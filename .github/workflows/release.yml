@@ -73,7 +73,7 @@ jobs:
 
           Notes:
           - The exe is not code-signed, so Windows SmartScreen may warn. Extract with Windows Explorer ("Extract all"), not WinRAR/7-Zip, so Windows keeps the download mark.
-          - The app listens on 127.0.0.1 only and sends no command to any printer in this build.
+          - The app listens on 127.0.0.1 only. It never sends a command that changes a printer. It reads from a printer only when you type its address and tick the approval box on the Connect screen (read-only requests, nothing stored but derived facts).
           - The zip contains a small test kit (RUN-TEST.cmd) that checks the exe on your PC and writes a report you can read before sharing it.
           - Not antivirus-scanned by the maintainer yet at the time of this draft.
           "@ | Set-Content release-notes.md -Encoding utf8
