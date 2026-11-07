@@ -83,3 +83,7 @@ def test_webview2_without_a_shipped_installer_cannot_install(monkeypatch):
 
 def test_webview2_installed_answers_a_bool():
     assert isinstance(desktop.webview2_installed(), bool)
+
+
+def test_unblock_bundle_does_nothing_outside_the_frozen_exe():
+    assert desktop.unblock_bundle() == 0

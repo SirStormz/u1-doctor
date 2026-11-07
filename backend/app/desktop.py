@@ -141,6 +141,26 @@ def ensure_webview2() -> bool:
     return webview2_installed()
 
 
+def unblock_bundle() -> int:
+    """Remove Windows' "downloaded from the Internet" mark from the DLLs shipped with the exe.
+
+    A zip extracted by some tools marks every file; .NET then refuses to load the marked WebView2/pythonnet DLLs and the window
+    cannot start. Only the app's own .dll files are touched, and only their mark. Returns how many were unblocked.
+    """
+    if sys.platform != "win32" or not getattr(sys, "frozen", False):
+        return 0
+    count = 0
+    for root, _dirs, files in os.walk(os.path.dirname(os.path.abspath(sys.executable))):
+        for name in files:
+            if name.lower().endswith(".dll"):
+                try:
+                    os.remove(os.path.join(root, name) + ":Zone.Identifier")
+                    count += 1
+                except OSError:
+                    pass  # no mark on this file
+    return count
+
+
 def write_error_log() -> str:
     """Save the current exception's traceback next to the app data so a failure can be diagnosed without a console."""
     import traceback
@@ -204,6 +224,7 @@ def main() -> int:
         return 0
     url = f"http://127.0.0.1:{port}"
     try:
+        unblock_bundle()
         if sys.platform == "win32" and not webview2_installed() and not ensure_webview2():
             raise RuntimeError("the Microsoft WebView2 runtime is not installed")
         run_window(url)
