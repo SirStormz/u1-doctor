@@ -30,7 +30,7 @@ from .support import checklist as support_checklist
 from .timeline import build_timeline
 
 API_VERSION = "1"
-APP_VERSION = "0.1.2-g1"
+APP_VERSION = "0.1.3-g1"
 
 FIXTURES = ROOT / "fixtures" / "synthetic"
 REAL = ROOT / "fixtures" / "real"

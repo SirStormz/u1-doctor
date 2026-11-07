@@ -71,6 +71,7 @@ $r.answers = $q
 
 # 4. Start the exe (local only, temp database)
 $env:U1DOCTOR_PORT = "$Port"
+$env:U1DOCTOR_HEADLESS = "1"  # server only: the window itself is what the owner checks by hand (LISEZ-MOI step 2)
 $env:U1DOCTOR_DB = Join-Path $env:TEMP "u1doctor-test-$stamp.sqlite3"
 $sw = [Diagnostics.Stopwatch]::StartNew()
 $proc = Start-Process -FilePath $exe -WorkingDirectory (Split-Path $exe -Parent) -PassThru -WindowStyle Minimized -RedirectStandardError (Join-Path $outDir "exe-stderr.log") -RedirectStandardOutput (Join-Path $outDir "exe-stdout.log")

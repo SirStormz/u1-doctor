@@ -125,8 +125,9 @@ def test_main_binds_localhost_by_default_and_the_exe_always():
     src = (app_dir / "app" / "__main__.py").read_text(encoding="utf-8")
     # default stays loopback; widening needs U1DOCTOR_HOST, which only the Docker image sets (and publishes on the host loopback)
     assert 'os.environ.get("U1DOCTOR_HOST", "127.0.0.1")' in src and "0.0.0.0" not in src
-    exe = (app_dir / "run_u1doctor.py").read_text(encoding="utf-8")
+    exe = (app_dir / "app" / "desktop.py").read_text(encoding="utf-8")  # run_u1doctor.py only calls desktop.main()
     assert 'host="127.0.0.1"' in exe and "U1DOCTOR_HOST" not in exe and "0.0.0.0" not in exe
+    assert "desktop" in (app_dir / "run_u1doctor.py").read_text(encoding="utf-8")
     docker = (app_dir.parent / "Dockerfile").read_text(encoding="utf-8")
     assert "U1DOCTOR_HOST=0.0.0.0" in docker and "-p 127.0.0.1:8765:8765" in docker
 

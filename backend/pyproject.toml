@@ -9,6 +9,7 @@ dependencies = ["fastapi>=0.115,<1", "uvicorn>=0.32,<1", "httpx>=0.28,<1", "pyda
 u1deb-validate = "app.deb_cli:main"
 
 [project.optional-dependencies]
+desktop = ["pywebview>=6,<7"]
 dev = ["pytest>=8,<9", "jsonschema>=4.23,<5", "ruff", "mypy", "pyinstaller"]
 
 [tool.pytest.ini_options]

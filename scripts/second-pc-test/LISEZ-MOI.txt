@@ -18,8 +18,10 @@ CE QU'IL FAUT FAIRE (5 minutes)
    - Ouvrez le dossier "u1-doctor" et double-cliquez sur "u1-doctor.exe".
    - Si un ecran bleu "Windows a protege votre ordinateur" apparait : PRENEZ UNE CAPTURE (touche Windows + Maj + S),
      puis cliquez sur "Informations complementaires" puis "Executer quand meme".
-   - Une fenetre noire (console) s'ouvre : laissez-la. Ouvrez un navigateur sur  http://127.0.0.1:8765  et regardez si l'application s'affiche.
-   - Fermez ensuite la fenetre noire (cela arrete le programme).
+   - Une fenetre "U1 Doctor" doit s'ouvrir toute seule avec l'application (pas de fenetre noire, pas de navigateur).
+     Si un message dit que la fenetre a besoin de "Microsoft WebView2", notez-le : l'application s'ouvre alors dans le navigateur.
+   - Dans l'ecran "Rapport", essayez le bouton d'export : une boite "Enregistrer sous" doit apparaitre.
+   - Fermez ensuite la fenetre (cela arrete le programme).
 
 3. TEST AUTOMATIQUE : double-cliquez sur "RUN-TEST.cmd" (a cote du dossier u1-doctor).
    - Si Windows demande confirmation, c'est normal : c'est aussi une information utile (notez-le).

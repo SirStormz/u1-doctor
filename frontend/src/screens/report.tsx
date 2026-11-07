@@ -71,9 +71,23 @@ export function Report() {
 
   const doExport = async () => {
     try {
-      const url = URL.createObjectURL(await bundles.export(source));
+      const blob = await bundles.export(source);
+      const name = sel === "demo" ? `u1-deb-synthetic-${DEMO_SCENARIO}.zip` : `u1-deb-${sel}.zip`;
+      // In the desktop window (pywebview) a blob download has no Save dialog: hand the bytes to the native one instead.
+      const native = (window as unknown as { pywebview?: { api?: { save_file?: (n: string, b64: string) => Promise<boolean> } } }).pywebview?.api?.save_file;
+      if (native) {
+        const b64 = await new Promise<string>((ok, ko) => {
+          const r = new FileReader();
+          r.onload = () => ok(String(r.result).split(",")[1] ?? "");
+          r.onerror = () => ko(r.error);
+          r.readAsDataURL(blob);
+        });
+        if (await native(name, b64)) toast(t.exported);
+        return;
+      }
+      const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = url; a.download = sel === "demo" ? `u1-deb-synthetic-${DEMO_SCENARIO}.zip` : `u1-deb-${sel}.zip`; document.body.appendChild(a); a.click(); a.remove();
+      a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
       toast(t.exported);
     } catch { toast(t.error); }

@@ -11,10 +11,12 @@ New-Item -ItemType Directory -Force $stage | Out-Null
 Copy-Item -Recurse (Join-Path $root "frontend\dist") (Join-Path $stage "dist")
 if (-not (Test-Path (Join-Path $stage "dist\models\u1-jay.glb"))) { Write-Warning "No 3D model found: the exe will show a still image" }
 
+# --windowed: no console window; the app opens in its own native window (backend/app/desktop.py, needs the "desktop" extra).
 # --noupx: never compress the exe (UPX raises antivirus false positives). --version-file: product metadata. The excluded modules are
 # development tools the app never imports (they only got in because the venv holds the dev extras).
-& "backend\.venv\Scripts\python.exe" -m PyInstaller --noconfirm --clean --noupx --name u1-doctor `
+& "backend\.venv\Scripts\python.exe" -m PyInstaller --noconfirm --clean --noupx --windowed --name u1-doctor `
   --version-file "$root\scripts\version_info.txt" `
+  --icon "$root\scripts\icon\u1-doctor.ico" --add-data "$root\scripts\icon\u1-doctor.ico;." `
   --exclude-module mypy --exclude-module mypy_extensions --exclude-module pytest --exclude-module _pytest --exclude-module setuptools `
   --exclude-module pkg_resources --exclude-module tkinter --exclude-module jsonschema `
   --paths backend `
