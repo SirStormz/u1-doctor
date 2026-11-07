@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Activity, Clock, Table2, Waypoints } from "lucide-react";
 import { Button, Chip, Panel, ProvenanceChip, Seal, StateBlock, TimeChip } from "../components/ui";
 import { PageTitle } from "../components/shell";
+import { NoData } from "../components/nodata";
 import { hhmmss, tms, useIncident, val } from "../lib/data";
 import { usePrefs } from "../lib/prefs";
 import { entityLabel, eventLabel, stateLabel, tok, tx } from "../lib/dyn";
@@ -18,6 +19,7 @@ function DemoTimeline() {
   const [table, setTable] = useState(false);
   const series = useMemo(() => deriveSeries(inc.obs), [inc.obs]);
   if (inc.status !== "ready") return <StateBlock kind={inc.status === "error" ? "error" : "loading"} title={inc.status === "error" ? t.error : t.loading} body={inc.error} />;
+  if (!inc.demo) return <><PageTitle title={t.nav.timeline} sub={t.timelineSub} icon={<Activity size={26} />} /><NoData /></>;
   if (!inc.obs.length) return <StateBlock kind="empty" title={t.empty} />;
 
   const events = inc.obs.filter((o) => ["state_transition", "user_reported_error_code", "capture_gap"].includes(o.event_type)).sort((a, b) => tms(a) - tms(b));
@@ -98,7 +100,9 @@ function DemoTimeline() {
 /** Timeline screen: the synthetic demo incident, or the real H-02 capture. Never mixed. */
 export function Timeline() {
   const { t } = usePrefs();
-  const [src, setSrc] = useState<"demo" | "real" | "history">("demo");
+  const inc = useIncident();
+  const [src, setSrc] = useState<"demo" | "real" | "history">(inc.demo ? "demo" : "history");
+  useEffect(() => { setSrc((s) => (inc.demo ? "demo" : s === "demo" ? "history" : s)); }, [inc.demo]);
   const opts: ["demo" | "real" | "history", string][] = [["demo", t.recon.demo], ["real", t.recon.real], ["history", t.histName]];
   return (
     <>
@@ -109,7 +113,7 @@ export function Timeline() {
       {src === "demo" ? (
         <>
           <DemoTimeline />
-          <div className="mt-4"><ReconPanel source="synthetic:demo_extrusion_blockage" /></div>
+          {inc.demo && <div className="mt-4"><ReconPanel source="synthetic:demo_extrusion_blockage" /></div>}
         </>
       ) : src === "real" ? (
         <>

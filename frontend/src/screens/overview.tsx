@@ -10,6 +10,7 @@ import type { RouteName } from "../lib/router";
 import { MiniStrip } from "../viz/HypothesisMap";
 import { U1Viewer } from "../viz/U1Viewer";
 import { RealCapturePanel } from "./real";
+import { NoData } from "../components/nodata";
 
 export function Overview({ go }: { go: (n: RouteName, p?: string) => void }) {
   const { t, lang } = usePrefs();
@@ -17,18 +18,23 @@ export function Overview({ go }: { go: (n: RouteName, p?: string) => void }) {
   if (inc.status === "loading") return <StateBlock kind="loading" title={t.loading} />;
   if (inc.status === "error") return <StateBlock kind="error" title={t.error} body={inc.error} action={<Button onClick={inc.reload}>{t.retry}</Button>} />;
 
-  const observed = inc.findings.filter((f) => f.classification === "OBSERVED").length;
-  const inconclusive = inc.findings.filter((f) => f.classification === "INCONCLUSIVE").length;
-  const forN = inc.findings.reduce((a, f) => a + f.evidence_for.length, 0);
-  const againstN = inc.findings.reduce((a, f) => a + f.evidence_against.length, 0);
-  const missingN = inc.findings.reduce((a, f) => a + f.missing_data.length, 0);
-  const dec = inc.decoding?.decoding;
-  const paused = [...inc.obs].reverse().find((o) => o.event_type === "state_transition" && val(o).state === "paused");
-  const codeObs = inc.obs.find((o) => o.event_type === "user_reported_error_code");
+  const demo = inc.demo;
+  const findings = demo ? inc.findings : [];
+  const obs = demo ? inc.obs : [];
+  const code = demo ? inc.code : null;
+  const observed = findings.filter((f) => f.classification === "OBSERVED").length;
+  const inconclusive = findings.filter((f) => f.classification === "INCONCLUSIVE").length;
+  const forN = findings.reduce((a, f) => a + f.evidence_for.length, 0);
+  const againstN = findings.reduce((a, f) => a + f.evidence_against.length, 0);
+  const missingN = findings.reduce((a, f) => a + f.missing_data.length, 0);
+  const dec = demo ? inc.decoding?.decoding : undefined;
+  const paused = [...obs].reverse().find((o) => o.event_type === "state_transition" && val(o).state === "paused");
+  const codeObs = obs.find((o) => o.event_type === "user_reported_error_code");
 
   return (
     <>
       <PageTitle title={t.nav.overview} sub={t.overviewSub} icon={<Radar size={26} />} />
+      {!demo && <div className="mb-d"><NoData /></div>}
       <div className="grid gap-d xl:grid-cols-[minmax(0,1.618fr)_minmax(380px,1fr)]">
         <Panel title={t.machine} icon={<Boxes size={17} />} active brackets i={0} bodyClass="p-0" actions={<Chip tone="demo">{t.illustration}</Chip>} className="blueprint grain">
           <div className="scan-host relative h-[520px]"><div className="scan-sweep" aria-hidden />
@@ -47,10 +53,10 @@ export function Overview({ go }: { go: (n: RouteName, p?: string) => void }) {
             ) : <p className="text-ink2">{t.noIncident}</p>}
             <div className="mt-3 flex flex-wrap items-center gap-2">
               {codeObs && <><ProvenanceChip status="USER_REPORTED" /><ProvenanceChip status={codeObs.source_status} /></>}
-              <span className="mono text-xs text-ink2">{inc.code}</span>
+              <span className="mono text-xs text-ink2">{code}</span>
               {paused && <span className="text-xs text-ink3">· {t.pausedAt} {hhmmss(tms(paused))} UTC</span>}
             </div>
-            <div className="mt-3"><MiniStrip obs={inc.obs} gapLabel={t.gap} /></div>
+            <div className="mt-3"><MiniStrip obs={obs} gapLabel={t.gap} /></div>
             <div className="mt-4 flex flex-wrap gap-2">
               <Button variant="primary" icon={<ArrowRight size={16} />} onClick={() => go("timeline")}>{t.openTimeline}</Button>
               <Button icon={<FileSearch size={16} />} onClick={() => go("evidence")}>{t.openEvidence}</Button>
@@ -60,7 +66,7 @@ export function Overview({ go }: { go: (n: RouteName, p?: string) => void }) {
           <div className="grid gap-d sm:grid-cols-2 [&>section]:h-full">
             <Panel title={t.ledger} icon={<Layers size={17} />} i={2}>
               <LedgerBars forN={forN} againstN={againstN} missingN={missingN} />
-              <p className="mt-3 text-xs text-ink3">{t.ledgerNote.replace("{n}", String(inc.findings.length))}</p>
+              <p className="mt-3 text-xs text-ink3">{t.ledgerNote.replace("{n}", String(findings.length))}</p>
             </Panel>
             <Panel title={t.findings} icon={<Gauge size={17} />} i={3}>
               <div className="grid grid-cols-[1fr_auto] gap-4">

@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { Activity, Check, Command, Eye, FileSearch, FileText, History, LayoutDashboard, ListChecks, Lock, Plug, Search, Settings, ShieldCheck } from "lucide-react";
+import { Activity, Check, Command, Eye, FileSearch, FileText, FlaskConical, History, LayoutDashboard, ListChecks, Lock, Plug, Search, Settings, ShieldCheck } from "lucide-react";
 import { api, type InterpretOut } from "../api";
 import { useIncident } from "../lib/data";
 import { usePrefs, type Theme } from "../lib/prefs";
@@ -100,7 +100,7 @@ const THEMES: Theme[] = ["night", "graphite", "light"];
 
 export function Shell({ route, go, replay, children }: { route: RouteName; go: (n: RouteName, p?: string) => void; replay: boolean; children: ReactNode }) {
   const { t, lang, setLang, theme, setTheme } = usePrefs();
-  const { health } = useIncident();
+  const { health, demo, setDemo } = useIncident();
   const [palette, setPalette] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const main = useRef<HTMLElement>(null);
@@ -130,6 +130,9 @@ export function Shell({ route, go, replay, children }: { route: RouteName; go: (
     return () => { ro.disconnect(); document.documentElement.style.removeProperty("--sbw"); };
   }, [route]);
 
+  const tone = replay ? "var(--replay)" : demo ? "var(--demo)" : "var(--ink-3)";
+  const stripStyle = { borderBottom: `1px solid ${tone}`, color: tone, background: `color-mix(in srgb, ${tone} 9%, var(--bg-1))` };
+
   return (
     <ToastCtx.Provider value={push}>
       <a href="#main" onClick={(e) => { e.preventDefault(); main.current?.focus(); }} className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-accent focus:px-3 focus:py-1 focus:text-accentink">{t.skip}</a>
@@ -138,9 +141,12 @@ export function Shell({ route, go, replay, children }: { route: RouteName; go: (
           <div className="wrap flex flex-wrap items-center gap-3 py-1.5">
           <a href="#/" className="flex items-center gap-3 no-underline" style={{ color: "#f4f4f0" }} aria-label={t.appName}><Logo /><span className="text-[17px] font-extrabold uppercase tracking-[0.04em]">{t.appName}</span></a>
           <span className="flex items-center gap-3 max-sm:hidden"><span className="mx-1 h-5 w-px bg-line" aria-hidden />
-          <Chip tone={replay ? "replay" : "demo"}>{replay ? t.modeReplay : t.modeDemo}</Chip>
+          {(replay || demo) && <Chip tone={replay ? "replay" : "demo"}>{replay ? t.modeReplay : t.modeDemo}</Chip>}
           <Chip tone="accent" icon={<Lock size={11} aria-hidden />}>{t.readOnly}</Chip></span>
           <div className="ml-auto flex items-center gap-2">
+            <button type="button" aria-pressed={demo} onClick={() => setDemo(!demo)} title={demo ? t.demoToggleOn : t.demoToggleOff} className="btn btn-secondary !py-1.5" style={{ background: demo ? "#ffc400" : "#1e1e1b", color: demo ? "#0e0e0e" : "#f4f4f0", borderColor: demo ? "#ffc400" : "#8d8d84" }}>
+              <FlaskConical size={15} aria-hidden /> <span>{t.demoToggle}</span>
+            </button>
             <button type="button" onClick={() => setPalette(true)} className="btn btn-secondary !py-1.5" style={{ background: "#1e1e1b", color: "#f4f4f0", borderColor: "#8d8d84" }} aria-label={`${t.palette} — ${t.palettePlaceholder.split("…")[0]}… Ctrl K`}>
               <Search size={15} aria-hidden /> <span className="hidden min-[1500px]:inline">{t.palettePlaceholder.split("…")[0]}…</span> <span className="max-sm:hidden"><Kbd>Ctrl K</Kbd></span>
             </button>
@@ -158,8 +164,8 @@ export function Shell({ route, go, replay, children }: { route: RouteName; go: (
           </div>
                   </div>
         </header>
-        <div role="status" className={`strip-h flex items-center justify-center gap-2 px-4 text-xs font-bold ${replay ? "" : "hatch-demo"}`} style={{ borderBottom: `1px solid ${replay ? "var(--replay)" : "var(--demo)"}`, color: replay ? "var(--replay)" : "var(--demo)", background: `color-mix(in srgb, ${replay ? "var(--replay)" : "var(--demo)"} 9%, var(--bg-1))` }}>
-          {replay ? t.replayStrip : t.demoStrip}
+        <div role="status" className={`strip-h flex items-center justify-center gap-2 px-4 text-xs font-bold ${replay || !demo ? "" : "hatch-demo"}`} style={stripStyle}>
+          {replay ? t.replayStrip : demo ? t.demoStrip : t.idleStrip}
         </div>
         <nav aria-label={t.navLabel} className="indexbar">
           <div className="wrap flex">

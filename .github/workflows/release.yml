@@ -1,11 +1,11 @@
 name: Release
-# Manual run only. Builds the Windows exe on a clean GitHub runner, smoke-tests it, zips it with the second-PC test kit and a
+# Manual run only. Builds the Windows exe on a clean GitHub runner, smoke-tests it, zips it with the licence and a
 # SHA-256 file, and creates a DRAFT release (nothing is public until the owner publishes the draft in the GitHub UI).
 on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Release tag, for example v0.1.5-g1"
+        description: "Release tag, for example v0.1.6-g1"
         required: true
         type: string
 permissions:
@@ -29,7 +29,7 @@ jobs:
           backend\.venv\Scripts\python.exe -m pip install -e "backend[desktop]" pyinstaller
       - name: Build the one-folder exe
         run: .\scripts\build_windows.ps1
-      - name: Zip with the test kit and SHA-256
+      - name: Zip with the licence and SHA-256
         run: .\scripts\package_zip.ps1
       - name: Smoke test the built exe (local port, temporary database)
         run: |
@@ -75,7 +75,7 @@ jobs:
           Notes:
           - The exe is not code-signed, so Windows SmartScreen may warn. Extract with Windows Explorer ("Extract all"), not WinRAR/7-Zip, so Windows keeps the download mark.
           - The app listens on 127.0.0.1 only. It never sends a command that changes a printer. It reads from a printer only when you type its address and tick the approval box on the Connect screen (read-only requests, nothing stored but derived facts).
-          - The zip contains a small test kit (RUN-TEST.cmd) that checks the exe on your PC and writes a report you can read before sharing it.
+          - Double-click u1-doctor.exe: the app opens in its own window and starts empty (demo mode is a switch in the header). If the Microsoft WebView2 component is missing, the app offers to install it with Microsoft's own installer shipped in the zip.
           - A VirusTotal scan of this exact zip is added to these notes once it has been run.
           "@ | Set-Content release-notes.md -Encoding utf8
           gh release create "${{ inputs.tag }}" "build\$zip" "build\$zip.sha256.txt" --draft --title "U1 Doctor ${{ inputs.tag }}" --notes-file release-notes.md --target "${{ github.sha }}"

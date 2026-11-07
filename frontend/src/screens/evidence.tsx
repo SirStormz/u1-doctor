@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Copy, ExternalLink, FileSearch, Fingerprint,
 import type { Finding } from "../api";
 import { Button, Chip, ClassChip, Panel, ProvenanceChip, StateBlock, TimeChip } from "../components/ui";
 import { PageTitle, useToast } from "../components/shell";
+import { NoData } from "../components/nodata";
 import { hhmmss, tms, useIncident } from "../lib/data";
 import { usePrefs } from "../lib/prefs";
 import { eventLabel, tok, tx } from "../lib/dyn";
@@ -20,6 +21,7 @@ export function Findings({ go }: { go: (n: RouteName, p?: string) => void }) {
   const [filter, setFilter] = useState("ALL");
   const rows = useMemo(() => inc.findings.filter((f) => filter === "ALL" || f.classification === filter).sort((a, b) => (ORDER[a.classification] ?? 9) - (ORDER[b.classification] ?? 9) || (QUAL[a.evidence_quality] ?? 9) - (QUAL[b.evidence_quality] ?? 9)), [inc.findings, filter]);
   if (inc.status !== "ready") return <StateBlock kind={inc.status === "error" ? "error" : "loading"} title={inc.status === "error" ? t.error : t.loading} body={inc.error} />;
+  if (!inc.demo) return <><PageTitle title={t.nav.findings} sub={t.findingsSub} icon={<ListChecks size={26} />} /><NoData /></>;
   return (
     <>
       <PageTitle title={t.nav.findings} sub={t.findingsSub} icon={<ListChecks size={26} />}
@@ -62,6 +64,7 @@ export function Evidence({ param, go }: { param?: string; go: (n: RouteName, p?:
   const inc = useIncident();
   const toast = useToast();
   if (inc.status !== "ready") return <StateBlock kind={inc.status === "error" ? "error" : "loading"} title={inc.status === "error" ? t.error : t.loading} body={inc.error} />;
+  if (!inc.demo) return <><PageTitle title={t.nav.evidence} icon={<FileSearch size={26} />} /><NoData /></>;
   if (!inc.findings.length) return <StateBlock kind="empty" title={t.empty} />;
   const sorted = [...inc.findings].sort((a, b) => (ORDER[a.classification] ?? 9) - (ORDER[b.classification] ?? 9));
   const f: Finding = sorted.find((x) => x.finding_id === param) ?? sorted[0]!;

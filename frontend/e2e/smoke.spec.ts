@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const ROUTES = ["welcome", "connect", "overview", "explorer", "symptoms", "timeline", "findings", "evidence", "replay", "report", "settings"];
 
-test.describe("every screen, demo data, read-only", () => {
+test.describe("every screen, demo mode on, read-only", () => {
   for (const route of ROUTES) {
     test(`#/${route} renders with the safety banners and no network beyond the app`, async ({ page, baseURL }) => {
       const origin = new URL(baseURL!).origin;
@@ -15,6 +15,7 @@ test.describe("every screen, demo data, read-only", () => {
 
       await page.goto(`/#/${route}`);
       await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
+      await page.getByRole("button", { name: /^(Demo mode|Mode démo)$/ }).click(); // the app starts empty: the demo is opt-in
       await expect(page.getByText("DEMO", { exact: false }).first()).toBeVisible();
       await expect(page.getByText(/0 commands sent to printer|0 commande envoyée à l'imprimante/)).toBeVisible();
 
@@ -47,4 +48,17 @@ test("timeline offers demo, real capture and history sources", async ({ page }) 
   for (const name of [/Synthetic demo|Démo synthétique/i, /Real capture|Capture réelle/i, /History|Historique/i]) {
     await expect(page.getByRole("button", { name })).toBeVisible();
   }
+});
+
+test("the app starts empty and says so; demo mode is an explicit switch", async ({ page }) => {
+  await page.goto("/#/overview");
+  await expect(page.getByText(/No data loaded|Aucune donnée chargée/)).toBeVisible();
+  await expect(page.getByText(/No data yet|Aucune donnée pour l'instant/).first()).toBeVisible();
+  await expect(page.getByText("DEMO", { exact: true })).toHaveCount(0);
+  const toggle = page.getByRole("button", { name: /^(Demo mode|Mode démo)$/ });
+  await expect(toggle).toHaveAttribute("aria-pressed", "false");
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByText("DEMO", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText(/synthetic data · not from a printer|données synthétiques/).first()).toBeVisible();
 });

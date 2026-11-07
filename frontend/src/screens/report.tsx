@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Download, Eye, FilePlus2, FileText, ShieldCheck, X, Check } from "lucide-react";
 import { Button, Chip, Panel, StateBlock } from "../components/ui";
 import { PageTitle, useToast } from "../components/shell";
+import { NoData } from "../components/nodata";
 import { bundles, historyApi } from "../api";
 import type { Finding, HistorySession, Observation } from "../api";
 import { canon } from "../lib/canon";
@@ -28,7 +29,7 @@ export function Report() {
   const [files, setFiles] = useState<FileRow[] | null>(null);
   const [privacyJson, setPrivacyJson] = useState("");
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [sel, setSel] = useState("demo");
+  const [sel, setSel] = useState(inc.demo ? "demo" : "");
   const [sessions, setSessions] = useState<HistorySession[]>([]);
   const [saved, setSaved] = useState<{ obs: Observation[]; findings: Finding[] } | null>(null);
   const source = sel === "demo" ? `synthetic:${DEMO_SCENARIO}` : `history:${sel}`;
@@ -38,13 +39,16 @@ export function Report() {
   useEffect(() => {
     let live = true;
     setSaved(null);
-    if (sel === "demo") return;
+    if (sel === "demo" || !sel) return;
     Promise.all([historyApi.observations(sel), historyApi.findings(sel)])
       .then(([o, f]) => { if (live) setSaved({ obs: o.observations ?? [], findings: f.findings ?? [] }); })
       .catch(() => { if (live) setSaved({ obs: [], findings: [] }); });
     return () => { live = false; };
   }, [sel]);
 
+  // demo off: pick the first saved session once the list is known; demo on: the synthetic report is the default
+  useEffect(() => { if (!sel && !inc.demo && sessions[0]) setSel(sessions[0].id); }, [sel, inc.demo, sessions]);
+  useEffect(() => { if (inc.demo && !sel) setSel("demo"); if (!inc.demo && sel === "demo") setSel(""); }, [inc.demo, sel]);
   const shown = sel === "demo" ? (inc.status === "ready" ? { obs: inc.obs, findings: inc.findings } : null) : saved;
   const built = useMemo(() => {
     if (!shown) return null;
@@ -57,6 +61,7 @@ export function Report() {
   useEffect(() => {
     let live = true;
     setFiles(null);
+    if (!sel) return;
     bundles.preview(source).then((p) => {
       if (!live) return;
       setFiles([{ name: "manifest.json" }, ...p.manifest.files.map((f) => ({ name: f.name, sha: f.sha256, bytes: f.bytes }))]);
@@ -66,6 +71,7 @@ export function Report() {
   }, [source]);
 
   if (inc.status !== "ready") return <StateBlock kind={inc.status === "error" ? "error" : "loading"} title={inc.status === "error" ? t.error : t.loading} body={inc.error} />;
+  if (!sel) return <><PageTitle title={t.nav.report} sub={t.reportSub} icon={<FileText size={26} />} /><NoData /><div className="mt-4"><ImportPanel /></div></>;
   const clean = built ? built.scan.every(([, n]) => n === 0) : false;
   const title = inc.decoding?.decoding.entry?.title ? tx(lang, inc.decoding.decoding.entry.title) : t.nav.report;
 
@@ -100,7 +106,7 @@ export function Report() {
       <div className="mb-d flex flex-wrap items-center gap-2">
         <label htmlFor="report-source" className="micro">{t.reportSource}</label>
         <select id="report-source" value={sel} onChange={(e) => setSel(e.target.value)} className="rounded-lg border border-control bg-surface2 px-3 py-2 text-ink">
-          <option value="demo">{t.reportSourceDemo}</option>
+          {inc.demo && <option value="demo">{t.reportSourceDemo}</option>}
           {sessions.map((s) => <option key={s.id} value={s.id}>{`${s.label} · ${s.observation_count} obs`}</option>)}
         </select>
         {sessions.length === 0 && <span className="text-xs text-ink3">{t.reportNoSaved}</span>}

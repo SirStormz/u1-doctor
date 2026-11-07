@@ -13,15 +13,19 @@ export interface IncidentData {
   code: string | null;
   compat: Compat | null;
   health: Health | null;
+  /** The synthetic demo is loaded in memory but only shown when this is on (off at every start). */
+  demo: boolean;
+  setDemo: (on: boolean) => void;
   reload: () => void;
 }
 
-const empty: IncidentData = { status: "loading", obs: [], findings: [], replay: null, decoding: null, code: null, compat: null, health: null, reload: () => {} };
+const empty: IncidentData = { status: "loading", obs: [], findings: [], replay: null, decoding: null, code: null, compat: null, health: null, demo: false, setDemo: () => {}, reload: () => {} };
 const Ctx = createContext<IncidentData>(empty);
 
 export function IncidentProvider({ children }: { children: ReactNode }) {
   const [n, setN] = useState(0);
-  const [state, setState] = useState<Omit<IncidentData, "reload">>(empty);
+  const [demo, setDemo] = useState(false);
+  const [state, setState] = useState<Omit<IncidentData, "reload" | "demo" | "setDemo">>(empty);
   useEffect(() => {
     let live = true;
     setState((s) => ({ ...s, status: "loading", error: undefined }));
@@ -38,7 +42,7 @@ export function IncidentProvider({ children }: { children: ReactNode }) {
     })();
     return () => { live = false; };
   }, [n]);
-  return <Ctx.Provider value={{ ...state, reload: () => setN((x) => x + 1) }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ ...state, demo, setDemo, reload: () => setN((x) => x + 1) }}>{children}</Ctx.Provider>;
 }
 
 export const useIncident = () => useContext(Ctx);

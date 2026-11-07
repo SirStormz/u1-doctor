@@ -45,7 +45,7 @@ function mockApi() {
     else if (url.endsWith("/history/h0123456789ab/findings")) body = { findings: realFindings, ruleset: { id: "u1-starter", version: "x", hash: "sha256:" + "a".repeat(64) } };
     else if (url.endsWith("/errors/interpret")) body = interpret(JSON.parse(String(init?.body)).code);
     else if (url.endsWith("/compatibility")) body = { verified_on_hardware: false, firmware_target: "V2.1.0", rows: [], capabilities: [{ name: "Moonraker HTTP :7125", status: "UNTESTED" }, { name: "Offline code decoder", status: "TESTED_SYNTHETIC" }] };
-    else if (url.endsWith("/health")) body = { status: "ok", api_version: "1", app_version: "0.1.5-g1", mode: "DEMO", machine_access: "READ_ONLY_ON_CONSENT", db_schema: 1 };
+    else if (url.endsWith("/health")) body = { status: "ok", api_version: "1", app_version: "0.1.6-g1", mode: "DEMO", machine_access: "READ_ONLY_ON_CONSENT", db_schema: 1 };
     return { ok: true, status: 200, json: async () => body };
   }));
   return calls;
@@ -55,10 +55,14 @@ let calls: string[];
 beforeEach(() => { calls = mockApi(); location.hash = "#/overview"; localStorage.clear(); });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
+const demoOn = async () => { fireEvent.click(await screen.findByRole("button", { name: /^(demo mode|mode démo)$/i })); };
 const go = async (hash: string) => { await act(async () => { location.hash = hash; window.dispatchEvent(new HashChangeEvent("hashchange")); }); };
 
 test("DEMO is unmistakable and no machine/connection action exists", async () => {
   render(<App />);
+  expect(await screen.findByText(/No data loaded|Aucune donnée chargée/i)).toBeInTheDocument(); // empty at start: the demo is opt-in
+  expect(screen.queryByText("DEMO")).toBeNull();
+  await demoOn();
   expect((await screen.findAllByText("DEMO")).length).toBeGreaterThan(0);
   expect(screen.getByText(/synthetic data · not from a printer|données synthétiques/i)).toBeInTheDocument();
   expect(screen.getByText(/0 commands sent|0 commande/i)).toBeInTheDocument();
@@ -128,6 +132,7 @@ test("palette: Enter on a code opens the Error codes screen with the result", as
 test("timeline: slider is keyboard operable and values are never shown across a gap", async () => {
   render(<App />);
   await go("#/timeline");
+  await demoOn();
   const slider = await screen.findByRole("slider");
   const before = Number(slider.getAttribute("aria-valuenow"));
   fireEvent.keyDown(slider, { key: "Home" });
@@ -144,6 +149,7 @@ test("timeline: slider is keyboard operable and values are never shown across a 
 test("evidence: every conclusion shows for / against / missing, limits and hashes", async () => {
   render(<App />);
   await go("#/evidence");
+  await demoOn();
   await screen.findAllByText(/Evidence detail|Détail des preuves/);
   for (const re of [/^(For|Pour) · \d+$/, /^(Against|Contre) · \d+$/, /^(Missing|Manquant) · \d+$/]) expect((await screen.findAllByText(re)).length).toBeGreaterThan(0);
   expect(screen.getAllByText(/sha256:/).length).toBeGreaterThanOrEqual(2);
@@ -184,6 +190,7 @@ test("replay: two runs of the same scenario are reported identical", async () =>
 test("empty and error states: findings filter without result and API failure", async () => {
   render(<App />);
   await go("#/findings");
+  await demoOn();
   await screen.findByRole("table");
   fireEvent.change(screen.getByLabelText(/filter|filtre/i), { target: { value: "OBSERVED" } });
   expect(screen.getAllByRole("row").length).toBeGreaterThan(1);
@@ -220,7 +227,7 @@ test("report: importing a bundle shows a plain refusal with its reason code (not
 test("timeline: real source shows the reconstruction without incident, labelled REAL", async () => {
   render(<App />);
   await go("#/timeline");
-  fireEvent.click(await screen.findByRole("button", { name: /real capture|capture réelle/i }));
+  fireEvent.click((await screen.findAllByRole("button", { name: /real capture|capture réelle/i }))[0]!); // the source selector comes first; the history view below has its own real-capture button
   expect(await screen.findByText(/no pause or error state|aucune pause ni erreur/i)).toBeInTheDocument();
   expect(calls.some((c) => c.includes("/timeline?source=real%3Ah02_normal_print"))).toBe(true);
   expect(screen.queryByRole("heading", { name: /^hypothes|^hypothèses/i })).toBeNull(); // demo-only hypothesis map is not shown for the real capture
