@@ -69,18 +69,18 @@ Press `Ctrl K` anywhere to jump to a screen or paste an error code.
 
 ## Get started in two minutes (Windows)
 
-1. Download `u1-doctor-0.1.2-g1-win64.zip` and its `.sha256.txt` from the [latest release](https://github.com/stormz85ia/u1-doctor/releases/latest).
+1. Download `u1-doctor-0.1.5-g1-win64.zip` and its `.sha256.txt` from the [latest release](https://github.com/stormz85ia/u1-doctor/releases/latest).
 2. Check the file was not altered (optional, 10 seconds):
    ```powershell
-   Get-FileHash .\u1-doctor-0.1.2-g1-win64.zip -Algorithm SHA256
+   Get-FileHash .\u1-doctor-0.1.5-g1-win64.zip -Algorithm SHA256
    ```
-   Compare with the value in the release notes: `E48706561A43531F10D8968B9521EABB4590BC4C9F9D8DAE507A8FB44E484912`.
-3. Right-click the zip, **Extract all** (not WinRAR or 7-Zip, so Windows keeps the download mark), then run `u1-doctor.exe`.
-4. Open <http://127.0.0.1:8765> in your browser.
+   Compare with the value in the release notes: `594599BF711DB552A6E8B01C27C25F642B6C816A162CFDF7D57410AE6B8812B9`.
+3. Right-click the zip, **Extract all** (not WinRAR or 7-Zip, so Windows keeps the download mark), then double-click `u1-doctor.exe`.
+4. A window opens with the app: no console, no browser. If the Microsoft WebView2 component is missing (some Windows 10 PCs), the app offers to install it once with Microsoft's own installer shipped in the zip (internet and a Windows permission prompt needed).
 
 **Good to know**
 - The app is **not code-signed**, so Windows SmartScreen may warn: choose "More info", then "Run anyway".
-- VirusTotal scan of this zip: 1 engine out of 66 flagged it: Zillya (`Trojan.Stealer.Win64.2764`, the same label it gave the 0.1.1-g1 zip). The other 65 detect nothing, including the generic detection Bkav Pro gave 0.1.1-g1. We believe it is a false positive typical of unsigned PyInstaller executables, but cannot prove it from here: the source is public, the build is made by GitHub Actions, and the app reads no browser data, cookies, passwords, clipboard or registry. [Report](https://www.virustotal.com/gui/file/e48706561a43531f10d8968b9521eabb4590bc4c9f9d8dae507a8fb44e484912). Earlier builds: 0.1.0-g1 was flagged by 1 engine out of 66, 0.1.1-g1 by 2 out of 65.
+- VirusTotal scan of this zip (2026-11-07): 0 engines out of 65 flagged it. [Report](https://www.virustotal.com/gui/file/594599bf711db552a6e8b01c27c25f642b6c816a162cfdf7d57410ae6b8812b9). Earlier builds: 0.1.0-g1 was flagged by 1 engine out of 66, 0.1.1-g1 by 2 out of 65 and 0.1.2-g1 by 1 out of 66 (Zillya, `Trojan.Stealer.Win64.2764`); we believe those were false positives typical of unsigned PyInstaller executables. A clean scan is not a guarantee and detections can change: the source is public, the build is made by GitHub Actions, and the app reads no browser data, cookies, passwords or clipboard. It reads one Windows registry value (the installed WebView2 version, to know whether its window can open) and removes the "downloaded from the Internet" mark from its own `.dll` files so that window can start.
 - It opens in **DEMO mode**: everything works offline with clearly labelled synthetic data. Nothing is sent anywhere.
 - Linux, macOS and Docker: see the [install guide](docs/INSTALL.md).
 
@@ -213,7 +213,7 @@ No code is copied from these projects. The comparison is in [`docs/ORIGINALITY_A
 
 - **Il ne pilote jamais l'imprimante** : ni pause, ni annulation, ni G-code. Il ne lit une imprimante que si tu saisis son adresse privée et coches la case d'accord, avec une courte liste fixe de requêtes de lecture.
 - **Tout reste sur ton PC** : pas de cloud, pas de télémétrie, pas d'IA. L'application n'écoute que sur `127.0.0.1`.
-- **Démarrer** : télécharge le zip de la [dernière release](https://github.com/stormz85ia/u1-doctor/releases/latest), extrais-le avec « Extraire tout », lance `u1-doctor.exe`, puis ouvre <http://127.0.0.1:8765>. Windows peut afficher un avertissement SmartScreen, car l'exe n'est pas signé.
+- **Démarrer** : télécharge le zip de la [dernière release](https://github.com/stormz85ia/u1-doctor/releases/latest), extrais-le avec « Extraire tout », double-clique `u1-doctor.exe` : une fenêtre s'ouvre avec l'application (sans console ni navigateur ; si le composant Microsoft WebView2 manque, l'app propose de l'installer une fois). Windows peut afficher un avertissement SmartScreen, car l'exe n'est pas signé.
 - **Bilingue** : l'interface existe en français et en anglais, avec un bouton en haut à droite.
 - **Statut honnête** : seules des impressions normales ont été capturées sur une vraie U1 ; aucune panne réelle pour l'instant, donc tous les incidents de démonstration sont marqués `SYNTHETIC`. La [présentation illustrée](https://stormz85ia.github.io/u1-doctor/presentation/) est aussi disponible en français.
 

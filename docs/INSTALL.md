@@ -12,25 +12,25 @@ All 11 screens are in [`docs/media/screens/`](media/screens/).
 
 ## Before you start: what is and is not verified
 
-- **Release `v0.1.2-g1` exists** (the current build). `v0.1.0-g1` lacks the export of your own saved captures; `v0.1.1-g1` has it but scored worse on VirusTotal; both are marked as superseded: [releases page](https://github.com/stormz85ia/u1-doctor/releases/latest). It is built by GitHub Actions and smoke-tested there.
+- **Release `v0.1.5-g1` exists** (the current build). Older releases are superseded: `v0.1.0-g1` lacks the export of your own saved captures, `v0.1.1-g1` scored worse on VirusTotal, `v0.1.2-g1` opens in the browser, and `v0.1.4-g1` cannot start its window when the zip is downloaded with a browser (fixed in 0.1.5-g1). `v0.1.3-g1` was removed. [releases page](https://github.com/stormz85ia/u1-doctor/releases/latest). It is built by GitHub Actions and smoke-tested there.
 - The test kit shipped in the zip was run on the developer PC (Windows 11, zip downloaded with a browser): the exe started in about a second, listened on `127.0.0.1` only, created no firewall rule and raised no SmartScreen or antivirus alert. That PC had Defender real-time protection off and has development tools, so the result is weaker than a test on a clean second PC, which has **not** been done yet.
-- VirusTotal scan of this zip: 1 engine out of 66 flagged it: Zillya (`Trojan.Stealer.Win64.2764`, the same label it gave the 0.1.1-g1 zip). The other 65 detect nothing, including the generic detection Bkav Pro gave 0.1.1-g1. We believe it is a false positive typical of unsigned PyInstaller executables, but cannot prove it from here: the source is public, the build is made by GitHub Actions, and the app reads no browser data, cookies, passwords, clipboard or registry. [Report](https://www.virustotal.com/gui/file/e48706561a43531f10d8968b9521eabb4590bc4c9f9d8dae507a8fb44e484912). Earlier builds: 0.1.0-g1 was flagged by 1 engine out of 66, 0.1.1-g1 by 2 out of 65.
+- VirusTotal scan of this zip (2026-11-07): 0 engines out of 65 flagged it. [Report](https://www.virustotal.com/gui/file/594599bf711db552a6e8b01c27c25f642b6c816a162cfdf7d57410ae6b8812b9). Earlier builds: 0.1.0-g1 was flagged by 1 engine out of 66, 0.1.1-g1 by 2 out of 65 and 0.1.2-g1 by 1 out of 66 (Zillya, `Trojan.Stealer.Win64.2764`); we believe those were false positives typical of unsigned PyInstaller executables. A clean scan is not a guarantee and detections can change: the source is public, the build is made by GitHub Actions, and the app reads no browser data, cookies, passwords or clipboard. It reads one Windows registry value (the installed WebView2 version, to know whether its window can open) and removes the "downloaded from the Internet" mark from its own `.dll` files so that window can start.
 - The executable is unsigned, so Windows SmartScreen may warn: choose "More info", then "Run anyway".
 - Source: `IMPLEMENTATION_STATUS.md` (REQ-015), `BACKLOG.md`.
 
 ## A. Windows executable (from the release)
 
-1. Download `u1-doctor-0.1.2-g1-win64.zip` and its `.sha256.txt` from the [release page](https://github.com/stormz85ia/u1-doctor/releases/latest).
+1. Download `u1-doctor-0.1.5-g1-win64.zip` and its `.sha256.txt` from the [release page](https://github.com/stormz85ia/u1-doctor/releases/latest).
 2. Verify the hash in PowerShell before unpacking:
 
    ```powershell
-   Get-FileHash .\u1-doctor-0.1.2-g1-win64.zip -Algorithm SHA256
+   Get-FileHash .\u1-doctor-0.1.5-g1-win64.zip -Algorithm SHA256
    ```
 
-   Compare the output with the published value: `E48706561A43531F10D8968B9521EABB4590BC4C9F9D8DAE507A8FB44E484912`. If they differ, do not run the file.
+   Compare the output with the published value: `594599BF711DB552A6E8B01C27C25F642B6C816A162CFDF7D57410AE6B8812B9`. If they differ, do not run the file.
    (A SHA-256 proves the file was not altered or corrupted. It does not prove who made it.)
-3. Unpack the zip with Windows Explorer (**Extract all**; WinRAR or 7-Zip would drop the download mark Windows uses for SmartScreen). It is one folder, no Python needed. Run `u1-doctor.exe`. A small test kit (`RUN-TEST.cmd`) is included: it checks the exe on your PC and writes a report you can read before sharing it.
-4. Open <http://127.0.0.1:8765>. Set `U1DOCTOR_PORT` to change the port.
+3. Unpack the zip with Windows Explorer (**Extract all**; WinRAR or 7-Zip would drop the download mark Windows uses for SmartScreen). It is one folder, no Python needed. Double-click `u1-doctor.exe`: a window opens with the app (no console, no browser). If the Microsoft WebView2 component is missing (some Windows 10 PCs), the app offers to install it once with Microsoft's own installer shipped in the zip (internet and a Windows permission prompt needed). A small test kit (`RUN-TEST.cmd`) is included: it checks the exe on your PC and writes a report you can read before sharing it.
+4. The app serves itself on `127.0.0.1:8765` only (set `U1DOCTOR_PORT` to change the port); closing the window stops it. Your language and theme choices are kept between runs.
 
 The build is produced by `scripts\build_windows.ps1`. It bundles the owner's 3D model (`frontend/public/models/u1-jay.glb`).
 

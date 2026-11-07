@@ -33,4 +33,4 @@ Out of scope:
 
 ## Supported versions
 
-Pre-release. Version `0.1.2-g1` is the current build; only it and the current `main` are considered. `0.1.0-g1` and `0.1.1-g1` are superseded.
+Pre-release. Version `0.1.5-g1` is the current build; only it and the current `main` are considered. `0.1.0-g1`, `0.1.1-g1`, `0.1.2-g1` and `0.1.4-g1` are superseded.
