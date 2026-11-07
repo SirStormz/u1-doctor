@@ -29,7 +29,7 @@ Legend: 🟢 no U1 needed · 🔴 needs the owner's explicit go on the U1 · �
 ### B. U1-DEB open standard (ecosystem)
 | # | Item | | Status |
 |---|---|---|
-| 10 | Spec published as an open standard, JSON Schema versioned | 🟢 | ◐ schemas final (no DRAFT); real `$id` URL once repo is public |
+| 10 | Spec published as an open standard, JSON Schema versioned | 🟢 | ☑ 2026-11-07: schemas final; `$id` now `https://raw.githubusercontent.com/stormz85ia/u1-doctor/main/schemas/<name>` (resolves once the repo is public) |
 | 11 | Validator CLI (pip or npx) | 🟢 | ☑ `python -m app.deb_cli validate` (stdlib, 5 tests) |
 | 12 | GitHub Action that validates a bundle | 🟢 | ☑ written + wired in CI; first GitHub run 2026-11-07: job `deb-action` green |
 | 13 | Minimal example bundle usable by other tools | 🟢 | ☑ `examples/u1-deb/` (SYNTHETIC, regression-tested) |

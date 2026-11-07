@@ -9,7 +9,7 @@ U1 Doctor is a local, read-only tool. Full analysis: [`docs/threat-model.md`](do
 - **Mandatory consent.** A real connection needs an explicit owner consent object matching the target host.
 - **Local-only binding.** The app listens on `127.0.0.1` only. No cloud, no telemetry.
 - **Untrusted imports.** U1-DEB bundles are validated (file-name allowlist, size and ratio caps, no symlinks or encrypted entries, SHA-256 and schema checks) and nothing in them is executed. See [`docs/U1-DEB.md`](docs/U1-DEB.md).
-- **Known residual risks.** The policy is tested against a mock plus two supervised sessions on the owner's U1; HTTP on the LAN is unencrypted; export redaction is best effort.
+- **Known residual risks.** The policy is tested against a mock plus supervised read-only sessions on the owner's U1 (see `docs/evidence`); HTTP on the LAN is unencrypted; export redaction is best effort.
 
 ## Reporting a vulnerability
 
@@ -33,4 +33,4 @@ Out of scope:
 
 ## Supported versions
 
-Pre-release. No version has been released; only the current `main` is considered. This will be updated at the first release.
+Pre-release. Version `0.1.0-g1` is the first build; only it and the current `main` are considered.

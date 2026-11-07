@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://u1-doctor.invalid/schemas/observation.schema.json",
+  "$id": "https://raw.githubusercontent.com/stormz85ia/u1-doctor/main/schemas/observation.schema.json",
   "title": "U1 Doctor Observation",
   "description": "Immutable normalized fact with explicit provenance. schema_version 1.0.",
   "type": "object",
