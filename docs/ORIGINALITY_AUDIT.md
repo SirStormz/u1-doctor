@@ -75,3 +75,12 @@ Catégorie « Original New Idea » : défendable pour le cœur, pas pour les bri
 - Décision propriétaire : key art et licence du dépôt.
 
 Sources : forum.snapmaker.com sujets 43460, 44029, 43227, 43823, 43909, 44000, 44080, 43827, 43994 ; catégorie 114 ; dépôts `dlgambill/u1hub`, `koicheviv/Snapmaker-U1-Monitor-IC`, `DVOpenLabs/snapmaker-studio` ; wiki.snapmaker.com (U1 export log, u1 error codes).
+
+## 6. Mise à jour du 2026-11-07 (relecture avant soumission)
+
+Méthode identique (API JSON publique du forum Discourse et API GitHub publique, aucune connexion à une imprimante). La catégorie Phase 2 (id 114) compte 25 sujets, le plus récent date du 2026-11-05.
+
+- **Nouveaux depuis la première lecture** : AMS-Hub (44063, changement de filament), ChromaMatter / Sorca CM (44059, édition de couleur dans Orca), Snapmaker Orca en ligne (44091), Slicer Cleaner (44077, réparation de slicer). Lus par leur titre seulement : tous portent sur le tranchage ou les filaments, aucun sur le diagnostic après incident.
+- **Recherches forum** (catégorie 114, depuis le 2026-10-20) : « forensic », « diagnostic », « incident », « log analyzer » ne renvoient rien. « error code », « evidence », « replay », « timeline », « troubleshooting » ne renvoient que des projets déjà comparés (Dry Run, Fix Pack, hanye, MakerStride, Kromacut, BrokkrSculpt, Print Cost & Profit) ou le sujet de règles.
+- **GitHub** : « snapmaker u1 diagnostic / forensic / error code / moonraker log » ne renvoient que des dépôts déjà connus (`u1-diagnostico`, `u1-dryrun`, `spoolman-klipper-helper`). Aucun dépôt « u1 doctor ».
+- **Conclusion** : inchangée, aucun projet ne couvre (b), (c) et (d). Mention retenue : Original New Idea. Même limite qu'au 2026-11-06 : l'absence de résultat n'est pas une preuve d'absence. À relancer une dernière fois le jour de l'envoi.
