@@ -87,6 +87,7 @@ Everything works offline. The **Connect** screen is the only part that can reach
 3. Open a scenario and read its timeline and findings (evidence for, evidence against, what is missing, limits, official references).
 4. Every synthetic scenario is labelled `SYNTHETIC`. The only real data is recorded captures of normal prints (labelled as real, with no fault in them).
 5. Export an evidence bundle (U1-DEB) and re-import it to replay it locally. See [`U1-DEB.md`](U1-DEB.md).
+6. Also in the app: the offline G-code pre-flight and the "what support will ask" checklist (Error codes screen), the print-quality assistant, the History of saved sessions and the U1 Dry Run import (Incident timeline screen), and `Ctrl K` to jump anywhere. The full list of screens is in the [README](../README.md#what-is-inside-the-11-screens).
 
 ## E. The read-only guarantee
 

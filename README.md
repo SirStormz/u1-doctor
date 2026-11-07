@@ -49,6 +49,24 @@ U1 Doctor runs **on your own PC**. It gives you three things:
 
 Screenshots use the built-in **synthetic demo data** (the `DEMO` banner is always visible). All 11 screens are in [`docs/media/screens/`](docs/media/screens/).
 
+## What is inside: the 11 screens
+
+| # | Screen | What you do there |
+|---|---|---|
+| 01 | **Welcome** | What the tool is, and its promises: no account, no cloud, no AI, nothing leaves your PC |
+| 02 | **Connect** | Take a short **read-only capture** of your own U1: type its private address, tick the approval box |
+| 03 | **Overview** | What is actually known about the incident and where it comes from, with the U1 in 3D (illustrative controls) |
+| 04 | **Error codes** | Decode any of the 413 official codes. Also here: firmware notes, which toolheads to inspect, the "what support will ask" checklist, 5 documented known issues, and an offline **G-code pre-flight** (10 checks on a sliced file) |
+| 05 | **Print quality** | The "needs your eyes" assistant: 16 symptoms, causes in the official order, evidence only from numbers you type or saved temperatures. No ranking, no score |
+| 06 | **Incident timeline** | The observed window with phases and explicit gaps. Also here: the **History** of your saved sessions (never merged) and the import of **U1 Dry Run** reports |
+| 07 | **Findings** | Every conclusion of the 12 rules, ordered by status then evidence quality. Open one to see what supports it, what contradicts it, what is missing and its limits |
+| 08 | **Evidence detail** | The observations behind every finding, with source, time quality and hashes |
+| 09 | **Replay lab** | Rerun the rules on frozen synthetic data and check the result is identical, byte for byte |
+| 10 | **Report composer** | Prepare a privacy-checked **evidence bundle** of the demo scenario or of **your own saved capture**, and import someone else's |
+| 11 | **Settings** | Language (English or French), 3 themes, 2 densities, versions and the compatibility list |
+
+Press `Ctrl K` anywhere to jump to a screen or paste an error code.
+
 ## Get started in two minutes (Windows)
 
 1. Download `u1-doctor-0.1.2-g1-win64.zip` and its `.sha256.txt` from the [latest release](https://github.com/stormz85ia/u1-doctor/releases/latest).
@@ -71,7 +89,8 @@ Screenshots use the built-in **synthetic demo data** (the `DEMO` banner is alway
 1. Open the **Connect** screen.
 2. Type your printer's private address (for example `192.168.x.x`).
 3. Read the list of allowed requests, tick **"I own this printer"**, press **Capture (read-only)**.
-4. You get what the printer reports (state, versions, temperatures over time) and the findings from the rules, with the capture saved to the History screen if you wish.
+4. You get what the printer reports (state, versions, temperatures over time) and the findings from the rules, with the capture saved to the History if you wish.
+5. To keep or share it, open the **Report composer**, choose your capture under *Report source*, check the privacy scan and press **Export bundle**. The bundle can be opened and replayed on any other PC.
 
 ![The Connect screen](docs/media/screens/02-connect.png)
 
@@ -84,10 +103,13 @@ The capture never contains your address or file names. If the live stream closes
 | Offline decoder for 413 official error codes (paraphrased, with link) | tested on synthetic data |
 | Deterministic rules engine: same observations and same rule set always give the same findings and the same hash. 12 rules | tested on synthetic and real-capture data, on Windows, Linux and macOS (identical replay hash in CI) |
 | Explainable findings: evidence for, evidence against, what is missing, limits, official references. No score, no percentage | tested |
-| Read-only live capture from the Connect screen | tested against a mock and on the owner's U1 (no write ever sent) |
+| Read-only live capture from the Connect screen, with read-only probes if the stream closes early | tested against a mock and on the owner's U1 (no write ever sent) |
+| Saved-session **history** and import of U1 Dry Run reports | tested |
+| **G-code pre-flight**: 10 offline checks on a sliced file (for example decimal commas, a 0 °C bed, nozzle diameter, more than 4 filaments, `#` in the file name) | tested |
+| "What support will ask" checklist per code, firmware notes, 5 documented known issues | tested |
 | Print-quality assistant ("needs your eyes"): 16 symptoms, causes in the official order, evidence only from numbers you type or saved temperatures | tested |
 | Timeline of the **observed window**: phases, explicit gaps, source and time quality per row | tested on real captures and 17 synthetic scenarios |
-| `U1-DEB` export of the demo scenarios or of your own saved captures, safe import and replay ([spec](docs/U1-DEB.md)) | tested; a ready-made example and a validator are in the repo |
+| `U1-DEB` evidence bundle: **export of the demo scenarios or of your own saved captures**, safe import and replay ([spec](docs/U1-DEB.md)) | tested; a ready-made example and a validator are in the repo |
 | Windows build (one folder, no Python needed) | started and checked on the developer PC; **not yet tested on a clean Windows 11** |
 | English and French interface | both complete |
 
