@@ -67,3 +67,19 @@ def test_server_starts_serves_health_and_stops(tmp_path):
         server.should_exit = True
         thread.join(5)
     assert not thread.is_alive()
+
+
+def test_webview2_missing_and_installer_declined_falls_back(monkeypatch):
+    monkeypatch.setattr(desktop, "webview2_setup_path", lambda: "setup.exe")
+    monkeypatch.setattr(desktop, "notify", lambda message, ask=False: False)  # the user answers No
+    assert desktop.ensure_webview2() is False
+
+
+def test_webview2_without_a_shipped_installer_cannot_install(monkeypatch):
+    monkeypatch.setattr(desktop, "webview2_setup_path", lambda: None)
+    monkeypatch.setattr(desktop, "notify", lambda message, ask=False: pytest.fail("nothing to offer"))
+    assert desktop.ensure_webview2() is False
+
+
+def test_webview2_installed_answers_a_bool():
+    assert isinstance(desktop.webview2_installed(), bool)

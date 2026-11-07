@@ -96,6 +96,61 @@ def user_data_dir() -> str:
     return path
 
 
+_WEBVIEW2_CLIENT = r"Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}"
+_WEBVIEW2_SETUP = "MicrosoftEdgeWebview2Setup.exe"
+
+
+def webview2_installed() -> bool:
+    """True when the Microsoft WebView2 runtime is installed (system-wide or for the current user)."""
+    if sys.platform != "win32":
+        return False
+    import winreg
+
+    for hive, prefix in ((winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\WOW6432Node"), (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE"),
+                         (winreg.HKEY_CURRENT_USER, r"Software")):
+        try:
+            with winreg.OpenKey(hive, rf"{prefix}\{_WEBVIEW2_CLIENT}") as key:
+                version = str(winreg.QueryValueEx(key, "pv")[0])
+        except OSError:
+            continue
+        if version and version != "0.0.0.0":
+            return True
+    return False
+
+
+def webview2_setup_path() -> str | None:
+    """The Microsoft installer shipped next to the exe (see scripts/build_windows.ps1)."""
+    path = os.path.join(os.path.dirname(os.path.abspath(sys.executable)), "webview2", _WEBVIEW2_SETUP)
+    return path if os.path.isfile(path) else None
+
+
+def ensure_webview2() -> bool:
+    """Offer to install the WebView2 runtime with the Microsoft installer shipped in the zip, then re-check."""
+    setup = webview2_setup_path()
+    if setup is None:
+        return False
+    if not notify("U1 Doctor needs a free Microsoft component (WebView2) to show its window, and it is not on this PC.\n\n"
+                  "Install it now? Windows will ask for your permission, and an internet connection is needed once.", ask=True):
+        return False
+    import subprocess
+
+    quoted = setup.replace("'", "''")
+    subprocess.run(["powershell", "-NoProfile", "-WindowStyle", "Hidden", "-Command",
+                    f"Start-Process -FilePath '{quoted}' -ArgumentList '/silent','/install' -Verb RunAs -Wait"],
+                   check=False, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+    return webview2_installed()
+
+
+def write_error_log() -> str:
+    """Save the current exception's traceback next to the app data so a failure can be diagnosed without a console."""
+    import traceback
+
+    path = os.path.join(os.path.dirname(user_data_dir()), "error.log")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(traceback.format_exc())
+    return path
+
+
 def icon_path() -> str | None:
     """The window icon: bundled next to the exe by the build, or taken from scripts/icon when run from a checkout."""
     here = os.path.dirname(os.path.abspath(__file__))
@@ -149,12 +204,16 @@ def main() -> int:
         return 0
     url = f"http://127.0.0.1:{port}"
     try:
+        if sys.platform == "win32" and not webview2_installed() and not ensure_webview2():
+            raise RuntimeError("the Microsoft WebView2 runtime is not installed")
         run_window(url)
-    except Exception:
-        # Most likely the Microsoft WebView2 runtime is missing (Windows 10 without Edge). Use the browser instead.
+    except Exception as e:
+        # The window could not start (often the Microsoft WebView2 runtime is missing). Keep the reason and use the browser instead.
+        log = write_error_log()
         webbrowser.open(url)
-        notify(f"U1 Doctor opened in your web browser because its own window needs the Microsoft WebView2 runtime ({WEBVIEW2_URL}).\n\n"
-               "Click OK to quit U1 Doctor.")
+        notify(f"U1 Doctor opened in your web browser because its own window could not start ({type(e).__name__}: {e}).\n"
+               f"If the Microsoft WebView2 runtime is missing, install it from {WEBVIEW2_URL}\n"
+               f"Details: {log}\n\nClick OK to quit U1 Doctor.")
     finally:
         server.should_exit = True
         thread.join(5)

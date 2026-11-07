@@ -28,5 +28,14 @@ if (-not (Test-Path (Join-Path $stage "dist\models\u1-jay.glb"))) { Write-Warnin
   --distpath build\dist --workpath build\work --specpath build `
   backend\run_u1doctor.py
 
+# Microsoft's own WebView2 installer (1.9 MB), shipped next to the exe: the app offers to run it when the runtime is missing
+# (see backend/app/desktop.py). It is downloaded here, never committed, and must carry a valid Microsoft signature.
+$setupDir = "build\dist\u1-doctor\webview2"
+New-Item -ItemType Directory -Force $setupDir | Out-Null
+$setup = Join-Path $setupDir "MicrosoftEdgeWebview2Setup.exe"
+Invoke-WebRequest "https://go.microsoft.com/fwlink/p/?LinkId=2124703" -OutFile $setup -UseBasicParsing
+$sig = Get-AuthenticodeSignature $setup
+if ($sig.Status -ne "Valid" -or $sig.SignerCertificate.Subject -notmatch "O=Microsoft Corporation") { throw "WebView2 installer is not validly signed by Microsoft: $($sig.Status)" }
+
 $bundled = Test-Path "build\dist\u1-doctor\_internal\frontend\dist\models\u1-jay.glb"
 Write-Host "Built build\dist\u1-doctor\u1-doctor.exe (3D model bundled: $bundled)"

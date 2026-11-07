@@ -19,7 +19,8 @@ CE QU'IL FAUT FAIRE (5 minutes)
    - Si un ecran bleu "Windows a protege votre ordinateur" apparait : PRENEZ UNE CAPTURE (touche Windows + Maj + S),
      puis cliquez sur "Informations complementaires" puis "Executer quand meme".
    - Une fenetre "U1 Doctor" doit s'ouvrir toute seule avec l'application (pas de fenetre noire, pas de navigateur).
-     Si un message dit que la fenetre a besoin de "Microsoft WebView2", notez-le : l'application s'ouvre alors dans le navigateur.
+     Si un message propose d'installer "Microsoft WebView2" (composant gratuit de Microsoft), notez-le puis repondez Oui :
+     Windows demande une autorisation, une connexion Internet est necessaire une seule fois, puis la fenetre s'ouvre.
    - Dans l'ecran "Rapport", essayez le bouton d'export : une boite "Enregistrer sous" doit apparaitre.
    - Fermez ensuite la fenetre (cela arrete le programme).
 
