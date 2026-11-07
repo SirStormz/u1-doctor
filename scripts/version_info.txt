@@ -17,12 +17,12 @@ VSVersionInfo(
         '040904B0',
         [StringStruct('CompanyName', 'U1 Doctor contributors'),
          StringStruct('FileDescription', 'U1 Doctor - local, read-only diagnostic evidence tool for the Snapmaker U1'),
-         StringStruct('FileVersion', '0.1.4.0'),
+         StringStruct('FileVersion', '0.1.5.0'),
          StringStruct('InternalName', 'u1-doctor'),
          StringStruct('LegalCopyright', 'MIT licence. Unofficial, not affiliated with Snapmaker.'),
          StringStruct('OriginalFilename', 'u1-doctor.exe'),
          StringStruct('ProductName', 'U1 Doctor'),
-         StringStruct('ProductVersion', '0.1.4-g1'),
+         StringStruct('ProductVersion', '0.1.5-g1'),
          StringStruct('Comments', 'Source: https://github.com/stormz85ia/u1-doctor')])
     ]),
     VarFileInfo([VarStruct('Translation', [1033, 1200])])
