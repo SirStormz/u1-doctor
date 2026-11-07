@@ -12,23 +12,24 @@ All 11 screens are in [`docs/media/screens/`](media/screens/).
 
 ## Before you start: what is and is not verified
 
-- **No release exists yet.** Option A below describes how a release will be installed; there is nothing to download today.
-- The Windows build has run on the developer PC only. It has **not yet been tested on a clean Windows 11** and has **not yet been antivirus-scanned**.
-- The executable is unsigned, so Windows SmartScreen may warn.
+- **Release `v0.1.0-g1` exists** (marked as the first build): [releases page](https://github.com/stormz85ia/u1-doctor/releases/latest). It is built by GitHub Actions and smoke-tested there.
+- The test kit shipped in the zip was run on the developer PC (Windows 11, zip downloaded with a browser): the exe started in about a second, listened on `127.0.0.1` only, created no firewall rule and raised no SmartScreen or antivirus alert. That PC had Defender real-time protection off and has development tools, so the result is weaker than a test on a clean second PC, which has **not** been done yet.
+- VirusTotal scan of the release zip: 1 engine out of 66 flagged it (a generic heuristic detection, no malware family named). [Report](https://www.virustotal.com/gui/file/fb7b72530d16b7b08e76aea0cfe5a130854c7389e4b8c8093faee4a05c7e8469).
+- The executable is unsigned, so Windows SmartScreen may warn: choose "More info", then "Run anyway".
 - Source: `IMPLEMENTATION_STATUS.md` (REQ-015), `BACKLOG.md`.
 
-## A. Windows executable (from a release, once published)
+## A. Windows executable (from the release)
 
-1. Download the release zip and its SHA-256 from the release page (link to be added at publication).
+1. Download `u1-doctor-0.1.0-g1-win64.zip` and its `.sha256.txt` from the [release page](https://github.com/stormz85ia/u1-doctor/releases/latest).
 2. Verify the hash in PowerShell before unpacking:
 
    ```powershell
-   Get-FileHash .\u1-doctor-windows.zip -Algorithm SHA256
+   Get-FileHash .\u1-doctor-0.1.0-g1-win64.zip -Algorithm SHA256
    ```
 
-   Compare the output with the published value: `SHA256_TO_FILL_AT_RELEASE`. If they differ, do not run the file.
+   Compare the output with the published value: `FB7B72530D16B7B08E76AEA0CFE5A130854C7389E4B8C8093FAEE4A05C7E8469`. If they differ, do not run the file.
    (A SHA-256 proves the file was not altered or corrupted. It does not prove who made it.)
-3. Unpack the zip (one folder, no Python needed) and run `u1-doctor.exe`.
+3. Unpack the zip with Windows Explorer (**Extract all**; WinRAR or 7-Zip would drop the download mark Windows uses for SmartScreen). It is one folder, no Python needed. Run `u1-doctor.exe`. A small test kit (`RUN-TEST.cmd`) is included: it checks the exe on your PC and writes a report you can read before sharing it.
 4. Open <http://127.0.0.1:8765>. Set `U1DOCTOR_PORT` to change the port.
 
 The build is produced by `scripts\build_windows.ps1`. It bundles the owner's 3D model (`frontend/public/models/u1-jay.glb`).
@@ -79,12 +80,12 @@ It is a local SQLite file holding saved replays and the history of observation s
 
 ## D. First steps in DEMO mode (no printer needed)
 
-Everything works offline. The **Connect** screen is the only part that can reach a printer, and only after you type its private address and tick the approval box.
+Everything works offline. The **Connect** screen is the only part that can reach a printer, and only after you type its private address and tick the approval box. It then takes a short read-only capture (3 GET requests and 1 live subscription, 3 to 60 seconds) and, if the stream closes early, a few more read-only status requests.
 
 1. Open the app. A banner and a mode badge show **DEMO** at all times.
 2. Look up an error code in the offline decoder. An unknown or malformed code gives `INCONCLUSIVE`, never a guess.
 3. Open a scenario and read its timeline and findings (evidence for, evidence against, what is missing, limits, official references).
-4. Every synthetic scenario is labelled `SYNTHETIC`. The only real data is one recorded capture of a normal print (labelled as real, with no fault in it).
+4. Every synthetic scenario is labelled `SYNTHETIC`. The only real data is recorded captures of normal prints (labelled as real, with no fault in them).
 5. Export an evidence bundle (U1-DEB) and re-import it to replay it locally. See [`U1-DEB.md`](U1-DEB.md).
 
 ## E. The read-only guarantee

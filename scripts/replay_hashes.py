@@ -12,8 +12,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "backend"))
 
-from app.engine import canon, evaluate  # noqa: E402
-from app.engine.canonical import ruleset_hash, sha256_hex  # noqa: E402
+from app.engine import canon, evaluate
+from app.engine.canonical import ruleset_hash, sha256_hex
 
 
 def main() -> int:
