@@ -14,7 +14,7 @@ All 11 screens are in [`docs/media/screens/`](media/screens/).
 
 - **Release `v0.1.1-g1` exists** (the second build: it adds the export of your own saved captures; `v0.1.0-g1` does not have it): [releases page](https://github.com/stormz85ia/u1-doctor/releases/latest). It is built by GitHub Actions and smoke-tested there.
 - The test kit shipped in the zip was run on the developer PC (Windows 11, zip downloaded with a browser): the exe started in about a second, listened on `127.0.0.1` only, created no firewall rule and raised no SmartScreen or antivirus alert. That PC had Defender real-time protection off and has development tools, so the result is weaker than a test on a clean second PC, which has **not** been done yet.
-- VirusTotal: the previous build (0.1.0-g1) was flagged by 1 engine out of 66 (a generic heuristic detection, no malware family named, [report](https://www.virustotal.com/gui/file/fb7b72530d16b7b08e76aea0cfe5a130854c7389e4b8c8093faee4a05c7e8469)). A scan of the 0.1.1-g1 zip is added to the release notes once it has been run.
+- VirusTotal scan of the 0.1.1-g1 zip: 2 engines out of 65 flagged it (Bkav Pro, a generic heuristic, and Zillya, `Trojan.Stealer.Win64.2764`); the other 63 detect nothing. We believe these are false positives typical of unsigned PyInstaller executables, but cannot prove it from here. [Report](https://www.virustotal.com/gui/file/629dc1b2043fff79a14edee93c34bf4bcee291c23826216e3aedfc773f472b54). The previous build (0.1.0-g1) was flagged by 1 engine out of 66.
 - The executable is unsigned, so Windows SmartScreen may warn: choose "More info", then "Run anyway".
 - Source: `IMPLEMENTATION_STATUS.md` (REQ-015), `BACKLOG.md`.
 

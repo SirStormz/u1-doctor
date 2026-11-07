@@ -62,7 +62,7 @@ Screenshots use the built-in **synthetic demo data** (the `DEMO` banner is alway
 
 **Good to know**
 - The app is **not code-signed**, so Windows SmartScreen may warn: choose "More info", then "Run anyway".
-- VirusTotal: the previous build (0.1.0-g1) was flagged by 1 engine out of 66 (a generic heuristic detection, no malware family named). A scan of this exact zip is added to the release notes once it has been run.
+- VirusTotal scan of this zip: 2 engines out of 65 flagged it (Bkav Pro, a generic heuristic, and Zillya, `Trojan.Stealer.Win64.2764`); the other 63 detect nothing. We believe these are false positives typical of unsigned PyInstaller executables, but cannot prove it from here: the source is public, the build is made by GitHub Actions, and the app reads no browser data, passwords or clipboard. [Report](https://www.virustotal.com/gui/file/629dc1b2043fff79a14edee93c34bf4bcee291c23826216e3aedfc773f472b54). The previous build (0.1.0-g1) was flagged by 1 engine out of 66.
 - It opens in **DEMO mode**: everything works offline with clearly labelled synthetic data. Nothing is sent anywhere.
 - Linux, macOS and Docker: see the [install guide](docs/INSTALL.md).
 
