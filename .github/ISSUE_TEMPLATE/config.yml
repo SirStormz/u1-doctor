@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Report a security problem (private)
+    url: https://github.com/stormz85ia/u1-doctor/security/advisories/new
+    about: Do not open a public issue for a security problem. Use GitHub's private vulnerability reporting.
+  - name: Illustrated presentation and install guide
+    url: https://stormz85ia.github.io/u1-doctor/presentation/
+    about: What U1 Doctor does and does not do, in a few minutes.

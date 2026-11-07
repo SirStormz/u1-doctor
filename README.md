@@ -137,7 +137,7 @@ Every fact carries its source and a time-quality marker. Findings point back to 
 
 ## Real incidents wanted
 
-The rules were written from the official documentation and tested on one healthy printer. What would improve them most is a **real incident**: an error code that appeared, with the capture or bundle around it. If you have one, open an issue and describe it. Review any bundle before attaching it, and never include serial numbers or addresses.
+The rules were written from the official documentation and tested on one healthy printer. What would improve them most is a **real incident**: the error code that appeared, the firmware, when it happened and what U1 Doctor said. If you have one, [open an incident report](https://github.com/stormz85ia/u1-doctor/issues/new?template=incident-report.yml): a short form, nothing is sent by the app itself. Read [how to share a report](docs/SHARE_A_REPORT.md) first: issues are public, so never include serial numbers, addresses or file names.
 
 ## Run from source
 

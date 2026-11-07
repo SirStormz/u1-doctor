@@ -1,0 +1,70 @@
+name: Incident report (real U1 problem)
+description: Share a real incident from your own Snapmaker U1 so the rules can be checked against it. Takes about five minutes.
+title: "Incident: <short description>"
+labels: ["incident-report", "needs-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you. Real incidents are what this project lacks most: so far only normal prints have been captured, so every incident in the app is synthetic.
+
+        **Before you start**
+        - Read [how to share a report](https://github.com/stormz85ia/u1-doctor/blob/main/docs/SHARE_A_REPORT.md) (two minutes).
+        - Everything you post here is **public and stays indexed even if you delete it later**. Do not post serial numbers, IP addresses, e-mail addresses, print file names, or screenshots that show them.
+        - U1 Doctor never sends anything by itself. You write this report yourself, and you can leave this form at any time.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: In your own words. What was the printer doing, what did you see, what did you try?
+      placeholder: "Example: the print paused at about layer 40 of a four-colour job, the screen showed a code, resuming did nothing."
+    validations:
+      required: true
+  - type: input
+    id: code
+    attributes:
+      label: Error code shown on the printer screen (if any)
+      description: Exactly as displayed, in the form dddd-dddd-dddd-dddd. Leave empty if no code appeared.
+      placeholder: "0000-0000-0000-0000"
+  - type: input
+    id: firmware
+    attributes:
+      label: Firmware version (if you know it)
+      placeholder: "2.1.0"
+  - type: dropdown
+    id: when
+    attributes:
+      label: When did it happen
+      options:
+        - During a print
+        - While heating
+        - During a tool change or filament load
+        - While idle
+        - Right after a restart
+        - I am not sure
+    validations:
+      required: true
+  - type: dropdown
+    id: capture
+    attributes:
+      label: Did you run U1 Doctor around that time
+      options:
+        - Yes, a capture was taken during or just after the problem
+        - Yes, but much later
+        - No
+    validations:
+      required: true
+  - type: textarea
+    id: findings
+    attributes:
+      label: What U1 Doctor showed (optional)
+      description: Copy the finding titles from the Findings screen, or describe what you saw. Check any screenshot for addresses, serial numbers or file names before attaching it.
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Your confirmation
+      options:
+        - label: I re-read this report and any screenshot, and it contains no address, serial number, e-mail or file name I want to keep private.
+          required: true
+        - label: I understand this issue is public and cannot be fully erased once posted.
+          required: true
