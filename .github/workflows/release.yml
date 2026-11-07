@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Release tag, for example v0.1.0-g1"
+        description: "Release tag, for example v0.1.1-g1"
         required: true
         type: string
 permissions:
@@ -75,6 +75,6 @@ jobs:
           - The exe is not code-signed, so Windows SmartScreen may warn. Extract with Windows Explorer ("Extract all"), not WinRAR/7-Zip, so Windows keeps the download mark.
           - The app listens on 127.0.0.1 only. It never sends a command that changes a printer. It reads from a printer only when you type its address and tick the approval box on the Connect screen (read-only requests, nothing stored but derived facts).
           - The zip contains a small test kit (RUN-TEST.cmd) that checks the exe on your PC and writes a report you can read before sharing it.
-          - VirusTotal scan of this zip at the time of the draft: 1 engine out of 66 flagged it (Bkav Pro, generic heuristic detection, no malware family named); report: https://www.virustotal.com/gui/file/fb7b72530d16b7b08e76aea0cfe5a130854c7389e4b8c8093faee4a05c7e8469
+          - A VirusTotal scan of this exact zip is added to these notes once it has been run.
           "@ | Set-Content release-notes.md -Encoding utf8
           gh release create "${{ inputs.tag }}" "build\$zip" "build\$zip.sha256.txt" --draft --title "U1 Doctor ${{ inputs.tag }}" --notes-file release-notes.md --target "${{ github.sha }}"

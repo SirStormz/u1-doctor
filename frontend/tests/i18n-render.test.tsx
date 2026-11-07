@@ -31,7 +31,7 @@ function api() {
       body = { source: "USER_REPORTED", catalog_version: "0.1.0", catalog_verified_at: "2026-11-05", official_reference: "https://example.test/", limits: ["The displayed code may not represent the actual fault source (official wiki note).", "Code declared by the user; not verified from the machine."],
         decoding: e ? { code, level: "0002", severity: "warning", module: "filament feeder", status: "KNOWN", classification: "OBSERVED", entry: e } : { status: "MALFORMED", classification: "INCONCLUSIVE", reason: "code must match dddd-dddd-dddd-dddd (digits only, no spaces)" } };
     } else if (url.endsWith("/compatibility")) body = { verified_on_hardware: false, firmware_target: "V2.1.0", rows: [], capabilities: [{ name: "Objects list / query", status: "UNTESTED" }, { name: "Offline code decoder", status: "TESTED_SYNTHETIC" }] };
-    else if (url.endsWith("/health")) body = { status: "ok", api_version: "1", app_version: "0.1.0-g1", mode: "DEMO", machine_access: "READ_ONLY_ON_CONSENT", db_schema: 1 };
+    else if (url.endsWith("/health")) body = { status: "ok", api_version: "1", app_version: "0.1.1-g1", mode: "DEMO", machine_access: "READ_ONLY_ON_CONSENT", db_schema: 1 };
     return { ok: true, status: 200, json: async () => body };
   }));
 }
