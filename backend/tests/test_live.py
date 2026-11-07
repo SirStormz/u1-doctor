@@ -156,3 +156,34 @@ def test_normal_end_has_no_probe():
     app.state.live_hooks = {"http_transport": httpx.MockTransport(handler), "connect": lambda: Conn(frames())}
     j = TestClient(app).post("/api/v1/live/capture", json={"host": HOST, "consent": True, "seconds": 3}).json()
     assert j["stream_dropped"] is False and "link_probe" not in [o["event_type"] for o in j["observations"]]
+
+
+# ---- export of the owner's own saved capture --------------------------------
+def test_saved_live_capture_can_be_exported_as_a_bundle_and_replayed(client):
+    import io
+    import zipfile
+
+    sid = post(client).json()["session"]["id"]
+    r = client.post("/api/v1/bundles/export", json={"source": f"history:{sid}"})
+    assert r.status_code == 200 and r.headers["content-type"] == "application/zip"
+    names = zipfile.ZipFile(io.BytesIO(r.content)).namelist()
+    assert {"manifest.json", "observations.jsonl", "findings.json"} <= set(names)
+    text = b"".join(zipfile.ZipFile(io.BytesIO(r.content)).read(n) for n in names).decode("utf-8")
+    assert HOST not in text and "secret" not in text
+    back = client.post("/api/v1/bundles/import", content=r.content, headers={"content-type": "application/zip"})
+    assert back.status_code == 200 and back.json()["source_status"] == "IMPORTED"
+    assert client.post("/api/v1/bundles/preview", json={"source": f"history:{sid}"}).status_code == 200
+
+
+def test_history_export_refuses_unknown_or_malformed_ids(client):
+    for src in ("history:h000000000000", "history:../etc", "history:", "history:H0123456789ab"):
+        assert client.post("/api/v1/bundles/export", json={"source": src}).status_code == 404
+
+
+def test_observations_endpoint_and_no_resave_of_a_history_source(client):
+    sid = post(client).json()["session"]["id"]
+    o = client.get(f"/api/v1/history/{sid}/observations").json()
+    assert o["session"]["id"] == sid and o["observations"] and HOST not in json.dumps(o)
+    assert client.get("/api/v1/history/h000000000000/observations").status_code == 404
+    again = client.post("/api/v1/history/source", json={"source": f"history:{sid}"})
+    assert again.status_code == 422

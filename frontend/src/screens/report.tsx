@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Download, Eye, FilePlus2, FileText, ShieldCheck, X, Check } from "lucide-react";
 import { Button, Chip, Panel, StateBlock } from "../components/ui";
 import { PageTitle, useToast } from "../components/shell";
-import { bundles } from "../api";
+import { bundles, historyApi } from "../api";
+import type { Finding, HistorySession, Observation } from "../api";
 import { canon } from "../lib/canon";
 import { DEMO_SCENARIO, tms, useIncident } from "../lib/data";
 import { usePrefs } from "../lib/prefs";
@@ -27,18 +28,35 @@ export function Report() {
   const [files, setFiles] = useState<FileRow[] | null>(null);
   const [privacyJson, setPrivacyJson] = useState("");
   const [previewOpen, setPreviewOpen] = useState(false);
-  const source = `synthetic:${DEMO_SCENARIO}`;
+  const [sel, setSel] = useState("demo");
+  const [sessions, setSessions] = useState<HistorySession[]>([]);
+  const [saved, setSaved] = useState<{ obs: Observation[]; findings: Finding[] } | null>(null);
+  const source = sel === "demo" ? `synthetic:${DEMO_SCENARIO}` : `history:${sel}`;
+  const session = sessions.find((s) => s.id === sel);
 
+  useEffect(() => { historyApi.list().then((h) => setSessions(h.sessions ?? [])).catch(() => setSessions([])); }, []);
+  useEffect(() => {
+    let live = true;
+    setSaved(null);
+    if (sel === "demo") return;
+    Promise.all([historyApi.observations(sel), historyApi.findings(sel)])
+      .then(([o, f]) => { if (live) setSaved({ obs: o.observations ?? [], findings: f.findings ?? [] }); })
+      .catch(() => { if (live) setSaved({ obs: [], findings: [] }); });
+    return () => { live = false; };
+  }, [sel]);
+
+  const shown = sel === "demo" ? (inc.status === "ready" ? { obs: inc.obs, findings: inc.findings } : null) : saved;
   const built = useMemo(() => {
-    if (inc.status !== "ready") return null;
-    const obsSorted = [...inc.obs].sort((a, b) => tms(a) - tms(b) || a.observation_id.localeCompare(b.observation_id));
-    const haystack = obsSorted.map((o) => canon(o)).join(String.fromCharCode(10)) + canon(inc.findings);
+    if (!shown) return null;
+    const obsSorted = [...shown.obs].sort((a, b) => tms(a) - tms(b) || a.observation_id.localeCompare(b.observation_id));
+    const haystack = obsSorted.map((o) => canon(o)).join(String.fromCharCode(10)) + canon(shown.findings);
     const scan = SCANS.map(([k, re]) => [k, (haystack.match(new RegExp(re, re.flags + "g")) ?? []).length] as const);
     return { scan };
-  }, [inc.status, inc.obs, inc.findings]);
+  }, [shown]);
 
   useEffect(() => {
     let live = true;
+    setFiles(null);
     bundles.preview(source).then((p) => {
       if (!live) return;
       setFiles([{ name: "manifest.json" }, ...p.manifest.files.map((f) => ({ name: f.name, sha: f.sha256, bytes: f.bytes }))]);
@@ -55,7 +73,7 @@ export function Report() {
     try {
       const url = URL.createObjectURL(await bundles.export(source));
       const a = document.createElement("a");
-      a.href = url; a.download = `u1-deb-synthetic-${DEMO_SCENARIO}.zip`; document.body.appendChild(a); a.click(); a.remove();
+      a.href = url; a.download = sel === "demo" ? `u1-deb-synthetic-${DEMO_SCENARIO}.zip` : `u1-deb-${sel}.zip`; document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
       toast(t.exported);
     } catch { toast(t.error); }
@@ -65,20 +83,28 @@ export function Report() {
   return (
     <>
       <PageTitle title={t.nav.report} sub={t.reportSub} icon={<FileText size={26} />} />
+      <div className="mb-d flex flex-wrap items-center gap-2">
+        <label htmlFor="report-source" className="micro">{t.reportSource}</label>
+        <select id="report-source" value={sel} onChange={(e) => setSel(e.target.value)} className="rounded-lg border border-control bg-surface2 px-3 py-2 text-ink">
+          <option value="demo">{t.reportSourceDemo}</option>
+          {sessions.map((s) => <option key={s.id} value={s.id}>{`${s.label} · ${s.observation_count} obs`}</option>)}
+        </select>
+        {sessions.length === 0 && <span className="text-xs text-ink3">{t.reportNoSaved}</span>}
+      </div>
       <div className="grid gap-d xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_340px]">
-        <Panel title={t.docPreview} icon={<Eye size={17} />} i={0} className="blueprint" actions={<Chip tone="demo">{tok(lang, "provenance", "SYNTHETIC")}</Chip>}>
+        <Panel title={t.docPreview} icon={<Eye size={17} />} i={0} className="blueprint" actions={sel === "demo" ? <Chip tone="demo">{tok(lang, "provenance", "SYNTHETIC")}</Chip> : <Chip>{(t.histOrigin as Record<string, string>)[session?.origin ?? ""] ?? session?.origin ?? ""}</Chip>}>
           <article className="paper p-5" aria-label={t.docPreview}>
-            <p className="micro">{t.reportKicker}</p>
-            <h3 className="mt-1 text-lg font-bold">{title}</h3>
-            <p className="mono mt-1 text-xs text-ink3">{inc.code} · {t.userDeclared}</p>
+            <p className="micro">{sel === "demo" ? t.reportKicker : t.reportKickerSaved}</p>
+            <h3 className="mt-1 text-lg font-bold">{sel === "demo" ? title : (session?.label ?? t.nav.report)}</h3>
+            {sel === "demo" && <p className="mono mt-1 text-xs text-ink3">{inc.code} · {t.userDeclared}</p>}
             <ul className="mt-4 grid gap-2 text-sm">
-              {inc.findings.map((f) => <li key={f.finding_id} className="flex flex-col gap-0.5 sm:flex-row sm:gap-2"><span className="mono shrink-0 text-xs text-accent sm:w-52">{f.rule_id}</span><span>{tx(lang, f.human_title.replace(/^SYNTHETIC: /, ""))} <span className="text-ink3">— {tok(lang, "classification", f.classification)}</span></span></li>)}
+              {(shown?.findings ?? []).map((f) => <li key={f.finding_id} className="flex flex-col gap-0.5 sm:flex-row sm:gap-2"><span className="mono shrink-0 text-xs text-accent sm:w-52">{f.rule_id}</span><span>{tx(lang, f.human_title.replace(/^SYNTHETIC: /, ""))} <span className="text-ink3">— {tok(lang, "classification", f.classification)}</span></span></li>)}
             </ul>
             <h4 className="micro mt-5">{t.redactedPreview}</h4>
             <dl className="mt-2 grid gap-2 text-sm">
               {redacted.map(([tag, label]) => (<div key={tag} className="flex items-center gap-3"><dt className="mono w-24 text-xs text-ink3">{tag}</dt><dd className="flex items-center gap-2"><span className="redact" role="img" aria-label={t.redactedAria.replace("{f}", label)} /><span className="text-xs text-ink3">{label}</span></dd></div>))}
             </dl>
-            <p className="mt-3 text-xs text-ink3">{t.redactNote}</p>
+            <p className="mt-3 text-xs text-ink3">{sel === "demo" ? t.redactNote : t.redactNoteSaved}</p>
           </article>
         </Panel>
 

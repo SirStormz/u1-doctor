@@ -160,6 +160,7 @@ export const historyApi = {
   saveSource: (source: string, label?: string) => fetch("/api/v1/history/source", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(label ? { source, label } : { source }) }).then(saved),
   saveBundle: (f: File) => fetch(`/api/v1/history/bundle?label=${encodeURIComponent(f.name.slice(0, 80))}`, { method: "POST", headers: { "content-type": "application/zip" }, body: f }).then(saved),
   saveDryrun: (f: File) => fetch(`/api/v1/history/dryrun?label=${encodeURIComponent(f.name.slice(0, 80))}`, { method: "POST", headers: { "content-type": "application/json" }, body: f }).then(saved),
+  observations: (id: string) => fetch(`/api/v1/history/${encodeURIComponent(id)}/observations`).then(j<{ observations: Observation[] }>),
   findings: (id: string) => fetch(`/api/v1/history/${encodeURIComponent(id)}/findings`).then(j<{ findings: Finding[]; ruleset: { id: string; version: string; hash: string } }>),
   remove: (id: string) => fetch(`/api/v1/history/${encodeURIComponent(id)}`, { method: "DELETE" }).then(j<{ deleted: string }>),
 };

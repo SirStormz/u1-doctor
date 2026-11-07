@@ -11,7 +11,7 @@ body:
         **Before you start**
         - Read [how to share a report](https://github.com/stormz85ia/u1-doctor/blob/main/docs/SHARE_A_REPORT.md) (two minutes).
         - Everything you post here is **public and stays indexed even if you delete it later**. Do not post serial numbers, IP addresses, e-mail addresses, print file names, or screenshots that show them.
-        - U1 Doctor never sends anything by itself. You write this report yourself, and you can leave this form at any time.
+        - U1 Doctor never sends anything by itself. You write this report yourself, you attach the file yourself, and you can leave this form at any time.
   - type: textarea
     id: what
     attributes:
@@ -59,6 +59,11 @@ body:
     attributes:
       label: What U1 Doctor showed (optional)
       description: Copy the finding titles from the Findings screen, or describe what you saw. Check any screenshot for addresses, serial numbers or file names before attaching it.
+  - type: textarea
+    id: bundle
+    attributes:
+      label: Bundle (optional, drag the zip here)
+      description: An evidence bundle exported from the Report screen. Open the zip first and read `privacy-report.json` and `observations.jsonl`; attach it only if you see nothing personal.
   - type: checkboxes
     id: consent
     attributes:
@@ -68,3 +73,5 @@ body:
           required: true
         - label: I understand this issue is public and cannot be fully erased once posted.
           required: true
+        - label: I allow the maintainer to add the bundle (if I attached one) to the repository as a community test fixture under the MIT licence, after review. Leave unticked if you only want help.
+          required: false

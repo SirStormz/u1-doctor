@@ -72,6 +72,7 @@ const en = {
   fIp: "IP address", fSerial: "Serial number", fSsid: "Wi-Fi name", fFile: "Print file name",
   bundle: "Bundle contents", hashing: "Computing SHA-256…", bundleNote: "SHA-256 of the exact files the local service would write. manifest.json carries a date, so its hash changes at each export.",
   privacy: "Privacy check", scan: { ip: "No IP address", serial: "No serial number", ssid: "No Wi-Fi name", file: "No print file name", token: "No token or password", path: "No local path" },
+  redactNoteSaved: "The export policy removes these fields when it finds them. The scan on the right checks the exact files that would be exported: read them before sharing.", reportSource: "Report source", reportSourceDemo: "Demo scenario (synthetic)", reportKickerSaved: "Incident report · saved capture", reportNoSaved: "No saved capture yet: take one on the Connect screen.",
   scanNote: "Automatic scan of the exact files that would be exported.", exportBundle: "Export bundle", preview: "Preview report file",
   sealNote: "U1-DEB v1 bundle written by the local service. Redaction is best-effort: review before sharing. SHA-256 proves integrity only.", exported: "Bundle exported",
   // welcome
@@ -230,6 +231,7 @@ const fr: Dict = {
   fIp: "Adresse IP", fSerial: "Numéro de série", fSsid: "Nom Wi-Fi", fFile: "Nom du fichier d'impression",
   bundle: "Contenu du dossier", hashing: "Calcul des SHA-256…", bundleNote: "SHA-256 des fichiers exacts que le service local écrirait. manifest.json contient une date : son empreinte change à chaque export.",
   privacy: "Contrôle de confidentialité", scan: { ip: "Aucune adresse IP", serial: "Aucun numéro de série", ssid: "Aucun nom Wi-Fi", file: "Aucun nom de fichier d'impression", token: "Aucun jeton ni mot de passe", path: "Aucun chemin local" },
+  redactNoteSaved: "La politique d'export retire ces champs quand elle les trouve. L'analyse à droite vérifie les fichiers exacts qui seraient exportés : lisez-les avant de partager.", reportSource: "Source du rapport", reportSourceDemo: "Scénario de démo (synthétique)", reportKickerSaved: "Rapport d'incident · capture enregistrée", reportNoSaved: "Aucune capture enregistrée : faites-en une sur l'écran Connexion.",
   scanNote: "Analyse automatique des fichiers exacts qui seraient exportés.", exportBundle: "Exporter le dossier", preview: "Aperçu du fichier de rapport",
   sealNote: "Dossier U1-DEB v1 écrit par le service local. Le caviardage est au mieux : relisez avant de partager. SHA-256 prouve l'intégrité uniquement.", exported: "Dossier exporté",
   welcomeTitle: "Savoir ce qui s'est passé. Voir pourquoi s'y fier.",

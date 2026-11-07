@@ -40,6 +40,9 @@ function mockApi() {
     else if (url.endsWith("/bundles/import")) return { ok: false, status: 422, json: async () => ({ detail: { code: "HASH_MISMATCH", message: "x" } }) };
     else if (url.includes("/timeline?source=")) body = { source_status: url.includes("real") ? "REAL" : "SYNTHETIC", observation_count: 3, integrity: "NO_GAP_RECORDED", observed_window: { start_utc: "2026-01-01T10:00:00Z", end_utc: "2026-01-01T10:10:00Z", duration_s: 600 }, sessions: [{ session_id: "s", observations: 3 }], gaps: [], phases: [{ state: "printing", start_utc: "2026-01-01T10:00:00Z", end_utc: "2026-01-01T10:10:00Z", duration_s: 600, ended_by_transition: false }], incident: null, entries: [{ t_utc: "2026-01-01T10:00:00Z", last_utc: "2026-01-01T10:00:00Z", ids: ["a"], event_type: "state_transition", entity_id: "printer", mapping_quality: "VERIFIED", timestamp_quality: "RECEIPT_ONLY", source_status: "SYNTHETIC", validity: "FRESH", summary: { state: "printing" }, repeat: 1 }] };
     else if (url.endsWith("/live/capture")) body = { captured_utc: "2026-11-07T10:00:00Z", duration_s: 15, inbound_frames: 12, source_status: "REAL", printer: { moonraker_version: "v0.9", api_version: "1.5", klippy_state: "ready", klipper_software_version: "v1", printer_state: "ready", object_count: 40 }, audit: { http: [], websocket_frames_sent: 1, read_operations: 4, non_read_operations: 0 }, observations: [], findings: [], session: null };
+    else if (url.endsWith("/api/v1/history")) body = { sessions: [{ id: "h0123456789ab", label: "Live capture", origin: "real_capture", saved_at: "2026-11-07T10:00:00Z", observation_count: 3, first_utc: "2026-11-07T10:00:00Z", last_utc: "2026-11-07T10:00:10Z", status_mix: ["REAL"], content_sha256: "f".repeat(64) }], totals: { sessions: 1, observations: 3 }, limits: { max_sessions: 50, max_observations: 5000 } };
+    else if (url.endsWith("/history/h0123456789ab/observations")) body = { session: {}, observations: realObs.slice(0, 3) };
+    else if (url.endsWith("/history/h0123456789ab/findings")) body = { findings: realFindings, ruleset: { id: "u1-starter", version: "x", hash: "sha256:" + "a".repeat(64) } };
     else if (url.endsWith("/errors/interpret")) body = interpret(JSON.parse(String(init?.body)).code);
     else if (url.endsWith("/compatibility")) body = { verified_on_hardware: false, firmware_target: "V2.1.0", rows: [], capabilities: [{ name: "Moonraker HTTP :7125", status: "UNTESTED" }, { name: "Offline code decoder", status: "TESTED_SYNTHETIC" }] };
     else if (url.endsWith("/health")) body = { status: "ok", api_version: "1", app_version: "0.1.0-g1", mode: "DEMO", machine_access: "READ_ONLY_ON_CONSENT", db_schema: 1 };
@@ -221,4 +224,14 @@ test("timeline: real source shows the reconstruction without incident, labelled 
   expect(await screen.findByText(/no pause or error state|aucune pause ni erreur/i)).toBeInTheDocument();
   expect(calls.some((c) => c.includes("/timeline?source=real%3Ah02_normal_print"))).toBe(true);
   expect(screen.queryByRole("heading", { name: /^hypothes|^hypothèses/i })).toBeNull(); // demo-only hypothesis map is not shown for the real capture
+});
+
+test("report: a saved capture can be chosen and exported through the same privacy scan", async () => {
+  render(<App />);
+  await go("#/report");
+  const pick = await screen.findByLabelText(/report source|source du rapport/i);
+  await act(async () => { fireEvent.change(pick, { target: { value: "h0123456789ab" } }); });
+  await waitFor(() => expect(calls.some((c) => c.includes("/history/h0123456789ab/observations"))).toBe(true));
+  await waitFor(() => expect(calls.some((c) => c.startsWith("POST") && c.endsWith("/bundles/preview"))).toBe(true));
+  expect((await screen.findAllByText("Live capture")).length).toBeGreaterThan(0);
 });

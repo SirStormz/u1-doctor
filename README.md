@@ -87,7 +87,7 @@ The capture never contains your address or file names. If the live stream closes
 | Read-only live capture from the Connect screen | tested against a mock and on the owner's U1 (no write ever sent) |
 | Print-quality assistant ("needs your eyes"): 16 symptoms, causes in the official order, evidence only from numbers you type or saved temperatures | tested |
 | Timeline of the **observed window**: phases, explicit gaps, source and time quality per row | tested on real captures and 17 synthetic scenarios |
-| `U1-DEB` export, safe import and replay ([spec](docs/U1-DEB.md)) | tested; a ready-made example and a validator are in the repo |
+| `U1-DEB` export of the demo scenarios or of your own saved captures, safe import and replay ([spec](docs/U1-DEB.md)) | tested; a ready-made example and a validator are in the repo |
 | Windows build (one folder, no Python needed) | started and checked on the developer PC; **not yet tested on a clean Windows 11** |
 | English and French interface | both complete |
 
@@ -137,7 +137,7 @@ Every fact carries its source and a time-quality marker. Findings point back to 
 
 ## Real incidents wanted
 
-The rules were written from the official documentation and tested on one healthy printer. What would improve them most is a **real incident**: the error code that appeared, the firmware, when it happened and what U1 Doctor said. If you have one, [open an incident report](https://github.com/stormz85ia/u1-doctor/issues/new?template=incident-report.yml): a short form, nothing is sent by the app itself. Read [how to share a report](docs/SHARE_A_REPORT.md) first: issues are public, so never include serial numbers, addresses or file names.
+The rules were written from the official documentation and tested on one healthy printer. What would improve them most is a **real incident**: the error code that appeared, the firmware, when it happened and what U1 Doctor said, optionally with an evidence bundle of your capture (Report screen, choose your saved capture, Export bundle). If you have one, [open an incident report](https://github.com/stormz85ia/u1-doctor/issues/new?template=incident-report.yml): a short form, and nothing is sent by the app itself. Read [how to share a report](docs/SHARE_A_REPORT.md) first: issues are public, so never include serial numbers, addresses or file names.
 
 ## Run from source
 

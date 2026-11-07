@@ -41,7 +41,7 @@ _SCENARIO = re.compile(r"^[a-z0-9_]{1,64}$")
 
 
 class HistorySourceIn(BaseModel):
-    source: str = Field(max_length=96)  # "synthetic:<scenario>" or "real:<capture id>"
+    source: str = Field(max_length=96)  # "synthetic:<scenario>", "real:<capture id>" or "history:<saved session id>"
     label: str | None = Field(default=None, max_length=200)
 
 
@@ -206,6 +206,8 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
             _, obs, _ = _load_scenario(name)
         elif kind == "real" and name in _REAL_IDS:
             obs = [json.loads(x) for x in (REAL / f"{_REAL_IDS[name]}.observations.jsonl").read_text(encoding="utf-8").splitlines()]
+        elif kind == "history" and _HISTORY_ID.fullmatch(name) and history.get(conn, name) is not None:
+            obs = history.observations(conn, name)  # the owner's own saved session, exported through the same redaction
         else:
             raise HTTPException(404, "unknown source")
         return kind, name, obs
@@ -250,6 +252,8 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
 
     @app.post("/api/v1/history/source")
     def history_save_source(body: HistorySourceIn) -> dict[str, Any]:
+        if body.source.startswith("history:"):
+            raise HTTPException(422, {"code": "ALREADY_IN_HISTORY", "message": "this session is already saved"})
         kind, name, obs = _source_obs(body.source)
         return _saved(obs, "real_capture" if kind == "real" else "synthetic", body.label, f"{kind}:{name}")
 
@@ -277,6 +281,14 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
         if meta is None:
             raise HTTPException(404, "unknown history session")
         return meta
+
+    @app.get("/api/v1/history/{sid}/observations")
+    def history_observations(sid: str) -> dict[str, Any]:
+        """The observations of one saved session, so the Report screen can scan exactly what an export would hold."""
+        meta = history.get(conn, sid) if _HISTORY_ID.fullmatch(sid) else None
+        if meta is None:
+            raise HTTPException(404, "unknown history session")
+        return {"session": meta, "observations": history.observations(conn, sid)}
 
     @app.get("/api/v1/history/{sid}/findings")
     def history_findings(sid: str) -> dict[str, Any]:
