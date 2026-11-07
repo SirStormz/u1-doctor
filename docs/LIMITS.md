@@ -6,8 +6,8 @@ What U1 Doctor cannot know or has not yet proven. Each item cites the document i
 
 | Limit | Source |
 |---|---|
-| Only one real capture exists: a 27-minute normal print (firmware 2.1.0, 9,333 frames, no fault). **No real failure has been captured**, so every incident in the app is `SYNTHETIC`. | `README.md`, `IMPLEMENTATION_STATUS.md` (REQ-017), `docs/ORIGINALITY_AUDIT.md` |
-| Machine calls made so far: 3 read-only GET and 1 WebSocket subscribe, in two supervised sessions. Nothing else was ever tested on hardware. | `IMPLEMENTATION_STATUS.md`, `docs/evidence/H-01/manifest.json` |
+| Real captures are normal prints only: a 27-minute print (firmware 2.1.0, 9,333 frames, shipped as a fixture) and a 55-minute multi-colour print (18,339 frames, derived evidence in `docs/evidence/H-06`). **No real failure has been captured**, so every incident in the app is `SYNTHETIC`. | `README.md`, `IMPLEMENTATION_STATUS.md` (REQ-017), `docs/ORIGINALITY_AUDIT.md` |
+| Machine calls made so far: read-only GET requests, object queries and one WebSocket subscribe, in supervised sessions (H-01, H-02, H-05, H-06) and one capture from the UI; 0 non-read operations in every audit log. Nothing else was ever tested on hardware, and no real connection drop with a Klipper stop was seen. | `IMPLEMENTATION_STATUS.md`, `docs/evidence/H-01/manifest.json` |
 | **No proof of the T1-T4 to PTFE-path mapping (H-04).** The 3D view's four markers are labelled UNMAPPED; mapping from Klipper objects stays `unmapped`. | `docs/design/3D_MODEL.md`, `docs/compatibility.md` |
 | The print-quality assistant compares only numbers you type, or the highest temperature of a saved session, with windows the wiki states. It reads no slicer profile, no G-code retraction, no chamber temperature, and the wiki's Build Plate Guide (full plate and filament matrix) was not read. Most causes stay "needs your eyes". | `knowledge/u1_symptoms.json`, `docs/wiki-findings.md` §6 |
 | No in-app live capture yet: the H-02 capture was scripted, not started from the UI. | `BACKLOG.md` #3, `IMPLEMENTATION_STATUS.md` (REQ-014) |
