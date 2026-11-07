@@ -51,18 +51,18 @@ Screenshots use the built-in **synthetic demo data** (the `DEMO` banner is alway
 
 ## Get started in two minutes (Windows)
 
-1. Download `u1-doctor-0.1.1-g1-win64.zip` and its `.sha256.txt` from the [latest release](https://github.com/stormz85ia/u1-doctor/releases/latest).
+1. Download `u1-doctor-0.1.2-g1-win64.zip` and its `.sha256.txt` from the [latest release](https://github.com/stormz85ia/u1-doctor/releases/latest).
 2. Check the file was not altered (optional, 10 seconds):
    ```powershell
-   Get-FileHash .\u1-doctor-0.1.1-g1-win64.zip -Algorithm SHA256
+   Get-FileHash .\u1-doctor-0.1.2-g1-win64.zip -Algorithm SHA256
    ```
-   Compare with the value in the release notes: `629DC1B2043FFF79A14EDEE93C34BF4BCEE291C23826216E3AEDFC773F472B54`.
+   Compare with the value in the release notes: `E48706561A43531F10D8968B9521EABB4590BC4C9F9D8DAE507A8FB44E484912`.
 3. Right-click the zip, **Extract all** (not WinRAR or 7-Zip, so Windows keeps the download mark), then run `u1-doctor.exe`.
 4. Open <http://127.0.0.1:8765> in your browser.
 
 **Good to know**
 - The app is **not code-signed**, so Windows SmartScreen may warn: choose "More info", then "Run anyway".
-- VirusTotal scan of this zip: 2 engines out of 65 flagged it (Bkav Pro, a generic heuristic, and Zillya, `Trojan.Stealer.Win64.2764`); the other 63 detect nothing. We believe these are false positives typical of unsigned PyInstaller executables, but cannot prove it from here: the source is public, the build is made by GitHub Actions, and the app reads no browser data, passwords or clipboard. [Report](https://www.virustotal.com/gui/file/629dc1b2043fff79a14edee93c34bf4bcee291c23826216e3aedfc773f472b54). The previous build (0.1.0-g1) was flagged by 1 engine out of 66.
+- VirusTotal scan of this zip: 1 engine out of 66 flagged it: Zillya (`Trojan.Stealer.Win64.2764`, the same label it gave the 0.1.1-g1 zip). The other 65 detect nothing, including the generic detection Bkav Pro gave 0.1.1-g1. We believe it is a false positive typical of unsigned PyInstaller executables, but cannot prove it from here: the source is public, the build is made by GitHub Actions, and the app reads no browser data, cookies, passwords, clipboard or registry. [Report](https://www.virustotal.com/gui/file/e48706561a43531f10d8968b9521eabb4590bc4c9f9d8dae507a8fb44e484912). Earlier builds: 0.1.0-g1 was flagged by 1 engine out of 66, 0.1.1-g1 by 2 out of 65.
 - It opens in **DEMO mode**: everything works offline with clearly labelled synthetic data. Nothing is sent anywhere.
 - Linux, macOS and Docker: see the [install guide](docs/INSTALL.md).
 
