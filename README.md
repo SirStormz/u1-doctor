@@ -47,7 +47,7 @@ U1 Doctor runs **on your own PC**. It gives you three things:
 |---|---|---|
 | ![Overview](docs/media/screens/03-overview.png) | ![Timeline](docs/media/screens/06-timeline.png) | ![Error codes](docs/media/screens/04-error-codes.png) |
 
-Screenshots use the built-in **synthetic demo data** (the `DEMO` banner is always visible). All 11 screens are in [`docs/media/screens/`](docs/media/screens/).
+Screenshots were taken with **demo mode** on, which shows the built-in **synthetic demo data** (the `DEMO` banner is visible whenever it is on). All 11 screens are in [`docs/media/screens/`](docs/media/screens/).
 
 ## What is inside: the 11 screens
 
@@ -80,7 +80,7 @@ Press `Ctrl K` anywhere to jump to a screen or paste an error code.
 
 **Good to know**
 - The app is **not code-signed**, so Windows SmartScreen may warn: choose "More info", then "Run anyway".
-- VirusTotal scan of this zip (2026-11-07): 0 engines out of 67 flagged it. [Report](https://www.virustotal.com/gui/file/b744d8c9cf7b3a275aa474fc8a44fd7c3e9cbc3c1a00ce73002df798add2fb92). Earlier builds: 0.1.0-g1 was flagged by 1 engine out of 66, 0.1.1-g1 by 2 out of 65, 0.1.2-g1 by 1 out of 66 and 0.1.5-g1 by 0 out of 65 ([report](https://www.virustotal.com/gui/file/594599bf711db552a6e8b01c27c25f642b6c816a162cfdf7d57410ae6b8812b9)) (Zillya, `Trojan.Stealer.Win64.2764`); we believe those were false positives typical of unsigned PyInstaller executables. A clean scan is not a guarantee and detections can change: the source is public, the build is made by GitHub Actions, and the app reads no browser data, cookies, passwords or clipboard. It reads one Windows registry value (the installed WebView2 version, to know whether its window can open) and removes the "downloaded from the Internet" mark from its own `.dll` files so that window can start.
+- VirusTotal scan of this zip (2026-11-07): 0 engines out of 67 flagged it. [Report](https://www.virustotal.com/gui/file/b744d8c9cf7b3a275aa474fc8a44fd7c3e9cbc3c1a00ce73002df798add2fb92). Earlier builds: 0.1.0-g1 was flagged by 1 engine out of 66, 0.1.1-g1 by 2 out of 65, 0.1.2-g1 by 1 out of 66 (Zillya, `Trojan.Stealer.Win64.2764`) and 0.1.5-g1 by 0 out of 65 ([report](https://www.virustotal.com/gui/file/594599bf711db552a6e8b01c27c25f642b6c816a162cfdf7d57410ae6b8812b9)); we believe the earlier detections were false positives typical of unsigned PyInstaller executables. A clean scan is not a guarantee and detections can change: the source is public, the build is made by GitHub Actions, and the app reads no browser data, cookies, passwords or clipboard. It reads one Windows registry value (the installed WebView2 version, to know whether its window can open) and removes the "downloaded from the Internet" mark from its own `.dll` files so that window can start.
 - It **starts empty**: nothing is shown until you import a bundle or capture a printer. The **Demo mode** switch in the header fills the screens with clearly labelled synthetic data (off again at every start). Everything works offline and nothing is sent anywhere.
 - Linux, macOS and Docker: see the [install guide](docs/INSTALL.md).
 
@@ -185,7 +185,7 @@ cd backend; .venv\Scripts\python.exe -m pytest
 cd frontend; npm test
 ```
 
-At the time of writing: 914 backend tests, 82 frontend tests and 14 browser (Playwright) tests pass, with `ruff`, `mypy` and `tsc` clean. CI runs the same checks on Windows, Linux and macOS.
+At the time of writing: 933 backend tests, 88 frontend tests and 15 browser (Playwright) tests pass, with `ruff`, `mypy` and `tsc` clean. CI runs the same checks on Windows, Linux and macOS.
 
 ## More documentation
 
