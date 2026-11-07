@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Release tag, for example v0.1.1-g1"
+        description: "Release tag, for example v0.1.2-g1"
         required: true
         type: string
 permissions:
@@ -26,7 +26,7 @@ jobs:
       - name: Python environment (the build script expects backend\.venv)
         run: |
           py -3.12 -m venv backend\.venv
-          backend\.venv\Scripts\python.exe -m pip install -e "backend[dev]"
+          backend\.venv\Scripts\python.exe -m pip install -e backend pyinstaller
       - name: Build the one-folder exe
         run: .\scripts\build_windows.ps1
       - name: Zip with the test kit and SHA-256

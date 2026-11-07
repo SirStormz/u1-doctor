@@ -11,7 +11,12 @@ New-Item -ItemType Directory -Force $stage | Out-Null
 Copy-Item -Recurse (Join-Path $root "frontend\dist") (Join-Path $stage "dist")
 if (-not (Test-Path (Join-Path $stage "dist\models\u1-jay.glb"))) { Write-Warning "No 3D model found: the exe will show a still image" }
 
-& "backend\.venv\Scripts\python.exe" -m PyInstaller --noconfirm --clean --name u1-doctor `
+# --noupx: never compress the exe (UPX raises antivirus false positives). --version-file: product metadata. The excluded modules are
+# development tools the app never imports (they only got in because the venv holds the dev extras).
+& "backend\.venv\Scripts\python.exe" -m PyInstaller --noconfirm --clean --noupx --name u1-doctor `
+  --version-file "$root\scripts\version_info.txt" `
+  --exclude-module mypy --exclude-module mypy_extensions --exclude-module pytest --exclude-module _pytest --exclude-module setuptools `
+  --exclude-module pkg_resources --exclude-module tkinter --exclude-module jsonschema `
   --paths backend `
   --add-data "$root\knowledge;knowledge" `
   --add-data "$root\rulesets;rulesets" `
