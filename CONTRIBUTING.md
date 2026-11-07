@@ -2,6 +2,8 @@
 
 U1 Doctor is a local, read-only forensics tool for the Snapmaker U1, released under the MIT licence. Read [`README.md`](README.md) and [`docs/threat-model.md`](docs/threat-model.md) first.
 
+Please also read the [Code of Conduct](CODE_OF_CONDUCT.md). The pull request template lists the checks and the rules below.
+
 ## Report a real incident
 
 Real incidents from a U1 are what the rules lack most. See [`docs/SHARE_A_REPORT.md`](docs/SHARE_A_REPORT.md) and use the **Incident report** issue form. Nothing a contributor shares is added to the repository without their explicit yes.
