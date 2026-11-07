@@ -1,0 +1,27 @@
+.venv/
+__pycache__/
+*.pyc
+node_modules/
+dist/
+.pytest_cache/
+*.sqlite
+*.sqlite3
+.env
+private/
+build/
+
+# 3MF sources stay local; the web model frontend/public/models/u1-jay.glb IS committed (owner's decision 2026-11-07)
+*.3mf
+U1-DOCTOR-MOCKUP.png
+.playwright-mcp/
+frontend/test-results/
+frontend/playwright-report/
+docs/design/captures/
+
+tsconfig.tsbuildinfo
+.mypy_cache/
+.ruff_cache/
+
+# owner's 3D model pack (heavy source files, not needed to build)
+U1_Jay_Pack_Complet/
+U1_Jay_Pack_Complet.zip

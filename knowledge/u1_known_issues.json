@@ -1,0 +1,53 @@
+{
+  "version": "0.1.0",
+  "source_url": "https://wiki.snapmaker.com/en/snapmaker_u1/troubleshooting/known_issues_and_quick_fixes",
+  "checked_at": "2026-11-06",
+  "note": "Paraphrased from the official 'Known issues and quick fixes' page (own wording, no copy). These are documented fixes to advise, never actions U1 Doctor performs.",
+  "issues": [
+    {
+      "id": "KI-ORCA-DECIMAL-COMMA",
+      "component": "Snapmaker Orca",
+      "applies": {"code": "0003-0529-0000-0001", "software": "Snapmaker Orca", "version_lt": "2.1.2"},
+      "title": {"en": "G-code parsing failed after multi-colour slicing in German or French", "fr": "Échec de lecture du G-code après un tranchage multicouleur en allemand ou en français"},
+      "symptom": {"en": "Code 0003-0529-0000-0001 appears on the touchscreen.", "fr": "Le code 0003-0529-0000-0001 s'affiche sur l'écran tactile."},
+      "cause": {"en": "Snapmaker Orca older than 2.1.2, with the interface language set to Deutsch or Français, writes decimal commas instead of points in multi-colour slicing.", "fr": "Snapmaker Orca antérieur à la 2.1.2, avec l'interface réglée sur Deutsch ou Français, écrit des virgules à la place des points décimaux lors d'un tranchage multicouleur."},
+      "fix": {"en": "Close Snapmaker Orca completely and reopen it after changing the language (the language switch only soft-restarts it), or download the latest official Snapmaker Orca and slice again.", "fr": "Fermez complètement Snapmaker Orca puis rouvrez-le après un changement de langue (le changement de langue ne fait qu'un redémarrage partiel), ou téléchargez la dernière version officielle de Snapmaker Orca et retranchez."}
+    },
+    {
+      "id": "KI-ORCA-CONNECT",
+      "component": "Snapmaker Orca",
+      "applies": {"software": "Snapmaker Orca", "version_lt": "2.1.2"},
+      "title": {"en": "Snapmaker Orca cannot connect to the U1", "fr": "Snapmaker Orca ne parvient pas à se connecter à la U1"},
+      "symptom": {"en": "Snapmaker Orca cannot connect to the U1 while the Snapmaker app and Fluidd connect normally.", "fr": "Snapmaker Orca ne se connecte pas à la U1 alors que l'application Snapmaker et Fluidd se connectent normalement."},
+      "cause": {"en": "Snapmaker Orca 2.1.1 and earlier contain a connection bug.", "fr": "Snapmaker Orca 2.1.1 et les versions antérieures contiennent un bogue de connexion."},
+      "fix": {"en": "Download the latest official Snapmaker Orca.", "fr": "Téléchargez la dernière version officielle de Snapmaker Orca."}
+    },
+    {
+      "id": "KI-NOZZLE-CLOG-LOAD",
+      "component": "Toolhead",
+      "applies": {},
+      "title": {"en": "Filament loading keeps retrying: clogged nozzle", "fr": "Le chargement du filament recommence sans cesse : buse bouchée"},
+      "symptom": {"en": "A toolhead keeps trying to load filament and does not finish after several cycles.", "fr": "Une tête d'outil essaie sans cesse de charger le filament et n'y parvient pas après plusieurs cycles."},
+      "cause": {"en": "The nozzle is clogged.", "fr": "La buse est bouchée."},
+      "fix": {"en": "Heat the nozzle 10 to 20 degC above the normal printing temperature of the filament, gently move the cleaning needle supplied with the printer up and down in the nozzle without force, then try loading again.", "fr": "Chauffez la buse de 10 à 20 °C au-dessus de la température d'impression normale du filament, passez doucement l'aiguille de nettoyage fournie avec l'imprimante de haut en bas dans la buse sans forcer, puis réessayez de charger."}
+    },
+    {
+      "id": "KI-QR-PIN-OLD-FIRMWARE",
+      "component": "Firmware",
+      "applies": {"software": "Firmware", "version_lt": "0.9.0"},
+      "title": {"en": "No QR code or PIN code available", "fr": "Aucun code QR ni code PIN disponible"},
+      "symptom": {"en": "No QR code in the first-start wizard, or no QR or PIN code later on.", "fr": "Pas de code QR dans l'assistant du premier démarrage, ou pas de code QR ni PIN ensuite."},
+      "cause": {"en": "Firmware older than 0.9.0 has cloud connection problems.", "fr": "Les firmwares antérieurs à la 0.9.0 ont des problèmes de connexion au cloud."},
+      "fix": {"en": "Update the firmware from a USB flash drive and restart. If the cloud still fails, the network may be weak: try several more times.", "fr": "Mettez le firmware à jour depuis une clé USB et redémarrez. Si le cloud échoue encore, le réseau est peut-être faible : réessayez plusieurs fois."}
+    },
+    {
+      "id": "KI-SCREEN-COVER-LOOSE",
+      "component": "Panels and covers",
+      "applies": {},
+      "title": {"en": "Screen rear cover feels loose", "fr": "Le capot arrière de l'écran bouge"},
+      "symptom": {"en": "The rear cover of the screen is loose after installation.", "fr": "Le capot arrière de l'écran est lâche après l'installation."},
+      "cause": {"en": "The part is designed for quick removal; slight play between the clips and the metal panel is normal and does not affect function.", "fr": "La pièce est conçue pour se retirer vite ; un léger jeu entre les clips et le panneau métallique est normal et sans effet sur le fonctionnement."},
+      "fix": {"en": "Remove the cover and add one or two layers of tape at the four clip positions (on the cover or on the front panel), then refit it.", "fr": "Retirez le capot et ajoutez une ou deux couches de ruban adhésif aux quatre positions des clips (sur le capot ou sur le panneau avant), puis remettez-le."}
+    }
+  ]
+}

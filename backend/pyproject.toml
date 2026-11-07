@@ -1,0 +1,28 @@
+[project]
+name = "u1-doctor-backend"
+version = "0.0.0"
+description = "U1 Doctor - read-only diagnostic forensics engine (G0 skeleton)"
+requires-python = ">=3.12"
+dependencies = ["fastapi>=0.115,<1", "uvicorn>=0.32,<1", "httpx>=0.28,<1", "pydantic>=2.9,<3", "websockets>=15,<16"]
+
+[project.scripts]
+u1deb-validate = "app.deb_cli:main"
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<9", "jsonschema>=4.23,<5", "ruff", "mypy", "pyinstaller"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 140
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "PLE", "UP"]
+ignore = ["E501", "B905", "UP017"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["PLE2502", "E741", "B017"]
+"../scripts/*" = ["E402"]

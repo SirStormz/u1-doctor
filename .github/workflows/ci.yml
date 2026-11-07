@@ -1,0 +1,109 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  backend:
+    # Linux, Windows and macOS: the tests compare findings byte for byte with the committed goldens,
+    # and each job prints the replay hashes so the next job can diff them across systems (T-025).
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev]"
+      - run: ruff check app tests
+      - run: mypy app --ignore-missing-imports
+      - run: pytest -q
+      - name: Replay hashes
+        shell: bash
+        run: python ../scripts/replay_hashes.py > replay-hashes.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: replay-hashes-${{ matrix.os }}
+          path: backend/replay-hashes.txt
+  replay-hash-identical:
+    needs: backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: hashes
+      - name: Same bytes on every system
+        run: |
+          ls -R hashes
+          for f in hashes/*/replay-hashes.txt; do diff -u hashes/replay-hashes-ubuntu-latest/replay-hashes.txt "$f"; done
+  deb-action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/validate-u1-deb
+        with:
+          bundle: examples/u1-deb/example-synthetic-known-code-feeder3.u1deb.zip
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm test
+      - run: npm run build
+  e2e:
+    # Playwright smoke tests of the 11 screens against the real backend serving the built UI (demo data only, no printer).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e "backend[dev]"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+        working-directory: frontend
+      - run: npm run build
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - name: Start the backend (127.0.0.1:8766, temporary database)
+        working-directory: backend
+        env:
+          U1DOCTOR_PORT: "8766"
+          U1DOCTOR_DB: ${{ runner.temp }}/e2e.sqlite3
+        run: |
+          nohup python -m app > "$RUNNER_TEMP/backend.log" 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8766/api/v1/health && exit 0; sleep 1; done
+          cat "$RUNNER_TEMP/backend.log"; exit 1
+      - run: npm run e2e
+        working-directory: frontend
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-test-results
+          path: frontend/test-results

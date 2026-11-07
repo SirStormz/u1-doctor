@@ -1,0 +1,445 @@
+import { useEffect, useState } from "react";
+import { Ban, Cpu, ExternalLink, FlaskConical, History, Play, Plug, Search, ShieldCheck, Settings as SettingsIcon, TriangleAlert } from "lucide-react";
+import { api, knownIssues, liveApi, LiveRefused, preflight, supportChecklist, PreflightRefused, type InterpretOut, type LiveOut, type KnownIssues, type PreflightOut } from "../api";
+import { Button, Chip, Kbd, Panel, ProvenanceChip, SeverityChip, Seal, StateBlock } from "../components/ui";
+import { PageTitle } from "../components/shell";
+import { useIncident } from "../lib/data";
+import { usePrefs, type Density, type Theme } from "../lib/prefs";
+import { moduleLabel, scenarioLabel, tok, tx } from "../lib/dyn";
+import { pfLimit, pfView } from "../lib/preflight-text";
+import { buildRequest, supNote, supText, type SupportOut } from "../lib/support-text";
+import type { RouteName } from "../lib/router";
+
+type Go = (n: RouteName, p?: string) => void;
+
+/* ---------------- Welcome ---------------- */
+export function Welcome({ go }: { go: Go }) {
+  const { t } = usePrefs();
+  const pillars = [{ h: t.pillar1h, b: t.pillar1b }, { h: t.pillar2h, b: t.pillar2b }, { h: t.pillar3h, b: t.pillar3b }];
+  return (
+    <>
+      <section className="reveal grid gap-[34px] border-b-2 border-ink pb-[34px] lg:grid-cols-[1.618fr_1fr]" aria-labelledby="welcome-h">
+        <div className="grid content-start gap-[21px]">
+          <Chip tone="demo" icon={<FlaskConical size={12} aria-hidden />}>{t.modeDemo} · SYNTHETIC</Chip>
+          <h1 id="welcome-h" className="text-[clamp(40px,5.4vw,var(--t-7))] font-extrabold leading-[0.95] tracking-[-0.055em]">{t.welcomeTitle}</h1>
+          <p className="max-w-[52ch] text-[length:var(--t-1)] font-medium leading-[1.4] text-ink2">{t.welcomeBody}</p>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button variant="primary" icon={<Play size={16} />} onClick={() => go("overview")}>{t.startDemo}</Button>
+            <Button icon={<Search size={16} />} onClick={() => go("explorer")}>{t.decodeCode}</Button>
+            <a href="#/" className="btn btn-ghost no-underline">{t.landing.back}</a>
+          </div>
+          <p className="text-xs text-ink3">{t.tip} <Kbd>Ctrl K</Kbd></p>
+        </div>
+        <div className="grid content-start gap-3" aria-label={t.privacyTitle}>
+          <p className="manual-label w-fit">{t.privacyTitle}</p>
+          <ul className="grid gap-0 border-y-2 border-ink">{t.privacyPoints.map((p, k) => <li key={p} className="flex gap-3 border-b border-line py-2.5 last:border-b-0"><span className="mono text-ink3" aria-hidden>{String(k + 1).padStart(2, "0")}</span><span className="font-semibold">{p}</span></li>)}</ul>
+        </div>
+      </section>
+      <div className="mt-[34px] grid gap-[34px] md:grid-cols-3">
+        {pillars.map((p, k) => (
+          <section key={p.h} className="reveal" style={{ "--i": k + 1 } as React.CSSProperties} aria-label={p.h}>
+            <p className="num-hero" aria-hidden>0{k + 1}</p>
+            <h2 className="mt-[13px] border-t-2 border-ink pt-2 text-[length:var(--t-1)] font-extrabold tracking-[-0.02em]">{p.h}</h2>
+            <p className="mt-1 text-ink2">{p.b}</p>
+          </section>
+        ))}
+      </div>
+    </>
+  );
+}
+
+/* ---------------- Connect (read-only live capture, owner-approved) ---------------- */
+const ALLOW = [["GET", "/server/info"], ["GET", "/printer/info"], ["GET", "/printer/objects/list"], ["POST", "/printer/objects/query"], ["WS", "printer.objects.subscribe"]];
+const DENY = ["printer.gcode.script", "printer.print.*", "printer.restart", "machine.*", "server.files.*"];
+export function Connect() {
+  const { t } = usePrefs();
+  const [host, setHost] = useState("");
+  const [consent, setConsent] = useState(false);
+  const [secs, setSecs] = useState(15);
+  const [save, setSave] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [out, setOut] = useState<LiveOut | null>(null);
+
+  async function run() {
+    setBusy(true); setErr(null); setOut(null);
+    try { setOut(await liveApi.capture(host.trim(), secs, save)); }
+    catch (e) { setErr((e instanceof LiveRefused ? t.liveErr[e.code] : undefined) ?? t.liveErr["UNKNOWN"] ?? ""); }
+    finally { setBusy(false); }
+  }
+  const ready = consent && /^\d{1,3}(\.\d{1,3}){3}$/.test(host.trim()) && !busy;
+  return (
+    <>
+      <PageTitle title={t.nav.connect} sub={t.connectSub} icon={<Plug size={26} />} actions={<Chip tone="ok" icon={<ShieldCheck size={12} aria-hidden />}>{t.notInBuild}</Chip>} />
+      <div className="grid gap-d xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        <Panel title={t.connSteps} icon={<Cpu size={17} />} i={0} active demo={false}>
+          <ol className="grid gap-3">
+            {[t.step1, t.step2, t.step3].map((s, k) => (<li key={s} className="flex items-start gap-3 rounded-lg border border-line bg-surface2 p-3"><span className="grid h-7 w-7 shrink-0 place-items-center border border-control text-sm font-bold text-ink2">{k + 1}</span><span>{s}</span></li>))}
+          </ol>
+          <label className="mt-4 grid gap-1 text-sm">{t.address}
+            <input value={host} onChange={(e) => setHost(e.target.value)} inputMode="decimal" autoComplete="off" spellCheck={false} placeholder="192.168.x.x" className="mono rounded-lg border border-control bg-surface2 px-3 py-2 text-ink" aria-describedby="addr-help" />
+          </label>
+          <p id="addr-help" className="mt-1 text-xs text-ink3">{t.addrHelp}</p>
+          <label className="mt-3 grid gap-1 text-sm">{t.liveSeconds}
+            <input type="number" min={3} max={60} value={secs} onChange={(e) => setSecs(Math.max(3, Math.min(60, Number(e.target.value) || 15)))} className="mono w-28 rounded-lg border border-control bg-surface2 px-3 py-2 text-ink" />
+          </label>
+          <label className="mt-3 flex items-start gap-2 text-sm"><input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-1" /><span>{t.liveConsent}</span></label>
+          <label className="mt-2 flex items-start gap-2 text-sm"><input type="checkbox" checked={save} onChange={(e) => setSave(e.target.checked)} className="mt-1" /><span>{t.liveSave}</span></label>
+          <div className="mt-4"><Button variant="primary" disabled={!ready} onClick={() => void run()} icon={<Plug size={16} />}>{busy ? t.liveRunning : t.connectBtn}</Button></div>
+          {!out && !err && !busy && <StateBlock kind="empty" title={t.notInBuild} body={t.notInBuildBody} />}
+          {busy && <StateBlock kind="loading" title={t.liveRunning} />}
+          {err && <div role="alert"><StateBlock kind="error" title={t.error} body={err} /></div>}
+        </Panel>
+        <div className="col-fill">
+          {out && (
+            <Panel title={t.liveDone} icon={<Cpu size={17} />} i={1} demo={false}>
+              <div className="mb-3 flex flex-wrap gap-2"><Chip tone="ok">{t.liveReal}</Chip><Chip tone={out.audit.non_read_operations === 0 ? "ok" : "danger"}>{t.liveWrites}: {out.audit.non_read_operations}</Chip><Chip tone="neutral">{t.liveReads}: {out.audit.read_operations}</Chip></div>
+              <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+                <dt className="text-ink3">{t.livePrinter}</dt><dd className="mono">{out.printer.printer_state}</dd>
+                <dt className="text-ink3">{t.liveKlippy}</dt><dd className="mono">{out.printer.klippy_state}</dd>
+                <dt className="text-ink3">{t.liveMoon}</dt><dd className="mono">{out.printer.moonraker_version}</dd>
+                <dt className="text-ink3">{t.liveKlipper}</dt><dd className="mono break-all">{out.printer.klipper_software_version}</dd>
+                <dt className="text-ink3">{t.liveObjects}</dt><dd className="mono">{out.printer.object_count}</dd>
+                <dt className="text-ink3">{t.liveFrames}</dt><dd className="mono">{out.inbound_frames}</dd>
+                <dt className="text-ink3">{t.liveObs}</dt><dd className="mono">{out.observations.length}</dd>
+                <dt className="text-ink3">{t.liveFind}</dt><dd className="mono">{out.findings.length}</dd>
+              </dl>
+              {out.findings.length === 0 && <p className="mt-3 text-sm text-ink2">{t.liveNoFind}</p>}
+              <p className="mt-3 text-xs text-ink3">{out.session ? t.liveSaved : t.liveNotSaved}</p>
+            </Panel>
+          )}
+          <Panel title={t.allowlist} icon={<ShieldCheck size={17} />} i={2} demo={false}>
+            <table className="w-full text-left text-sm"><caption className="sr-only">{t.allowlist}</caption><tbody>{ALLOW.map(([m, p]) => (<tr key={p} className="border-t border-line first:border-0"><td className="py-1.5 pr-3"><Chip tone="ok">{m}</Chip></td><td className="mono text-xs">{p}</td></tr>))}</tbody></table>
+          </Panel>
+          <Panel title={t.denied} icon={<Ban size={17} />} i={3} demo={false}>
+            <div className="flex flex-wrap gap-2">{DENY.map((d) => <Chip key={d} tone="danger">{d}</Chip>)}</div>
+            <p className="mt-3 text-xs text-ink3">{t.deniedNote}</p>
+          </Panel>
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ---------------- Error code explorer ---------------- */
+const SAMPLES = ["0002-0525-0002-0002", "0002-0525-0002-0004", "0003-0522-0002-0008", "0003-0529-0001-0009"];
+export function Explorer({ param }: { param?: string }) {
+  const { t, lang } = usePrefs();
+  const [code, setCode] = useState(param ?? "");
+  const [res, setRes] = useState<InterpretOut | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [fw, setFw] = useState("");
+
+  async function run(c: string) {
+    setBusy(true); setErr(null);
+    try { setRes(await api.interpret(c, fw.trim() || undefined)); } catch (e) { setRes(null); setErr(String(e)); } finally { setBusy(false); }
+  }
+  useEffect(() => { if (param) { setCode(param); void run(param); } }, [param]);
+  const d = res?.decoding;
+  const entry = d?.entry as ({ title: string; summary: string; toolhead?: number | null; inspect_toolheads?: number[]; inspect_scope?: "listed" | "all" | "this_head" }) | null | undefined;
+  const crit = d?.severity === "error";
+  return (
+    <>
+      <PageTitle title={t.nav.explorer} sub={t.explorerSub} icon={<Search size={26} />} />
+      <div className="grid gap-d xl:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">
+        <Panel title={t.codeLabel} i={0} active>
+          <form onSubmit={(e) => { e.preventDefault(); void run(code); }} className="grid gap-3">
+            <input value={code} maxLength={64} onChange={(e) => setCode(e.target.value)} placeholder="0002-0525-0002-0002" aria-label={t.codeLabel} className="mono rounded-lg border border-control bg-surface2 px-3 py-2.5 text-base text-ink" />
+            <label className="grid gap-1.5"><span className="micro">{t.fwLabel}</span>
+              <input value={fw} maxLength={32} onChange={(e) => setFw(e.target.value)} placeholder="2.1.0" aria-label={t.fwLabel} className="mono rounded-lg border border-control bg-surface2 px-3 py-2.5 text-base text-ink" />
+              <span className="text-xs text-ink3">{t.fwHint}</span></label>
+            <Button variant="primary" type="submit" disabled={busy} icon={<Search size={16} />}>{t.decode}</Button>
+          </form>
+          <p className="micro mt-4 mb-2">{t.samples}</p>
+          <div className="flex flex-wrap gap-2">{SAMPLES.map((s) => (<button key={s} type="button" className="chip" data-tone="accent" onClick={() => { setCode(s); void run(s); }}>{s}</button>))}</div>
+        </Panel>
+        <div aria-live="polite">
+          {err && <StateBlock kind="error" title={t.error} body={err} />}
+          {!res && !err && <StateBlock kind="empty" title={t.empty} body={t.explorerEmpty} />}
+          {res && d && (
+            <Panel i={1} active={!crit} title={<span className="flex items-center gap-2">{d.status === "MALFORMED" ? t.statusMalformed : entry?.title ? tx(lang, entry.title) : t.statusStructure}</span>} actions={<SeverityChip level={d.severity} />}>
+              {crit && <div role="alert" className="mb-4 flex gap-3 rounded-lg border p-3" style={{ borderColor: "var(--danger)", background: "color-mix(in srgb, var(--danger) 10%, var(--surface-1))" }}><TriangleAlert className="shrink-0 text-danger" aria-hidden /><p>{t.criticalNote}</p></div>}
+              <div className="flex flex-wrap items-center gap-2"><ProvenanceChip status="USER_REPORTED" /><span className="mono text-xs text-ink2">{res.decoding.status === "MALFORMED" ? code : (d as unknown as { code?: string }).code}</span>
+                {d.module && <Chip>{moduleLabel(lang, d.module)}</Chip>}{entry?.toolhead != null && <Chip tone="accent">{t.toolhead} {entry.toolhead} · {t.fromTable}</Chip>}<Chip tone={d.status === "KNOWN" ? "ok" : "neutral"}>{tok(lang, "classification", d.classification)}</Chip></div>
+              {entry && <p className="mt-3 text-[15px]">{tx(lang, entry.summary)}</p>}
+              {d.status !== "MALFORMED" && <SupportList code={(d as unknown as { code?: string }).code ?? code} firmware={fw.trim() || undefined} title={entry?.title ?? null} />}
+              {entry?.inspect_toolheads && entry.inspect_scope && <DockHint reported={entry.toolhead ?? null} inspect={entry.inspect_toolheads} scope={entry.inspect_scope} />}
+              {d.firmware && (d.firmware.notes.length > 0 || d.firmware.valid === false) && (
+                <div className="mt-4" data-testid="fw-notes">
+                  <h3 className="micro mb-2">{t.fwNotes}</h3>
+                  {d.firmware.valid === false && <p className="mb-2 text-warn">{t.fwInvalid}</p>}
+                  <ul className="grid gap-2">
+                    {d.firmware.notes.map((n) => (
+                      <li key={n.text} className="rounded-lg border border-control p-2.5 text-[15px]">
+                        <div className="flex flex-wrap items-center gap-2">
+                          {n.applies === "BEFORE" && <Chip tone="warn">{t.fwBefore}</Chip>}
+                          {n.applies === "INCLUDED" && <Chip tone="ok">{t.fwIncluded}</Chip>}
+                          <span className="mono text-xs text-ink3">{n.component} {n.version}</span>
+                        </div>
+                        <p className="mt-1.5">{tx(lang, n.text)}</p>
+                        <a href={n.source} target="_blank" rel="noreferrer noopener" className="mt-1 inline-flex items-center gap-1 text-xs underline">{t.fwSource}<ExternalLink size={12} aria-hidden /></a>
+                      </li>
+                    ))}
+                  </ul>
+                  {d.firmware.latest && <p className="mt-2 text-xs text-ink3">{t.fwLatest.replace("{v}", d.firmware.latest.version).replace("{d}", d.firmware.latest.date)}{d.firmware.behind_latest ? ` ${t.fwBehind}` : ""}</p>}
+                </div>
+              )}
+              {d.reason && <p className="mt-3 text-danger">{tx(lang, d.reason)}</p>}
+              <h3 className="micro mt-5 mb-2">{t.limits}</h3>
+              <ul className="grid gap-1.5">{res.limits.map((l) => <li key={l} className="flex gap-2"><span className="text-warn" aria-hidden>▲</span>{tx(lang, l)}</li>)}</ul>
+              <a href={res.official_reference} target="_blank" rel="noreferrer noopener" className="btn btn-secondary mt-4 w-fit">{t.openOfficial}<ExternalLink size={15} aria-hidden /></a>
+              <p className="mt-2 text-xs text-ink3">{t.catalogNote.replace("{d}", res.catalog_verified_at)}</p>
+            </Panel>
+          )}
+        </div>
+      </div>
+      <KnownIssuesPanel code={res && d && d.status !== "MALFORMED" ? ((d as unknown as { code?: string }).code ?? code) : null} />
+      <Preflight onCode={(c) => { setCode(c); void run(c); window.scrollTo({ top: 0, behavior: "smooth" }); }} />
+    </>
+  );
+}
+
+/** Documented quick fixes (official wiki, own wording). The one matching the decoded code is highlighted and listed first. */
+function KnownIssuesPanel({ code }: { code: string | null }) {
+  const { t, lang } = usePrefs();
+  const [data, setData] = useState<KnownIssues | null>(null);
+  const [fail, setFail] = useState(false);
+  useEffect(() => { let live = true; knownIssues().then((x) => { if (!live) return; if (Array.isArray(x?.issues)) setData(x); else setFail(true); }).catch(() => { if (live) setFail(true); }); return () => { live = false; }; }, []);
+  const rows = data ? [...data.issues].sort((a, b) => Number(b.applies.code === code && !!code) - Number(a.applies.code === code && !!code)) : [];
+  return (
+    <div className="mt-4">
+      <Panel title={t.kiTitle} icon={<TriangleAlert size={17} />} i={3} demo={false}>
+        <p className="text-ink2">{t.kiNote}</p>
+        {fail && <p className="mt-3 text-ink3">{t.kiLoadFail}</p>}
+        {data && (
+          <ul className="mt-3 grid gap-2" data-testid="known-issues">
+            {rows.map((k) => {
+              const hit = !!code && k.applies.code === code;
+              return (
+                <li key={k.id} data-match={hit} className="rounded-lg border-2 p-3" style={{ borderColor: hit ? "var(--warn)" : "var(--control-line)" }}>
+                  <div className="flex flex-wrap items-center gap-2"><strong>{k.title[lang]}</strong><Chip>{k.component}</Chip>{hit && <Chip tone="warn">{t.kiMatch}</Chip>}{k.applies.code && <span className="mono text-xs text-ink3">{k.applies.code}</span>}</div>
+                  <dl className="mt-2 grid gap-1 text-[15px]">
+                    <div><dt className="micro">{t.kiSymptom}</dt><dd className="m-0">{k.symptom[lang]}</dd></div>
+                    <div><dt className="micro">{t.kiCause}</dt><dd className="m-0">{k.cause[lang]}</dd></div>
+                    <div><dt className="micro">{t.kiFix}</dt><dd className="m-0">{k.fix[lang]}</dd></div>
+                  </dl>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+        {data && <a href={data.source_url} target="_blank" rel="noreferrer noopener" className="btn btn-secondary mt-3 w-fit">{t.kiSource}<ExternalLink size={15} aria-hidden /></a>}
+        {data && <p className="mt-2 text-xs text-ink3">{t.catalogNote.replace("{d}", data.checked_at)}</p>}
+      </Panel>
+    </div>
+  );
+}
+
+/** Schematic of the four dock slots: which toolheads the official table row tells you to inspect. Slot numbers only, no geometry. */
+function DockHint({ reported, inspect, scope }: { reported: number | null; inspect: number[]; scope: "listed" | "all" | "this_head" }) {
+  const { t } = usePrefs();
+  const why = scope === "listed" ? t.dockListed : scope === "all" ? t.dockAll : t.dockThis;
+  return (
+    <div className="mt-4" data-testid="dock-hint">
+      <h3 className="micro mb-2">{t.dockTitle}</h3>
+      <ul className="grid grid-cols-4 gap-2" aria-label={t.dockTitle}>
+        {[1, 2, 3, 4].map((n) => {
+          const look = inspect.includes(n);
+          const rep = reported === n;
+          return (
+            <li key={n} data-slot={n} data-inspect={look} data-reported={rep} className="rounded-lg border-2 p-2 text-center" style={{ borderColor: look ? "var(--warn)" : "var(--control-line)", background: look ? "color-mix(in srgb, var(--warn) 12%, var(--surface-1))" : "transparent" }}>
+              <div className="mono text-base font-bold">T{n}</div>
+              <div className="text-xs">{look ? t.dockInspect : "·"}{rep ? ` · ${t.dockReported}` : ""}</div>
+            </li>
+          );
+        })}
+      </ul>
+      <p className="mt-2 text-xs text-ink3">{why} {t.dockNote}</p>
+    </div>
+  );
+}
+
+/* ---------------- What support will ask ---------------- */
+function SupportList({ code, firmware, title }: { code: string; firmware?: string; title: string | null }) {
+  const { t, lang } = usePrefs();
+  const [data, setData] = useState<SupportOut | null>(null);
+  const [checked, setChecked] = useState<Set<string>>(new Set());
+  const [copied, setCopied] = useState(false);
+  useEffect(() => { let live = true; setData(null); setChecked(new Set()); supportChecklist(code, firmware).then((x) => { if (live) setData(x); }).catch(() => {}); return () => { live = false; }; }, [code, firmware]);
+  if (!data || !Array.isArray(data.items)) return null;
+  const toggle = (id: string) => setChecked((c) => { const n = new Set(c); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+  async function copy() {
+    try { await navigator.clipboard.writeText(buildRequest(lang, data!, checked, title ? tx(lang, title) : null)); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch { /* clipboard unavailable: nothing to do */ }
+  }
+  return (
+    <div className="mt-4" data-testid="support-list">
+      <h3 className="micro mb-1">{t.supTitle}</h3>
+      <p className="mb-2 text-xs text-ink3">{t.supSub}</p>
+      <ul className="grid gap-1.5">
+        {data.items.map((i) => (
+          <li key={i.id}>
+            <label className="flex cursor-pointer items-start gap-2 text-[15px]">
+              <input type="checkbox" checked={checked.has(i.id)} onChange={() => toggle(i.id)} className="mt-1" />
+              <span>{supText(lang, i)} <Chip tone={i.source === "wiki" ? "accent" : "neutral"}>{i.source === "wiki" ? t.supWiki : t.supSuggested}</Chip></span>
+            </label>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <Button variant="secondary" onClick={() => void copy()}>{copied ? t.supCopied : t.supCopy}</Button>
+        <a href={data.ticket.url} target="_blank" rel="noreferrer noopener" className="btn btn-secondary">{t.supForm}<ExternalLink size={15} aria-hidden /></a>
+      </div>
+      <ul className="mt-2 grid gap-1">{data.notes.map((n) => <li key={n} className="flex gap-2 text-xs text-ink3"><span className="text-warn" aria-hidden>▲</span>{supNote(lang, n)}</li>)}</ul>
+    </div>
+  );
+}
+
+const PF_TONE = { FAIL: "danger", WARN: "warn", PASS: "ok", INFO: "neutral", UNKNOWN: "neutral" } as const;
+
+/* ---------------- G-code pre-flight ---------------- */
+function Preflight({ onCode }: { onCode: (code: string) => void }) {
+  const { t, lang } = usePrefs();
+  const [res, setRes] = useState<PreflightOut | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  async function pick(f: File | undefined) {
+    if (!f) return;
+    setBusy(true); setErr(null); setRes(null);
+    try { setRes(await preflight(f)); }
+    catch (e) { setErr(e instanceof PreflightRefused ? (t.pfRefusal as Record<string, string>)[e.code] ?? t.pfRefusal.UNKNOWN : String(e)); }
+    finally { setBusy(false); }
+  }
+  const order = { FAIL: 0, WARN: 1, UNKNOWN: 2, INFO: 3, PASS: 4 } as const;
+  const checks = res ? [...res.checks].sort((a, b) => order[a.status] - order[b.status]) : [];
+  return (
+    <div className="mt-4">
+      <Panel title={t.pfTitle} i={2} active={!!res}>
+        <p className="text-ink2">{t.pfSub}</p>
+        <label className="btn btn-primary mt-4 w-fit cursor-pointer">
+          <FlaskConical size={16} aria-hidden />{busy ? t.pfBusy : t.pfPick}
+          <input type="file" accept=".gcode,.gco,.nc,.txt,text/plain" className="sr-only" disabled={busy} onChange={(e) => { void pick(e.target.files?.[0]); e.target.value = ""; }} />
+        </label>
+        <div aria-live="polite" className="mt-4">
+          {err && <StateBlock kind="error" title={t.pfRefused} body={err} />}
+          {!res && !err && !busy && <p className="text-ink3">{t.pfEmpty}</p>}
+          {res && (
+            <>
+              <div className="flex flex-wrap items-center gap-2">
+                {(["FAIL", "WARN", "UNKNOWN", "INFO", "PASS"] as const).map((k) => <Chip key={k} tone={PF_TONE[k]}>{t[`pf${k}` as "pfFAIL"]} · {res.summary[k]}</Chip>)}
+                <span className="mono text-xs text-ink3">{res.file.lines.toLocaleString(lang)} {t.pfLines}</span>
+              </div>
+              <ul className="mt-4 grid gap-3">
+                {checks.map((c) => {
+                  const v = pfView(lang, c);
+                  return (
+                    <li key={c.id} className="rounded-lg border border-control p-3" data-status={c.status}>
+                      <div className="flex flex-wrap items-center gap-2"><Chip tone={PF_TONE[c.status]}>{t[`pf${c.status}` as "pfFAIL"]}</Chip><strong>{v.title}</strong></div>
+                      <p className="mt-1.5 text-[15px]">{v.detail}</p>
+                      <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-ink3">
+                        {c.evidence.count > 0 && <span className="mono">{c.evidence.count} {t.pfMatches} · {t.pfLines} {c.evidence.lines.join(", ")}{c.evidence.count > c.evidence.lines.length ? "…" : ""}</span>}
+                        {c.code && <button type="button" className="chip" data-tone="accent" onClick={() => onCode(c.code!)}>{c.code} · {t.pfOpenCode}</button>}
+                        <a href={c.reference.url} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 underline">{c.reference.title}<ExternalLink size={12} aria-hidden /></a>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+              <ul className="mt-4 grid gap-1.5">{res.limits.map((l) => <li key={l} className="flex gap-2 text-sm"><span className="text-warn" aria-hidden>▲</span>{pfLimit(lang, l)}</li>)}</ul>
+            </>
+          )}
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
+/* ---------------- Replay lab ---------------- */
+interface Run { n: number; scenario: string; hash: string; ok: boolean; count: number }
+export function Replay({ onMode }: { onMode: (r: boolean) => void }) {
+  const { t, lang } = usePrefs();
+  const [names, setNames] = useState<string[]>([]);
+  const [sel, setSel] = useState("");
+  const [runs, setRuns] = useState<Run[]>([]);
+  const [err, setErr] = useState<string | null>(null);
+  useEffect(() => { api.scenarios().then((s) => { setNames(s.scenarios); setSel(s.scenarios.includes("demo_extrusion_blockage") ? "demo_extrusion_blockage" : s.scenarios[0] ?? ""); }).catch((e) => setErr(String(e))); }, []);
+  useEffect(() => { onMode(false); }, [sel, onMode]);
+  async function run() {
+    setErr(null);
+    try { const r = await api.replay(sel); setRuns((x) => [{ n: x.length + 1, scenario: sel, hash: r.findings_sha256, ok: r.matches_golden, count: r.findings.length }, ...x].slice(0, 6)); onMode(true); } catch (e) { setErr(String(e)); }
+  }
+  const last = runs[0];
+  const prev = runs.find((r, i) => i > 0 && r.scenario === last?.scenario);
+  return (
+    <>
+      <PageTitle title={t.nav.replay} sub={t.replaySub} icon={<History size={26} />} />
+      <div className="grid gap-d xl:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
+        <Panel title={t.scenario} i={0} active>
+          <label className="grid gap-1 text-sm">{t.scenario}
+            <select value={sel} onChange={(e) => setSel(e.target.value)} className="rounded-lg border border-control bg-surface2 px-3 py-2 text-ink">{names.map((n) => <option key={n} value={n}>{scenarioLabel(lang, n)}</option>)}</select>
+          </label>
+          <div className="mt-3"><Button variant="primary" icon={<Play size={16} />} onClick={run} disabled={!sel}>{t.runReplay}</Button></div>
+          <p className="mt-3 text-xs text-ink3">{t.replayHelp}</p>
+          {err && <StateBlock kind="error" title={t.error} body={err} />}
+        </Panel>
+        <div className="col-fill">
+          {!last ? <StateBlock kind="empty" title={t.empty} body={t.replayEmpty} /> : (
+            <>
+              <Seal ok={last.ok} label={last.ok ? t.sameResult : t.differs} sub={`${t.replaySeal} · ${last.count} ${t.findings.toLowerCase()}`} hash={last.hash} />
+              {prev && <p className="flex items-center gap-2 text-sm"><Chip tone={prev.hash === last.hash ? "ok" : "danger"}>{prev.hash === last.hash ? t.identicalPrev : t.differsPrev}</Chip></p>}
+            </>
+          )}
+          {runs.length > 0 && (
+            <Panel title={t.runs} i={1} bodyClass="p-0"><div className="overflow-x-auto"><table className="w-full text-left text-sm"><caption className="sr-only">{t.runs}</caption>
+              <thead className="micro"><tr><th className="px-4 py-2">#</th><th>{t.scenario}</th><th>SHA-256</th><th>{t.matches}</th></tr></thead>
+              <tbody>{runs.map((r) => (<tr key={r.n} className="border-t border-line"><td className="px-4 py-2">{r.n}</td><td>{scenarioLabel(lang, r.scenario)}</td><td className="mono text-xs">{r.hash.slice(0, 16)}…</td><td><Chip tone={r.ok ? "ok" : "danger"}>{r.ok ? t.match : t.mismatch}</Chip></td></tr>))}</tbody></table></div></Panel>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ---------------- Settings / compatibility ---------------- */
+const SW: Record<Theme, string[]> = { night: ["#10100e", "#161614", "#ffc400"], graphite: ["#191a1d", "#1f2023", "#ffc400"], light: ["#f4f4f0", "#fafaf7", "#ffc400"] };
+export function SettingsScreen() {
+  const { t, theme, setTheme, density, setDensity, lang, setLang } = usePrefs();
+  const inc = useIncident();
+  return (
+    <>
+      <PageTitle title={t.nav.settings} sub={t.settingsSub} icon={<SettingsIcon size={26} />} />
+      <div className="grid gap-d xl:grid-cols-2">
+        <Panel title={t.appearance} i={0} active>
+          <fieldset><legend className="micro mb-2">{t.theme}</legend>
+            <div className="grid grid-cols-3 gap-3">{(Object.keys(SW) as Theme[]).map((k) => (
+              <button key={k} type="button" aria-pressed={theme === k} onClick={() => setTheme(k)} className="rounded-xl border p-3 text-left" style={{ borderColor: theme === k ? "var(--accent)" : "var(--line)", boxShadow: theme === k ? "var(--glow)" : "none", background: "var(--surface-2)" }}>
+                <span className="mb-2 flex h-8 overflow-hidden rounded-md border border-control" aria-hidden>{SW[k].map((c) => <span key={c} className="flex-1" style={{ background: c }} />)}</span>{t.themes[k]}
+              </button>))}</div>
+          </fieldset>
+          <fieldset className="mt-5"><legend className="micro mb-2">{t.density}</legend>
+            <div className="flex gap-2">{(["comfortable", "compact"] as Density[]).map((d) => <Button key={d} aria-pressed={density === d} variant={density === d ? "primary" : "secondary"} onClick={() => setDensity(d)}>{t.densities[d]}</Button>)}</div>
+          </fieldset>
+          <fieldset className="mt-5"><legend className="micro mb-2">{t.language}</legend>
+            <div className="flex gap-2">{(["en", "fr"] as const).map((l) => <Button key={l} aria-pressed={lang === l} variant={lang === l ? "primary" : "secondary"} onClick={() => setLang(l)}>{l === "en" ? "English" : "Français"}</Button>)}</div>
+          </fieldset>
+        </Panel>
+        <Panel title={t.versions} i={1}>
+          <dl className="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2">
+            <dt className="text-ink3">{t.th.app}</dt><dd className="mono">{inc.health?.app_version ?? "…"}</dd>
+            <dt className="text-ink3">{t.th.api}</dt><dd className="mono">v{inc.health?.api_version ?? "…"}</dd>
+            <dt className="text-ink3">{t.th.db}</dt><dd className="mono">{inc.health?.db_schema ?? "…"}</dd>
+            <dt className="text-ink3">{t.machineAccess}</dt><dd className="mono">{inc.health ? tok(lang, "access", inc.health.machine_access) : "…"}</dd>
+            <dt className="text-ink3">{t.firmware}</dt><dd><Chip>{t.unknown}</Chip> <span className="text-xs text-ink3">{t.fwNote}</span></dd>
+            <dt className="text-ink3">{t.retention}</dt><dd className="text-ink2">{t.retentionNote}</dd>
+          </dl>
+        </Panel>
+        <div className="xl:col-span-2"><Panel title={t.compat} i={2} bodyClass="p-0">
+          <div className="overflow-x-auto"><table className="w-full text-left"><caption className="sr-only">{t.compat}</caption>
+            <thead className="micro"><tr><th className="px-4 py-3">{t.capability}</th><th>{t.status}</th></tr></thead>
+            <tbody>{inc.compat?.capabilities.map((c) => (<tr key={c.name} className="border-t border-line"><td className="px-4 py-2.5">{tx(lang, c.name)}</td><td><Chip tone={c.status === "TESTED_REAL" ? "ok" : c.status === "TESTED_SYNTHETIC" ? "demo" : "neutral"}>{tok(lang, "status", c.status)}</Chip></td></tr>))}</tbody></table></div>
+          <p className="border-t border-line px-4 py-3 text-xs text-ink3">{t.compatNote}</p>
+        </Panel></div>
+      </div>
+    </>
+  );
+}

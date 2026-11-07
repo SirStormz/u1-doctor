@@ -1,0 +1,46 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>render u1</title>
+<style>html,body{margin:0;background:#222}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"/frontend/node_modules/three/build/three.module.js","three/addons/":"/frontend/node_modules/three/examples/jsm/"}}</script>
+</head><body>
+<script type="module">
+// Offline still of the owner's own model (frontend/public/models/u1-jay.glb) on a TRANSPARENT background.
+// Served by scripts/presentation/render_server.py, which also saves the PNG. Nothing is invented: it is the GLB, lit.
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+
+const q = new URLSearchParams(location.search);
+const W = +(q.get("w") || 1100), H = +(q.get("h") || 1300), NAME = q.get("name") || "u1-render.png";
+const dir = (q.get("dir") || "1.05,0.72,1.35").split(",").map(Number);
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(W, H); renderer.setClearColor(0x000000, 0);
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const pm = new THREE.PMREMGenerator(renderer);
+scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = 0.85;
+const key = new THREE.DirectionalLight(0xfff2dd, 2.1); key.castShadow = true; key.shadow.mapSize.set(2048, 2048); key.shadow.bias = -0.0004;
+scene.add(key, key.target);
+const rim = new THREE.DirectionalLight(0xb4a0ff, 0.9); scene.add(rim);
+
+new GLTFLoader().load("/frontend/public/models/u1-jay.glb", gltf => {
+  const m = gltf.scene; scene.add(m);
+  m.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+  const box = new THREE.Box3().setFromObject(m), c = box.getCenter(new THREE.Vector3()), s = box.getSize(new THREE.Vector3());
+  const r = Math.max(s.x, s.y, s.z);
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(r * 6, r * 6), new THREE.ShadowMaterial({ opacity: 0.38 }));
+  ground.rotation.x = -Math.PI / 2; ground.position.y = box.min.y - 0.0005; ground.receiveShadow = true; scene.add(ground);
+  key.position.set(c.x + r * 1.2, c.y + r * 2.4, c.z + r * 1.4); key.target.position.copy(c);
+  const sh = key.shadow.camera; sh.left = sh.bottom = -r * 1.6; sh.right = sh.top = r * 1.6; sh.near = .1; sh.far = r * 8; sh.updateProjectionMatrix();
+  rim.position.set(c.x - r * 2, c.y + r, c.z - r * 1.5);
+  const cam = new THREE.PerspectiveCamera(26, W / H, 0.01, 50);
+  const v = new THREE.Vector3(...dir).normalize();
+  cam.position.copy(c).addScaledVector(v, r * 3.1); cam.lookAt(c.x, c.y - s.y * .02, c.z);
+  renderer.render(scene, cam);
+  window.__info = { size: [s.x, s.y, s.z], center: [c.x, c.y, c.z] };
+  renderer.domElement.toBlob(b => fetch("/save?name=" + encodeURIComponent(NAME), { method: "POST", body: b }).then(r => r.text()).then(t => { document.title = "saved " + t; }), "image/png");
+}, undefined, e => { document.title = "error " + e; });
+</script></body></html>

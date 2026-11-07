@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://u1-doctor.invalid/schemas/observation.schema.json",
+  "title": "U1 Doctor Observation",
+  "description": "Immutable normalized fact with explicit provenance. schema_version 1.0.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "observation_id", "session_id", "source_kind", "source_status", "capture_utc", "timestamp_quality", "source_ref", "entity_id", "mapping_quality", "event_type", "value", "validity", "sensitive"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "observation_id": {"type": "string", "pattern": "^[A-Za-z0-9_.-]{1,64}$"},
+    "session_id": {"type": "string", "pattern": "^[A-Za-z0-9_.-]{1,64}$"},
+    "source_kind": {"enum": ["MOONRAKER", "USER", "IMPORT", "DEMO"]},
+    "source_status": {"enum": ["REAL", "SYNTHETIC", "USER_REPORTED", "IMPORTED"]},
+    "capture_utc": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "source_timestamp": {"type": ["number", "null"], "description": "Raw source value (e.g. Klipper eventtime, monotonic). NEVER interpreted as UTC unless timestamp_quality says so."},
+    "timestamp_quality": {"enum": ["RECEIPT_ONLY", "SOURCE_WALLCLOCK", "MONOTONIC_MAPPED", "UNKNOWN"]},
+    "source_ref": {"type": "string", "pattern": "^[A-Za-z0-9_][A-Za-z0-9_./ \\-]{0,127}$", "not": {"pattern": "//|\\.\\."}, "description": "Allowlisted object path or attachment id; never a URL."},
+    "entity_id": {"enum": ["printer", "toolhead_1", "toolhead_2", "toolhead_3", "toolhead_4", "unmapped"]},
+    "mapping_quality": {"enum": ["VERIFIED", "INFERRED", "UNKNOWN"]},
+    "event_type": {"type": "string", "pattern": "^[a-z0-9_]{1,64}$"},
+    "value": {"type": ["object", "array", "string", "number", "boolean", "null"]},
+    "validity": {"enum": ["FRESH", "STALE", "UNAVAILABLE", "MALFORMED"]},
+    "sensitive": {"type": "boolean"}
+  },
+  "allOf": [
+    {"if": {"properties": {"entity_id": {"enum": ["toolhead_1", "toolhead_2", "toolhead_3", "toolhead_4"]}}, "required": ["entity_id"]},
+     "then": {"properties": {"mapping_quality": {"enum": ["VERIFIED", "INFERRED"]}}}},
+    {"if": {"properties": {"source_kind": {"const": "DEMO"}}, "required": ["source_kind"]},
+     "then": {"properties": {"source_status": {"const": "SYNTHETIC"}}}},
+    {"if": {"properties": {"source_status": {"const": "SYNTHETIC"}}, "required": ["source_status"]},
+     "then": {"properties": {"observation_id": {"pattern": "synthetic"}}}}
+  ]
+}

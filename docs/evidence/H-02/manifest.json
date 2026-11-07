@@ -1,0 +1,218 @@
+{
+  "test_id": "H-02",
+  "date_utc": "2026-11-05T20:29:22Z",
+  "duration_s": 1675.1,
+  "app_version": "0.1.0-g1",
+  "git_sha": "1ebf582",
+  "os": "Windows 11",
+  "target": "RFC1918 IPv4 literal :7125 (redacted)",
+  "outbound_frames": [
+    {
+      "method": "printer.objects.subscribe",
+      "allowed": true
+    }
+  ],
+  "outbound_non_subscribe": 0,
+  "inbound_frames": 9333,
+  "max_gap_between_frames_s": 0.74,
+  "print_state_transitions": [
+    {
+      "t_utc": "2026-11-05T20:29:22.496860Z",
+      "print_state": "printing"
+    },
+    {
+      "t_utc": "2026-11-05T20:56:47.051204Z",
+      "print_state": "complete"
+    }
+  ],
+  "exception_manager_updates": [
+    {
+      "t_utc": "2026-11-05T20:29:22.496860Z",
+      "fields": [
+        "exceptions"
+      ]
+    }
+  ],
+  "observed_fields": {
+    "exception_manager": [
+      "exceptions"
+    ],
+    "extruder": [
+      "activating_move",
+      "active_pin",
+      "can_extrude",
+      "error_count",
+      "extruder_index",
+      "extruder_offset",
+      "grab_valid_pin",
+      "last_maintenance_count",
+      "motion_queue",
+      "nozzle_diameter",
+      "nozzle_volume_type",
+      "park_pin",
+      "power",
+      "pressure_advance",
+      "printing_e_pos",
+      "real_extruder_stats",
+      "retry_count",
+      "smooth_time",
+      "state",
+      "switch_count",
+      "target",
+      "temperature"
+    ],
+    "extruder1": [
+      "activating_move",
+      "active_pin",
+      "can_extrude",
+      "error_count",
+      "extruder_index",
+      "extruder_offset",
+      "grab_valid_pin",
+      "last_maintenance_count",
+      "motion_queue",
+      "nozzle_diameter",
+      "nozzle_volume_type",
+      "park_pin",
+      "power",
+      "pressure_advance",
+      "printing_e_pos",
+      "real_extruder_stats",
+      "retry_count",
+      "smooth_time",
+      "state",
+      "switch_count",
+      "target",
+      "temperature"
+    ],
+    "extruder2": [
+      "activating_move",
+      "active_pin",
+      "can_extrude",
+      "error_count",
+      "extruder_index",
+      "extruder_offset",
+      "grab_valid_pin",
+      "last_maintenance_count",
+      "motion_queue",
+      "nozzle_diameter",
+      "nozzle_volume_type",
+      "park_pin",
+      "power",
+      "pressure_advance",
+      "printing_e_pos",
+      "real_extruder_stats",
+      "retry_count",
+      "smooth_time",
+      "state",
+      "switch_count",
+      "target",
+      "temperature"
+    ],
+    "extruder3": [
+      "activating_move",
+      "active_pin",
+      "can_extrude",
+      "error_count",
+      "extruder_index",
+      "extruder_offset",
+      "grab_valid_pin",
+      "last_maintenance_count",
+      "motion_queue",
+      "nozzle_diameter",
+      "nozzle_volume_type",
+      "park_pin",
+      "power",
+      "pressure_advance",
+      "printing_e_pos",
+      "real_extruder_stats",
+      "retry_count",
+      "smooth_time",
+      "state",
+      "switch_count",
+      "target",
+      "temperature"
+    ],
+    "heater_bed": [
+      "power",
+      "target",
+      "temperature"
+    ],
+    "idle_timeout": [
+      "printing_time",
+      "state"
+    ],
+    "machine_state_manager": [
+      "action_code",
+      "main_state"
+    ],
+    "pause_resume": [
+      "is_paused"
+    ],
+    "print_stats": [
+      "exception",
+      "filament_used",
+      "filename",
+      "info",
+      "message",
+      "print_duration",
+      "state",
+      "total_duration"
+    ],
+    "print_task_config": [
+      "auto_bed_leveling",
+      "auto_replenish_filament",
+      "end_led_turn_off",
+      "end_unload_filament",
+      "extruder_map_table",
+      "extruders_replenished",
+      "extruders_used",
+      "filament_color",
+      "filament_color_multi",
+      "filament_color_rgba",
+      "filament_edit",
+      "filament_entangle_detect",
+      "filament_entangle_sen",
+      "filament_exist",
+      "filament_official",
+      "filament_sku",
+      "filament_soft",
+      "filament_sub_type",
+      "filament_type",
+      "filament_vendor",
+      "flow_calib_extruders",
+      "flow_calibrate",
+      "replenish_ignore_color",
+      "reprint_info",
+      "shaper_calibrate",
+      "time_lapse_camera"
+    ],
+    "toolhead": [
+      "axis_maximum",
+      "axis_minimum",
+      "estimated_print_time",
+      "extruder",
+      "homed_axes",
+      "max_accel",
+      "max_velocity",
+      "minimum_cruise_ratio",
+      "position",
+      "print_time",
+      "square_corner_velocity",
+      "stalls"
+    ],
+    "virtual_sdcard": [
+      "file_path",
+      "file_position",
+      "file_size",
+      "is_active",
+      "pl_env_valid",
+      "progress"
+    ],
+    "webhooks": [
+      "state",
+      "state_message"
+    ]
+  },
+  "human_approval": "owner started the print and gave the go in chat"
+}

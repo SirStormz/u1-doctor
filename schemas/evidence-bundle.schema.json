@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://u1-doctor.invalid/schemas/evidence-bundle.schema.json",
+  "title": "U1-DEB manifest.json (format v1)",
+  "description": "Manifest of a U1 Diagnostic Evidence Bundle. SHA-256 proves integrity only, not authenticity or machine origin.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "format_version", "app_version", "ruleset", "source_mix", "capture_windows", "files", "limits", "integrity_notice"],
+  "properties": {
+    "format": {"const": "U1-DEB"},
+    "format_version": {"type": "string", "pattern": "^1\\.\\d+\\.\\d+$"},
+    "app_version": {"type": "string"},
+    "generated_at": {"type": "string", "format": "date-time", "description": "Metadata, excluded from logical hash."},
+    "ruleset": {"type": "object", "additionalProperties": false, "required": ["id", "version", "hash"], "properties": {"id": {"type": "string"}, "version": {"type": "string"}, "hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}},
+    "source_mix": {"type": "array", "minItems": 1, "items": {"enum": ["REAL", "SYNTHETIC", "USER_REPORTED", "IMPORTED"]}},
+    "firmware_claim": {"type": "string", "description": "Official firmware as displayed by the machine, or 'UNKNOWN'. Kept separate from Klipper version."},
+    "capture_windows": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["session_id", "start_utc", "end_utc", "gaps"], "properties": {"session_id": {"type": "string"}, "start_utc": {"type": "string", "format": "date-time"}, "end_utc": {"type": "string", "format": "date-time"}, "gaps": {"type": "array", "items": {"type": "object", "required": ["start_utc", "end_utc"], "properties": {"start_utc": {"type": "string"}, "end_utc": {"type": "string"}}}}}}},
+    "files": {"type": "array", "minItems": 1, "maxItems": 16, "items": {"type": "object", "additionalProperties": false, "required": ["name", "sha256", "bytes"], "properties": {"name": {"enum": ["observations.jsonl", "findings.json", "compatibility.json", "knowledge-refs.json", "privacy-report.json", "README.txt", "support-checklist.json"]}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "bytes": {"type": "integer", "minimum": 0, "maximum": 52428800}}}},
+    "limits": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "integrity_notice": {"const": "SHA-256 proves integrity of these files only; it does not prove authenticity of the author or that the data came from a specific machine."}
+  }
+}

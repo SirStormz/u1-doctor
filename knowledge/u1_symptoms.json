@@ -1,0 +1,219 @@
+{
+  "version": "0.1.0",
+  "checked_at": "2026-11-07",
+  "wiki_base": "https://wiki.snapmaker.com/en/",
+  "note": "Paraphrased from the official Snapmaker U1 print-quality pages (own wording, EN/FR, no copy). The wiki lists causes, not probabilities: this catalogue keeps its order, adds no ranking and no score. A cause with eyes=true can only be settled by the owner looking at the print or the machine.",
+  "materials": {
+    "PLA": {"nozzle": [190, 230], "bed": [55, 65], "dry": "45–50 °C · 4–6 h · ≤ 55 °C", "saturate": {"en": "1–2 weeks", "fr": "1 à 2 semaines"}},
+    "PETG": {"nozzle": [230, 270], "bed": [60, 80], "dry": "60–65 °C · 4–6 h", "saturate": {"en": "3–5 days", "fr": "3 à 5 jours"}},
+    "TPU": {"nozzle": [220, 240], "bed": [30, 35], "dry": "50–55 °C · 6–8 h (TPU 95A)", "saturate": {"en": "12–24 hours", "fr": "12 à 24 heures"}},
+    "PVA": {"nozzle": [210, 250], "bed": [55, 65], "saturate": {"en": "under 1 hour", "fr": "moins d'une heure"}},
+    "PCTG": {"nozzle": [240, 280], "bed": [65, 85]},
+    "PET": {"nozzle": [260, 290], "bed": [80, 100]},
+    "ABS/ASA": {"nozzle": [240, 280], "bed": [90, 100], "dry": "80–85 °C · 4–6 h", "saturate": {"en": "about 1 week", "fr": "environ 1 semaine"}},
+    "PA": {"nozzle": [260, 300], "bed": [60, 100], "dry": "70–80 °C · 12 h or more", "saturate": {"en": "under 6 hours", "fr": "moins de 6 heures"}},
+    "PC": {"nozzle": [260, 300], "bed": [80, 100], "dry": "120 °C · 6–8 h"},
+    "PLA CF": {"nozzle": [210, 240], "bed": [55, 65]},
+    "PETG CF": {"nozzle": [240, 270], "bed": [60, 80]},
+    "PET CF": {"nozzle": [260, 300], "bed": [70, 100]},
+    "ABS GF": {"nozzle": [240, 280], "bed": [90, 100]},
+    "ASA CF": {"nozzle": [250, 290], "bed": [90, 100]},
+    "PA6 CF": {"nozzle": [260, 300], "bed": [60, 100]}
+  },
+  "limits": {
+    "mesh_ok_below": 0.5, "mesh_manual_above": 0.8,
+    "retraction_length": [0.5, 1.5, 2.0], "retraction_speed": [25, 45, 60],
+    "bridge_speed": [15, 30], "flow_ratio": [0.95, 1.05], "layer_ratio": [0.2, 0.8],
+    "abs_ambient_c": 60,
+    "warp_prone": ["ABS/ASA", "PA", "ABS GF", "ASA CF", "PA6 CF"],
+    "release_agent_on_smooth_pei": ["PETG", "TPU", "ABS/ASA"],
+    "bad_on_textured_pei": ["ABS/ASA"]
+  },
+  "symptoms": [
+    {
+      "id": "first-layer-gaps", "page": "snapmaker_u1/troubleshooting/first_layer_printing_troubleshooting_guide",
+      "title": {"en": "Wrinkles or gaps in the first layer", "fr": "Plis ou trous dans la première couche"},
+      "eyes": {"en": "Look at the printed first layer: wrinkled areas, or gaps between lines. The wiki treats wrinkles over about 10 % of the layer as unacceptable.", "fr": "Regardez la première couche imprimée : zones plissées ou trous entre les lignes. Le wiki juge inacceptable un plissement au-delà d'environ 10 % de la couche."},
+      "causes": [
+        {"id": "fl-z-high", "eyes": true, "text": {"en": "Z offset too high (nozzle too close to the plate) gives large wrinkled areas. The wiki lowers the Z-offset magnitude in steps of at most 0.05 mm in printer.cfg (Advanced Mode), then power-cycles.", "fr": "Un décalage Z trop fort (buse trop près du plateau) donne de grandes zones plissées. Le wiki réduit le décalage Z par pas de 0,05 mm au plus dans printer.cfg (mode avancé), puis redémarre."}},
+        {"id": "fl-z-far", "eyes": true, "text": {"en": "Nozzle too far from the plate shows as gaps between lines. The wiki moves the Z offset toward the plate in small steps.", "fr": "Une buse trop éloignée du plateau laisse des trous entre les lignes. Le wiki rapproche le décalage Z du plateau par petits pas."}},
+        {"id": "fl-mesh", "eyes": true, "check": {"ev": "mesh_range"}, "text": {"en": "Bed flatness: a bed-mesh RANGE under 0.5 mm is normal; above 0.8 mm with raised corners that match the wrinkles calls for manual leveling.", "fr": "Planéité du plateau : un RANGE de maillage sous 0,5 mm est normal ; au-delà de 0,8 mm avec des coins relevés qui suivent les plis, il faut un nivellement manuel."}},
+        {"id": "fl-heatsoak", "eyes": true, "text": {"en": "The plastic bed shell may limit deformation: heat-soak the bed at 65 °C for at least 5 minutes; if the wrinkles shrink, that is the cause.", "fr": "La coque plastique du plateau peut limiter sa déformation : chauffez le plateau à 65 °C pendant au moins 5 minutes ; si les plis diminuent, c'est la cause."}},
+        {"id": "fl-dirt", "eyes": true, "text": {"en": "Dirty plate, debris between plate and bed or between the heatsink and the sensing plate, or nozzle build-up: clean, then run auto bed leveling.", "fr": "Plateau sale, débris entre le plateau et le lit ou entre le dissipateur et la plaque de détection, ou résidu sur la buse : nettoyez, puis lancez le nivellement automatique."}},
+        {"id": "fl-scope", "eyes": true, "check": {"ev": "toolhead_scope", "matches_for": ["one"], "label": {"en": "only one toolhead is affected", "fr": "une seule tête est touchée"}}, "text": {"en": "If only one toolhead is bad, troubleshoot that toolhead; if several are bad but one is good, run the multi-toolhead offset calibration. All toolheads rely on toolhead 1's calibration, so check it too.", "fr": "Si une seule tête est mauvaise, dépannez cette tête ; si plusieurs le sont mais qu'une est bonne, lancez l'étalonnage des décalages multi-têtes. Toutes les têtes s'appuient sur l'étalonnage de la tête 1 : vérifiez-la aussi."}},
+        {"id": "fl-fw", "eyes": false, "check": {"ev": "firmware_range", "lo": [1, 5, 0], "hi": [1, 5, 2], "label": {"en": "release notes: first-layer squish regression in 1.5.0 and 1.5.1, fixed in 1.5.2", "fr": "notes de version : régression d'écrasement de la première couche en 1.5.0 et 1.5.1, corrigée en 1.5.2"}}, "text": {"en": "A first-layer squish regression existed in firmware 1.5.0 and 1.5.1 and was fixed in 1.5.2 (release notes).", "fr": "Une régression d'écrasement de la première couche existait dans les firmwares 1.5.0 et 1.5.1 et a été corrigée en 1.5.2 (notes de version)."}}
+      ]
+    },
+    {
+      "id": "first-layer-adhesion", "page": "snapmaker_u1/u1_poor_first_layer_adhesion",
+      "title": {"en": "Poor first-layer adhesion", "fr": "Mauvaise adhérence de la première couche"},
+      "eyes": {"en": "Look at where the first layer lets go: edges, one corner, everywhere, or only with one toolhead.", "fr": "Regardez où la première couche se décolle : bords, un coin, partout, ou avec une seule tête."},
+      "causes": [
+        {"id": "pa-dirty", "eyes": true, "text": {"en": "Dirty build plate: clean it (the wiki recommends ethanol here, dish soap on its first-layer guide).", "fr": "Plateau sale : nettoyez-le (le wiki recommande l'éthanol ici, le liquide vaisselle dans son guide de première couche)."}},
+        {"id": "pa-residue", "eyes": true, "text": {"en": "Residual filament on the outside of the nozzle: clean it at print temperature (about 200 °C for PLA, 240 °C for ABS or PETG) and check the nozzle-wiper brush.", "fr": "Filament résiduel à l'extérieur de la buse : nettoyez-la à température d'impression (environ 200 °C pour le PLA, 240 °C pour l'ABS ou le PETG) et vérifiez la brosse d'essuyage."}},
+        {"id": "pa-mesh", "eyes": true, "check": {"ev": "mesh_range"}, "text": {"en": "Unlevel bed: run auto bed leveling; if the mesh RANGE stays above 0.8 mm, level manually first.", "fr": "Plateau mal nivelé : lancez le nivellement automatique ; si le RANGE reste au-dessus de 0,8 mm, nivelez d'abord à la main."}},
+        {"id": "pa-speed", "eyes": true, "text": {"en": "First-layer speed too fast: reduce it, and the first-layer infill speed.", "fr": "Vitesse de première couche trop élevée : réduisez-la, ainsi que celle du remplissage de première couche."}},
+        {"id": "pa-bed", "eyes": false, "check": {"ev": "bed_low"}, "text": {"en": "First-layer bed temperature too low for the material.", "fr": "Température de plateau en première couche trop basse pour le matériau."}}
+      ]
+    },
+    {
+      "id": "warps", "page": "snapmaker_u1/u1_model_warps_detaches_or_collapses",
+      "title": {"en": "Model warps, detaches or collapses", "fr": "Le modèle se déforme, se décolle ou s'effondre"},
+      "eyes": {"en": "Look at which edge lifts and when (first layers or later), and whether the part sits near a draught.", "fr": "Regardez quel bord se soulève et quand (premières couches ou plus tard), et si la pièce est près d'un courant d'air."},
+      "causes": [
+        {"id": "wp-plate", "eyes": false, "check": {"ev": "plate_material"}, "text": {"en": "Plate not suited to the filament (the wiki's examples: smooth PEI with some materials, textured PEI with ABS). Check the filament's data sheet for its bed type.", "fr": "Plateau mal adapté au filament (exemples du wiki : PEI lisse avec certains matériaux, PEI texturé avec l'ABS). Vérifiez le type de plateau sur la fiche du filament."}},
+        {"id": "wp-dirty", "eyes": true, "text": {"en": "Dirty plate: wipe with ethanol once it has cooled.", "fr": "Plateau sale : essuyez à l'éthanol une fois refroidi."}},
+        {"id": "wp-mesh", "eyes": true, "check": {"ev": "mesh_range"}, "text": {"en": "Unlevel bed: auto leveling, then manual plus auto if needed.", "fr": "Plateau mal nivelé : nivellement automatique, puis manuel suivi d'un automatique si besoin."}},
+        {"id": "wp-speed", "eyes": true, "text": {"en": "First-layer speed too fast: reduce it and add more slow layers.", "fr": "Vitesse de première couche trop élevée : réduisez-la et ajoutez des couches lentes."}},
+        {"id": "wp-bed", "eyes": false, "check": {"ev": "bed_low"}, "text": {"en": "First-layer bed temperature too low for the material.", "fr": "Température de plateau en première couche trop basse pour le matériau."}},
+        {"id": "wp-fan", "eyes": true, "text": {"en": "Part-cooling fan too strong on the first layers.", "fr": "Ventilateur de refroidissement trop fort sur les premières couches."}},
+        {"id": "wp-ambient", "eyes": false, "check": {"ev": "enclosure"}, "text": {"en": "Ambient temperature difference: the wiki says ABS needs an ambient temperature of at least 60 °C, so an open frame is a risk for ABS-type materials.", "fr": "Écart de température ambiante : le wiki indique que l'ABS demande une température ambiante d'au moins 60 °C, donc un châssis ouvert est un risque pour les matériaux de type ABS."}},
+        {"id": "wp-brim", "eyes": true, "text": {"en": "No or too small a brim: the wiki suggests an outer brim only, 5–10 mm wide, with a brim-to-object gap of 0.", "fr": "Pas de bordure ou bordure trop petite : le wiki propose une bordure extérieure seule, large de 5 à 10 mm, avec un écart de 0 à l'objet."}}
+      ]
+    },
+    {
+      "id": "stringing", "page": "snapmaker_u1/troubleshooting/stringing_or_oozing",
+      "title": {"en": "Stringing or oozing", "fr": "Fils ou suintement"},
+      "eyes": {"en": "Look for thin strands between separate parts, and blobs where the nozzle waits.", "fr": "Cherchez de fins fils entre les parties séparées, et des gouttes là où la buse attend."},
+      "causes": [
+        {"id": "st-wet", "eyes": true, "check": {"ev": "moisture_info"}, "text": {"en": "Wet filament: dry it and store it sealed with desiccant.", "fr": "Filament humide : séchez-le et rangez-le fermé avec un dessiccant."}},
+        {"id": "st-nozzle", "eyes": true, "text": {"en": "Worn nozzle: replace it.", "fr": "Buse usée : remplacez-la."}},
+        {"id": "st-temp", "eyes": false, "check": {"ev": "nozzle_high"}, "text": {"en": "Nozzle temperature too high: find the right value with a temperature tower.", "fr": "Température de buse trop haute : trouvez la bonne valeur avec une tour de température."}},
+        {"id": "st-travel", "eyes": true, "text": {"en": "Travel speed too slow: raise it.", "fr": "Vitesse de déplacement trop lente : augmentez-la."}},
+        {"id": "st-retract", "eyes": false, "check": {"ev": "retraction"}, "text": {"en": "Improper retraction (length, Z-hop, speed): tune it.", "fr": "Rétraction inadaptée (longueur, Z-hop, vitesse) : ajustez-la."}}
+      ]
+    },
+    {
+      "id": "pitting", "page": "snapmaker_u1/troubleshooting/pitting_and_pockmarks",
+      "title": {"en": "Pits and pockmarks", "fr": "Piqûres et cratères"},
+      "eyes": {"en": "Look for tiny pits (about 0.1–0.3 mm) or curled-edge pockmarks, and listen for crackling or popping at the nozzle.", "fr": "Cherchez de minuscules piqûres (environ 0,1 à 0,3 mm) ou des cratères à bord enroulé, et écoutez des craquements ou claquements à la buse."},
+      "causes": [
+        {"id": "pt-wet", "eyes": true, "check": {"ev": "moisture_info"}, "text": {"en": "Wet filament: water flashes to steam in the hotend. Dry the filament.", "fr": "Filament humide : l'eau se vaporise dans le hotend. Séchez le filament."}},
+        {"id": "pt-retract", "eyes": false, "check": {"ev": "retraction"}, "text": {"en": "Excessive retraction (too long or too fast) draws air into the melt chamber. Direct drive: about 0.5–1.5 mm, never above 2 mm; speed about 25–45 mm/s, harmful above about 60.", "fr": "Rétraction excessive (trop longue ou trop rapide) : de l'air est aspiré dans la chambre de fusion. Entraînement direct : environ 0,5 à 1,5 mm, jamais plus de 2 mm ; vitesse d'environ 25 à 45 mm/s, nuisible au-delà d'environ 60."}}
+      ]
+    },
+    {
+      "id": "under-extrusion", "page": "snapmaker_u1/u1_under_extrusion",
+      "title": {"en": "Under-extrusion", "fr": "Sous-extrusion"},
+      "eyes": {"en": "Look for thin, gappy or weak lines, and listen for a clicking feeder.", "fr": "Cherchez des lignes fines, avec des trous ou faibles, et écoutez un entraîneur qui claque."},
+      "causes": [
+        {"id": "ue-diameter", "eyes": true, "text": {"en": "Wrong filament diameter in the profile: measure the filament with a caliper at about 6 points and use the average.", "fr": "Mauvais diamètre de filament dans le profil : mesurez le filament au pied à coulisse en 6 points environ et prenez la moyenne."}},
+        {"id": "ue-clog", "eyes": true, "text": {"en": "Partly clogged nozzle: cleaning needle (not for nozzles under 0.4 mm), or a cold pull (heat to 230 °C, extrude, cool to 70 °C, pull).", "fr": "Buse partiellement bouchée : aiguille de nettoyage (pas pour les buses de moins de 0,4 mm), ou tirage à froid (chauffer à 230 °C, extruder, refroidir à 70 °C, tirer)."}},
+        {"id": "ue-flow", "eyes": true, "check": {"ev": "flow_ratio", "mode": "outside"}, "text": {"en": "Flow ratio wrong for this filament: calibrate it (the wiki's flow-ratio test).", "fr": "Ratio de débit inadapté à ce filament : étalonnez-le (le test de débit du wiki)."}},
+        {"id": "ue-pa", "eyes": true, "text": {"en": "Wrong pressure-advance value: calibrate it.", "fr": "Mauvaise valeur d'avance de pression : étalonnez-la."}},
+        {"id": "ue-speed", "eyes": true, "text": {"en": "Print speed too fast for the flow the nozzle can melt.", "fr": "Vitesse d'impression trop élevée pour le débit que la buse peut fondre."}}
+      ]
+    },
+    {
+      "id": "interlayer-cracking", "page": "snapmaker_u1/u1_interlayer_cracking",
+      "title": {"en": "Layers splitting apart (interlayer cracking)", "fr": "Couches qui se séparent (fissures entre couches)"},
+      "eyes": {"en": "Look for cracks that follow layer lines, often on tall thin walls.", "fr": "Cherchez des fissures qui suivent les lignes de couche, souvent sur les parois hautes et fines."},
+      "causes": [
+        {"id": "ic-temp", "eyes": false, "check": {"ev": "nozzle_low"}, "text": {"en": "Print temperature too low: find the right value with a temperature tower.", "fr": "Température d'impression trop basse : trouvez la bonne valeur avec une tour de température."}},
+        {"id": "ic-layer", "eyes": false, "check": {"ev": "layer_ratio"}, "text": {"en": "Layer height too large for the nozzle: the wiki guide is 20–80 % of the nozzle diameter.", "fr": "Hauteur de couche trop grande pour la buse : le guide du wiki est de 20 à 80 % du diamètre de buse."}},
+        {"id": "ic-fan", "eyes": true, "text": {"en": "Part-cooling fan too fast: lower the maximum fan threshold.", "fr": "Ventilateur de refroidissement trop rapide : baissez le seuil de ventilation maximal."}},
+        {"id": "ic-speed", "eyes": true, "text": {"en": "Print speed too fast: lower the outer and inner wall speeds.", "fr": "Vitesse d'impression trop élevée : baissez celles des parois extérieures et intérieures."}},
+        {"id": "ic-ambient", "eyes": false, "check": {"ev": "enclosure"}, "text": {"en": "Ambient temperature difference: enclose the printer (Top Cover).", "fr": "Écart de température ambiante : fermez l'imprimante (Top Cover)."}}
+      ]
+    },
+    {
+      "id": "overhang", "page": "snapmaker_u1/troubleshooting/poor_overhang_quality",
+      "title": {"en": "Poor overhang quality", "fr": "Mauvaise qualité des surplombs"},
+      "eyes": {"en": "Look at the underside of overhangs: sagging, curling or rough strands.", "fr": "Regardez le dessous des surplombs : affaissement, enroulement ou fils rugueux."},
+      "causes": [
+        {"id": "ov-angle", "eyes": true, "text": {"en": "Overhang steeper than about 45°: add supports.", "fr": "Surplomb plus raide qu'environ 45° : ajoutez des supports."}},
+        {"id": "ov-temp", "eyes": false, "check": {"ev": "nozzle_high"}, "text": {"en": "Temperature too high: lower it in 5 °C steps, never below the filament's minimum.", "fr": "Température trop haute : baissez-la par pas de 5 °C, jamais sous le minimum du filament."}},
+        {"id": "ov-speed", "eyes": true, "text": {"en": "Speed too fast: bring it to 60–80 % and enable slowing down for overhangs.", "fr": "Vitesse trop élevée : ramenez-la à 60–80 % et activez le ralentissement dans les surplombs."}},
+        {"id": "ov-cooling", "eyes": true, "text": {"en": "Not enough cooling: raise the auxiliary fan and the maximum fan threshold.", "fr": "Refroidissement insuffisant : augmentez le ventilateur auxiliaire et le seuil de ventilation maximal."}},
+        {"id": "ov-layer", "eyes": false, "check": {"ev": "layer_ratio"}, "text": {"en": "Layer height too large: reduce it or use adaptive layer height.", "fr": "Hauteur de couche trop grande : réduisez-la ou utilisez la hauteur de couche adaptative."}}
+      ]
+    },
+    {
+      "id": "bridging", "page": "snapmaker_u1/troubleshooting/poor_bridging",
+      "title": {"en": "Poor bridging", "fr": "Mauvais ponts"},
+      "eyes": {"en": "Look for sagging, strings or broken lines where the print spans a gap.", "fr": "Cherchez des affaissements, des fils ou des lignes cassées là où l'impression franchit un vide."},
+      "causes": [
+        {"id": "br-speed", "eyes": false, "check": {"ev": "bridge_speed"}, "text": {"en": "Bridge speed: the wiki's typical range is 15–30 mm/s.", "fr": "Vitesse des ponts : la plage typique du wiki est de 15 à 30 mm/s."}},
+        {"id": "br-fan", "eyes": true, "text": {"en": "Raise the auxiliary part-cooling fan on bridges and the maximum fan threshold.", "fr": "Augmentez le ventilateur auxiliaire sur les ponts et le seuil de ventilation maximal."}},
+        {"id": "br-temp", "eyes": false, "check": {"ev": "nozzle_high"}, "text": {"en": "Lower the nozzle temperature in 5 °C steps, not below the filament's minimum.", "fr": "Baissez la température de buse par pas de 5 °C, pas sous le minimum du filament."}},
+        {"id": "br-flow", "eyes": true, "text": {"en": "Tune the bridge flow ratio.", "fr": "Ajustez le ratio de débit des ponts."}}
+      ]
+    },
+    {
+      "id": "nozzle-adhesion", "page": "snapmaker_u1/troubleshooting/filament_adhesion_to_nozzle",
+      "title": {"en": "Molten filament sticking to the nozzle", "fr": "Filament fondu qui colle à la buse"},
+      "eyes": {"en": "Look at the outside of the nozzle for a blob or crust of plastic; it causes stringing, under-extrusion and rough surfaces. Power off before touching anything.", "fr": "Regardez l'extérieur de la buse : une goutte ou une croûte de plastique cause fils, sous-extrusion et surfaces rugueuses. Éteignez avant de toucher quoi que ce soit."},
+      "causes": [
+        {"id": "na-wet", "eyes": true, "check": {"ev": "moisture_info"}, "text": {"en": "Wet filament: dry it and store it sealed with desiccant.", "fr": "Filament humide : séchez-le et rangez-le fermé avec un dessiccant."}},
+        {"id": "na-wear", "eyes": true, "text": {"en": "Worn nozzle: replace it.", "fr": "Buse usée : remplacez-la."}},
+        {"id": "na-flow", "eyes": false, "check": {"ev": "flow_ratio", "mode": "high"}, "text": {"en": "Flow rate too high: calibrate the flow ratio.", "fr": "Débit trop élevé : étalonnez le ratio de débit."}},
+        {"id": "na-temp", "eyes": false, "check": {"ev": "nozzle_high"}, "text": {"en": "Print temperature too high: use a temperature tower.", "fr": "Température d'impression trop haute : utilisez une tour de température."}},
+        {"id": "na-speed", "eyes": true, "text": {"en": "Print speed too slow: raise the outer and inner wall speeds.", "fr": "Vitesse d'impression trop lente : augmentez celles des parois extérieures et intérieures."}},
+        {"id": "na-retract", "eyes": false, "check": {"ev": "retraction"}, "text": {"en": "Bad retraction (length, Z-hop height or type, speed): tune it.", "fr": "Mauvaise rétraction (longueur, hauteur ou type de Z-hop, vitesse) : ajustez-la."}}
+      ]
+    },
+    {
+      "id": "sloped-top-gaps", "page": "snapmaker_u1/troubleshooting/gaps_on_sloped_top_surfaces",
+      "title": {"en": "Gaps on sloped top surfaces", "fr": "Trous sur les surfaces supérieures inclinées"},
+      "eyes": {"en": "Look at sloped top surfaces: gaps between lines, stair-stepping, or thin walls under the top skin.", "fr": "Regardez les surfaces supérieures inclinées : trous entre les lignes, effet d'escalier, ou parois fines sous la peau."},
+      "causes": [
+        {"id": "sg-flow", "eyes": true, "check": {"ev": "flow_ratio", "mode": "outside"}, "text": {"en": "Under-extrusion or unstable flow: run the flow-ratio test; outer-wall line width about 105–120 % of the nozzle, top surface 100–105 %.", "fr": "Sous-extrusion ou débit instable : lancez le test de débit ; largeur de ligne de paroi extérieure d'environ 105 à 120 % de la buse, surface supérieure 100 à 105 %."}},
+        {"id": "sg-walls", "eyes": true, "text": {"en": "Weak walls under the top skin: more wall loops, more top shell layers, a denser infill.", "fr": "Parois faibles sous la peau : plus de parois, plus de couches de coque supérieure, un remplissage plus dense."}},
+        {"id": "sg-pattern", "eyes": true, "text": {"en": "Top pattern: concentric, monotonic or monotonic-line patterns help.", "fr": "Motif supérieur : les motifs concentrique, monotone ou ligne monotone aident."}},
+        {"id": "sg-steps", "eyes": true, "text": {"en": "Stair-stepping: use variable (adaptive) layer height.", "fr": "Effet d'escalier : utilisez une hauteur de couche variable (adaptative)."}},
+        {"id": "sg-overhang", "eyes": false, "check": {"ev": "nozzle_high"}, "text": {"en": "Steep overhang: lower the nozzle temperature, raise the part and auxiliary fans.", "fr": "Surplomb raide : baissez la température de buse, augmentez les ventilateurs pièce et auxiliaire."}}
+      ]
+    },
+    {
+      "id": "prime-tower", "page": "snapmaker_u1/troubleshooting/prime_tower_collapse",
+      "title": {"en": "Prime tower shifts or collapses", "fr": "La tour d'amorçage bouge ou s'effondre"},
+      "eyes": {"en": "Look at where the tower broke: base, middle, or a layer between two materials.", "fr": "Regardez où la tour a cassé : base, milieu, ou une couche entre deux matériaux."},
+      "causes": [
+        {"id": "pr-same", "eyes": true, "text": {"en": "Same-material tower: enlarge it, keep it near-square, widen the brim and purge-line spacing, use rib walls with longer, wider ribs.", "fr": "Tour d'un seul matériau : agrandissez-la, gardez-la presque carrée, élargissez la bordure et l'espacement des lignes de purge, utilisez des parois à nervures plus longues et plus larges."}},
+        {"id": "pr-multi", "eyes": true, "text": {"en": "Poor adhesion between two materials (for example PLA and PETG): assign a single filament to the tower shell.", "fr": "Mauvaise adhérence entre deux matériaux (par exemple PLA et PETG) : affectez un seul filament à la coque de la tour."}},
+        {"id": "pr-bed", "eyes": false, "check": {"ev": "bed_low"}, "text": {"en": "Tower not sticking to the plate: clean the plate, raise the bed temperature, lower the fan on the first layers.", "fr": "Tour qui n'adhère pas au plateau : nettoyez le plateau, augmentez la température du plateau, baissez le ventilateur sur les premières couches."}}
+      ]
+    },
+    {
+      "id": "color-misalignment", "page": "snapmaker_u1/troubleshooting/multi-color_misalignment",
+      "title": {"en": "Multi-colour misalignment", "fr": "Désalignement des couleurs"},
+      "eyes": {"en": "Look at colour transitions: overlaps, gaps, or parts that no longer fit together.", "fr": "Regardez les transitions de couleur : chevauchements, trous, ou pièces qui ne s'emboîtent plus."},
+      "causes": [
+        {"id": "ma-residue", "eyes": true, "text": {"en": "Residual filament on a nozzle changes its trigger height: clean the nozzles.", "fr": "Du filament résiduel sur une buse change sa hauteur de déclenchement : nettoyez les buses."}},
+        {"id": "ma-loose", "eyes": true, "text": {"en": "A loose hotend that wiggles: tighten it.", "fr": "Un hotend desserré qui bouge : resserrez-le."}},
+        {"id": "ma-gap", "eyes": true, "text": {"en": "Gap between the hotend copper plate and the calibration sensor too large (normal 0.1–0.4 mm, about a sheet of A4 paper).", "fr": "Écart trop grand entre la plaque de cuivre du hotend et le capteur d'étalonnage (normal : 0,1 à 0,4 mm, environ une feuille A4)."}},
+        {"id": "ma-grease", "eyes": true, "text": {"en": "Not enough grease on the steel balls and pogo pins: clean and lubricate every quarter.", "fr": "Pas assez de graisse sur les billes d'acier et les contacts pogo : nettoyez et lubrifiez chaque trimestre."}},
+        {"id": "ma-cal", "eyes": true, "text": {"en": "Offsets out of date: run the multi-toolhead offset calibration after moving the printer or replacing a toolhead, hotend or nozzle.", "fr": "Décalages périmés : lancez l'étalonnage multi-têtes après un déplacement de l'imprimante ou le remplacement d'une tête, d'un hotend ou d'une buse."}}
+      ]
+    },
+    {
+      "id": "seam", "page": "snapmaker_u1/troubleshooting/seam",
+      "title": {"en": "Visible seam marks", "fr": "Coutures visibles"},
+      "eyes": {"en": "Look at the seam line: a bulge or a divot where each layer starts and ends.", "fr": "Regardez la ligne de couture : un renflement ou un creux là où chaque couche commence et finit."},
+      "causes": [
+        {"id": "sm-retract", "eyes": false, "check": {"ev": "retraction"}, "text": {"en": "Retraction settings (length, Z-hop, speed).", "fr": "Réglages de rétraction (longueur, Z-hop, vitesse)."}},
+        {"id": "sm-pa", "eyes": true, "text": {"en": "Wrong pressure-advance value: calibrate it.", "fr": "Mauvaise valeur d'avance de pression : étalonnez-la."}},
+        {"id": "sm-settings", "eyes": true, "text": {"en": "Seam settings: position (nearest, aligned, aligned back, back, random), seam gap 0–15 %, role-based wipe speed on.", "fr": "Réglages de couture : position (plus proche, alignée, alignée arrière, arrière, aléatoire), écart de couture 0 à 15 %, vitesse d'essuyage par rôle activée."}}
+      ]
+    },
+    {
+      "id": "gloss", "page": "snapmaker_u1/u1_significant_gloss_variation_across_different_regions_of_the_model",
+      "title": {"en": "Gloss varies across the model", "fr": "Brillance variable sur le modèle"},
+      "eyes": {"en": "Look for shiny and matt patches, especially with silk filaments.", "fr": "Cherchez des zones brillantes et mates, surtout avec les filaments soie."},
+      "causes": [
+        {"id": "gl-speed", "eyes": true, "text": {"en": "Speed differences between regions: turn off slowing down for overhangs and slowing down for layer cooling, and check the speed preview.", "fr": "Écarts de vitesse entre les zones : désactivez le ralentissement dans les surplombs et celui pour le refroidissement des couches, et vérifiez l'aperçu des vitesses."}}
+      ]
+    },
+    {
+      "id": "smooth-pei", "page": "snapmaker_u1/u1_smooth_pei_plate_faq",
+      "title": {"en": "Smooth PEI plate: tearing, bubbles or marks", "fr": "Plateau PEI lisse : déchirures, bulles ou marques"},
+      "eyes": {"en": "Look at the plate surface: bubbles, tears, or marks left by models.", "fr": "Regardez la surface du plateau : bulles, déchirures, ou marques laissées par les modèles."},
+      "causes": [
+        {"id": "sp-release", "eyes": false, "check": {"ev": "plate_material"}, "text": {"en": "Strong-adhesion materials (PETG, TPU, ABS) without a release agent can tear the plate: use glue stick or liquid glue.", "fr": "Les matériaux très adhérents (PETG, TPU, ABS) sans agent de démoulage peuvent déchirer le plateau : utilisez de la colle en bâton ou liquide."}},
+        {"id": "sp-hot", "eyes": true, "text": {"en": "Removing the model while hot, or prying with metal: let it cool, and spray alcohol around the model.", "fr": "Retirer le modèle à chaud, ou le décoller avec du métal : laissez refroidir et vaporisez de l'alcool autour du modèle."}},
+        {"id": "sp-screws", "eyes": true, "text": {"en": "Loose hotend screws leave marks (nozzle too close): check them.", "fr": "Des vis de hotend desserrées laissent des marques (buse trop près) : vérifiez-les."}},
+        {"id": "sp-bubbles", "eyes": true, "text": {"en": "Bubbles are normal wear: place the bulged side down and heat the bed to 100 °C for 20–30 minutes, then let it cool before touching it.", "fr": "Les bulles sont une usure normale : posez la face bombée vers le bas et chauffez le plateau à 100 °C pendant 20 à 30 minutes, puis laissez refroidir avant d'y toucher."}}
+      ]
+    }
+  ]
+}

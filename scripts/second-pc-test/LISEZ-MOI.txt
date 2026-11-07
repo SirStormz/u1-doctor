@@ -1,0 +1,37 @@
+U1 DOCTOR - TEST SUR UN PC PROPRE
+==================================
+
+But : verifier que le programme demarre sur un Windows propre et voir ce que Windows en pense.
+Aucune imprimante n'est contactee. Rien n'est envoye sur Internet. Le programme n'ecoute que sur ce PC (127.0.0.1).
+
+CE QU'IL FAUT FAIRE (5 minutes)
+-------------------------------
+1. Ce dossier doit venir d'un TELECHARGEMENT par navigateur (pas d'une cle USB).
+   EXTRACTION : utilisez l'Explorateur Windows, PAS WinRAR ni 7-Zip (ils perdent la marque "telecharge d'Internet",
+   donc SmartScreen ne se declenche pas et le test ne sert a rien).
+   - Clic droit sur le zip > "Extraire tout..." > Extraire.
+   - Si ce choix n'existe pas (WinRAR a pris la main) : clic droit > "Ouvrir avec" > "Explorateur Windows",
+     puis bouton "Extraire tout" en haut.
+   Le test automatique vous dira s'il voit la marque ("ATTENTION" en jaune si elle manque).
+
+2. ESSAI A LA MAIN, en premier :
+   - Ouvrez le dossier "u1-doctor" et double-cliquez sur "u1-doctor.exe".
+   - Si un ecran bleu "Windows a protege votre ordinateur" apparait : PRENEZ UNE CAPTURE (touche Windows + Maj + S),
+     puis cliquez sur "Informations complementaires" puis "Executer quand meme".
+   - Une fenetre noire (console) s'ouvre : laissez-la. Ouvrez un navigateur sur  http://127.0.0.1:8765  et regardez si l'application s'affiche.
+   - Fermez ensuite la fenetre noire (cela arrete le programme).
+
+3. TEST AUTOMATIQUE : double-cliquez sur "RUN-TEST.cmd" (a cote du dossier u1-doctor).
+   - Si Windows demande confirmation, c'est normal : c'est aussi une information utile (notez-le).
+   - Repondez aux 4 questions (o = oui, n = non, ? = pas teste).
+   - Attendez 1 a 2 minutes. Un fichier "U1Doctor-TestReport-....zip" apparait sur le Bureau.
+
+4. Envoyez ce fichier .zip, plus vos eventuelles captures d'ecran.
+
+5. Nettoyage : supprimez le dossier "u1-doctor", ce kit et le rapport.
+
+CONFIDENTIALITE
+---------------
+Le rapport contient : version de Windows, langue, memoire, noms des antivirus, resultats des controles, captures des ecrans du programme.
+Il ne contient PAS : nom d'utilisateur, nom d'ordinateur, chemins de fichiers, adresse de telechargement, fichiers personnels.
+Vous pouvez l'ouvrir avant de l'envoyer.

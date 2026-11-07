@@ -1,0 +1,37 @@
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+@import "tailwindcss";
+@import "./design/tokens.css";
+@import "./design/components.css";
+
+@theme inline {
+  --font-sans: var(--font-ui);
+  --radius-md: var(--radius-m);
+  --radius-lg: var(--radius-l);
+  --radius-xl: var(--radius-l);
+  --font-mono: var(--font-mono);
+  --color-bg: var(--bg-1);
+  --color-bg0: var(--bg-0);
+  --color-surface: var(--surface-1);
+  --color-surface2: var(--surface-2);
+  --color-surface3: var(--surface-3);
+  --color-line: var(--line);
+  --color-line2: var(--line-strong);
+  --color-control: var(--control-line);
+  --color-ink: var(--ink);
+  --color-ink2: var(--ink-2);
+  --color-ink3: var(--ink-3);
+  --color-accent: var(--accent);
+  --color-accentink: var(--accent-ink);
+  --color-yellow: var(--yellow);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
+  --color-demo: var(--demo);
+  --color-replay: var(--replay);
+}
+
+html, body, #root { height: 100%; }
+body { margin: 0; background: var(--bg-0); color: var(--ink); font-family: var(--font-ui); font-size: 14px; line-height: 22px; font-variation-settings: normal; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4, h5 { margin: 0; }
+button { font: inherit; }

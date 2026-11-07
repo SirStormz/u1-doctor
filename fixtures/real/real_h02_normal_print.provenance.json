@@ -1,0 +1,10 @@
+{
+  "test_id": "H-02",
+  "date_utc": "2026-11-05T20:29:22Z",
+  "duration_s": 1675.1,
+  "inbound_frames": 9333,
+  "max_gap_between_frames_s": 0.74,
+  "outbound_frames": 1,
+  "outbound_non_subscribe": 0,
+  "firmware_observed": "Klipper 2.1.0.157 / Moonraker 2.1.0 (H-01)"
+}

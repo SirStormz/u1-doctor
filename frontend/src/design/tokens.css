@@ -1,0 +1,81 @@
+/* U1 Doctor design tokens — "Service manual" (direction C). Themes: night = Atelier (dark, default token set), graphite, light = Manuel (default theme).
+   accent = ink-coloured accent used for text/icons (>= 4.5:1); yellow = the machine's own yellow, used for fills and marks only. */
+:root,
+[data-theme="night"] {
+  color-scheme: dark;
+  --bg-0: #0a0a09; --bg-1: #10100e;
+  --surface-1: #161614; --surface-2: #1e1e1b; --surface-3: #272724;
+  --line: #2f2f2b; --line-strong: #f4f4f0; --control-line: #8d8d84;
+  --ink: #f4f4f0; --ink-2: #c9c9c0; --ink-3: #a1a197;
+  --accent: #ffc400; --accent-ink: #0e0e0e; --yellow: #ffc400;
+  --ok: #4ade80; --warn: #ffa94d; --danger: #ff6b6b; --demo: #b39dfa; --replay: #7db4ff;
+  --shadow-1: none; --shadow-2: none; --glow: 0 0 0 2px var(--yellow);
+}
+[data-theme="graphite"] {
+  color-scheme: dark;
+  --bg-0: #131416; --bg-1: #191a1d;
+  --surface-1: #1f2023; --surface-2: #26272b; --surface-3: #2e2f34;
+  --line: #36383d; --line-strong: #ececee; --control-line: #8e919a;
+  --ink: #ececee; --ink-2: #bcbec5; --ink-3: #9a9da6;
+  --accent: #ffc400; --accent-ink: #0e0e0e; --yellow: #ffc400;
+  --ok: #4ade80; --warn: #ffa94d; --danger: #ff7a85; --demo: #b4a0ff; --replay: #7db4ff;
+  --shadow-1: none; --shadow-2: none; --glow: 0 0 0 2px var(--yellow);
+}
+[data-theme="light"] {
+  color-scheme: light;
+  --bg-0: #ebebe5; --bg-1: #f4f4f0;
+  --surface-1: #fafaf7; --surface-2: #efefe9; --surface-3: #e4e4dd;
+  --line: #cdcdc4; --line-strong: #0e0e0e; --control-line: #66665e;
+  --ink: #0e0e0e; --ink-2: #34342f; --ink-3: #55554e;
+  --accent: #0e0e0e; --accent-ink: #ffffff; --yellow: #ffc400;
+  --ok: #156a38; --warn: #a24500; --danger: #b3121a; --demo: #6d28d9; --replay: #1d4ed8;
+  --shadow-1: none; --shadow-2: none; --glow: 0 0 0 2px var(--yellow);
+}
+:root {
+  --radius-s: 0px; --radius-m: 2px; --radius-l: 2px;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --d-fast: 120ms; --d-base: 200ms; --d-panel: 320ms;
+  /* golden ratio: phi = 1.618, 1/phi = .618, 1/phi^2 = .382 */
+  --phi: 1.618034; --phi-inv: 0.618034; --phi-inv2: 0.381966;
+  --ease-phi: cubic-bezier(0.618, 0, 0.382, 1);
+  --d-phi-1: 324ms; --d-phi-2: 524ms; --d-phi-3: 848ms; --d-phi-4: 1372ms; --stagger: 62ms;
+  /* type scale: 16px x phi^(n/2) */
+  --t-0: 16px; --t-1: 20.35px; --t-2: 25.89px; --t-3: 32.94px; --t-4: 41.9px; --t-5: 53.3px; --t-6: 67.8px; --t-7: 86.2px; --t-8: 109.7px;
+  /* space scale: 8px x phi^n */
+  --s-1: 8px; --s-2: 13px; --s-3: 21px; --s-4: 34px; --s-5: 55px; --s-6: 89px; --s-7: 144px;
+  --font-ui: "Inter Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Mono", monospace;
+}
+
+/* ---- utilities ---- */
+.panel { background: var(--surface-1); border: 1px solid var(--line-strong); border-radius: var(--radius-l); position: relative; }
+.panel[data-elev="2"] { background: var(--surface-2); }
+.panel[data-active="true"] { box-shadow: 0 0 0 2px var(--yellow), 4px 4px 0 2px var(--line-strong); }
+.panel[data-demo="true"] { border-style: solid; }
+.brackets::after { content: none; }
+.hatch { background-image: repeating-linear-gradient(135deg, transparent 0 5px, color-mix(in srgb, var(--ink-3) 55%, transparent) 5px 6px); }
+.hatch-demo { background-image: repeating-linear-gradient(135deg, transparent 0 7px, color-mix(in srgb, var(--demo) 30%, transparent) 7px 8px); }
+.blueprint, .grain::before { background-image: none; }
+.micro { font-size: 11px; line-height: 16px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; color: var(--ink-3); }
+.num-hero { font-size: var(--t-7); line-height: 0.95; font-weight: 800; letter-spacing: -0.05em; font-feature-settings: "tnum"; }
+.mono { font-family: var(--font-mono); font-feature-settings: "zero"; }
+.manual-label { display: inline-block; background: var(--yellow); color: #0e0e0e; padding: 1px 9px; font-weight: 800; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+:focus-visible { outline: 3px solid var(--yellow); outline-offset: 1px; box-shadow: 0 0 0 1px var(--ink); }
+
+/* ---- motion: transform + opacity only ---- */
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+@keyframes toast-in { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: none; } }
+.reveal { animation: rise var(--d-phi-1) var(--ease-phi) both; animation-delay: calc(var(--i, 0) * var(--stagger)); }
+.fade-in { animation: fade var(--d-base) var(--ease) both; }
+.skeleton { position: relative; overflow: hidden; background: var(--surface-2); border-radius: var(--radius-s); }
+.skeleton::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--ink) 8%, transparent), transparent); animation: shimmer 1.4s linear infinite; }
+.lift { transition: transform var(--d-fast) var(--ease); }
+.lift:hover { transform: translateY(-1px); }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+  .reveal { animation: none; }
+  .skeleton::after { display: none; }
+}

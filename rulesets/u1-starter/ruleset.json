@@ -1,0 +1,20 @@
+{
+  "ruleset_id": "u1-starter",
+  "version": "0.3.0",
+  "format": "u1-ruleset/1",
+  "note": "Declarative parameters only; evaluators are a fixed built-in enum. No code, no expressions. Status PROPOSED: nothing here is hardware-verified.",
+  "rules": [
+    {"id": "U1-S01-CODE-DECODE", "version": "1.0.0", "status": "PROPOSED", "evaluator": "catalog_code", "params": {"event_type": "user_reported_error_code"}},
+    {"id": "U1-S03-STATE-TRANSITION", "version": "1.0.0", "status": "PROPOSED", "evaluator": "state_transition", "params": {"event_type": "state_transition", "from": "printing", "to": ["paused", "error"], "proximity_s": 120}},
+    {"id": "U1-S09-MAPPING-UNKNOWN", "version": "1.0.0", "status": "PROPOSED", "evaluator": "mapping_unknown", "params": {}},
+    {"id": "U1-S10-OBSERVATION-GAPS", "version": "1.0.0", "status": "PROPOSED", "evaluator": "coverage_gaps", "params": {"event_types": ["capture_gap", "connection_timeout", "connection_lost"]}},
+    {"id": "U1-SEC-BLOCKED-CALL", "version": "1.0.0", "status": "PROPOSED", "evaluator": "transport_denied", "params": {"event_type": "transport_denied"}},
+    {"id": "U1-S11-BED-WINDOW", "version": "1.0.0", "status": "PROPOSED", "evaluator": "value_window", "params": {"event_types": ["bed_temperature_sample"], "field": "celsius", "min": -10, "max": 110, "label": "Heated bed temperature", "code": "0003-0526-0000-0000", "hypothesis": "The official page gives -10 to 110 degC as the normal bed range and lists wiring and sensor checks when it is left", "reference_url": "https://wiki.snapmaker.com/en/snapmaker_u1/troubleshooting/bed_temperature_exceeds_limit"}},
+    {"id": "U1-S12-NOZZLE-WINDOW", "version": "1.0.0", "status": "PROPOSED", "evaluator": "value_window", "params": {"event_types": ["temperature_sample", "extruder_temperature"], "field": "celsius", "min": -10, "max": 310, "label": "Nozzle temperature", "hypothesis": "The official page gives -10 degC as the minimum and 310 degC as the maximum safe nozzle temperature and lists heater and sensor checks", "reference_url": "https://wiki.snapmaker.com/en/snapmaker_u1/troubleshooting/nozzle_temperature_anomaly"}},
+    {"id": "U1-S13-CODE-RECURRENCE", "version": "1.0.0", "status": "PROPOSED", "evaluator": "code_recurrence", "params": {"event_type": "user_reported_error_code", "min_count": 3, "window_s": 900}},
+    {"id": "U1-S14-CONNECTION-FLAPS", "version": "1.0.0", "status": "PROPOSED", "evaluator": "connection_flaps", "params": {"event_types": ["connection_lost", "connection_timeout"], "min_count": 3, "window_s": 600, "hypothesis": "The official static-IP page says a printer that often disconnects, looks offline or loses pairing may have changed address after a restart", "reference_url": "https://wiki.snapmaker.com/en/snapmaker_u1/set-static-ip-for-u1"}},
+    {"id": "U1-S15-DRYRUN-PREDICTION", "version": "1.0.0", "status": "PROPOSED", "evaluator": "dryrun_prediction", "params": {"declared_event_type": "user_reported_error_code", "hypothesis": "The community tool U1 Dry Run replays the sliced file on the firmware motion code and reports the moves the firmware would refuse and the tool-change travel that would leave scars on the print; it is a simulation and models no heating, flow or sensors", "reference_url": "https://github.com/DesignMaster-Solutions/u1-dryrun"}},
+    {"id": "U1-S04-DROP-PROBE", "version": "1.0.0", "status": "PROPOSED", "evaluator": "drop_probe", "params": {"drop_event_types": ["connection_lost", "connection_timeout"], "probe_event_type": "link_probe", "window_s": 120}},
+    {"id": "U1-S16-FAN-OFF-HOT", "version": "1.0.0", "status": "PROPOSED", "evaluator": "fan_off_hot", "params": {"event_type": "nozzle_fan_sample", "min_celsius": 60, "min_count": 3}}
+  ]
+}

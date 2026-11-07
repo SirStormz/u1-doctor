@@ -1,0 +1,80 @@
+name: Release
+# Manual run only. Builds the Windows exe on a clean GitHub runner, smoke-tests it, zips it with the second-PC test kit and a
+# SHA-256 file, and creates a DRAFT release (nothing is public until the owner publishes the draft in the GitHub UI).
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag, for example v0.1.0-g1"
+        required: true
+        type: string
+permissions:
+  contents: write
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Python environment (the build script expects backend\.venv)
+        run: |
+          py -3.12 -m venv backend\.venv
+          backend\.venv\Scripts\python.exe -m pip install -e "backend[dev]"
+      - name: Build the one-folder exe
+        run: .\scripts\build_windows.ps1
+      - name: Zip with the test kit and SHA-256
+        run: .\scripts\package_zip.ps1
+      - name: Smoke test the built exe (local port, temporary database)
+        run: |
+          $env:U1DOCTOR_PORT = "18900"
+          $env:U1DOCTOR_DB = Join-Path $env:RUNNER_TEMP "smoke.sqlite3"
+          $p = Start-Process build\dist\u1-doctor\u1-doctor.exe -PassThru -WindowStyle Hidden
+          $ok = $false
+          foreach ($i in 1..60) { Start-Sleep 1; try { $h = Invoke-RestMethod http://127.0.0.1:18900/api/v1/health -TimeoutSec 2; $ok = $true; break } catch {} }
+          if (-not $ok) { throw "exe did not answer on /api/v1/health" }
+          "health: $($h | ConvertTo-Json -Compress)"
+          $m = Invoke-WebRequest http://127.0.0.1:18900/models/u1-jay.glb -UseBasicParsing
+          if ($m.StatusCode -ne 200) { throw "3D model not served" }
+          $i = Invoke-WebRequest http://127.0.0.1:18900/ -UseBasicParsing
+          if ($i.StatusCode -ne 200) { throw "UI not served" }
+          Get-NetTCPConnection -State Listen -LocalPort 18900 | ForEach-Object { "listening on $($_.LocalAddress):$($_.LocalPort)"; Stop-Process -Id $_.OwningProcess -Force }
+          Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+      - uses: actions/upload-artifact@v4
+        with:
+          name: u1-doctor-win64
+          path: |
+            build/u1-doctor-*-win64.zip
+            build/u1-doctor-*-win64.zip.sha256.txt
+      - name: Create the DRAFT release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $zip = (Get-ChildItem build\u1-doctor-*-win64.zip).Name
+          $sha = (Get-Content "build\$zip.sha256.txt" -Raw).Trim().Split(" ")[0]
+          @"
+          U1 Doctor, local and read-only diagnostic forensics for the Snapmaker U1. Unofficial: not affiliated with Snapmaker.
+
+          **Windows build ($zip)**, built by GitHub Actions from this commit.
+
+          SHA-256 of the zip: ``$sha``
+
+          Verify before running:
+
+          ``````powershell
+          Get-FileHash .\$zip -Algorithm SHA256
+          ``````
+
+          Notes:
+          - The exe is not code-signed, so Windows SmartScreen may warn. Extract with Windows Explorer ("Extract all"), not WinRAR/7-Zip, so Windows keeps the download mark.
+          - The app listens on 127.0.0.1 only and sends no command to any printer in this build.
+          - The zip contains a small test kit (RUN-TEST.cmd) that checks the exe on your PC and writes a report you can read before sharing it.
+          - Not antivirus-scanned by the maintainer yet at the time of this draft.
+          "@ | Set-Content release-notes.md -Encoding utf8
+          gh release create "${{ inputs.tag }}" "build\$zip" "build\$zip.sha256.txt" --draft --title "U1 Doctor ${{ inputs.tag }}" --notes-file release-notes.md --target "${{ github.sha }}"

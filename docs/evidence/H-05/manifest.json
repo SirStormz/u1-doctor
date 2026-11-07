@@ -1,0 +1,124 @@
+{
+  "test_id": "H-05",
+  "date_utc": "2026-11-07T07:53:44Z",
+  "target": "RFC1918 IPv4 literal :7125 (redacted)",
+  "scope": "object field discovery (BACKLOG #40/#41), client-side WebSocket drop then HTTP probes (H-03/S04 data), toolhead index evidence read-only (H-04). Printer idle (print_stats.state=complete).",
+  "operations": {
+    "http_get": 13,
+    "http_post_objects_query": 2,
+    "ws_subscribe": 1,
+    "non_read": 0
+  },
+  "objects_queried": 63,
+  "observed": {
+    "extruder_fields": [
+      "activating_move",
+      "active_pin",
+      "can_extrude",
+      "error_count",
+      "extruder_index",
+      "extruder_offset",
+      "grab_valid_pin",
+      "last_maintenance_count",
+      "motion_queue",
+      "nozzle_diameter",
+      "nozzle_volume_type",
+      "park_pin",
+      "power",
+      "pressure_advance",
+      "printing_e_pos",
+      "real_extruder_stats",
+      "retry_count",
+      "smooth_time",
+      "state",
+      "switch_count",
+      "target",
+      "temperature"
+    ],
+    "extruder_index_by_object": {
+      "extruder": 0,
+      "extruder1": 1,
+      "extruder2": 2,
+      "extruder3": 3
+    },
+    "maintenance_counters_exposed_per_extruder": [
+      "switch_count",
+      "retry_count",
+      "error_count",
+      "last_maintenance_count"
+    ],
+    "switch_counts_changed_between_snapshots": false,
+    "heater_fan_fields": [
+      "rpm",
+      "speed"
+    ],
+    "heater_fan_objects": [
+      "heater_fan e0_nozzle_fan",
+      "heater_fan e1_nozzle_fan",
+      "heater_fan e2_nozzle_fan",
+      "heater_fan e3_nozzle_fan",
+      "heater_fan power_fan"
+    ],
+    "toolhead_fields": [
+      "axis_maximum",
+      "axis_minimum",
+      "estimated_print_time",
+      "extruder",
+      "homed_axes",
+      "max_accel",
+      "max_velocity",
+      "minimum_cruise_ratio",
+      "position",
+      "print_time",
+      "square_corner_velocity",
+      "stalls"
+    ],
+    "print_task_config_fields": [
+      "auto_bed_leveling",
+      "auto_replenish_filament",
+      "end_led_turn_off",
+      "end_unload_filament",
+      "extruder_map_table",
+      "extruders_replenished",
+      "extruders_used",
+      "filament_color",
+      "filament_color_multi",
+      "filament_color_rgba",
+      "filament_edit",
+      "filament_entangle_detect",
+      "filament_entangle_sen",
+      "filament_exist",
+      "filament_official",
+      "filament_sku",
+      "filament_soft",
+      "filament_sub_type",
+      "filament_type",
+      "filament_vendor",
+      "flow_calib_extruders",
+      "flow_calibrate",
+      "replenish_ignore_color",
+      "reprint_info",
+      "shaper_calibrate",
+      "time_lapse_camera"
+    ]
+  },
+  "drop_probe": {
+    "method": "client closes its own WebSocket, then GET /server/info + GET /printer/info every ~3 s",
+    "probes": 5,
+    "all_ok": true,
+    "klippy_states_seen": [
+      "ready"
+    ],
+    "klippy_connected_values": [
+      "True"
+    ],
+    "frames_before_close": 25
+  },
+  "limits": [
+    "Idle machine only: no print, no fault, no tool change.",
+    "extruder_index is machine-reported; the match between that index and the 'toolhead N' wording in official error codes is NOT verified (needs a tool change or a real code).",
+    "The drop is simulated on the PC side by closing our own socket; the network was not cut and the machine was not touched.",
+    "Counter meaning (switch_count etc.) comes from field names only; the official documentation does not describe them."
+  ],
+  "human_approval": "owner go in chat, printer idle, then back to printing"
+}

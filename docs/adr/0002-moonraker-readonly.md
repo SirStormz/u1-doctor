@@ -1,0 +1,8 @@
+# ADR-0002 — Read-only Moonraker transport
+Status: Accepted (G0), implemented as policy + mocked client · Date: 2026-11-05
+
+**Decision.** `ReadOnlyMoonrakerTransport` exposes exactly: `get_server_info`, `get_printer_info`, `list_objects`, `query_objects`. Allowlist = `GET /server/info`, `GET /printer/info`, `GET /printer/objects/list`, `POST /printer/objects/query` (validated body). WS: only JSON-RPC `printer.objects.subscribe`, validated frame. Denied until a formal audit adds them: `GET /printer/objects/query`, WS `server.info`/`printer.info`, `server.connection.identify`. Target = literal RFC1918 IPv4:7125. `trust_env=False`, no redirects, size caps, owner `Consent` for real network. Verb is never trusted alone (the one allowed POST is body-validated).
+**Why.** Cahier §6; Moonraker mutating calls exist on the same server (see source-audit §3).
+**Consequences.** Some useful reads (identify, GET query) need an audit; the 192.0.0.0/8 trusted range upstream is wider than RFC1918 but we stay stricter. Checks live in `backend/app/transport/policy.py`; any new route = ADR amendment + negative test.
+**Amendment 2026-11-05 (WebSocket).** `ReadOnlyMoonrakerWebSocket` (`backend/app/transport/ws.py`): only `subscribe()` can send, frame validated by `check_ws_message` before any I/O; no generic send; inbound parsed, capped (256 kB), never answered; `proxy=None`, no compression; same RFC1918:7125 + owner Consent rule. New dependency `websockets>=15,<16` (BSD-3, pure Python). Tests: `backend/tests/test_ws.py`. Not yet run against the real U1 (H-02 needs owner go).
+**Not covered.** Real-hardware WebSocket behaviour (H-02).
