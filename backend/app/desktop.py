@@ -113,7 +113,7 @@ def webview2_installed() -> bool:
                 version = str(winreg.QueryValueEx(key, "pv")[0])
         except OSError:
             continue
-        if version and version != "0.0.0.0":
+        if version.strip("0."):  # empty or all zeros means "not installed"
             return True
     return False
 
