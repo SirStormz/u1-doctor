@@ -1,4 +1,4 @@
-# IMPLEMENTATION_STATUS — updated 2026-11-06 (G0–G2 done, G4 U1-DEB done, G3 timeline done on the real capture)
+# IMPLEMENTATION_STATUS — updated 2026-11-07 (release v0.1.6-g1 published; G0–G2, G4 U1-DEB and G3 timeline done)
 
 States: PLANNED · IMPLEMENTED_UNTESTED · TESTED_SYNTHETIC · TESTED_REAL · BLOCKED. **H-01 passed 2026-11-05 (TESTED_REAL for: Moonraker HTTP :7125, objects list, official version read; nothing else).** H-02 passed 2026-11-05 (WS subscribe, 27 min normal print, 9 333 frames, no gap > 0.74 s). Machine calls made so far: **3 read-only GET + 1 WS subscribe** (see `docs/evidence/H-01/manifest.json`). Observed: Moonraker 2.1.0, Klipper 2.1.0.157, 197 objects, `exception_manager` component present.
 
@@ -15,14 +15,14 @@ States: PLANNED · IMPLEMENTED_UNTESTED · TESTED_SYNTHETIC · TESTED_REAL · BL
 | REQ-010 Safe import | M | TESTED_SYNTHETIC | `deb.import_bundle`: allowlist, size/ratio/symlink/encrypted/dup/NaN checks, hash + schema validation; hostile-zip corpus in `test_deb.py` |
 | REQ-011 Redacted export | M | TESTED_SYNTHETIC | `deb.export_bundle`: best-effort redaction reported in privacy-report.json; deterministic zip. Not a guarantee of anonymity |
 | REQ-012 Replay | M | TESTED_SYNTHETIC (one machine) | in-app replay of SYNTHETIC scenarios and of the real capture; imported bundles replayed with the local ruleset (findings always recomputed); same ruleset hash from source and from frozen exe. 2nd machine / OS not tested (T-025) |
-| REQ-013 Permanent DEMO | M | TESTED_SYNTHETIC | banner + mode badge; the only machine route is `POST /api/v1/live/capture` (consent required); socket guard test |
+| REQ-013 DEMO is explicit | M | TESTED_SYNTHETIC | the app starts empty; demo mode is a header switch (off at every start) that shows the synthetic data under a permanent DEMO banner and badge; the only machine route is `POST /api/v1/live/capture` (consent required); socket guard test |
 | REQ-014 Non-mutation | M | TESTED_SYNTHETIC | 113 transport tests (mock) + 1 supervised real session (H-02: 1 outbound frame = subscribe, 0 write). No in-app live capture yet |
-| REQ-015 Windows exe | M | IMPLEMENTED_UNTESTED | PyInstaller one-folder ran on dev PC only (with U1-DEB; rebuild needed to include the timeline); **not tested on a clean Win11** |
-| REQ-016 GitHub / EN docs | M | PARTIAL | private GitHub repo + CI (backend, frontend) green; English README written 2026-11-06; originality audit `docs/ORIGINALITY_AUDIT.md`. Not public yet; no release, no install guide, no screenshots |
+| REQ-015 Windows exe | M | TESTED_REAL (developer PC only) | PyInstaller one-folder exe built by GitHub Actions (`release.yml`), opens in its own window (pywebview/WebView2), v0.1.6-g1 published, VirusTotal 0/67. Run on the owner's Windows 11 PC with a browser-downloaded zip (window opens, no WebView2 message). **Not tested on a PC without WebView2 or on a clean second Windows 11** |
+| REQ-016 GitHub / EN docs | M | DONE | public GitHub repo, CI (Windows, Linux, macOS, e2e), GitHub Pages presentation, English README and install guide, security policy, code of conduct, six releases (current v0.1.6-g1); originality audit `docs/ORIGINALITY_AUDIT.md` |
 | REQ-017 Physical U1 tests | M | PARTIAL (owner-approved sessions only) | H-01 and H-02 done 2026-11-05 (3 GET + 1 WS subscribe, no write). H-03/H-04 need a new explicit owner accord. No real fault captured |
 | REQ-018..026 | S/C | PLANNED | — |
 
-Tests run (Windows, Python 3.14 venv, 2026-11-06): `pytest` **877 passed** · `vitest` **81 passed** · `ruff` clean · `mypy app` clean · `tsc --noEmit` clean · `vite build` OK. CI (Python 3.12, Linux) green on main. Earlier logs: `docs/evidence/G0-G1/`. Not run: Playwright E2E (replaced by manual browser-pane checks, not tests), macOS, cross-OS replay hash.
+Tests run (Windows, Python 3.14 venv, 2026-11-07): `pytest` **933 passed** · `vitest` **88 passed** · 15 Playwright e2e tests (run in CI) · `ruff` clean · `mypy app` clean · `tsc --noEmit` clean · `vite build` OK. CI (Python 3.12) green on main.
 Deviations: stdlib migrations instead of Alembic (ADR-0004); no TanStack Query / i18n lib (plain fetch + dictionary).
 
 ## G0.5 — Product design & UX (2026-11-05) — **prototype built, design VALIDATED by owner 2026-11-05 (improvements later)**

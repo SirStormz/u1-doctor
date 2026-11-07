@@ -25,3 +25,6 @@ tsconfig.tsbuildinfo
 # owner's 3D model pack (heavy source files, not needed to build)
 U1_Jay_Pack_Complet/
 U1_Jay_Pack_Complet.zip
+
+# local backups (kept inside the project folder, never committed)
+backups/
