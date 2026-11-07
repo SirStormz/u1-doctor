@@ -23,7 +23,7 @@ VSVersionInfo(
          StringStruct('OriginalFilename', 'u1-doctor.exe'),
          StringStruct('ProductName', 'U1 Doctor'),
          StringStruct('ProductVersion', '0.1.6-g1'),
-         StringStruct('Comments', 'Source: https://github.com/stormz85ia/u1-doctor')])
+         StringStruct('Comments', 'Source: https://github.com/SirStormz/u1-doctor')])
     ]),
     VarFileInfo([VarStruct('Translation', [1033, 1200])])
   ]

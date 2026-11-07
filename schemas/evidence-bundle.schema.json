@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/stormz85ia/u1-doctor/main/schemas/evidence-bundle.schema.json",
+  "$id": "https://raw.githubusercontent.com/SirStormz/u1-doctor/main/schemas/evidence-bundle.schema.json",
   "title": "U1-DEB manifest.json (format v1)",
   "description": "Manifest of a U1 Diagnostic Evidence Bundle. SHA-256 proves integrity only, not authenticity or machine origin.",
   "type": "object",

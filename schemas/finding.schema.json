@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/stormz85ia/u1-doctor/main/schemas/finding.schema.json",
+  "$id": "https://raw.githubusercontent.com/SirStormz/u1-doctor/main/schemas/finding.schema.json",
   "title": "U1 Doctor Finding",
   "description": "Explainable conclusion. CONFIRMED_BY_PROTOCOL requires a recorded, reviewed protocol reference. No probability score field exists by design.",
   "type": "object",

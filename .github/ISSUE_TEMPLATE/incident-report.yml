@@ -9,7 +9,7 @@ body:
         Thank you. Real incidents are what this project lacks most: so far only normal prints have been captured, so every incident in the app is synthetic.
 
         **Before you start**
-        - Read [how to share a report](https://github.com/stormz85ia/u1-doctor/blob/main/docs/SHARE_A_REPORT.md) (two minutes).
+        - Read [how to share a report](https://github.com/SirStormz/u1-doctor/blob/main/docs/SHARE_A_REPORT.md) (two minutes).
         - Everything you post here is **public and stays indexed even if you delete it later**. Do not post serial numbers, IP addresses, e-mail addresses, print file names, or screenshots that show them.
         - U1 Doctor never sends anything by itself. You write this report yourself, you attach the file yourself, and you can leave this form at any time.
   - type: textarea

@@ -27,7 +27,7 @@ This applies in the issues, pull requests and any other space of this repository
 
 ## Reporting and enforcement
 
-To report a problem privately, use [GitHub's private reporting](https://github.com/stormz85ia/u1-doctor/security/advisories/new) and say it is a conduct report. Please do not open a public issue about it.
+To report a problem privately, use [GitHub's private reporting](https://github.com/SirStormz/u1-doctor/security/advisories/new) and say it is a conduct report. Please do not open a public issue about it.
 
 The maintainer will read every report, keep it confidential, and may remove comments, close or lock a discussion, or block a user from the repository when behaviour breaks this code. This project is unofficial and not affiliated with Snapmaker.
 

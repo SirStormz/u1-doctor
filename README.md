@@ -6,8 +6,8 @@
 A local, read-only evidence tool for the Snapmaker U1. No cloud, no telemetry, no AI.</p>
 
 <p align="center">
-<a href="https://github.com/stormz85ia/u1-doctor/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/stormz85ia/u1-doctor/actions/workflows/ci.yml/badge.svg"></a>
-<a href="https://github.com/stormz85ia/u1-doctor/releases/latest"><img alt="release" src="https://img.shields.io/github/v/release/stormz85ia/u1-doctor?include_prereleases&style=flat-square&labelColor=131416&color=ffc400"></a>
+<a href="https://github.com/SirStormz/u1-doctor/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/SirStormz/u1-doctor/actions/workflows/ci.yml/badge.svg"></a>
+<a href="https://github.com/SirStormz/u1-doctor/releases/latest"><img alt="release" src="https://img.shields.io/github/v/release/SirStormz/u1-doctor?include_prereleases&style=flat-square&labelColor=131416&color=ffc400"></a>
 <a href="LICENSE"><img alt="MIT" src="https://img.shields.io/badge/licence-MIT-ffc400?style=flat-square&labelColor=131416"></a>
 <img alt="read-only" src="https://img.shields.io/badge/printer-read--only-ffc400?style=flat-square&labelColor=131416">
 <img alt="local" src="https://img.shields.io/badge/runs-100%25%20local-ffc400?style=flat-square&labelColor=131416">
@@ -15,8 +15,8 @@ A local, read-only evidence tool for the Snapmaker U1. No cloud, no telemetry, n
 </p>
 
 <p align="center">
-<a href="https://github.com/stormz85ia/u1-doctor/releases/latest"><b>Download for Windows</b></a> &nbsp;·&nbsp;
-<a href="https://stormz85ia.github.io/u1-doctor/presentation/"><b>Illustrated presentation</b></a> (EN/FR) &nbsp;·&nbsp;
+<a href="https://github.com/SirStormz/u1-doctor/releases/latest"><b>Download for Windows</b></a> &nbsp;·&nbsp;
+<a href="https://sirstormz.github.io/u1-doctor/presentation/"><b>Illustrated presentation</b></a> (EN/FR) &nbsp;·&nbsp;
 <a href="docs/INSTALL.md"><b>Install guide</b></a> &nbsp;·&nbsp;
 <a href="docs/LIMITS.md"><b>What it does not do</b></a>
 </p>
@@ -69,7 +69,7 @@ Press `Ctrl K` anywhere to jump to a screen or paste an error code.
 
 ## Get started in two minutes (Windows)
 
-1. Download `u1-doctor-0.1.6-g1-win64.zip` and its `.sha256.txt` from the [latest release](https://github.com/stormz85ia/u1-doctor/releases/latest).
+1. Download `u1-doctor-0.1.6-g1-win64.zip` and its `.sha256.txt` from the [latest release](https://github.com/SirStormz/u1-doctor/releases/latest).
 2. Check the file was not altered (optional, 10 seconds):
    ```powershell
    Get-FileHash .\u1-doctor-0.1.6-g1-win64.zip -Algorithm SHA256
@@ -159,7 +159,7 @@ Every fact carries its source and a time-quality marker. Findings point back to 
 
 ## Real incidents wanted
 
-The rules were written from the official documentation and tested on one healthy printer. What would improve them most is a **real incident**: the error code that appeared, the firmware, when it happened and what U1 Doctor said, optionally with an evidence bundle of your capture (Report screen, choose your saved capture, Export bundle). If you have one, [open an incident report](https://github.com/stormz85ia/u1-doctor/issues/new?template=incident-report.yml): a short form, and nothing is sent by the app itself. Read [how to share a report](docs/SHARE_A_REPORT.md) first: issues are public, so never include serial numbers, addresses or file names.
+The rules were written from the official documentation and tested on one healthy printer. What would improve them most is a **real incident**: the error code that appeared, the firmware, when it happened and what U1 Doctor said, optionally with an evidence bundle of your capture (Report screen, choose your saved capture, Export bundle). If you have one, [open an incident report](https://github.com/SirStormz/u1-doctor/issues/new?template=incident-report.yml): a short form, and nothing is sent by the app itself. Read [how to share a report](docs/SHARE_A_REPORT.md) first: issues are public, so never include serial numbers, addresses or file names.
 
 ## Run from source
 
@@ -213,9 +213,9 @@ No code is copied from these projects. The comparison is in [`docs/ORIGINALITY_A
 
 - **Il ne pilote jamais l'imprimante** : ni pause, ni annulation, ni G-code. Il ne lit une imprimante que si tu saisis son adresse privée et coches la case d'accord, avec une courte liste fixe de requêtes de lecture.
 - **Tout reste sur ton PC** : pas de cloud, pas de télémétrie, pas d'IA. L'application n'écoute que sur `127.0.0.1`.
-- **Démarrer** : télécharge le zip de la [dernière release](https://github.com/stormz85ia/u1-doctor/releases/latest), extrais-le avec « Extraire tout », double-clique `u1-doctor.exe` : une fenêtre s'ouvre avec l'application (sans console ni navigateur ; si le composant Microsoft WebView2 manque, l'app propose de l'installer une fois). Windows peut afficher un avertissement SmartScreen, car l'exe n'est pas signé.
+- **Démarrer** : télécharge le zip de la [dernière release](https://github.com/SirStormz/u1-doctor/releases/latest), extrais-le avec « Extraire tout », double-clique `u1-doctor.exe` : une fenêtre s'ouvre avec l'application (sans console ni navigateur ; si le composant Microsoft WebView2 manque, l'app propose de l'installer une fois). Windows peut afficher un avertissement SmartScreen, car l'exe n'est pas signé.
 - **Bilingue** : l'interface existe en français et en anglais, avec un bouton en haut à droite.
-- **Statut honnête** : seules des impressions normales ont été capturées sur une vraie U1 ; aucune panne réelle pour l'instant, donc tous les incidents de démonstration sont marqués `SYNTHETIC`. La [présentation illustrée](https://stormz85ia.github.io/u1-doctor/presentation/) est aussi disponible en français.
+- **Statut honnête** : seules des impressions normales ont été capturées sur une vraie U1 ; aucune panne réelle pour l'instant, donc tous les incidents de démonstration sont marqués `SYNTHETIC`. La [présentation illustrée](https://sirstormz.github.io/u1-doctor/presentation/) est aussi disponible en français.
 
 </details>
 

@@ -30,7 +30,7 @@ U1 Doctor's own capture never contains your address or file names, and the expor
 
 ## 3. Open the issue
 
-Open [**New issue, Incident report**](https://github.com/stormz85ia/u1-doctor/issues/new?template=incident-report.yml), fill the short form, drag the bundle in if you have one, and tick the confirmations (you checked the content, you know it is public, and, only if you want it, that the bundle may become a test fixture).
+Open [**New issue, Incident report**](https://github.com/SirStormz/u1-doctor/issues/new?template=incident-report.yml), fill the short form, drag the bundle in if you have one, and tick the confirmations (you checked the content, you know it is public, and, only if you want it, that the bundle may become a test fixture).
 
 ## 4. What happens next
 
@@ -47,4 +47,4 @@ Open [**New issue, Incident report**](https://github.com/stormz85ia/u1-doctor/is
 
 ## En français
 
-U1 Doctor n'envoie jamais rien de lui-même. Pour aider avec un **vrai incident** : note le **code d'erreur exact** affiché sur l'écran, la version du firmware, le moment (pendant une impression, une chauffe, un changement d'outil, à l'arrêt), ce que tu as vu et essayé, et ce que l'écran **Constats** de U1 Doctor a indiqué. Relis ton texte, tes captures et ton paquet : **tout ce qui est posté dans une issue est public et reste indexé, même effacé** (pas d'IP, de numéro de série, de nom de fichier). Puis ouvre une [issue « Incident report »](https://github.com/stormz85ia/u1-doctor/issues/new?template=incident-report.yml). Pour un paquet rejouable : écran Connexion (case « Enregistrer la capture dans l'Historique »), puis écran Rapport, choisis la capture dans « Source du rapport » et exporte. Rien n'est ajouté au dépôt sans ton accord explicite.
+U1 Doctor n'envoie jamais rien de lui-même. Pour aider avec un **vrai incident** : note le **code d'erreur exact** affiché sur l'écran, la version du firmware, le moment (pendant une impression, une chauffe, un changement d'outil, à l'arrêt), ce que tu as vu et essayé, et ce que l'écran **Constats** de U1 Doctor a indiqué. Relis ton texte, tes captures et ton paquet : **tout ce qui est posté dans une issue est public et reste indexé, même effacé** (pas d'IP, de numéro de série, de nom de fichier). Puis ouvre une [issue « Incident report »](https://github.com/SirStormz/u1-doctor/issues/new?template=incident-report.yml). Pour un paquet rejouable : écran Connexion (case « Enregistrer la capture dans l'Historique »), puis écran Rapport, choisis la capture dans « Source du rapport » et exporte. Rien n'est ajouté au dépôt sans ton accord explicite.
