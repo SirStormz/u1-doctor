@@ -51,18 +51,18 @@ Screenshots use the built-in **synthetic demo data** (the `DEMO` banner is alway
 
 ## Get started in two minutes (Windows)
 
-1. Download `u1-doctor-0.1.0-g1-win64.zip` and its `.sha256.txt` from the [latest release](https://github.com/stormz85ia/u1-doctor/releases/latest).
+1. Download `u1-doctor-0.1.1-g1-win64.zip` and its `.sha256.txt` from the [latest release](https://github.com/stormz85ia/u1-doctor/releases/latest).
 2. Check the file was not altered (optional, 10 seconds):
    ```powershell
-   Get-FileHash .\u1-doctor-0.1.0-g1-win64.zip -Algorithm SHA256
+   Get-FileHash .\u1-doctor-0.1.1-g1-win64.zip -Algorithm SHA256
    ```
-   Compare with the value in the release notes: `FB7B72530D16B7B08E76AEA0CFE5A130854C7389E4B8C8093FAEE4A05C7E8469`.
+   Compare with the value in the release notes: `629DC1B2043FFF79A14EDEE93C34BF4BCEE291C23826216E3AEDFC773F472B54`.
 3. Right-click the zip, **Extract all** (not WinRAR or 7-Zip, so Windows keeps the download mark), then run `u1-doctor.exe`.
 4. Open <http://127.0.0.1:8765> in your browser.
 
 **Good to know**
 - The app is **not code-signed**, so Windows SmartScreen may warn: choose "More info", then "Run anyway".
-- VirusTotal scan of the release zip: 1 engine out of 66 flagged it (a generic heuristic detection, no malware family named); [report](https://www.virustotal.com/gui/file/fb7b72530d16b7b08e76aea0cfe5a130854c7389e4b8c8093faee4a05c7e8469).
+- VirusTotal: the previous build (0.1.0-g1) was flagged by 1 engine out of 66 (a generic heuristic detection, no malware family named). A scan of this exact zip is added to the release notes once it has been run.
 - It opens in **DEMO mode**: everything works offline with clearly labelled synthetic data. Nothing is sent anywhere.
 - Linux, macOS and Docker: see the [install guide](docs/INSTALL.md).
 
