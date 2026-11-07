@@ -45,7 +45,7 @@ function mockApi() {
     else if (url.endsWith("/history/h0123456789ab/findings")) body = { findings: realFindings, ruleset: { id: "u1-starter", version: "x", hash: "sha256:" + "a".repeat(64) } };
     else if (url.endsWith("/errors/interpret")) body = interpret(JSON.parse(String(init?.body)).code);
     else if (url.endsWith("/compatibility")) body = { verified_on_hardware: false, firmware_target: "V2.1.0", rows: [], capabilities: [{ name: "Moonraker HTTP :7125", status: "UNTESTED" }, { name: "Offline code decoder", status: "TESTED_SYNTHETIC" }] };
-    else if (url.endsWith("/health")) body = { status: "ok", api_version: "1", app_version: "0.1.3-g1", mode: "DEMO", machine_access: "READ_ONLY_ON_CONSENT", db_schema: 1 };
+    else if (url.endsWith("/health")) body = { status: "ok", api_version: "1", app_version: "0.1.4-g1", mode: "DEMO", machine_access: "READ_ONLY_ON_CONSENT", db_schema: 1 };
     return { ok: true, status: 200, json: async () => body };
   }));
   return calls;
