@@ -46,7 +46,7 @@ test("connect screen stays locked until the owner ticks the approval box", async
 test("timeline offers demo, real capture and history sources", async ({ page }) => {
   await page.goto("/#/timeline");
   for (const name of [/Synthetic demo|Démo synthétique/i, /Real capture|Capture réelle/i, /History|Historique/i]) {
-    await expect(page.getByRole("button", { name })).toBeVisible();
+    await expect(page.getByRole("button", { name }).first()).toBeVisible();
   }
 });
 

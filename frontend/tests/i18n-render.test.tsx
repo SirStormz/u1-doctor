@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { act, cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { App } from "../src/App";
 
@@ -18,7 +18,8 @@ const cat = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../knowledge/
 function api() {
   vi.stubGlobal("fetch", vi.fn(async (url: string, init?: RequestInit) => {
     let body: unknown = {};
-    if (url.endsWith("/demo/scenarios")) body = { banner: "x", scenarios: [NAME, "timeout", "offline_gap"] };
+    if (url.endsWith("/api/v1/history")) body = { sessions: [] };
+    else if (url.endsWith("/demo/scenarios")) body = { banner: "x", scenarios: [NAME, "timeout", "offline_gap"] };
     else if (url.includes("/demo/scenarios/")) body = { observations, golden_findings: findings };
     else if (url.includes("/real/captures/")) body = realCapture;
     else if (url.endsWith("/replays")) body = { mode: "REPLAY", matches_golden: true, findings, ruleset_hash: "sha256:" + "a".repeat(64), findings_sha256: "b".repeat(64), input_sha256: "c".repeat(64) };
@@ -52,5 +53,19 @@ for (const r of ROUTES) {
     const text = (document.body.innerText ?? document.body.textContent ?? "").replace(ALLOWED, " ");
     const hits = [...new Set(text.match(new RegExp(ENGLISH.source, "gi")) ?? [])];
     expect(hits, `English words on #/${r}`).toEqual([]);
+  });
+}
+
+// the same check with the demo switched on: the screens that stay empty at start show the synthetic incident
+for (const r of ["overview", "timeline", "findings", "evidence", "report"]) {
+  test(`French UI has no English text with demo mode on: ${r}`, async () => {
+    location.hash = `#/${r}`;
+    render(<App />);
+    await screen.findByRole("main");
+    fireEvent.click(await screen.findByRole("button", { name: /^mode démo$/i }));
+    await act(async () => { await new Promise((x) => setTimeout(x, 350)); });
+    const text = (document.body.innerText ?? document.body.textContent ?? "").replace(ALLOWED, " ");
+    const hits = [...new Set(text.match(new RegExp(ENGLISH.source, "gi")) ?? [])];
+    expect(hits, `English words on #/${r} (demo on)`).toEqual([]);
   });
 }
