@@ -209,11 +209,12 @@ cd backend; .venv\Scripts\python.exe -m pytest
 cd frontend; npm test
 ```
 
-At the time of writing: 1,192 backend tests, 181 frontend tests and 16 browser (Playwright) tests pass, with `ruff`, `mypy` and `tsc` clean. CI runs the same checks on Windows, Linux and macOS.
+At the time of writing: 1,195 backend tests, 181 frontend tests and 16 browser (Playwright) tests pass, with `ruff`, `mypy` and `tsc` clean. CI runs the same checks on Windows, Linux and macOS.
 
 ## More documentation
 
 - [`docs/HOW-IT-WORKS.md`](docs/HOW-IT-WORKS.md): one page on the rules, provenance, the live-read budget and how U1 Doctor differs from community tools.
+- [`docs/API.md`](docs/API.md): the local API, route by route (which ones read, which write the local history, and the single one that can reach a printer). A test keeps it in step with the code.
 - [`docs/INSTALL.md`](docs/INSTALL.md): install guide (executable, source, Docker) and where your data lives.
 - [`docs/U1-DEB.md`](docs/U1-DEB.md): the evidence bundle format and its validator.
 - [`docs/LIMITS.md`](docs/LIMITS.md): what is not covered or not yet proven.

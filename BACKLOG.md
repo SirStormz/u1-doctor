@@ -5,7 +5,7 @@ Contest: Snapmaker Innovation Fund Phase 2, Cash Fund, software. Posting closes 
 Hard rules: read-only; no U1 contact without the owner's explicit go; nothing invented; DEMO/SYNTHETIC always visible; unknown = INCONCLUSIVE.
 
 ## Where we are (2026-11-08, end of night) — the one list to follow
-**Release state:** **v0.1.8-g1 is published as Latest** (tag on commit 2f9bb8d, zip 24.6 MB, SHA-256 `265D992EC37D537D861D03183B765148A48F3C5F0671BD67FC64339F554A5E07`). `release.yml` ran green on its first run with the pinned dependencies, SHA-pinned actions and the build provenance attestation (`gh attestation verify` passed). The downloaded exe was run headless: health 0.1.8-g1, listens on 127.0.0.1 only, cross-site POST refused. Local = GitHub = backup. Tests: 1192 backend, 181 UI, 16 e2e.
+**Release state:** **v0.1.8-g1 is published as Latest** (tag on commit 2f9bb8d, zip 24.6 MB, SHA-256 `265D992EC37D537D861D03183B765148A48F3C5F0671BD67FC64339F554A5E07`). `release.yml` ran green on its first run with the pinned dependencies, SHA-pinned actions and the build provenance attestation (`gh attestation verify` passed). The downloaded exe was run headless: health 0.1.8-g1, listens on 127.0.0.1 only, cross-site POST refused. Local = GitHub = backup. Tests: 1195 backend, 181 UI, 16 e2e.
 
 **Done 2026-11-08 (checked item by item against the audit and forum lists):** audit #52-#54 and #61 (H1, H2, M1-M7, L1-L10, missing tests, stale docs) · forum roadmap #55-#60 (causes, near-match, message matcher, ticket summary, evidence reminder, rules S17-S24, 10 G-code checks + 3MF with every plate, firmware issues table, connectivity self-check) · #64 (alert, good-to-know notes, sample report on Pages) · maintenance reminders · #51 hints and folded blocks · flaky test fixed · HOW-IT-WORKS.md.
 **Proven on the real U1 (supervised, read-only, 3 captures, nothing written):** log-partition read, cavity + bed-mesh subscription, S22-S24, connectivity numbers, `/server/history/totals`.
@@ -19,7 +19,7 @@ Hard rules: read-only; no U1 contact without the owner's explicit go; nothing in
 6. **Untested on a real fault:** positive cases of S17-S21; maintenance reminders screen on a real result.
 7. **Needs a machine I do not have:** macOS/Linux builds, one-line install.
 8. **Contest, not code (#62):** plainer topic title, retest on firmware 2.1.1, useful replies on other threads, ask staff the vote dates (#27), independent tester (#22).
-9. **Small leftovers (decided or minor):** WebP textures of the GLB and PNG fallback of the key art (skipped on purpose) · `actionlint` · Wi-Fi fields of Moonraker unverified · stray empty file `E:	mp_noop` (owner deletes).
+9. **Small leftovers (decided or minor):** WebP textures of the GLB and PNG fallback of the key art (skipped on purpose) · `actionlint` · Wi-Fi fields of Moonraker unverified · stray empty file `E:	mp_noop` (owner deletes). `docs/API.md` (31 routes, drift test `test_api_doc.py`) done 2026-11-08.
 **Decided NOT to do:** read `printer.cfg` (the reported nozzle diameter already comes from it), `homing` per toolhead (data does not exist), push notifications, anything that writes or commands the printer, reading the encrypted logs.
 
 **Contest deadline:** post before **2026-12-23 23:59 UTC** (official table says 12-24).
