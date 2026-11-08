@@ -204,7 +204,7 @@ footer{padding:var(--s5) 0;color:var(--ink3);font-size:14px;background:linear-gr
 <header class="top"><div class="wrap">
   <span class="brand">U1 <b>Doctor</b></span>
   <nav>
-    <a href="#idea" data-fr="Idée">Idea</a><a href="#how" data-fr="Principe">How</a><a href="#decoder" data-fr="Décodeur">Decoder</a>
+    <a href="#film">Film</a><a href="#idea" data-fr="Idée">Idea</a><a href="#how" data-fr="Principe">How</a><a href="#decoder" data-fr="Décodeur">Decoder</a>
     <a href="#features" data-fr="Fonctions">Features</a><a href="#get" data-fr="Obtenir">Get it</a><a href="#roadmap" data-fr="Demain">Next</a><a href="#safety" data-fr="Sécurité">Safety</a>
   </nav>
   <button class="lang" id="lang" type="button" aria-label="Language">EN / FR</button>
@@ -228,6 +228,15 @@ footer{padding:var(--s5) 0;color:var(--ink3);font-size:14px;background:linear-gr
   <span><b>◆</b> LOCAL</span><span><b>◆</b> READ-ONLY</span><span><b>◆</b> NO CLOUD</span><span><b>◆</b> NO TELEMETRY</span><span><b>◆</b> UNKNOWN = INCONCLUSIVE</span><span><b>◆</b> EVERY FACT KEEPS ITS SOURCE</span><span><b>◆</b> OWNER-READABLE EVIDENCE</span><span><b>◆</b> SYNTHETIC IS ALWAYS BADGED</span>
   <span><b>◆</b> LOCAL</span><span><b>◆</b> READ-ONLY</span><span><b>◆</b> NO CLOUD</span><span><b>◆</b> NO TELEMETRY</span><span><b>◆</b> UNKNOWN = INCONCLUSIVE</span><span><b>◆</b> EVERY FACT KEEPS ITS SOURCE</span><span><b>◆</b> OWNER-READABLE EVIDENCE</span><span><b>◆</b> SYNTHETIC IS ALWAYS BADGED</span>
 </div></div>
+
+<!-- FILM -->
+<section id="film" data-world="0"><div class="wrap">
+  <div class="tag" data-fr="Le film · 90 s">The film · 90 s</div>
+  <video id="film-video" controls playsinline preload="metadata" poster="../media/film/poster.jpg" style="display:block;width:100%;aspect-ratio:16/9;margin-top:var(--s2);border:1px solid var(--line);border-radius:10px;background:#000">
+    <source src="../media/film/u1-doctor-film.mp4" type="video/mp4">
+    <track id="film-fr" kind="subtitles" srclang="fr" label="Français" src="../media/film/fr.vtt">
+  </video>
+</div></section>
 
 <!-- IDEA -->
 <section id="idea" data-world="10"><div class="wrap">
@@ -678,7 +687,7 @@ footer{padding:var(--s5) 0;color:var(--ink3);font-size:14px;background:linear-gr
   try{L=localStorage.getItem(K)||((navigator.language||"").toLowerCase().indexOf("fr")===0?"fr":"en")}catch(e){}
   var nodes=[].slice.call(document.querySelectorAll("[data-fr]"));
   nodes.forEach(function(n){n.setAttribute("data-en",n.textContent)});
-  function setLang(v){L=v;h.lang=v;nodes.forEach(function(n){n.textContent=n.getAttribute(v==="fr"?"data-fr":"data-en")});try{localStorage.setItem(K,v)}catch(e){}}
+  function setLang(v){L=v;h.lang=v;nodes.forEach(function(n){n.textContent=n.getAttribute(v==="fr"?"data-fr":"data-en")});try{localStorage.setItem(K,v)}catch(e){}var ft=document.getElementById("film-video");if(ft&&ft.textTracks[0])ft.textTracks[0].mode=v==="fr"?"showing":"disabled"}
   setLang(L);document.getElementById("lang").addEventListener("click",function(){setLang(L==="en"?"fr":"en");typeStart()});
 
   /* determinism fingerprints */
