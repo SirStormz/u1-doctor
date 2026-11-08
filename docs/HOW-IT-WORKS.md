@@ -20,8 +20,8 @@ observations (REAL / SYNTHETIC / USER_REPORTED / IMPORTED)
 
 A live capture runs only after you type a private (RFC1918) IPv4 address and tick the approval box. Every request is checked against a frozen allowlist **before** any network I/O.
 
-- Normal capture: **4 GET + 1 WebSocket message** (`GET /server/info`, `/printer/info`, `/printer/objects/list`, `/server/files/directory?path=logs`, then one `printer.objects.subscribe` with a fixed object list).
-- If the stream drops early: up to 6 more status GET, so **10 GET and 1 WebSocket message at most**. The stream is never reopened; no keepalive pings are sent.
+- Normal capture: **5 GET + 1 WebSocket message** (`GET /server/info`, `/printer/info`, `/printer/objects/list`, `/server/files/directory?path=logs`, `/server/history/totals`, then one `printer.objects.subscribe` with a fixed object list).
+- If the stream drops early: up to 6 more status GET, so **11 GET and 1 WebSocket message at most**. The stream is never reopened; no keepalive pings are sent.
 - Refused by design: `POST /printer/objects/query`, pause, resume, cancel, restart, emergency stop, `printer.gcode.script`, any other method. The printer address is never stored (only a keyed local fingerprint, to say "the address changed").
 
 ## The 20 rules (ruleset `u1-starter` 0.4.0, all status PROPOSED)
@@ -69,6 +69,6 @@ U1 Doctor does not simulate before printing, drive the printer or watch it live.
 | [Snapmaker Studio](https://forum.snapmaker.com/t/43460) | Pre-print checks of 3MF/STL files against the machine profile | Reads the profile | No |
 | [U1 Print Hub](https://forum.snapmaker.com/t/42516) | Dashboard and control: queue, scheduling, monitoring, logbook | Sends commands | Logbook of pauses and errors, no replayable evidence format |
 | [Snap Studio](https://forum.snapmaker.com/t/43847) | Desktop workshop: slicing, queue, camera, printing | Sends commands | No |
-| **U1 Doctor** | Read-only diagnosis after an incident: decoder, timeline, findings, U1-DEB bundle | Reads only (4 GET + 1 WS message per capture, 10 GET at most) | Yes: provenance per fact, deterministic replay, same hash on three OS |
+| **U1 Doctor** | Read-only diagnosis after an incident: decoder, timeline, findings, U1-DEB bundle | Reads only (5 GET + 1 WS message per capture, 11 GET at most) | Yes: provenance per fact, deterministic replay, same hash on three OS |
 
 These tools are complementary; no code is copied from them ([`ORIGINALITY_AUDIT.md`](ORIGINALITY_AUDIT.md)).

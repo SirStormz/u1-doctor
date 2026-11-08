@@ -51,9 +51,9 @@ async function capture() {
   await screen.findByText(/Connectivity self-check|Autodiagnostic de la connexion/);
 }
 
-test("consent text states 4 GET, 1 subscription and 10 GET at most, in both languages", () => {
-  expect(messages.en.liveConsent).toMatch(/4 GET .*1 live subscription.*up to 6 more.*10 GET at most/);
-  expect(messages.fr.liveConsent).toMatch(/4 GET .*1 abonnement en direct.*jusqu'à 6 GET.*10 GET au maximum/);
+test("consent text states 5 GET, 1 subscription and 11 GET at most, in both languages", () => {
+  expect(messages.en.liveConsent).toMatch(/5 GET .*job totals of the print history.*1 live subscription.*up to 6 more.*11 GET at most/);
+  expect(messages.fr.liveConsent).toMatch(/5 GET .*totaux de l'historique des impressions.*1 abonnement en direct.*jusqu'à 6 GET.*11 GET au maximum/);
 });
 
 test("EN: connectivity panel shows timings, drops, 0 reconnects, the address flag and only the observed advice", async () => {

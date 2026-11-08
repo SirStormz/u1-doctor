@@ -130,13 +130,15 @@ def _secs(a: str, b: str) -> float:
     return round(_epoch(b) - _epoch(a), 1)
 
 
-def live_facts(lines: Iterable[str], *, start: int, disk: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+def live_facts(lines: Iterable[str], *, start: int, disk: dict[str, Any] | None = None,
+               totals: dict[str, Any] | None = None) -> list[dict[str, Any]]:
     """Window summaries for the live rules S17-S24. Pure and deterministic: same frames in, same facts out.
 
     One observation per fact, entity `printer`, values keyed by the Klipper object name (never a toolhead number: the
     mapping is unproven, H-04). Nothing that names a file or a host is kept. `start` is the first free index after
     the observations already built from the same frames, so ids stay unique. `disk` is the parsed disk usage of the
-    `logs` root, or None when it was not read.
+    `logs` root, or None when it was not read. `totals` is the parsed job-history totals (four fields, BACKLOG #65), or
+    None when not observable; it is not a coverage key (no rule reads it: the maintenance reminders are local to the app).
     """
     last: dict[str, dict[str, Any]] = {}
     temps: dict[str, dict[str, Any]] = {}
@@ -238,6 +240,9 @@ def live_facts(lines: Iterable[str], *, start: int, disk: dict[str, Any] | None 
     if disk:
         present.add("disk_usage")
         emit(t_end or disk["t"], "disk_usage", {k: disk[k] for k in ("root", "total_bytes", "used_bytes", "free_bytes")}, "server.files.directory/logs")
+    if totals:
+        emit(t_end or totals["t"], "history_totals", {k: totals[k] for k in ("total_jobs", "total_print_time", "total_filament_used", "total_time")},
+             "server.history.totals")
     if t_end is not None:
         emit(t_end, "live_coverage", {"absent": sorted(k for k in COVERAGE_KEYS if k not in present)}, "transport/coverage")
     return out

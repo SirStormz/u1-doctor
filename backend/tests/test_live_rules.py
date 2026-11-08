@@ -60,10 +60,24 @@ def test_logs_disk_usage_get_is_allowed_only_with_the_exact_query():
     ("GET", "/machine/proc_stats", None),
     ("GET", "/machine/system_info", None),
     ("GET", "/printer/objects/query", None),
+    # job history (BACKLOG #65): only the totals path, with no query
+    ("GET", "/server/history/totals", {"path": "logs"}),
+    ("GET", "/server/history/list", None),
+    ("GET", "/server/history/job", None),
+    ("POST", "/server/history/totals", None),
+    ("POST", "/server/history/reset_totals", None),
+    ("DELETE", "/server/history/job", None),
+    ("GET", "/server/history/totals/", None),
+    ("GET", "/server/history", None),
 ])
 def test_other_directory_variants_and_new_reads_are_denied(method, path, query):
     with pytest.raises(PolicyViolation):
         check_http_request(method, path, None, query)
+
+
+def test_history_totals_get_is_allowed_with_no_query():
+    assert check_http_request("GET", "/server/history/totals") == "server.history.totals"
+    assert ("GET", "/server/history/totals") not in ALLOWED_HTTP_QUERY
 
 
 class Spy:
@@ -83,6 +97,15 @@ def test_transport_sends_exactly_the_allowlisted_query_and_records_latency():
     assert req.method == "GET" and req.url.path == "/server/files/directory" and req.url.query == b"path=logs" and req.content == b""
     a = t.audit[0]
     assert a.tag == "server.files.directory" and a.query == {"path": "logs"} and isinstance(a.ms, float) and a.ms >= 0
+
+
+def test_transport_reads_history_totals_with_a_bare_get():
+    spy = Spy({"result": {"job_totals": {"total_jobs": 1}}})
+    t = ReadOnlyMoonrakerTransport(HOST, consent=Consent(False, HOST, "T"), http_transport=httpx.MockTransport(spy))
+    t.get_history_totals()
+    (req,) = spy.calls
+    assert req.method == "GET" and req.url.path == "/server/history/totals" and req.url.query == b"" and req.content == b""
+    assert t.audit[0].tag == "server.history.totals" and t.audit[0].query is None
 
 
 def test_refused_query_makes_no_io():
@@ -119,7 +142,7 @@ def _i18n(key):
 
 
 def test_consent_text_counts_match_the_code_budget_in_en_and_fr():
-    assert live.MAX_GET == live.BASE_GET + live.PROBES * 2 == 10 and live.MAX_WS_SENT == 1
+    assert live.MAX_GET == live.BASE_GET + live.PROBES * 2 == 11 and live.MAX_WS_SENT == 1
     en, fr = _i18n("liveConsent")
     m = re.search(r"(\d+) GET .*?(\d+) live subscription.*?up to (\d+) more read-only status GET: (\d+) GET at most", en)
     assert m, en
@@ -127,18 +150,19 @@ def test_consent_text_counts_match_the_code_budget_in_en_and_fr():
     m = re.search(r"(\d+) GET .*?(\d+) abonnement en direct.*?jusqu'à (\d+) GET d'état en lecture seule de plus : (\d+) GET au maximum", fr)
     assert m, fr
     assert [int(x) for x in m.groups()] == [live.BASE_GET, live.MAX_WS_SENT, live.PROBES * 2, live.MAX_GET]
+    assert "job totals of the print history" in en and "totaux de l'historique des impressions" in fr
 
 
 @pytest.mark.parametrize("doc", ["SECURITY.md", "docs/INSTALL.md", "README.md", "docs/adr/0002-moonraker-readonly.md", "docs/threat-model.md"])
 def test_docs_state_the_same_maximum(doc):
     text = (ROOT / doc).read_text(encoding="utf-8")
-    assert f"{live.MAX_GET} GET" in text and "/server/files/directory?path=logs" in text
+    assert f"{live.MAX_GET} GET" in text and "/server/files/directory?path=logs" in text and "/server/history/totals" in text
 
 
 def test_the_api_docstring_and_module_docstring_agree():
     import app.api as api
-    assert "10 GET" in (api.create_app.__doc__ or "") or "10 GET" in (live.__doc__ or "")
-    assert "MAX_GET = 10" in (live.__doc__ or "")
+    assert "11 GET" in (api.create_app.__doc__ or "") or "11 GET" in (live.__doc__ or "")
+    assert "MAX_GET = 11" in (live.__doc__ or "")
 
 
 # ---- live_facts: what is kept from frames --------------------------------------------------------------------------
@@ -344,9 +368,17 @@ class Conn:
         pass
 
 
-def handler(disk_status=200):
+TOTALS = {"result": {"job_totals": {"total_jobs": 42, "total_time": 360000.04, "total_print_time": 324000.0, "total_filament_used": 987654.3,
+                                     "longest_job": 9000.0, "longest_print": 8000.0},
+                      "auxiliary_totals": [{"provider": "sensor secret_power", "field": "energy", "maximum": 1.0, "total": 2.0}]}}
+
+
+def handler(disk_status=200, totals_status=200, totals=None):
     def h(req):
         assert req.method == "GET"
+        if req.url.path == "/server/history/totals":
+            assert req.url.query == b""
+            return httpx.Response(totals_status, json=totals or TOTALS)
         if req.url.path == "/server/files/directory":
             assert req.url.query == b"path=logs"
             return httpx.Response(disk_status, json={"result": {"files": [{"filename": "secret.log"}], "disk_usage": {"total": 104857600, "used": 99614720, "free": 5242880}}})
@@ -356,7 +388,7 @@ def handler(disk_status=200):
     return h
 
 
-def _client(disk_status=200, drop=False, monkeypatch=None):
+def _client(disk_status=200, drop=False, monkeypatch=None, **hk):
     if monkeypatch:
         monkeypatch.setattr(live, "PROBE_GAP_S", 0.0)
     app = create_app(":memory:")
@@ -366,7 +398,7 @@ def _client(disk_status=200, drop=False, monkeypatch=None):
         conns.append(Conn(_frames(), drop=drop))
         return conns[-1]
 
-    app.state.live_hooks = {"http_transport": httpx.MockTransport(handler(disk_status)), "connect": connect}
+    app.state.live_hooks = {"http_transport": httpx.MockTransport(handler(disk_status, **hk)), "connect": connect}
     c = TestClient(app, headers=APP)
     c.conns, c.app_ = conns, app
     return c
@@ -381,14 +413,14 @@ def test_capture_runs_the_new_rules_and_stays_within_the_budget():
     r = _post(c)
     assert r.status_code == 200, r.text
     j = r.json()
-    assert [a["tag"] for a in j["audit"]["http"]] == ["server.info", "printer.info", "printer.objects.list", "server.files.directory"]
-    assert j["audit"]["read_operations"] == 5 and j["audit"]["non_read_operations"] == 0 and j["budget"] == {"max_get": 10, "max_ws_sent": 1}
+    assert [a["tag"] for a in j["audit"]["http"]] == ["server.info", "printer.info", "printer.objects.list", "server.files.directory", "server.history.totals"]
+    assert j["audit"]["read_operations"] == 6 and j["audit"]["non_read_operations"] == 0 and j["budget"] == {"max_get": 11, "max_ws_sent": 1}
     (sent,) = c.conns[0].sent
     assert set(json.loads(sent)["params"]["objects"]) == set(ALLOWED_SUBSCRIBE_OBJECTS)
     rules = {f["rule_id"] for f in j["findings"]}
     assert {"U1-S17-OFFSET-Y-SPREAD", "U1-S18-SENSOR-IMPLAUSIBLE", "U1-S21-CLOCK-RESET", "U1-S22-LOG-PARTITION", "U1-S24-BED-MESH-STATS"} <= rules
     conn = j["connectivity"]
-    assert conn["ws_drops"] == 0 and conn["ws_reconnects"] == 0 and conn["ip_changed"] is None and len(conn["requests"]) == 4
+    assert conn["ws_drops"] == 0 and conn["ws_reconnects"] == 0 and conn["ip_changed"] is None and len(conn["requests"]) == 5
     assert all(isinstance(x["ms"], float) for x in conn["requests"]) and conn["max_ms"] >= conn["median_ms"]
     assert "connectivity_check" in [o["event_type"] for o in j["observations"]]
     assert HOST not in r.text and "secret" not in r.text
@@ -426,7 +458,7 @@ def test_connectivity_is_exported_in_the_bundle_without_the_address():
     assert HOST not in json.dumps(obs) and HOST not in blob.decode("latin-1")
 
 
-def test_dropped_stream_counts_one_drop_and_stays_at_most_10_get(monkeypatch):
+def test_dropped_stream_counts_one_drop_and_stays_at_most_max_get(monkeypatch):
     j = _post(_client(drop=True, monkeypatch=monkeypatch)).json()
     assert j["connectivity"]["ws_drops"] == 1 and j["connectivity"]["ws_reconnects"] == 0
     assert len(j["audit"]["http"]) == live.MAX_GET and all(a["method"] == "GET" for a in j["audit"]["http"])
@@ -458,6 +490,8 @@ def test_compatibility_marks_what_ran_on_the_real_u1_and_what_did_not():
         assert caps[n] == "TESTED_REAL"
     # quiet on a healthy print, positive case never seen on a real printer
     assert caps["Live rules S17-S21"] == "UNTESTED"
+    # BACKLOG #65: code only, the orchestrator's supervised read-only check has not run yet
+    assert caps["Job history totals read"] == "UNTESTED" and caps["Maintenance reminders"] == "UNTESTED"
 
 
 def test_synthetic_live_fixtures_validate_against_the_schema():
@@ -467,3 +501,45 @@ def test_synthetic_live_fixtures_validate_against_the_schema():
             OBS_SCHEMA.validate(o)
             validate_observation(copy.deepcopy(o))
             assert o["source_status"] == "SYNTHETIC" and "synthetic" in o["observation_id"]
+
+
+# ---- BACKLOG #65: job-history totals for the local maintenance reminders ------------------------------------------
+def test_history_totals_keep_only_four_fields_and_become_one_observation():
+    j = _post(_client()).json()
+    (o,) = [o for o in j["observations"] if o["event_type"] == "history_totals"]
+    assert o["value"] == {"total_jobs": 42, "total_print_time": 324000.0, "total_filament_used": 987654.3, "total_time": 360000.0}
+    assert o["source_ref"] == "server.history.totals" and o["source_status"] == "REAL" and o["entity_id"] == "printer"
+    OBS_SCHEMA.validate(o)
+    validate_observation(copy.deepcopy(o))
+    mi = j["maintenance_inputs"]
+    assert mi["history_totals"] == o["value"] and mi["history_status"] == 200
+    assert mi["switch_count"] == {"per_object": {"extruder": 10, "extruder1": 6}, "total": 16}
+    text = json.dumps(j)
+    assert "longest" not in text and "auxiliary" not in text and "secret" not in text
+    assert "history_totals" not in COVERAGE_KEYS  # no rule reads it: no "not observable" finding is added
+
+
+@pytest.mark.parametrize("status,body", [(404, None), (503, None),
+                                         (200, {"result": {"job_totals": {"total_jobs": -1, "total_time": 1, "total_print_time": 1, "total_filament_used": 1}}}),
+                                         (200, {"result": {"job_totals": {"total_jobs": 1, "total_time": "x", "total_print_time": 1, "total_filament_used": 1}}}),
+                                         (200, {"result": {"job_totals": {"total_jobs": True, "total_time": 1, "total_print_time": 1, "total_filament_used": 1}}}),
+                                         (200, {"result": {"no_totals": {}}})])
+def test_history_totals_failure_keeps_the_capture_and_says_not_observable(status, body):
+    r = _post(_client(totals_status=status, totals=body))
+    assert r.status_code == 200
+    j = r.json()
+    assert j["maintenance_inputs"]["history_totals"] is None and j["maintenance_inputs"]["history_status"] == status
+    assert "history_totals" not in [o["event_type"] for o in j["observations"]]
+    assert [a["tag"] for a in j["audit"]["http"]][-1] == "server.history.totals" and len(j["audit"]["http"]) == live.BASE_GET
+
+
+def test_switch_count_is_absent_when_the_firmware_reports_none():
+    assert live._switch_counts([]) is None
+    assert live._switch_counts([{"event_type": "extruder_activity", "value": {"extruders": {"extruder": {"state_changes": 0}}}}]) is None
+
+
+def test_live_facts_emits_history_totals_before_the_coverage_record():
+    tot = {"total_jobs": 1, "total_print_time": 3600.0, "total_filament_used": 10.0, "total_time": 3700.0, "t": "2026-01-20T10:00:00Z"}
+    types = [o["event_type"] for o in live_facts(_frames(), start=1, totals=tot)]
+    assert types[-2:] == ["history_totals", "live_coverage"]
+    assert [o["event_type"] for o in live_facts([], start=1, totals=tot)] == ["history_totals"]

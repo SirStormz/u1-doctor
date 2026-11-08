@@ -50,6 +50,8 @@ const EXACT: Record<string, string> = {
   "Live rules S22-S24": "Règles en direct S22-S24",
   "Live rules S17-S21": "Règles en direct S17-S21",
   "Connectivity self-check": "Autodiagnostic de la connexion",
+  "Job history totals read": "Lecture des totaux de l'historique des travaux",
+  "Maintenance reminders": "Rappels d'entretien",
 };
 
 const LABEL: Record<string, string> = {

@@ -1,10 +1,16 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, expect, test, vi } from "vitest";
 import { App } from "../src/App";
 
 const SESSION = { id: "h0123456789ab", label: "H-02 capture", origin: "real_capture", saved_at: "2026-11-06T12:00:00Z", observation_count: 9333, first_utc: "2026-11-05T20:00:00Z", last_utc: "2026-11-05T20:27:25Z", status_mix: ["REAL"], content_sha256: "a".repeat(64) };
 let sessions: typeof SESSION[] = [];
 const calls: string[] = [];
+
+// Root cause of the flake (BACKLOG #65): the Timeline screen is a React.lazy chunk. Its first import (the Vite transform
+// of the screen, the history view and the chart code) ran inside the first test and took 1.3 s even on a quiet machine,
+// longer than the 1 s default of findBy/waitFor, so under full-suite load the first wait could time out. The module is
+// imported once here, outside any timed wait; React.lazy then resolves from the module cache.
+beforeAll(async () => { await import("../src/screens/timeline"); });
 
 beforeEach(() => {
   sessions = [];

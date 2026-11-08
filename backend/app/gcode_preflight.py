@@ -607,6 +607,7 @@ def _community_checks(cfg: dict[str, str], slicer: dict[str, Any], *, m191: list
 # every other entry is checked for a safe name and never opened. Same size limits as the U1-DEB bundle import (app.deb).
 MAX_3MF_BYTES = MAX_ZIP_BYTES
 MAX_3MF_ENTRIES = 4096
+MAX_3MF_PLATES = 64  # sliced plates checked in one 3MF; above this the file is refused (UNSAFE_ENTRY)
 SETTINGS_ENTRY = "Metadata/project_settings.config"
 _GCODE_ENTRY = re.compile(r"^Metadata/([A-Za-z0-9_.-]{1,80})\.gcode$")
 _PLATE = re.compile(r"^plate_(\d{1,4})$")
@@ -631,8 +632,14 @@ def _settings_text(blob: bytes) -> dict[str, str] | None:
     return out
 
 
-def extract_3mf(data: bytes) -> tuple[bytes, dict[str, str] | None, dict[str, Any]]:
-    """Safely pull the first sliced plate's G-code (and project settings) out of a 3MF. Never slices, never writes to disk."""
+def extract_3mf_plates(data: bytes) -> tuple[list[tuple[str, int | None, bytes]], dict[str, str] | None, dict[str, Any]]:
+    """Safely pull EVERY sliced plate's G-code (and the project settings) out of a 3MF. Never slices, never writes to disk.
+
+    Plates come back in order (plate_1, plate_2, ..., plate_10, then other names alphabetically) as
+    (entry name, plate number or None, bytes). The per-entry caps apply to each plate and MAX_TOTAL_BYTES is shared by
+    all of them plus the settings: the declared sizes are summed and refused BEFORE anything is read, then the real
+    sizes are checked again while reading. At most MAX_3MF_PLATES sliced plates.
+    """
     if len(data) > MAX_3MF_BYTES:
         raise PreflightError("ARCHIVE_TOO_LARGE", "3MF larger than 50 MiB")
     try:
@@ -660,34 +667,67 @@ def extract_3mf(data: bytes) -> tuple[bytes, dict[str, str] | None, dict[str, An
         gcodes = [i for i in wanted if i.filename != SETTINGS_ENTRY]
         if not gcodes:
             raise PreflightError("NO_GCODE", "this 3MF has no sliced G-code inside (U1 Doctor does not slice)")
+        if len(gcodes) > MAX_3MF_PLATES:
+            raise PreflightError("UNSAFE_ENTRY", f"more than {MAX_3MF_PLATES} sliced plates")
+
+        def plate_no(i: zipfile.ZipInfo) -> int | None:
+            p = _PLATE.match(_GCODE_ENTRY.match(i.filename).group(1))  # type: ignore[union-attr]
+            return int(p.group(1)) if p else None
 
         def order(i: zipfile.ZipInfo) -> tuple[int, int, str]:
-            stem = _GCODE_ENTRY.match(i.filename).group(1)  # type: ignore[union-attr]
-            p = _PLATE.match(stem)
-            return (0, int(p.group(1)), "") if p else (1, 0, stem)
+            n = plate_no(i)
+            return (0, n, "") if n is not None else (1, 0, i.filename)
         gcodes.sort(key=order)
-        chosen = gcodes[0]
         settings_info = next((i for i in wanted if i.filename == SETTINGS_ENTRY), None)
-        total = 0
-        blobs: dict[str, bytes] = {}
-        for i in [chosen] + ([settings_info] if settings_info else []):
+        to_read = gcodes + ([settings_info] if settings_info else [])
+        for i in to_read:
             if i.file_size > MAX_FILE_BYTES or i.compress_size and i.file_size / i.compress_size > MAX_RATIO:
                 raise PreflightError("ARCHIVE_TOO_LARGE", "entry too large or suspicious compression ratio")
-            total += i.file_size
-            if total > MAX_TOTAL_BYTES:
-                raise PreflightError("ARCHIVE_TOO_LARGE", "uncompressed size too large")
+        if sum(i.file_size for i in to_read) > MAX_TOTAL_BYTES:  # shared cap, checked before any read
+            raise PreflightError("ARCHIVE_TOO_LARGE", "uncompressed size too large")
+        total = 0
+        blobs: dict[str, bytes] = {}
+        for i in to_read:
             with z.open(i) as fh:
                 blob = fh.read(MAX_FILE_BYTES + 1)  # bounded: the declared size is not trusted
-            if len(blob) > MAX_FILE_BYTES or len(blob) != i.file_size:
+            total += len(blob)
+            if len(blob) > MAX_FILE_BYTES or len(blob) != i.file_size or total > MAX_TOTAL_BYTES:
                 raise PreflightError("ARCHIVE_TOO_LARGE", "entry size mismatch")
             blobs[i.filename] = blob
     settings = _settings_text(blobs[SETTINGS_ENTRY]) if SETTINGS_ENTRY in blobs else None
-    info = {"kind": "3mf", "entry": chosen.filename, "plates": len(gcodes), "settings": settings is not None}
-    return blobs[chosen.filename], settings, info
+    info = {"kind": "3mf", "entry": gcodes[0].filename, "plates": len(gcodes), "settings": settings is not None}
+    return [(i.filename, plate_no(i), blobs[i.filename]) for i in gcodes], settings, info
+
+
+def extract_3mf(data: bytes) -> tuple[bytes, dict[str, str] | None, dict[str, Any]]:
+    """First sliced plate only (same checks as `extract_3mf_plates`, which reads every plate)."""
+    plates, settings, info = extract_3mf_plates(data)
+    return plates[0][2], settings, info
 
 
 def analyze_3mf(data: bytes, name: str | None = None) -> dict[str, Any]:
-    gcode, settings, info = extract_3mf(data)
-    out = analyze(gcode, name, settings)
+    """Pre-flight of EVERY sliced plate of a 3MF.
+
+    The top-level `file`/`slicer`/`checks`/`summary`/`limits` are those of the first plate (unchanged for a one-plate
+    3MF and for older clients); `plates` holds one result per plate ({plate, entry, refused, file, slicer, checks, summary}) and
+    `combined` adds up the check counts of all plates (counts only: no ranking, no score). A plate that is not G-code
+    text (empty, binary) is listed with `refused` set to its error code; the file is refused only when no plate is readable.
+    """
+    plates, settings, info = extract_3mf_plates(data)
+    results: list[tuple[str, int | None, dict[str, Any] | None, str | None]] = []
+    for entry, no, blob in plates:
+        try:
+            results.append((entry, no, analyze(blob, name, settings), None))
+        except PreflightError as e:  # one empty or binary plate does not hide the others
+            results.append((entry, no, None, e.code))
+    ok = [r for _, _, r, _ in results if r is not None]
+    if not ok:
+        first = next(c for *_, c in results if c)
+        raise PreflightError(first, "no sliced plate of this 3MF could be read as G-code")
+    out = dict(ok[0])
     out["source"] = info
+    out["plates"] = [{"plate": no, "entry": entry, "refused": code, **({k: r[k] for k in ("file", "slicer", "checks", "summary")} if r else {})}
+                     for entry, no, r, code in results]
+    out["combined"] = {"plates": len(results), "refused": sum(1 for *_, c in results if c),
+                       "summary": {k: sum(r["summary"][k] for r in ok) for k in ("FAIL", "WARN", "PASS", "INFO", "UNKNOWN")}}
     return out

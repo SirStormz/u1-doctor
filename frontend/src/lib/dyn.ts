@@ -22,6 +22,7 @@ const EVENT: Record<string, string> = {
   extruder_offsets: "décalages des extrudeurs", nozzle_diameters: "diamètres de buse", gcode_nozzle_diameter: "diamètre de buse du G-code",
   heater_window: "fenêtre de chauffe", clock_check: "contrôle des horloges", disk_usage: "occupation du disque", extruder_activity: "activité des extrudeurs",
   bed_mesh_points: "points du maillage du plateau", live_coverage: "couverture de la capture", connectivity_check: "autodiagnostic de la connexion",
+  history_totals: "totaux de l'historique des travaux",
 };
 const ENTITY: Record<string, string> = { printer: "imprimante", toolhead_1: "tête 1", toolhead_2: "tête 2", toolhead_3: "tête 3", toolhead_4: "tête 4", unmapped: "non associé" };
 

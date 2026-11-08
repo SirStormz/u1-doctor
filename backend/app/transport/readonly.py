@@ -73,7 +73,7 @@ class ReadOnlyMoonrakerTransport:
             headers={"User-Agent": "U1-Doctor/0 (read-only)"},
         )
 
-    # --- the only four operations (all GET) ---------------------------
+    # --- the only five operations (all GET) ---------------------------
     def get_server_info(self) -> dict[str, Any]:
         return self._send("GET", "/server/info")
 
@@ -86,6 +86,10 @@ class ReadOnlyMoonrakerTransport:
     def get_logs_disk_usage(self) -> dict[str, Any]:
         """GET /server/files/directory?path=logs. Only `disk_usage` of the reply is meant to be kept (BACKLOG #57)."""
         return self._send("GET", "/server/files/directory", query={"path": "logs"})
+
+    def get_history_totals(self) -> dict[str, Any]:
+        """GET /server/history/totals (no query). Only four job totals of the reply are meant to be kept (BACKLOG #65)."""
+        return self._send("GET", "/server/history/totals")
 
     # --- internals ----------------------------------------------------
     def _send(self, method: str, path: str, body: bytes | None = None, query: dict[str, str] | None = None) -> dict[str, Any]:

@@ -23,7 +23,7 @@ for (const e of cat.entries) { add(e.title); add(e.summary); for (const n of e.f
 [
   "The displayed code may not represent the actual fault source (official wiki note).", "Code declared by the user; not verified from the machine.",
   "code must be ASCII text like dddd-dddd-dddd-dddd", "code must match dddd-dddd-dddd-dddd (digits only, no spaces)",
-  "Moonraker HTTP :7125", "Objects list", "Objects query", "WebSocket subscribe", "Live error codes", "Toolhead 1-4 mapping", "Official firmware version", "Offline code decoder", "Deterministic replay", "Log partition usage read", "Cavity sensor and bed mesh subscription", "Live rules S22-S24", "Live rules S17-S21", "Connectivity self-check",
+  "Moonraker HTTP :7125", "Objects list", "Objects query", "WebSocket subscribe", "Live error codes", "Toolhead 1-4 mapping", "Official firmware version", "Offline code decoder", "Deterministic replay", "Log partition usage read", "Cavity sensor and bed mesh subscription", "Live rules S22-S24", "Live rules S17-S21", "Connectivity self-check", "Job history totals read", "Maintenance reminders",
   "Toolhead 3 · nozzle", "Bed", "Print state",
 ].forEach(add);
 

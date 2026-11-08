@@ -1,4 +1,5 @@
 import type { PfCheck } from "./lib/preflight-text";
+import type { MaintenanceInputs } from "./lib/maintenance";
 import type { SupportOut } from "./lib/support-text";
 export interface Observation {
   observation_id: string;
@@ -122,6 +123,8 @@ export interface LiveOut {
   /** connectivity self-check (BACKLOG #59), measured on the same requests; UNTESTED on a real U1 */
   connectivity?: LiveConnectivity;
   budget?: { max_get: number; max_ws_sent: number };
+  /** job-history totals and switch counters for the local maintenance reminders (BACKLOG #65); UNTESTED on a real U1 */
+  maintenance_inputs?: MaintenanceInputs;
   observations: Observation[]; findings: Finding[];
   session: { id: string; label: string } | null; already_saved?: boolean;
 }
@@ -182,6 +185,13 @@ export interface PreflightOut {
   file: { bytes: number; lines: number; name_provided: boolean }; slicer: { name: string | null; version: string | null };
   checks: PfCheck[]; summary: Record<"FAIL" | "WARN" | "PASS" | "INFO" | "UNKNOWN", number>; limits: string[];
   source?: { kind: "3mf"; entry: string; plates: number; settings: boolean };
+  /** 3MF only: one result per sliced plate (every plate is checked), and the counts added up over all plates */
+  plates?: PfPlate[];
+  combined?: { plates: number; refused: number; summary: PreflightOut["summary"] };
+}
+export interface PfPlate {
+  plate: number | null; entry: string; refused: string | null;
+  file?: PreflightOut["file"]; slicer?: PreflightOut["slicer"]; checks?: PfCheck[]; summary?: PreflightOut["summary"];
 }
 export class PreflightRefused extends Error { constructor(public code: string) { super(code); } }
 export const preflight = async (file: File): Promise<PreflightOut> => {

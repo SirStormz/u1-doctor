@@ -200,7 +200,9 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
                 ("Live error codes", "UNTESTED"), ("Toolhead 1-4 mapping", "UNTESTED"), ("Official firmware version", "TESTED_REAL"),
                 ("Offline code decoder", "TESTED_SYNTHETIC"), ("Deterministic replay", "TESTED_REAL"),
                 ("Log partition usage read", "TESTED_REAL"), ("Cavity sensor and bed mesh subscription", "TESTED_REAL"),
-                ("Live rules S22-S24", "TESTED_REAL"), ("Live rules S17-S21", "UNTESTED"), ("Connectivity self-check", "TESTED_REAL")]
+                ("Live rules S22-S24", "TESTED_REAL"), ("Live rules S17-S21", "UNTESTED"), ("Connectivity self-check", "TESTED_REAL"),
+                # BACKLOG #65 (2026-11-08, code only): the job-history read and the local reminders never ran on a real U1.
+                ("Job history totals read", "UNTESTED"), ("Maintenance reminders", "UNTESTED")]
         return {"verified_on_hardware": True, "firmware_target": "V2.1.0",
                 "capabilities": [{"name": n, "status": s} for n, s in caps],
                 "rows": [{"firmware": fw, "rest_readonly": "TESTED_REAL" if fw == "V2.1.0" else "UNTESTED",
@@ -473,8 +475,9 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
     def live_capture(body: LiveIn) -> dict[str, Any]:
         """Owner-triggered read-only capture from one private address. Needs `consent: true`.
 
-        4 GET + 1 WebSocket subscribe message; if the stream drops early, up to 6 more read-only status GET: 10 GET and
-        1 WebSocket message at most (see app.live). A foreign `Origin` or a missing app header is refused by the
+        5 GET + 1 WebSocket subscribe message; if the stream drops early, up to 6 more read-only status GET: 11 GET and
+        1 WebSocket message at most (see app.live). `maintenance_inputs` carries the job-history totals and switch counters
+        the app's local maintenance reminders use (None = not observable). A foreign `Origin` or a missing app header is refused by the
         `same_app_only` middleware before this runs. The address is compared with the previous capture through a keyed
         fingerprint only (`_target_fp`); the address itself is never stored.
         """

@@ -23,6 +23,9 @@ ALLOWED_HTTP = MappingProxyType(
         ("GET", "/printer/info"): "printer.info",
         ("GET", "/printer/objects/list"): "printer.objects.list",
         ("GET", "/server/files/directory"): "server.files.directory",
+        # Job-history totals for the maintenance reminders (BACKLOG #65, ADR-0002 amendment 2026-11-08 b). Fixed path, no
+        # query; only total_print_time, total_jobs, total_filament_used and total_time are kept (app.live._totals).
+        ("GET", "/server/history/totals"): "server.history.totals",
     }
 )
 

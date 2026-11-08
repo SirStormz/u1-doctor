@@ -1,19 +1,21 @@
 import { useEffect, useState } from "react";
 import { Ban, Cpu, ExternalLink, FlaskConical, History, Info, MessageSquareText, Play, Plug, Search, ShieldCheck, Settings as SettingsIcon, TriangleAlert, Users } from "lucide-react";
-import { api, firmwareIssues, goodToKnow, knownIssues, liveApi, LiveRefused, preflight, supportChecklist, PreflightRefused, type CommunityCause, type InterpretOut, type LiveOut, type FirmwareIssues, type GoodToKnow, type KnownIssues, type MessageMatch, type PreflightOut } from "../api";
+import { api, firmwareIssues, goodToKnow, knownIssues, liveApi, LiveRefused, preflight, supportChecklist, PreflightRefused, type CommunityCause, type InterpretOut, type LiveOut, type FirmwareIssues, type GoodToKnow, type KnownIssues, type MessageMatch, type PfPlate, type PreflightOut } from "../api";
 import { Button, Chip, Kbd, Panel, ProvenanceChip, SeverityChip, Seal, StateBlock } from "../components/ui";
 import { PageTitle } from "../components/shell";
 import { useIncident } from "../lib/data";
 import { usePrefs, type Density, type Mode, type Theme } from "../lib/prefs";
 import { errText } from "../lib/errors";
 import { moduleLabel, scenarioLabel, tok, tx } from "../lib/dyn";
-import { pfLimit, pfView } from "../lib/preflight-text";
+import { pfLimit, pfView, type PfCheck } from "../lib/preflight-text";
 import { buildRequest, supNote, supText, type SupportOut } from "../lib/support-text";
 import type { RouteName } from "../lib/router";
 import { EvidenceNotice } from "../components/evidence-notice";
 import { LiveNet } from "../components/live-net";
 import { CaptureAlert, useCaptureAlert } from "../components/capture-alert";
 import { loadGcodeNozzle, nozzleFromPreflight, saveGcodeNozzle } from "../lib/gcode-nozzle";
+import { MaintenanceDue, MaintenancePanel } from "../components/maintenance";
+import { currentFrom, dueTasks, loadTasks, saveCurrent, type Current } from "../lib/maintenance";
 
 type Go = (n: RouteName, p?: string) => void;
 
@@ -54,7 +56,7 @@ export function Welcome({ go }: { go: Go }) {
 }
 
 /* ---------------- Connect (read-only live capture, owner-approved) ---------------- */
-const ALLOW = [["GET", "/server/info"], ["GET", "/printer/info"], ["GET", "/printer/objects/list"], ["GET", "/server/files/directory?path=logs"], ["WS", "printer.objects.subscribe"]];
+const ALLOW = [["GET", "/server/info"], ["GET", "/printer/info"], ["GET", "/printer/objects/list"], ["GET", "/server/files/directory?path=logs"], ["GET", "/server/history/totals"], ["WS", "printer.objects.subscribe"]];
 const DENY = ["printer.gcode.script", "printer.print.*", "printer.restart", "machine.*", "server.files.upload", "server.files.delete", "/printer/objects/query"];
 export function Connect() {
   const { t, lang } = usePrefs();
@@ -67,13 +69,17 @@ export function Connect() {
   const [out, setOut] = useState<LiveOut | null>(null);
   const [gcodeMm] = useState<number[] | null>(() => loadGcodeNozzle());
   const alert = useCaptureAlert("live-result");
+  const [maint, setMaint] = useState<Current | null>(null);
 
   async function run() {
-    setBusy(true); setErr(null); setOut(null); alert.clear();
+    setBusy(true); setErr(null); setOut(null); setMaint(null); alert.clear();
     try {
       const r = await liveApi.capture(host.trim(), secs, save, gcodeMm ?? undefined);
       setOut(r);
-      alert.raise(r.findings, r.observations, [r.printer.klippy_state, r.printer.printer_state]);
+      // maintenance reminders (local, BACKLOG #65): keep this capture's totals, count the tasks due with them
+      const cur = r.maintenance_inputs ? currentFrom(r.maintenance_inputs, r.captured_utc) : null;
+      if (cur) { saveCurrent(cur); setMaint(cur); }
+      alert.raise(r.findings, r.observations, [r.printer.klippy_state, r.printer.printer_state], cur ? dueTasks(loadTasks(), cur).length : 0);
     }
     catch (e) { setErr((e instanceof LiveRefused ? t.liveErr[e.code] ?? t.apiErr[e.code] : undefined) ?? t.liveErr["UNKNOWN"] ?? ""); }
     finally { setBusy(false); }
@@ -125,6 +131,7 @@ export function Connect() {
             </div>
           )}
           {out?.connectivity && <LiveNet net={out.connectivity} />}
+          {out && maint && <MaintenanceDue cur={maint} tasks={loadTasks()} />}
           <Panel title={t.allowlist} icon={<ShieldCheck size={17} />} i={2} demo={false}>
             <table className="w-full text-left text-sm"><caption className="sr-only">{t.allowlist}</caption><tbody>{ALLOW.map(([m, p]) => (<tr key={p} className="border-t border-line first:border-0"><td className="py-1.5 pr-3"><Chip tone="ok">{m}</Chip></td><td className="mono text-xs">{p}</td></tr>))}</tbody></table>
           </Panel>
@@ -478,6 +485,84 @@ function SupportList({ code, firmware, title }: { code: string; firmware?: strin
 const PF_TONE = { FAIL: "danger", WARN: "warn", PASS: "ok", INFO: "neutral", UNKNOWN: "neutral" } as const;
 
 /* ---------------- G-code pre-flight ---------------- */
+const PF_ORDER = { FAIL: 0, WARN: 1, UNKNOWN: 2, INFO: 3, PASS: 4 } as const;
+const PF_KEYS = ["FAIL", "WARN", "UNKNOWN", "INFO", "PASS"] as const;
+
+function PfSummary({ summary }: { summary: PreflightOut["summary"] }) {
+  const { t } = usePrefs();
+  return <>{PF_KEYS.map((k) => <Chip key={k} tone={PF_TONE[k]}>{t[`pf${k}` as "pfFAIL"]} · {summary[k]}</Chip>)}</>;
+}
+
+function PfChecks({ checks, onCode }: { checks: PfCheck[]; onCode: (code: string) => void }) {
+  const { t, lang } = usePrefs();
+  return (
+    <ul className="mt-4 grid gap-3">
+      {[...checks].sort((a, b) => PF_ORDER[a.status] - PF_ORDER[b.status]).map((c) => {
+        const v = pfView(lang, c);
+        return (
+          <li key={c.id} className="rounded-lg border border-control p-3" data-status={c.status}>
+            <div className="flex flex-wrap items-center gap-2"><Chip tone={PF_TONE[c.status]}>{t[`pf${c.status}` as "pfFAIL"]}</Chip><strong>{v.title}</strong></div>
+            <p className="mt-1.5 text-[15px]">{v.detail}</p>
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-ink3">
+              {c.evidence.count > 0 && <span className="mono">{c.evidence.count} {t.pfMatches} · {t.pfLines} {c.evidence.lines.join(", ")}{c.evidence.count > c.evidence.lines.length ? "…" : ""}</span>}
+              {c.code && <button type="button" className="chip" data-tone="accent" onClick={() => onCode(c.code!)}>{c.code} · {t.pfOpenCode}</button>}
+              <a href={c.reference.url} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 underline">{c.reference.title}<ExternalLink size={12} aria-hidden /></a>
+            </div>
+            {c.community && (
+              <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-ink3" data-testid="pf-community">
+                <Chip tone="warn">{t.pfCommunity.replace("{d}", c.community.checked)}</Chip>
+                {c.community.sources.filter((x) => x.url !== c.reference.url).map((x) => <a key={x.url} href={x.url} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 underline">{x.title}<ExternalLink size={12} aria-hidden /></a>)}
+              </div>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+/** Several sliced plates of one 3MF: one tab per plate (WAI-ARIA tabs; arrow keys, Home and End move between plates). */
+function PfPlates({ plates, onCode }: { plates: PfPlate[]; onCode: (code: string) => void }) {
+  const { t, lang } = usePrefs();
+  const [sel, setSel] = useState(0);
+  const name = (p: PfPlate) => (p.plate != null ? t.pfPlate.replace("{n}", String(p.plate)) : p.entry.replace(/^Metadata\//, ""));
+  const cur = plates[Math.min(sel, plates.length - 1)]!;
+  function key(e: React.KeyboardEvent, k: number) {
+    const n = plates.length;
+    const next = e.key === "ArrowRight" ? (k + 1) % n : e.key === "ArrowLeft" ? (k - 1 + n) % n : e.key === "Home" ? 0 : e.key === "End" ? n - 1 : -1;
+    if (next < 0) return;
+    e.preventDefault(); setSel(next);
+    document.getElementById(`pf-tab-${next}`)?.focus();
+  }
+  return (
+    <div className="mt-4" data-testid="pf-plates">
+      <div role="tablist" aria-label={t.pfPlates} className="flex flex-wrap gap-2">
+        {plates.map((p, k) => (
+          <button key={p.entry} id={`pf-tab-${k}`} type="button" role="tab" aria-selected={k === sel} aria-controls="pf-plate-panel" tabIndex={k === sel ? 0 : -1}
+            onClick={() => setSel(k)} onKeyDown={(e) => key(e, k)} className="chip" data-tone={k === sel ? "accent" : "neutral"}>
+            {name(p)}{p.refused ? ` · ${t.pfPlateRefused}` : p.summary && p.summary.FAIL > 0 ? ` · ${t.pfFAIL} ${p.summary.FAIL}` : ""}
+          </button>
+        ))}
+      </div>
+      <div id="pf-plate-panel" role="tabpanel" aria-labelledby={`pf-tab-${sel}`} tabIndex={0} className="mt-3 outline-none" data-plate={cur.plate ?? ""}>
+        <p className="mono text-xs text-ink3">{cur.entry}{cur.file ? ` · ${cur.file.lines.toLocaleString(lang)} ${t.pfLines}` : ""}</p>
+        {cur.refused ? <p className="mt-2 text-ink2">{(t.pfRefusal as Record<string, string>)[cur.refused] ?? t.pfRefusal.UNKNOWN}</p> : (
+          <>
+            {cur.summary && <div className="mt-2 flex flex-wrap items-center gap-2"><PfSummary summary={cur.summary} /></div>}
+            {cur.checks && <PfChecks checks={cur.checks} onCode={onCode} />}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** distinct nozzle diameters declared by every checked plate (or by the single G-code), handed to the live capture (S20) */
+function nozzleOf(r: PreflightOut): number[] | null {
+  const all = (r.plates?.length ? r.plates.map((p) => p.checks ?? []) : [r.checks]).flatMap((c) => nozzleFromPreflight(c) ?? []);
+  return all.length ? [...new Set(all)].sort((a, b) => a - b) : null;
+}
+
 function Preflight({ onCode }: { onCode: (code: string) => void }) {
   const { t, lang } = usePrefs();
   const [res, setRes] = useState<PreflightOut | null>(null);
@@ -486,12 +571,11 @@ function Preflight({ onCode }: { onCode: (code: string) => void }) {
   async function pick(f: File | undefined) {
     if (!f) return;
     setBusy(true); setErr(null); setRes(null);
-    try { const r = await preflight(f); setRes(r); saveGcodeNozzle(nozzleFromPreflight(r.checks)); }
+    try { const r = await preflight(f); setRes(r); saveGcodeNozzle(nozzleOf(r)); }
     catch (e) { setErr(e instanceof PreflightRefused ? (t.pfRefusal as Record<string, string>)[e.code] ?? t.pfRefusal.UNKNOWN : errText(t, e)); }
     finally { setBusy(false); }
   }
-  const order = { FAIL: 0, WARN: 1, UNKNOWN: 2, INFO: 3, PASS: 4 } as const;
-  const checks = res ? [...res.checks].sort((a, b) => order[a.status] - order[b.status]) : [];
+  const multi = res?.plates && res.plates.length > 1 ? res.plates : null;
   return (
     <div className="mt-4">
       <Panel title={t.pfTitle} i={2} active={!!res}>
@@ -505,35 +589,15 @@ function Preflight({ onCode }: { onCode: (code: string) => void }) {
           {!res && !err && !busy && <p className="text-ink3">{t.pfEmpty}</p>}
           {res && (
             <>
-              <div className="flex flex-wrap items-center gap-2">
-                {(["FAIL", "WARN", "UNKNOWN", "INFO", "PASS"] as const).map((k) => <Chip key={k} tone={PF_TONE[k]}>{t[`pf${k}` as "pfFAIL"]} · {res.summary[k]}</Chip>)}
-                <span className="mono text-xs text-ink3">{res.file.lines.toLocaleString(lang)} {t.pfLines}</span>
+              <div className="flex flex-wrap items-center gap-2" data-testid="pf-summary">
+                {multi && res.combined && <span className="micro">{t.pfCombined}</span>}
+                <PfSummary summary={multi && res.combined ? res.combined.summary : res.summary} />
+                {!multi && <span className="mono text-xs text-ink3">{res.file.lines.toLocaleString(lang)} {t.pfLines}</span>}
               </div>
               {res.source?.kind === "3mf" && (
-                <p className="mt-2 text-sm text-ink2" data-testid="pf-3mf">{t.pfFrom3mf.replace("{entry}", res.source.entry).replace("{n}", String(res.source.plates))}{res.source.settings ? ` ${t.pfSettings3mf}` : ""}</p>
+                <p className="mt-2 text-sm text-ink2" data-testid="pf-3mf">{(multi ? t.pfFrom3mfAll : t.pfFrom3mf).replace("{entry}", res.source.entry).replace("{n}", String(res.source.plates))}{res.source.settings ? ` ${t.pfSettings3mf}` : ""}</p>
               )}
-              <ul className="mt-4 grid gap-3">
-                {checks.map((c) => {
-                  const v = pfView(lang, c);
-                  return (
-                    <li key={c.id} className="rounded-lg border border-control p-3" data-status={c.status}>
-                      <div className="flex flex-wrap items-center gap-2"><Chip tone={PF_TONE[c.status]}>{t[`pf${c.status}` as "pfFAIL"]}</Chip><strong>{v.title}</strong></div>
-                      <p className="mt-1.5 text-[15px]">{v.detail}</p>
-                      <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-ink3">
-                        {c.evidence.count > 0 && <span className="mono">{c.evidence.count} {t.pfMatches} · {t.pfLines} {c.evidence.lines.join(", ")}{c.evidence.count > c.evidence.lines.length ? "…" : ""}</span>}
-                        {c.code && <button type="button" className="chip" data-tone="accent" onClick={() => onCode(c.code!)}>{c.code} · {t.pfOpenCode}</button>}
-                        <a href={c.reference.url} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 underline">{c.reference.title}<ExternalLink size={12} aria-hidden /></a>
-                      </div>
-                      {c.community && (
-                        <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-ink3" data-testid="pf-community">
-                          <Chip tone="warn">{t.pfCommunity.replace("{d}", c.community.checked)}</Chip>
-                          {c.community.sources.filter((x) => x.url !== c.reference.url).map((x) => <a key={x.url} href={x.url} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 underline">{x.title}<ExternalLink size={12} aria-hidden /></a>)}
-                        </div>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
+              {multi ? <PfPlates plates={multi} onCode={onCode} /> : <PfChecks checks={res.checks} onCode={onCode} />}
               <ul className="mt-4 grid gap-1.5">{res.limits.map((l) => <li key={l} className="flex gap-2 text-sm"><span className="text-warn" aria-hidden>▲</span>{pfLimit(lang, l)}</li>)}</ul>
             </>
           )}
@@ -640,7 +704,8 @@ export function SettingsScreen() {
             <dt className="text-ink3">{t.retention}</dt><dd className="text-ink2">{t.retentionNote}</dd>
           </dl>
         </Panel>
-        <div className="xl:col-span-2"><Panel title={t.compat} i={2} bodyClass="p-0">
+        <div className="xl:col-span-2"><MaintenancePanel i={2} /></div>
+        <div className="xl:col-span-2"><Panel title={t.compat} i={3} bodyClass="p-0">
           <div className="overflow-x-auto"><table className="w-full text-left"><caption className="sr-only">{t.compat}</caption>
             <thead className="micro"><tr><th className="px-4 py-3">{t.capability}</th><th>{t.status}</th></tr></thead>
             <tbody>{inc.compat?.capabilities.map((c) => (<tr key={c.name} className="border-t border-line"><td className="px-4 py-2.5">{tx(lang, c.name)}</td><td><Chip tone={c.status === "TESTED_REAL" ? "ok" : c.status === "TESTED_SYNTHETIC" ? "demo" : "neutral"}>{tok(lang, "status", c.status)}</Chip></td></tr>))}</tbody></table></div>

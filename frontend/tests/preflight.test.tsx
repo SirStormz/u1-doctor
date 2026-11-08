@@ -129,3 +129,38 @@ test("a 3MF without sliced G-code is refused with a translated message", async (
   fireEvent.change(input, { target: { files: [new File(["PK"], "model.3mf")] } });
   await waitFor(() => expect(screen.getByText(/U1 Doctor does not slice/)).toBeTruthy());
 });
+
+test("a 3MF with several plates shows the combined counts and one accessible tab per plate", async () => {
+  const p1 = { plate: 1, entry: "Metadata/plate_1.gcode", refused: null, file: REPORT.file, slicer: REPORT.slicer, checks: [check({ id: "m28_m30", status: "PASS", title: "Plate one check" })], summary: { FAIL: 0, WARN: 0, PASS: 1, INFO: 0, UNKNOWN: 0 } };
+  const p2 = { ...p1, plate: 2, entry: "Metadata/plate_2.gcode", checks: [check({ id: "decimal_comma", status: "FAIL", title: "Plate two failure", params: { old_orca: true } })], summary: { FAIL: 1, WARN: 0, PASS: 0, INFO: 0, UNKNOWN: 0 } };
+  const p3 = { plate: 3, entry: "Metadata/plate_3.gcode", refused: "EMPTY" };
+  const rep = { ...REPORT, checks: p1.checks, summary: p1.summary, source: { kind: "3mf", entry: "Metadata/plate_1.gcode", plates: 3, settings: false },
+    plates: [p1, p2, p3], combined: { plates: 3, refused: 1, summary: { FAIL: 1, WARN: 0, PASS: 1, INFO: 0, UNKNOWN: 0 } } };
+  vi.stubGlobal("fetch", vi.fn(async (url: string) => (String(url).includes("/preflight/3mf") ? { ok: true, status: 200, json: async () => rep } : { ok: true, status: 200, json: async () => ({}) })));
+  render(<App />);
+  fireEvent.change(await screen.findByLabelText(/Choose a G-code file/i), { target: { files: [new File(["PK"], "multi.3mf")] } });
+  const tabs = await screen.findAllByRole("tab");
+  expect(tabs.map((x) => x.textContent)).toEqual(["Plate 1", "Plate 2 · Will fail 1", "Plate 3 · not readable"]);
+  expect(tabs[0]!.getAttribute("aria-selected")).toBe("true");
+  expect(screen.getByTestId("pf-summary").textContent).toContain("All plates");
+  expect(screen.getByTestId("pf-3mf").textContent).toContain("all 3 sliced plates are checked");
+  expect(screen.getByRole("tabpanel").textContent).toContain("Plate one check");
+  fireEvent.keyDown(tabs[0]!, { key: "ArrowRight" });
+  await waitFor(() => expect(screen.getByRole("tabpanel").textContent).toContain("Plate two failure"));
+  expect(document.activeElement).toBe(screen.getAllByRole("tab")[1]);
+  fireEvent.click(screen.getAllByRole("tab")[2]!);
+  await waitFor(() => expect(screen.getByRole("tabpanel").textContent).toContain("The file is empty."));
+  fireEvent.keyDown(screen.getAllByRole("tab")[2]!, { key: "Home" });
+  await waitFor(() => expect(screen.getAllByRole("tab")[0]!.getAttribute("aria-selected")).toBe("true"));
+});
+
+test("a 3MF with one plate keeps the single-plate view (no tabs)", async () => {
+  const rep = { ...REPORT, source: { kind: "3mf", entry: "Metadata/plate_1.gcode", plates: 1, settings: false },
+    plates: [{ plate: 1, entry: "Metadata/plate_1.gcode", refused: null, ...REPORT }], combined: { plates: 1, refused: 0, summary: REPORT.summary } };
+  vi.stubGlobal("fetch", vi.fn(async (url: string) => (String(url).includes("/preflight/3mf") ? { ok: true, status: 200, json: async () => rep } : { ok: true, status: 200, json: async () => ({}) })));
+  render(<App />);
+  fireEvent.change(await screen.findByLabelText(/Choose a G-code file/i), { target: { files: [new File(["PK"], "one.3mf")] } });
+  await waitFor(() => expect(screen.getByText("Decimal commas in motion or temperature commands")).toBeTruthy());
+  expect(screen.queryByRole("tab")).toBeNull();
+  expect(screen.getByTestId("pf-3mf").textContent).toContain("the only sliced plate");
+});

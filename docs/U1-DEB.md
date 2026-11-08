@@ -21,7 +21,7 @@ Version history: **1.0.0** the original layout; **1.1.0** adds the optional `sup
 
 Canonical JSON everywhere (sorted keys, no spaces, UTF-8). `generated_at` is metadata only and is not part of the logical replay hash. The zip is written deterministically (fixed timestamps, sorted entries): same inputs ⇒ same bytes.
 
-### Live-capture event types (2026-11-08, BACKLOG #57/#59, UNTESTED on a real U1)
+### Live-capture event types (2026-11-08, BACKLOG #57/#59/#65, UNTESTED on a real U1)
 
 `event_type` stays a free `^[a-z0-9_]{1,64}$` string, so the schema and the validator are unchanged (no new `source_status`). A live capture adds one window summary per source, entity `printer`, values keyed by the Klipper object name (never a toolhead number):
 
@@ -36,6 +36,7 @@ Canonical JSON everywhere (sorted keys, no spaces, UTF-8). `generated_at` is met
 | `extruder_activity` | `{extruders: {name: {state_changes, switch_count: [first, last], retry_count: [...], error_count: [...]}}, homing_changes}` | S23 |
 | `bed_mesh_points` | `{rows, cols, points, min_mm, max_mm, range_mm, mean_mm, stdev_mm}` or `{points: 0}` | S24 |
 | `live_coverage` | `{absent: [source keys not reported in this capture]}`: makes S17-S24 say "not observable" instead of staying silent | S17-S24 |
+| `history_totals` | `{total_jobs, total_print_time (s), total_filament_used (mm), total_time (s)}` as Moonraker's job history reports them (`source_ref` `server.history.totals`); absent when the history component does not answer | none (maintenance reminders, computed locally in the app) |
 | `connectivity_check` | `{requests: [{op, ms, status}], ws_drops, ws_reconnects (always 0), ws_frames_received, ip_changed (true, false or null), max_ms, median_ms}` | none (shown in Connect, exported as is) |
 
 Older bundles have none of these: the new rules then produce nothing.

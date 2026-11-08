@@ -1,9 +1,9 @@
-"""Owner-triggered live capture from the UI (BACKLOG #3, #8, #57, #59). Read-only, bounded, on explicit consent.
+"""Owner-triggered live capture from the UI (BACKLOG #3, #8, #57, #59, #65). Read-only, bounded, on explicit consent.
 
-Sends 4 GET requests (/server/info, /printer/info, /printer/objects/list, /server/files/directory?path=logs) and one
-WebSocket `printer.objects.subscribe` message to one RFC1918 address on port 7125, then listens for a few seconds.
-If the stream drops early, it probes with up to PROBES x 2 = 6 more read-only status GET (/server/info,
-/printer/info): MAX_GET = 10 GET and MAX_WS_SENT = 1 WebSocket message at most, never more (the consent text in the
+Sends 5 GET requests (/server/info, /printer/info, /printer/objects/list, /server/files/directory?path=logs,
+/server/history/totals) and one WebSocket `printer.objects.subscribe` message to one RFC1918 address on port 7125,
+then listens for a few seconds. If the stream drops early, it probes with up to PROBES x 2 = 6 more read-only status
+GET (/server/info, /printer/info): MAX_GET = 11 GET and MAX_WS_SENT = 1 WebSocket message at most, never more (the consent text in the
 UI states these numbers and a test keeps them equal). Nothing else can be sent: the only senders are the allowlisted
 methods of `app.transport`. The stream is never reopened (0 reconnects by design). The WebSocket client sends no
 keepalive pings; it only answers the peer at protocol level (pong to a ping, the closing handshake). The result keeps
@@ -14,6 +14,7 @@ and are dropped when the call ends.
 from __future__ import annotations
 
 import json
+import math
 import time
 from collections.abc import Callable
 from datetime import UTC, datetime
@@ -30,8 +31,10 @@ MAX_SECONDS = 60
 MAX_FRAMES = 5000
 PROBES = 3
 PROBE_GAP_S = 3.0
-BASE_GET = 4  # server.info, printer.info, printer.objects.list, server.files.directory (logs disk usage)
-MAX_GET = BASE_GET + PROBES * 2  # 10: the consent text must state this maximum (tests/test_live_rules.py)
+BASE_GET = 5  # server.info, printer.info, printer.objects.list, server.files.directory (logs disk usage), server.history.totals
+MAX_GET = BASE_GET + PROBES * 2  # 11: the consent text must state this maximum (tests/test_live_rules.py)
+# The only job-history fields kept (BACKLOG #65); everything else in the reply (longest_job, auxiliary_totals...) is dropped unread.
+TOTALS_FIELDS = ("total_jobs", "total_print_time", "total_filament_used", "total_time")
 MAX_WS_SENT = 1
 # Added to the H-02 subscribe set for BACKLOG #57 (both listed by the real U1, never subscribed to: UNTESTED).
 EXTRA_OBJECTS: dict[str, list[str] | None] = {"temperature_sensor cavity": ["temperature"], "bed_mesh": ["probed_matrix"]}
@@ -59,6 +62,32 @@ def _disk(doc: dict[str, Any], t: str) -> dict[str, Any] | None:
     if not all(isinstance(v, int) and not isinstance(v, bool) and v >= 0 for v in vals.values()):
         return None
     return {"root": "logs", "total_bytes": vals["total"], "used_bytes": vals["used"], "free_bytes": vals["free"], "t": t}
+
+
+def _totals(doc: dict[str, Any], t: str) -> dict[str, Any] | None:
+    """Keep the four job totals of `result.job_totals`, drop everything else unread. None unless all four are valid:
+    `total_jobs` a non-negative integer, the three others non-negative finite numbers (seconds, seconds, mm)."""
+    jt = _result(doc).get("job_totals")
+    if not isinstance(jt, dict):
+        return None
+    vals = {k: jt.get(k) for k in TOTALS_FIELDS}
+    if not (isinstance(vals["total_jobs"], int) and not isinstance(vals["total_jobs"], bool) and vals["total_jobs"] >= 0):
+        return None
+    for k in TOTALS_FIELDS[1:]:
+        v = vals[k]
+        if not isinstance(v, int | float) or isinstance(v, bool) or not math.isfinite(v) or v < 0:
+            return None
+        vals[k] = round(float(v), 1)
+    return {**vals, "t": t}
+
+
+def _switch_counts(observations: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Last `switch_count` per extruder object, as the firmware reports it (read by the same subscribe as rule S23).
+    What the firmware counts there is not documented officially; the numbers are passed on as they are, with their sum."""
+    act = next((o["value"] for o in observations if o["event_type"] == "extruder_activity"), None)
+    per = {n: v["switch_count"][1] for n, v in ((act or {}).get("extruders") or {}).items()
+           if isinstance(v, dict) and isinstance(v.get("switch_count"), list) and len(v["switch_count"]) == 2}
+    return {"per_object": dict(sorted(per.items())), "total": sum(per.values())} if per else None
 
 
 def _audit_rows(tr: ReadOnlyMoonrakerTransport) -> list[dict[str, Any]]:
@@ -97,6 +126,10 @@ def run_live_capture(host: str, *, seconds: int, http_transport: httpx.BaseTrans
             disk = _disk(tr.get_logs_disk_usage(), disk_t)
         except (TransportError, httpx.HTTPError, OSError):
             disk = None
+        try:  # optional: history component off (404) or an error only makes the reminders say "not observable"
+            totals = _totals(tr.get_history_totals(), _now())
+        except (TransportError, httpx.HTTPError, OSError):
+            totals = None
         http_audit = _audit_rows(tr)
     finally:
         tr.close()
@@ -129,7 +162,7 @@ def run_live_capture(host: str, *, seconds: int, http_transport: httpx.BaseTrans
         ws.close()
 
     observations = frames_to_observations(lines)
-    observations += live_facts(lines, start=len(observations) + 1, disk=disk)
+    observations += live_facts(lines, start=len(observations) + 1, disk=disk, totals=totals)
     if gcode_nozzle_mm:
         at = observations[-1]["capture_utc"] if observations else disk_t
         observations.append(_obs(len(observations) + 1, at, "gcode_nozzle_diameter", {"mm": sorted({round(float(x), 3) for x in gcode_nozzle_mm})},
@@ -190,5 +223,12 @@ def run_live_capture(host: str, *, seconds: int, http_transport: httpx.BaseTrans
         "stream_dropped": dropped_at is not None,
         "connectivity": conn,
         "budget": {"max_get": MAX_GET, "max_ws_sent": MAX_WS_SENT},
+        # Inputs of the local maintenance reminders (BACKLOG #65); None = not observable in this capture. No judgement here:
+        # the reminders are computed in the app from these numbers and the owner's own intervals.
+        "maintenance_inputs": {
+            "history_totals": {k: totals[k] for k in TOTALS_FIELDS} if totals else None,
+            "history_status": next((a["status"] for a in http_audit if a["tag"] == "server.history.totals"), None),
+            "switch_count": _switch_counts(observations),
+        },
         "observations": observations,
     }
