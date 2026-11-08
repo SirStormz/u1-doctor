@@ -4,18 +4,18 @@ Contest: Snapmaker Innovation Fund Phase 2, Cash Fund, software. Posting closes 
 
 Hard rules: read-only; no U1 contact without the owner's explicit go; nothing invented; DEMO/SYNTHETIC always visible; unknown = INCONCLUSIVE.
 
-## Where we are (2026-11-08, late night) — the one list to follow
-**Code state:** everything below is committed and pushed on `main` (last commit 59d456c, CI green). The published exe / Latest release is still **v0.1.7-g1** and contains NONE of the 2026-11-08 work; the version in the code is still 0.1.7-g1. Local = GitHub = backup (`backups/…-59d456c`). Tests: 1192 backend, 181 UI, 16 e2e.
+## Where we are (2026-11-08, end of night) — the one list to follow
+**Release state:** **v0.1.8-g1 is published as Latest** (tag on commit 2f9bb8d, zip 24.6 MB, SHA-256 `265D992EC37D537D861D03183B765148A48F3C5F0671BD67FC64339F554A5E07`). `release.yml` ran green on its first run with the pinned dependencies, SHA-pinned actions and the build provenance attestation (`gh attestation verify` passed). The downloaded exe was run headless: health 0.1.8-g1, listens on 127.0.0.1 only, cross-site POST refused. Local = GitHub = backup. Tests: 1192 backend, 181 UI, 16 e2e.
 
 **Done 2026-11-08 (checked item by item against the audit and forum lists):** audit #52-#54 and #61 (H1, H2, M1-M7, L1-L10, missing tests, stale docs) · forum roadmap #55-#60 (causes, near-match, message matcher, ticket summary, evidence reminder, rules S17-S24, 10 G-code checks + 3MF with every plate, firmware issues table, connectivity self-check) · #64 (alert, good-to-know notes, sample report on Pages) · maintenance reminders · #51 hints and folded blocks · flaky test fixed · HOW-IT-WORKS.md.
 **Proven on the real U1 (supervised, read-only, 3 captures, nothing written):** log-partition read, cavity + bed-mesh subscription, S22-S24, connectivity numbers, `/server/history/totals`.
 
 **STILL OPEN, in this order**
-1. **Release 0.1.8-g1** (owner decision): bump version in the 6 places (a test checks them), run `release.yml` (first real run of the pinned deps + SHA-pinned actions + attestation; creates a DRAFT and a public attestation), publish as Latest, VirusTotal of the new zip, then README/INSTALL/LIMITS/Pages/memory sync and re-record the exe SHA-256.
-2. **Forum topic** (owner posts): message 1 still says "12 rules" and v0.1.6-g1; post a short reply with the new figures (20 rules, 20 checks, 0.1.8) after the release.
+1. **VirusTotal of the 0.1.8-g1 zip** (the owner uploads it, the site shows a CAPTCHA): then update README/INSTALL/LIMITS/IMPLEMENTATION_STATUS/Pages text ("not scanned yet" -> result) and the release notes. The zip is in the release; its SHA-256 is above.
+2. **Forum topic** (owner posts): message 1 still says "12 rules" and v0.1.6-g1; post a short reply with the new figures (20 rules, 20 checks, v0.1.8-g1 is out). Draft in `private/drafts/`.
 3. **Film:** `docs/media/film/fr.vtt` (and the voice) say "douze règles"; now 20 rules. Leave or redo.
 4. **Real fault capture or volunteer U1-DEB bundles** (weakest contest point), plus a second capture in the real app to exercise the address-change fingerprint.
-5. **Clean Windows 11 test** of the next exe (second-PC kit in `scripts/second-pc-test/`).
+5. **Clean Windows 11 test** of the 0.1.8-g1 exe (second-PC kit in `scripts/second-pc-test/`).
 6. **Untested on a real fault:** positive cases of S17-S21; maintenance reminders screen on a real result.
 7. **Needs a machine I do not have:** macOS/Linux builds, one-line install.
 8. **Contest, not code (#62):** plainer topic title, retest on firmware 2.1.1, useful replies on other threads, ask staff the vote dates (#27), independent tester (#22).

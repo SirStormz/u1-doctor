@@ -18,7 +18,7 @@ U1 Doctor is a local, read-only tool. Full analysis: [`docs/threat-model.md`](do
 ## Verifying a release
 
 - Each release lists the SHA-256 of its zip (`Get-FileHash .\<zip> -Algorithm SHA256`).
-- Builds released after `0.1.7-g1` also carry a GitHub build provenance attestation: `gh attestation verify .\<zip> --repo SirStormz/u1-doctor` confirms the zip was produced by this repository's release workflow and shows the commit. Not available for `0.1.7-g1` and older. See [`docs/INSTALL.md`](docs/INSTALL.md).
+- Builds from `0.1.8-g1` on also carry a GitHub build provenance attestation: `gh attestation verify .\<zip> --repo SirStormz/u1-doctor` confirms the zip was produced by this repository's release workflow and shows the commit. Not available for `0.1.7-g1` and older. See [`docs/INSTALL.md`](docs/INSTALL.md).
 - The release build installs Python packages at pinned versions (`backend/constraints-release.txt`) and every GitHub Action is pinned by full commit SHA.
 
 ## Reporting a vulnerability
@@ -43,4 +43,4 @@ Out of scope:
 
 ## Supported versions
 
-Pre-release. Version `0.1.7-g1` is the current build; only it and the current `main` are considered. `0.1.0-g1`, `0.1.1-g1`, `0.1.2-g1`, `0.1.4-g1`, `0.1.5-g1` and `0.1.6-g1` are superseded.
+Pre-release. Version `0.1.8-g1` is the current build; only it and the current `main` are considered. `0.1.0-g1`, `0.1.1-g1`, `0.1.2-g1`, `0.1.4-g1`, `0.1.5-g1`, `0.1.6-g1` and `0.1.7-g1` are superseded.

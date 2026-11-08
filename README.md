@@ -83,7 +83,7 @@ Press `Ctrl K` anywhere to jump to a screen or paste an error code.
    ```powershell
    Get-FileHash .\u1-doctor-0.1.8-g1-win64.zip -Algorithm SHA256
    ```
-   Compare with the value in the release notes: `137D74A73CD12687844C781186B1BCD21002BCF53F3735B1E0B0B0AA2442D4E7`.
+   Compare with the value in the release notes: `265D992EC37D537D861D03183B765148A48F3C5F0671BD67FC64339F554A5E07`.
 3. Right-click the zip, **Extract all** (not WinRAR or 7-Zip, so Windows keeps the download mark), then double-click `u1-doctor.exe`.
 4. A window opens with the app: no console, no browser. If the Microsoft WebView2 component is missing (some Windows 10 PCs), the app offers to install it once with Microsoft's own installer shipped in the zip (internet and a Windows permission prompt needed).
 
