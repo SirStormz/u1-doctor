@@ -18,6 +18,8 @@ def handler(req: httpx.Request) -> httpx.Response:
         "/server/info": httpx.Response(200, json={"result": {"moonraker_version": "v0.9", "klippy_state": "ready", "hostname": "secret-host"}}),
         "/printer/info": httpx.Response(200, json={"result": {"state": "ready", "software_version": "v1", "hostname": "secret-host"}}),
         "/printer/objects/list": httpx.Response(200, json={"result": {"objects": ["toolhead", "extruder"]}}),
+        "/server/files/directory": httpx.Response(200, json={"result": {"files": [{"filename": "secret_klippy.log"}], "dirs": [],
+                                                                         "disk_usage": {"total": 104857600, "used": 52428800, "free": 52428800}}}),
     }[req.url.path]
 
 
@@ -71,8 +73,8 @@ def test_capture_is_read_only_and_hides_address_and_names(client):
     r = post(client)
     assert r.status_code == 200, r.text
     j = r.json()
-    assert j["audit"]["non_read_operations"] == 0 and j["audit"]["read_operations"] == 4
-    assert [a["method"] for a in j["audit"]["http"]] == ["GET", "GET", "GET"]
+    assert j["audit"]["non_read_operations"] == 0 and j["audit"]["read_operations"] == 5
+    assert [a["method"] for a in j["audit"]["http"]] == ["GET", "GET", "GET", "GET"]
     assert len(client.conn.sent) == 1 and json.loads(client.conn.sent[0])["method"] == "printer.objects.subscribe"
     assert j["printer"]["klippy_state"] == "ready" and j["printer"]["object_count"] == 2
     assert j["source_status"] == "REAL" and {o["source_status"] for o in j["observations"]} == {"REAL"}
@@ -131,7 +133,7 @@ def _drop_client(monkeypatch, handler_fn):
 def test_dropped_stream_is_probed_read_only_and_feeds_s04(monkeypatch):
     j = _drop_client(monkeypatch, handler).post("/api/v1/live/capture", json={"host": HOST, "consent": True, "seconds": 3}).json()
     assert j["stream_dropped"] is True and j["audit"]["non_read_operations"] == 0
-    assert all(a["method"] == "GET" for a in j["audit"]["http"]) and len(j["audit"]["http"]) == 3 + 3 * 2
+    assert all(a["method"] == "GET" for a in j["audit"]["http"]) and len(j["audit"]["http"]) == 4 + 3 * 2
     types = [o["event_type"] for o in j["observations"]]
     assert "connection_lost" in types and types.count("link_probe") == 3
     assert [f["rule_id"] for f in j["findings"] if f["rule_id"] == "U1-S04-DROP-PROBE"] == ["U1-S04-DROP-PROBE"]
@@ -144,7 +146,7 @@ def test_dropped_stream_with_unreachable_printer_is_inconclusive(monkeypatch):
 
     def flaky(req):
         calls["n"] += 1
-        if calls["n"] <= 3:
+        if calls["n"] <= 4:
             return handler(req)
         raise httpx.ConnectError("down")
 

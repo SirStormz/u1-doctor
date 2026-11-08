@@ -61,7 +61,7 @@ Screenshots were taken in **Expert mode** with **demo mode** on, which shows the
 | 04 | **Error codes** | Decode any of the 413 official codes. Also here: firmware notes, which toolheads to inspect, the "what support will ask" checklist, 5 documented known issues, causes **reported by the community** on the forum (11 entries, each with its topic link, never official), "did you mean" for mistyped codes, explanations for 8 messages that carry no code, and an offline **G-code pre-flight** (10 checks on a sliced file) |
 | 05 | **Print quality** | The "needs your eyes" assistant: 16 symptoms, causes in the official order, evidence only from numbers you type or saved temperatures. No ranking, no score |
 | 06 | **Incident timeline** | The observed window with phases and explicit gaps. Also here: the **History** of your saved sessions (never merged) and the import of **U1 Dry Run** reports |
-| 07 | **Findings** | Every conclusion of the 12 rules, ordered by status then evidence quality. Open one to see what supports it, what contradicts it, what is missing and its limits |
+| 07 | **Findings** | Every conclusion of the 20 rules (the 8 live rules S17-S24 are UNTESTED on a real U1), ordered by status then evidence quality. Open one to see what supports it, what contradicts it, what is missing and its limits |
 | 08 | **Evidence detail** | The observations behind every finding, with source, time quality and hashes (in the menu in Expert mode; in Simple mode it opens from "Open" on a finding) |
 | 09 | **Replay lab** | Rerun the rules on frozen synthetic data and check the result is identical, byte for byte (in the menu in Expert mode) |
 | 10 | **Report composer** | Prepare a privacy-checked **evidence bundle** of the demo scenario or of **your own saved capture**, import someone else's, and copy a **ticket-ready summary** (versions, code, toolhead, LAN or cloud, filaments, what you tried, capture facts) for a support ticket or a forum post |
@@ -101,14 +101,16 @@ Press `Ctrl K` anywhere to jump to a screen or paste an error code.
 
 ![The Connect screen](docs/media/screens/02-connect.png)
 
-The capture never contains your address or file names. If the live stream closes early, the app checks with up to 6 more read-only status GET requests whether the printer itself still answers, so a lost connection is not mistaken for a stopped printer.
+The capture never contains your address or file names. It sends 4 GET requests (one of them, `/server/files/directory?path=logs`, only reads the free space of the log partition) and 1 live subscription message. If the live stream closes early, the app checks with up to 6 more read-only status GET requests whether the printer itself still answers, so a lost connection is not mistaken for a stopped printer: 10 GET at most.
+
+**Live rules and connectivity self-check (UNTESTED).** From the same capture, eight rules (S17-S24) report the spread of the toolhead Y offsets, implausible bed or cavity readings, a heater that does not warm up, nozzle diameters that disagree (with a G-code you analysed in the app), a controller clock reset while printing, the log partition usage, toolhead counters and bed-mesh numbers. They were written from forum reports and have not been checked on a real U1 fault: each says "not observable" when the printer does not report the data. The Connect screen also shows how long each request took, whether the stream dropped and whether the address changed since the last capture (only a keyed fingerprint of the address is kept, never the address).
 
 ## What works today
 
 | Feature | State |
 |---|---|
 | Offline decoder for 413 official error codes (paraphrased, with link) | tested on synthetic data |
-| Deterministic rules engine: same observations and same rule set always give the same findings and the same hash. 12 rules | tested on synthetic and real-capture data, on Windows, Linux and macOS (identical replay hash in CI) |
+| Deterministic rules engine: same observations and same rule set always give the same findings and the same hash. 20 rules | tested on synthetic and real-capture data, on Windows, Linux and macOS (identical replay hash in CI) |
 | Explainable findings: evidence for, evidence against, what is missing, limits, official references. No score, no percentage | tested |
 | Read-only live capture from the Connect screen, with read-only probes if the stream closes early | tested against a mock and on the owner's U1 (no write ever sent) |
 | Saved-session **history** and import of U1 Dry Run reports | tested |
@@ -129,7 +131,7 @@ The capture never contains your address or file names. If the live stream closes
 U1 Doctor never controls the printer.
 
 - One single module may open a network connection to a printer. The web interface reaches it through one route (`POST /api/v1/live/capture`) that refuses to run without explicit owner consent, accepts one private IPv4 address, and rejects requests that do not come from the app itself.
-- Every request is checked against a frozen allowlist **before** any network I/O: `GET /server/info`, `GET /printer/info`, `GET /printer/objects/list` and one WebSocket method, `printer.objects.subscribe`. Anything else is refused, including `POST /printer/objects/query`, which the app never needed.
+- Every request is checked against a frozen allowlist **before** any network I/O: `GET /server/info`, `GET /printer/info`, `GET /printer/objects/list`, `GET /server/files/directory?path=logs` (that exact query only) and one WebSocket method, `printer.objects.subscribe`, with a fixed list of object names. Anything else is refused, including `POST /printer/objects/query`, which the app never needed.
 - The local API refuses any POST or DELETE that does not come from the app's own page (foreign `Origin` or missing `X-U1D` header), so another web page open in your browser cannot drive it.
 - Pause, resume, cancel, restart, emergency stop and `printer.gcode.script` are covered by tests that must stay refused.
 - Supervised sessions on the owner's U1 (scripted runs, a capture from the Connect screen and a 55-minute passive watch of a print) recorded **0 non-read operations**. The evidence is in [`docs/evidence/`](docs/evidence/).

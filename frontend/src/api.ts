@@ -119,13 +119,21 @@ export interface LiveOut {
   captured_utc: string; duration_s: number; inbound_frames: number; stream_dropped?: boolean; source_status: string;
   printer: { moonraker_version: string; api_version: string; klippy_state: string; klipper_software_version: string; printer_state: string; object_count: number };
   audit: { http: { method: string; path: string; allowed: boolean; status: number | null }[]; websocket_frames_sent: number; read_operations: number; non_read_operations: number };
+  /** connectivity self-check (BACKLOG #59), measured on the same requests; UNTESTED on a real U1 */
+  connectivity?: LiveConnectivity;
+  budget?: { max_get: number; max_ws_sent: number };
   observations: Observation[]; findings: Finding[];
   session: { id: string; label: string } | null; already_saved?: boolean;
 }
+export interface LiveConnectivity {
+  requests: { op: string | null; ms: number | null; status: number | null }[];
+  ws_drops: number; ws_reconnects: number; ws_frames_received: number; ip_changed: boolean | null; max_ms: number | null; median_ms: number | null;
+}
 export class LiveRefused extends Error { constructor(public code: string) { super(code); } }
 export const liveApi = {
-  capture: async (host: string, seconds: number, save: boolean): Promise<LiveOut> => {
-    const r = await fetch("/api/v1/live/capture", { method: "POST", headers: hdr("application/json"), body: JSON.stringify({ host, consent: true, seconds, save }) });
+  capture: async (host: string, seconds: number, save: boolean, gcodeNozzleMm?: number[]): Promise<LiveOut> => {
+    const body = { host, consent: true, seconds, save, ...(gcodeNozzleMm?.length ? { gcode_nozzle_mm: gcodeNozzleMm } : {}) };
+    const r = await fetch("/api/v1/live/capture", { method: "POST", headers: hdr("application/json"), body: JSON.stringify(body) });
     if (r.status >= 400 && r.status < 600 && r.status !== 500) {
       const b = (await r.json().catch(() => ({}))) as { detail?: { code?: string } };
       throw new LiveRefused(b.detail?.code ?? "UNKNOWN");

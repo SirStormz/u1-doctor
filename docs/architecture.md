@@ -22,7 +22,7 @@ flowchart LR
 3. **Canonical hashing**: JSON `sort_keys`, compact separators, UTF-8; `generated_at` excluded from `replay_hash`. Observations sorted by `(capture_utc, observation_id)`.
 4. **Time**: store receipt UTC; Klipper `eventtime` kept raw, never UTC; sessions never merged across reboots without proof.
 5. **Modes** always visible: OFFLINE / CONNECTED / DEMO / REPLAY; SYNTHETIC badge on all simulated data.
-6. **Transport**: see ADR-0002. Policy is pure and unit-tested; policy runs before I/O; three HTTP GET ops + one WS method; owner `Consent` required for real network.
+6. **Transport**: see ADR-0002. Policy is pure and unit-tested; policy runs before I/O; four HTTP GET ops (one with an exact query allowlist: `/server/files/directory?path=logs`) + one WS method with a fixed object-name allowlist; 10 GET at most per capture; owner `Consent` required for real network.
 
 ## Code present at end of G0
 `backend/app/transport/{policy,readonly}.py` (+128 offline tests), `schemas/*.json`, `fixtures/synthetic/*`, `scripts/make_synthetic_example.py`. No FastAPI/React/SQLite code yet (G1).

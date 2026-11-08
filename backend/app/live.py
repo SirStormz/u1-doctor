@@ -1,11 +1,15 @@
-"""Owner-triggered live capture from the UI (BACKLOG #3 and #8). Read-only, bounded, on explicit consent.
+"""Owner-triggered live capture from the UI (BACKLOG #3, #8, #57, #59). Read-only, bounded, on explicit consent.
 
-Sends 3 GET requests and one WebSocket `printer.objects.subscribe` message to one RFC1918 address on port 7125,
-then listens for a few seconds. If the stream drops early, it probes with up to PROBES x 2 = 6 more read-only
-status GET (/server/info, /printer/info). Nothing else can be sent: the only senders are the allowlisted methods
-of `app.transport`. The WebSocket client sends no keepalive pings; it only answers the peer at protocol level
-(pong to a ping, the closing handshake). The result keeps derived facts only; the address, host names and file names are
-never returned, stored or logged. Raw frames stay in memory and are dropped when the call ends.
+Sends 4 GET requests (/server/info, /printer/info, /printer/objects/list, /server/files/directory?path=logs) and one
+WebSocket `printer.objects.subscribe` message to one RFC1918 address on port 7125, then listens for a few seconds.
+If the stream drops early, it probes with up to PROBES x 2 = 6 more read-only status GET (/server/info,
+/printer/info): MAX_GET = 10 GET and MAX_WS_SENT = 1 WebSocket message at most, never more (the consent text in the
+UI states these numbers and a test keeps them equal). Nothing else can be sent: the only senders are the allowlisted
+methods of `app.transport`. The stream is never reopened (0 reconnects by design). The WebSocket client sends no
+keepalive pings; it only answers the peer at protocol level (pong to a ping, the closing handshake). The result keeps
+derived facts only; the address, host names and file names are never returned, stored or logged (the API keeps a
+keyed fingerprint of the address to tell "same address as last time", never the address). Raw frames stay in memory
+and are dropped when the call ends.
 """
 from __future__ import annotations
 
@@ -17,7 +21,7 @@ from typing import Any
 
 import httpx
 
-from .capture import _obs, frames_to_observations
+from .capture import _obs, frames_to_observations, live_facts
 from .transport import Consent, PolicyViolation, ReadOnlyMoonrakerTransport, ReadOnlyMoonrakerWebSocket
 from .transport.readonly import TransportError
 
@@ -26,6 +30,11 @@ MAX_SECONDS = 60
 MAX_FRAMES = 5000
 PROBES = 3
 PROBE_GAP_S = 3.0
+BASE_GET = 4  # server.info, printer.info, printer.objects.list, server.files.directory (logs disk usage)
+MAX_GET = BASE_GET + PROBES * 2  # 10: the consent text must state this maximum (tests/test_live_rules.py)
+MAX_WS_SENT = 1
+# Added to the H-02 subscribe set for BACKLOG #57 (both listed by the real U1, never subscribed to: UNTESTED).
+EXTRA_OBJECTS: dict[str, list[str] | None] = {"temperature_sensor cavity": ["temperature"], "bed_mesh": ["probed_matrix"]}
 
 
 class LiveError(Exception):
@@ -41,9 +50,33 @@ def _result(doc: dict[str, Any]) -> dict[str, Any]:
     return r if isinstance(r, dict) else {}
 
 
+def _disk(doc: dict[str, Any], t: str) -> dict[str, Any] | None:
+    """Keep the three disk numbers of the reply, drop everything else (file names) unread."""
+    du = _result(doc).get("disk_usage")
+    if not isinstance(du, dict):
+        return None
+    vals = {k: du.get(k) for k in ("total", "used", "free")}
+    if not all(isinstance(v, int) and not isinstance(v, bool) and v >= 0 for v in vals.values()):
+        return None
+    return {"root": "logs", "total_bytes": vals["total"], "used_bytes": vals["used"], "free_bytes": vals["free"], "t": t}
+
+
+def _audit_rows(tr: ReadOnlyMoonrakerTransport) -> list[dict[str, Any]]:
+    return [{"method": a.method, "path": a.path, "query": a.query, "tag": a.tag, "allowed": a.allowed, "status": a.status, "ms": a.ms} for a in tr.audit]
+
+
+def _now() -> str:
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
+
 def run_live_capture(host: str, *, seconds: int, http_transport: httpx.BaseTransport | None = None,
-                     connect: Callable[[], Any] | None = None) -> dict[str, Any]:
-    """Run the capture. Raises LiveError. `http_transport` and `connect` are test hooks only."""
+                     connect: Callable[[], Any] | None = None, ip_changed: bool | None = None,
+                     gcode_nozzle_mm: list[float] | None = None) -> dict[str, Any]:
+    """Run the capture. Raises LiveError. `http_transport` and `connect` are test hooks only.
+
+    `ip_changed` (computed by the API from a keyed fingerprint, never from a stored address) and `gcode_nozzle_mm`
+    (distinct diameters of a G-code analysed in the app, IMPORTED) are carried into the observations as given.
+    """
     from .h02 import OBJECTS  # lazy: h02 imports app.api for APP_VERSION
 
     seconds = max(MIN_SECONDS, min(MAX_SECONDS, int(seconds)))
@@ -59,7 +92,12 @@ def run_live_capture(host: str, *, seconds: int, http_transport: httpx.BaseTrans
             raise LiveError("UNREACHABLE", "the printer did not answer on port 7125 (check power, network and address)") from e
         except PolicyViolation as e:  # pragma: no cover - the three requests are fixed and allowlisted
             raise LiveError("REFUSED_REQUEST", "request refused by the read-only policy") from e
-        http_audit = [{"method": a.method, "path": a.path, "allowed": a.allowed, "status": a.status} for a in tr.audit]
+        disk_t = _now()
+        try:  # optional: a printer without a `logs` root (or an error) only makes rule S22 say "not observable"
+            disk = _disk(tr.get_logs_disk_usage(), disk_t)
+        except (TransportError, httpx.HTTPError, OSError):
+            disk = None
+        http_audit = _audit_rows(tr)
     finally:
         tr.close()
 
@@ -78,7 +116,7 @@ def run_live_capture(host: str, *, seconds: int, http_transport: httpx.BaseTrans
     started = datetime.now(UTC)
     t0 = time.monotonic()
     try:
-        ws.subscribe(OBJECTS)
+        ws.subscribe(OBJECTS | EXTRA_OBJECTS)
         while time.monotonic() - t0 < seconds and len(lines) < MAX_FRAMES:
             for fr in ws.frames(max_frames=50, duration_s=min(1.0, seconds - (time.monotonic() - t0))):
                 lines.append(json.dumps({"t": fr.received_utc, "frame": fr.payload}))
@@ -91,6 +129,11 @@ def run_live_capture(host: str, *, seconds: int, http_transport: httpx.BaseTrans
         ws.close()
 
     observations = frames_to_observations(lines)
+    observations += live_facts(lines, start=len(observations) + 1, disk=disk)
+    if gcode_nozzle_mm:
+        at = observations[-1]["capture_utc"] if observations else disk_t
+        observations.append(_obs(len(observations) + 1, at, "gcode_nozzle_diameter", {"mm": sorted({round(float(x), 3) for x in gcode_nozzle_mm})},
+                                 entity="printer", mq="VERIFIED", ref="gcode/nozzle_diameter") | {"source_kind": "IMPORT", "source_status": "IMPORTED"})
     tag = started.strftime("%Y%m%dT%H%M%SZ")
     for o in observations:  # unique ids per capture; never labelled as the old H-02 run
         o["session_id"] = f"live_{tag}"
@@ -112,7 +155,7 @@ def run_live_capture(host: str, *, seconds: int, http_transport: httpx.BaseTrans
                     ok = False
                 observations.append(_obs(len(observations) + 1, at, "link_probe", {"http_ok": ok, "klippy_state": ks},
                                          entity="printer", mq="VERIFIED", ref="transport/probe"))
-            http_audit += [{"method": a.method, "path": a.path, "allowed": a.allowed, "status": a.status} for a in probe_tr.audit]
+            http_audit += _audit_rows(probe_tr)
         finally:
             probe_tr.close()
         for i, o in enumerate(observations[-(PROBES + 1):], start=1):
@@ -121,8 +164,16 @@ def run_live_capture(host: str, *, seconds: int, http_transport: httpx.BaseTrans
 
     reads = len(http_audit) + sum(1 for a in audit_ws if a.get("method") == "printer.objects.subscribe")
     non_read = sum(1 for a in http_audit if a["method"] != "GET") + sum(1 for a in audit_ws if a.get("method") != "printer.objects.subscribe")
-    if non_read:  # pragma: no cover - cannot happen with the fixed senders, kept as a tripwire
-        raise RuntimeError("non-read operation recorded: STOP")
+    if non_read or len(http_audit) > MAX_GET or len(audit_ws) > MAX_WS_SENT:  # pragma: no cover - fixed senders; tripwire
+        raise RuntimeError("operation outside the documented budget recorded: STOP")
+    timed = sorted(a["ms"] for a in http_audit if isinstance(a["ms"], int | float))
+    conn = {
+        "requests": [{"op": a["tag"], "ms": a["ms"], "status": a["status"]} for a in http_audit],
+        "ws_drops": 1 if dropped_at else 0, "ws_reconnects": 0, "ws_frames_received": len(lines), "ip_changed": ip_changed,
+        "max_ms": timed[-1] if timed else None, "median_ms": timed[len(timed) // 2] if timed else None,
+    }
+    observations.append(_obs(len(observations) + 1, _now(), "connectivity_check", conn, entity="printer", mq="VERIFIED", ref="transport/selfcheck")
+                        | {"session_id": f"live_{tag}", "observation_id": f"live_{tag}_net01"})
     return {
         "captured_utc": started.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "duration_s": round(time.monotonic() - t0, 1),
@@ -137,5 +188,7 @@ def run_live_capture(host: str, *, seconds: int, http_transport: httpx.BaseTrans
         "audit": {"http": http_audit, "websocket_frames_sent": len(audit_ws), "read_operations": reads, "non_read_operations": non_read},
         "inbound_frames": len(lines),
         "stream_dropped": dropped_at is not None,
+        "connectivity": conn,
+        "budget": {"max_get": MAX_GET, "max_ws_sent": MAX_WS_SENT},
         "observations": observations,
     }

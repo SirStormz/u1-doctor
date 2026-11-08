@@ -11,6 +11,8 @@ import { pfLimit, pfView } from "../lib/preflight-text";
 import { buildRequest, supNote, supText, type SupportOut } from "../lib/support-text";
 import type { RouteName } from "../lib/router";
 import { EvidenceNotice } from "../components/evidence-notice";
+import { LiveNet } from "../components/live-net";
+import { loadGcodeNozzle, nozzleFromPreflight, saveGcodeNozzle } from "../lib/gcode-nozzle";
 
 type Go = (n: RouteName, p?: string) => void;
 
@@ -51,10 +53,10 @@ export function Welcome({ go }: { go: Go }) {
 }
 
 /* ---------------- Connect (read-only live capture, owner-approved) ---------------- */
-const ALLOW = [["GET", "/server/info"], ["GET", "/printer/info"], ["GET", "/printer/objects/list"], ["WS", "printer.objects.subscribe"]];
-const DENY = ["printer.gcode.script", "printer.print.*", "printer.restart", "machine.*", "server.files.*"];
+const ALLOW = [["GET", "/server/info"], ["GET", "/printer/info"], ["GET", "/printer/objects/list"], ["GET", "/server/files/directory?path=logs"], ["WS", "printer.objects.subscribe"]];
+const DENY = ["printer.gcode.script", "printer.print.*", "printer.restart", "machine.*", "server.files.upload", "server.files.delete", "/printer/objects/query"];
 export function Connect() {
-  const { t } = usePrefs();
+  const { t, lang } = usePrefs();
   const [host, setHost] = useState("");
   const [consent, setConsent] = useState(false);
   const [secs, setSecs] = useState(15);
@@ -62,10 +64,11 @@ export function Connect() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [out, setOut] = useState<LiveOut | null>(null);
+  const [gcodeMm] = useState<number[] | null>(() => loadGcodeNozzle());
 
   async function run() {
     setBusy(true); setErr(null); setOut(null);
-    try { setOut(await liveApi.capture(host.trim(), secs, save)); }
+    try { setOut(await liveApi.capture(host.trim(), secs, save, gcodeMm ?? undefined)); }
     catch (e) { setErr((e instanceof LiveRefused ? t.liveErr[e.code] ?? t.apiErr[e.code] : undefined) ?? t.liveErr["UNKNOWN"] ?? ""); }
     finally { setBusy(false); }
   }
@@ -87,6 +90,7 @@ export function Connect() {
           </label>
           <label className="mt-3 flex items-start gap-2 text-sm"><input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-1" /><span>{t.liveConsent}</span></label>
           <label className="mt-2 flex items-start gap-2 text-sm"><input type="checkbox" checked={save} onChange={(e) => setSave(e.target.checked)} className="mt-1" /><span>{t.liveSave}</span></label>
+          {gcodeMm && <p className="mt-2 text-xs text-ink3">{t.net.gcode.replace("{mm}", gcodeMm.map((x) => (lang === "fr" ? String(x).replace(".", ",") : String(x))).join(", "))}</p>}
           <div className="mt-4"><Button variant="primary" disabled={!ready} onClick={() => void run()} icon={<Plug size={16} />}>{busy ? t.liveRunning : t.connectBtn}</Button></div>
           {!out && !err && !busy && <StateBlock kind="empty" title={t.notInBuild} body={t.notInBuildBody} />}
           {busy && <StateBlock kind="loading" title={t.liveRunning} />}
@@ -111,6 +115,7 @@ export function Connect() {
               <EvidenceNotice />
             </Panel>
           )}
+          {out?.connectivity && <LiveNet net={out.connectivity} />}
           <Panel title={t.allowlist} icon={<ShieldCheck size={17} />} i={2} demo={false}>
             <table className="w-full text-left text-sm"><caption className="sr-only">{t.allowlist}</caption><tbody>{ALLOW.map(([m, p]) => (<tr key={p} className="border-t border-line first:border-0"><td className="py-1.5 pr-3"><Chip tone="ok">{m}</Chip></td><td className="mono text-xs">{p}</td></tr>))}</tbody></table>
           </Panel>
@@ -379,7 +384,7 @@ function Preflight({ onCode }: { onCode: (code: string) => void }) {
   async function pick(f: File | undefined) {
     if (!f) return;
     setBusy(true); setErr(null); setRes(null);
-    try { setRes(await preflight(f)); }
+    try { const r = await preflight(f); setRes(r); saveGcodeNozzle(nozzleFromPreflight(r.checks)); }
     catch (e) { setErr(e instanceof PreflightRefused ? (t.pfRefusal as Record<string, string>)[e.code] ?? t.pfRefusal.UNKNOWN : errText(t, e)); }
     finally { setBusy(false); }
   }

@@ -2,8 +2,11 @@
 (read-only, explicit consent, one private address). This module never imports the transport itself."""
 from __future__ import annotations
 
+import hashlib
+import hmac
 import json
 import re
+import secrets
 import threading
 from datetime import UTC, datetime
 from typing import Any
@@ -64,6 +67,8 @@ class LiveIn(BaseModel):
     seconds: int = Field(default=15, ge=3, le=60)
     save: bool = True
     label: str | None = Field(default=None, max_length=200)
+    # distinct nozzle diameters of a G-code analysed in this app (pre-flight), compared by rule S20; never a file name
+    gcode_nozzle_mm: list[float] | None = Field(default=None, max_length=16)
 
 
 def _local_origins(request: Request) -> set[str]:
@@ -131,6 +136,36 @@ def _load_scenario(name: str) -> tuple[bytes, list[dict[str, Any]], bytes]:
     return raw, obs, (FIXTURES / f"synthetic_{name}.findings.json").read_bytes()
 
 
+_FP_KEY = "live_target_fp_key"
+_FP_LAST = "live_target_fp_last"
+
+
+def _setting(conn: Any, key: str) -> Any:
+    with db.lock(conn):
+        r = conn.execute("SELECT value_json FROM app_settings WHERE key=?", (key,)).fetchone()
+    return json.loads(r["value_json"]) if r else None
+
+
+def _put_setting(conn: Any, key: str, value: Any) -> None:
+    now = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+    with db.lock(conn), conn:
+        conn.execute("INSERT INTO app_settings(key,value_json,updated_at) VALUES (?,?,?) ON CONFLICT(key) DO UPDATE SET value_json=excluded.value_json, "
+                     "updated_at=excluded.updated_at", (key, json.dumps(value), now))
+
+
+def _target_fp(conn: Any, host: str) -> str:
+    """Keyed fingerprint of the printer address (HMAC-SHA256, random per-install key kept in the local database).
+
+    Lets the next capture say "same address as last time" without ever storing the address (BACKLOG #59).
+    Neither the key nor the fingerprint is returned, exported or logged.
+    """
+    key = _setting(conn, _FP_KEY)
+    if not isinstance(key, str):
+        key = secrets.token_hex(32)
+        _put_setting(conn, _FP_KEY, key)
+    return hmac.new(bytes.fromhex(key), host.encode("ascii", "replace"), hashlib.sha256).hexdigest()
+
+
 def create_app(db_path: str = ":memory:") -> FastAPI:
     app = FastAPI(title="U1 Doctor", version=APP_VERSION, docs_url=None, redoc_url=None, openapi_url=None)
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost", "testserver"])
@@ -152,9 +187,12 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
     def compatibility() -> dict[str, Any]:
         # TESTED_REAL only where docs/evidence/H-01 and H-02 prove it on the owner's U1 (Klipper 2.1.0.157).
         # Objects query never ran on the machine and is not allowed by the transport (BACKLOG #52 L3).
+        # BACKLOG #57/#59 (owner decision 2026-11-08: defensive code, UNTESTED): the new reads and live rules never ran on a U1.
         caps = [("Moonraker HTTP :7125", "TESTED_REAL"), ("Objects list", "TESTED_REAL"), ("Objects query", "UNTESTED"), ("WebSocket subscribe", "TESTED_REAL"),
                 ("Live error codes", "UNTESTED"), ("Toolhead 1-4 mapping", "UNTESTED"), ("Official firmware version", "TESTED_REAL"),
-                ("Offline code decoder", "TESTED_SYNTHETIC"), ("Deterministic replay", "TESTED_REAL")]
+                ("Offline code decoder", "TESTED_SYNTHETIC"), ("Deterministic replay", "TESTED_REAL"),
+                ("Log partition usage read", "UNTESTED"), ("Cavity sensor and bed mesh subscription", "UNTESTED"),
+                ("Live rules S17-S24", "UNTESTED"), ("Connectivity self-check", "UNTESTED")]
         return {"verified_on_hardware": True, "firmware_target": "V2.1.0",
                 "capabilities": [{"name": n, "status": s} for n, s in caps],
                 "rows": [{"firmware": fw, "rest_readonly": "TESTED_REAL" if fw == "V2.1.0" else "UNTESTED",
@@ -403,16 +441,25 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
     def live_capture(body: LiveIn) -> dict[str, Any]:
         """Owner-triggered read-only capture from one private address. Needs `consent: true`.
 
-        3 GET + 1 WebSocket subscribe message; if the stream drops early, up to 6 more read-only status GET (see app.live).
-        A foreign `Origin` or a missing app header is refused by the `same_app_only` middleware before this runs.
+        4 GET + 1 WebSocket subscribe message; if the stream drops early, up to 6 more read-only status GET: 10 GET and
+        1 WebSocket message at most (see app.live). A foreign `Origin` or a missing app header is refused by the
+        `same_app_only` middleware before this runs. The address is compared with the previous capture through a keyed
+        fingerprint only (`_target_fp`); the address itself is never stored.
         """
         if body.consent is not True:
             raise HTTPException(403, {"code": "CONSENT_REQUIRED", "message": "explicit owner consent is required"})
+        noz = body.gcode_nozzle_mm
+        if noz is not None and not all(0.05 <= x <= 2.0 for x in noz):
+            raise HTTPException(422, {"code": "BAD_NOZZLE", "message": "nozzle diameters must be between 0.05 and 2 mm"})
         if not live_busy.acquire(blocking=False):
             raise HTTPException(409, {"code": "LIVE_BUSY", "message": "a live capture is already running"})
         hooks = getattr(app.state, "live_hooks", {})
         try:
-            out = run_live_capture(body.host, seconds=body.seconds, **hooks)
+            fp = _target_fp(conn, body.host)
+            last = _setting(conn, _FP_LAST)
+            out = run_live_capture(body.host, seconds=body.seconds, ip_changed=None if not isinstance(last, str) else last != fp,
+                                   gcode_nozzle_mm=noz, **hooks)
+            _put_setting(conn, _FP_LAST, fp)  # only after a capture that reached the printer
         except LiveError as e:
             raise HTTPException(422 if e.code.startswith("REFUSED") else 502, {"code": e.code, "message": str(e)}) from e
         finally:

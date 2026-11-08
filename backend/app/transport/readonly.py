@@ -8,6 +8,7 @@ G0: only tests construct it, with httpx.MockTransport. No U1 contact.
 from __future__ import annotations
 
 import json
+import time
 from dataclasses import dataclass
 from typing import Any
 
@@ -39,6 +40,8 @@ class AuditEntry:
     tag: str | None
     allowed: bool
     status: int | None = None
+    ms: float | None = None  # wall time of the request in milliseconds (connectivity self-check, BACKLOG #59)
+    query: dict[str, str] | None = None
 
 
 class TransportError(Exception):
@@ -70,7 +73,7 @@ class ReadOnlyMoonrakerTransport:
             headers={"User-Agent": "U1-Doctor/0 (read-only)"},
         )
 
-    # --- the only three operations (all GET) --------------------------
+    # --- the only four operations (all GET) ---------------------------
     def get_server_info(self) -> dict[str, Any]:
         return self._send("GET", "/server/info")
 
@@ -80,17 +83,29 @@ class ReadOnlyMoonrakerTransport:
     def list_objects(self) -> dict[str, Any]:
         return self._send("GET", "/printer/objects/list")
 
+    def get_logs_disk_usage(self) -> dict[str, Any]:
+        """GET /server/files/directory?path=logs. Only `disk_usage` of the reply is meant to be kept (BACKLOG #57)."""
+        return self._send("GET", "/server/files/directory", query={"path": "logs"})
+
     # --- internals ----------------------------------------------------
-    def _send(self, method: str, path: str, body: bytes | None = None) -> dict[str, Any]:
+    def _send(self, method: str, path: str, body: bytes | None = None, query: dict[str, str] | None = None) -> dict[str, Any]:
         try:
-            tag = check_http_request(method, path, body)
+            tag = check_http_request(method, path, body, query)
         except PolicyViolation:
-            self.audit.append(AuditEntry(method, path, None, False))
+            self.audit.append(AuditEntry(method, path, None, False, query=query))
             raise
-        entry = AuditEntry(method, path, tag, True)
+        entry = AuditEntry(method, path, tag, True, query=dict(query) if query else None)
         self.audit.append(entry)
         headers = {"Content-Type": "application/json"} if body else None
-        with self._client.stream(method, path, content=body, headers=headers) as resp:
+        t0 = time.monotonic()
+        try:
+            return self._read(entry, method, path, body, headers, query)
+        finally:
+            entry.ms = round((time.monotonic() - t0) * 1000, 1)
+
+    def _read(self, entry: AuditEntry, method: str, path: str, body: bytes | None, headers: dict[str, str] | None,
+              query: dict[str, str] | None) -> dict[str, Any]:
+        with self._client.stream(method, path, content=body, headers=headers, params=query) as resp:
             entry.status = resp.status_code
             if 300 <= resp.status_code < 400:
                 raise TransportError("redirect refused")

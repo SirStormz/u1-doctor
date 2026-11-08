@@ -125,6 +125,60 @@ _d.append(code_obs(_i, "2026-01-13T14:14:20Z", "0002-0525-0002-0004", _n))
 S[_n] = _d
 
 
+# Live rules S17-S24 and the connectivity self-check (BACKLOG #57/#59). SYNTHETIC window summaries in the shape
+# app.capture.live_facts builds; the numbers are invented to exercise each rule (positive, normal, not observable).
+_COV = ["bed_mesh", "disk_usage", "estimated_print_time", "extruder_offset", "extruder_state", "heater_bed", "nozzle_diameter", "temperature_sensor cavity"]
+
+
+def _live(n, t, rows):
+    out = [state(1, t + "00Z", "printing", n)]
+    for k, (etype, value, ref) in enumerate(rows, start=2):
+        out.append(o(k, t + f"{k:02d}Z", etype, value, ref=ref, scen=n))
+    return out
+
+
+def _net(ip_changed, drops, ms):
+    return ("connectivity_check", {"requests": [{"op": op, "ms": m, "status": 200} for op, m in zip(("server.info", "printer.info", "printer.objects.list", "server.files.directory"), ms)],
+                                   "ws_drops": drops, "ws_reconnects": 0, "ws_frames_received": 40, "ip_changed": ip_changed, "max_ms": max(ms), "median_ms": sorted(ms)[len(ms) // 2]}, "transport/selfcheck")
+
+
+_n = "live_rules_positive"
+S[_n] = _live(_n, "2026-01-20T10:00:", [
+    ("extruder_offsets", {"extruder": {"x": 0.1, "y": 1.12, "z": 0.0}, "extruder1": {"x": -0.1, "y": -1.14, "z": -0.05}, "extruder2": {"x": 0.0, "y": 0.3, "z": 0.0}, "extruder3": {"x": 0.05, "y": -0.2, "z": 0.0}}, "extruder/extruder_offset"),
+    ("nozzle_diameters", {"extruder": 0.4, "extruder1": 0.4, "extruder2": 0.2, "extruder3": 0.4}, "extruder/nozzle_diameter"),
+    ("gcode_nozzle_diameter", {"mm": [0.6]}, "gcode/nozzle_diameter"),
+    ("heater_window", {"sensors": {"heater_bed": {"first_c": -1035.8, "last_c": -1035.8, "min_c": -1035.8, "max_c": -1035.8, "target_c": 60.0, "seconds": 45.0},
+                                   "temperature_sensor cavity": {"first_c": -1035.8, "last_c": -1035.8, "min_c": -1035.8, "max_c": -1035.8, "target_c": None, "seconds": 45.0},
+                                   "extruder1": {"first_c": 25.0, "last_c": 25.4, "min_c": 25.0, "max_c": 25.4, "target_c": 220.0, "seconds": 45.0}},
+                       "bed_cavity": {"pairs": 12, "identical": 12}}, "heater_bed/temperature"),
+    ("clock_check", {"host_s": 5400.0, "mcu_s": 1200.0, "print_state": "printing"}, "toolhead/estimated_print_time"),
+    ("disk_usage", {"root": "logs", "total_bytes": 104857600, "used_bytes": 99614720, "free_bytes": 5242880}, "server.files.directory/logs"),
+    ("extruder_activity", {"extruders": {"extruder": {"state_changes": 2, "switch_count": [744, 745], "retry_count": [94, 96], "error_count": [0, 0]},
+                                         "extruder1": {"state_changes": 2, "switch_count": [694, 695], "retry_count": [2, 2], "error_count": [0, 0]}}, "homing_changes": 0}, "extruder/state"),
+    ("bed_mesh_points", {"rows": 5, "cols": 5, "points": 25, "min_mm": -0.12, "max_mm": 0.18, "range_mm": 0.3, "mean_mm": 0.02, "stdev_mm": 0.07}, "bed_mesh/probed_matrix"),
+    ("live_coverage", {"absent": []}, "transport/coverage"),
+    _net(False, 0, [12.5, 9.8, 31.0, 18.2]),
+])
+_n = "live_rules_normal"
+S[_n] = _live(_n, "2026-01-21T10:00:", [
+    ("extruder_offsets", {"extruder": {"x": 0.139, "y": 0.0973, "z": 0.0}, "extruder1": {"x": -0.139, "y": -0.0973, "z": -0.0502}, "extruder2": {"x": -0.0371, "y": -0.0619, "z": -0.0778}, "extruder3": {"x": 0.0611, "y": -0.0192, "z": -0.068}}, "extruder/extruder_offset"),
+    ("nozzle_diameters", {"extruder": 0.4, "extruder1": 0.4, "extruder2": 0.4, "extruder3": 0.4}, "extruder/nozzle_diameter"),
+    ("gcode_nozzle_diameter", {"mm": [0.4]}, "gcode/nozzle_diameter"),
+    ("heater_window", {"sensors": {"heater_bed": {"first_c": 59.8, "last_c": 60.1, "min_c": 59.7, "max_c": 60.1, "target_c": 60.0, "seconds": 45.0},
+                                   "temperature_sensor cavity": {"first_c": 30.1, "last_c": 30.4, "min_c": 30.1, "max_c": 30.4, "target_c": None, "seconds": 45.0},
+                                   "extruder1": {"first_c": 150.0, "last_c": 198.0, "min_c": 150.0, "max_c": 198.0, "target_c": 220.0, "seconds": 45.0}},
+                       "bed_cavity": {"pairs": 10, "identical": 0}}, "heater_bed/temperature"),
+    ("clock_check", {"host_s": 1980.9, "mcu_s": 1966.8, "print_state": "printing"}, "toolhead/estimated_print_time"),
+    ("disk_usage", {"root": "logs", "total_bytes": 104857600, "used_bytes": 41943040, "free_bytes": 62914560}, "server.files.directory/logs"),
+    ("extruder_activity", {"extruders": {"extruder": {"state_changes": 0, "switch_count": [744, 744], "retry_count": [94, 94], "error_count": [0, 0]}}, "homing_changes": 0}, "extruder/state"),
+    ("bed_mesh_points", {"points": 0}, "bed_mesh/probed_matrix"),
+    ("live_coverage", {"absent": []}, "transport/coverage"),
+    _net(None, 0, [10.1, 8.7, 22.4, 15.0]),
+])
+_n = "live_rules_absent"
+S[_n] = _live(_n, "2026-01-22T10:00:", [("live_coverage", {"absent": _COV}, "transport/coverage"), _net(True, 1, [480.0, 1210.5, 950.2, 700.0])])
+
+
 def jsonl(obs):
     return b"".join(canon(x) + b"\n" for x in obs)
 

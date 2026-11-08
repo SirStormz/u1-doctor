@@ -22,8 +22,29 @@ ALLOWED_HTTP = MappingProxyType(
         ("GET", "/server/info"): "server.info",
         ("GET", "/printer/info"): "printer.info",
         ("GET", "/printer/objects/list"): "printer.objects.list",
+        ("GET", "/server/files/directory"): "server.files.directory",
     }
 )
+
+# (method, exact path) -> {query key: frozen set of exact allowed values}. A path listed here REQUIRES exactly these
+# keys with one of these values; every other allowed path takes no query at all. Only the disk usage of the `logs`
+# root is read (BACKLOG #57, ADR-0002 amendment 2026-11-08): the file names in the reply are dropped unread.
+ALLOWED_HTTP_QUERY = MappingProxyType(
+    {
+        ("GET", "/server/files/directory"): MappingProxyType({"path": frozenset({"logs"})}),
+    }
+)
+
+# Objects the single subscribe frame may name (exact match). Klipper simply leaves out an object a printer does not
+# have. `temperature_sensor cavity` and `bed_mesh` were added for BACKLOG #57: listed by the real U1 (H-01 object
+# list) but never subscribed to on one, so every rule using them is UNTESTED.
+ALLOWED_SUBSCRIBE_OBJECTS = frozenset({
+    "print_stats", "machine_state_manager", "exception_manager", "webhooks", "pause_resume", "idle_timeout",
+    "virtual_sdcard", "print_task_config", "toolhead", "heater_bed", "extruder", "extruder1", "extruder2", "extruder3",
+    "heater_fan e0_nozzle_fan", "heater_fan e1_nozzle_fan", "heater_fan e2_nozzle_fan", "heater_fan e3_nozzle_fan",
+    "temperature_sensor cavity", "bed_mesh",
+})
+_QUERY_TEXT = re.compile(r"^[a-z_]{1,32}$")
 
 # JSON-RPC methods allowed on /websocket. server.info / printer.info over WS
 # are "option after audit" -> NOT allowed in G0.
@@ -37,11 +58,12 @@ class PolicyViolation(Exception):
     """Raised BEFORE any I/O when a request is outside the allowlist."""
 
 
-def check_http_request(method: str, target: str, body: bytes | None = None) -> str:
-    """Return the audit tag if (method, target, body) is allowed, else raise.
+def check_http_request(method: str, target: str, body: bytes | None = None, query: dict[str, str] | None = None) -> str:
+    """Return the audit tag if (method, target, body, query) is allowed, else raise.
 
     `target` must be the bare path: no scheme, host, query, fragment, dot
-    segments, percent-escapes, backslashes or non-ASCII.
+    segments, percent-escapes, backslashes or non-ASCII. A query is passed apart in `query` and must
+    match ALLOWED_HTTP_QUERY exactly (same keys, allowed values); paths not listed there take none.
     """
     if not isinstance(method, str) or not isinstance(target, str):
         raise PolicyViolation("method/path must be str")
@@ -54,7 +76,21 @@ def check_http_request(method: str, target: str, body: bytes | None = None) -> s
         raise PolicyViolation(f"{method} {target!r} not in allowlist")
     if body:  # every allowed request is a GET
         raise PolicyViolation("GET must not carry a body")
+    _check_query(method, target, query)
     return tag
+
+
+def _check_query(method: str, target: str, query: dict[str, str] | None) -> None:
+    spec = ALLOWED_HTTP_QUERY.get((method, target))
+    if spec is None:
+        if query:
+            raise PolicyViolation(f"{method} {target!r} takes no query")
+        return
+    if not isinstance(query, dict) or set(query) != set(spec):
+        raise PolicyViolation("query keys must match the allowlist exactly")
+    for k, v in query.items():
+        if not isinstance(v, str) or not _QUERY_TEXT.match(v) or v not in spec[k]:
+            raise PolicyViolation(f"query value for {k!r} not in allowlist")
 
 
 def _no_dup_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -75,6 +111,8 @@ def _validate_objects_param(doc: Any) -> None:
     for name, fields in objs.items():
         if not _OBJECT_NAME.match(name):
             raise PolicyViolation(f"invalid object name {name!r}")
+        if name not in ALLOWED_SUBSCRIBE_OBJECTS:
+            raise PolicyViolation(f"object {name!r} not in the subscribe allowlist")
         if fields is None:
             continue
         if not isinstance(fields, list) or len(fields) > 128:

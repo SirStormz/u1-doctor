@@ -328,6 +328,258 @@ def ev_fan_off_hot(rule: Rule, obs: list[Obs], rs_hash: str, rs_id: str) -> list
     return out
 
 
+# --- Live rules S17-S24 (BACKLOG #57). Written from documentation and forum reports; UNTESTED on a real U1. --------
+# Each reads one window summary built by app.capture.live_facts. When the source is missing, a rule speaks only if
+# the capture says so (`live_coverage.absent`): one INCONCLUSIVE "not observable" finding, never a guess.
+UNTESTED = "UNTESTED: this rule has not been checked against a real U1 fault; it only restates the reported values."
+NAMES = "Values are keyed by the Klipper object name (extruder, extruder1...); which physical toolhead each one is stays unproven (H-04)."
+
+
+def _community(url: str) -> list[dict[str, str]]:
+    return [{"kind": "COMMUNITY_THREAD", "url": url, "checked_at": "2026-11-08"}]
+
+
+def _latest(obs: list[Obs], etype: str) -> Obs | None:
+    hits = [o for o in obs if o["event_type"] == etype and o["validity"] == "FRESH" and isinstance(o["value"], dict)]
+    return hits[-1] if hits else None
+
+
+def _quality(os_: list[Obs]) -> str:
+    return "MODERATE" if all(o["source_status"] == "REAL" for o in os_) else "WEAK"
+
+
+def _not_observable(rule: Rule, obs: list[Obs], rs_hash: str, rs_id: str) -> list[dict[str, Any]]:
+    p = rule["params"]
+    cov = _latest(obs, "live_coverage")
+    absent = cov["value"].get("absent") if cov else None
+    if cov is None or not isinstance(absent, list) or not set(p["coverage_keys"]) & set(absent):
+        return []
+    what = p["label"]
+    return [_make(
+        rule, rs_hash, rs_id, [(cov, f"Not reported in this capture: {', '.join(sorted(set(p['coverage_keys']) & set(absent)))}.")],
+        classification="INCONCLUSIVE", title=f"{what}: not observable in this capture", hypotheses=[],
+        missing=[f"{what}: the printer did not report this data during the capture (object or field absent, or the read failed)."],
+        safe=["No action: missing data says nothing about the printer."], refs=[],
+        limits=["Absence of data is not evidence of absence.", UNTESTED], quality="UNKNOWN")]
+
+
+def ev_offset_spread(rule: Rule, obs: list[Obs], rs_hash: str, rs_id: str) -> list[dict[str, Any]]:
+    """Spread of one extruder_offset axis across the extruder objects. A fact about reported offsets, not a fault."""
+    p = rule["params"]
+    o = _latest(obs, p["event_type"])
+    if o is None:
+        return _not_observable(rule, obs, rs_hash, rs_id)
+    ax = p["axis"]
+    vals = {n: v for n, d in sorted(o["value"].items()) if isinstance(d, dict) and (v := _number(d.get(ax))) is not None}
+    if len(vals) < 2:
+        return []
+    spread = max(vals.values()) - min(vals.values())
+    if spread <= p["max_spread_mm"]:
+        return []
+    low = [n for n, v in vals.items() if v < p["low_mm"]]
+    listed = ", ".join(f"{n} {v:g}" for n, v in vals.items())
+    return [_make(
+        rule, rs_hash, rs_id, [(o, f"{ax.upper()} offsets (mm): {listed}.")], classification="OBSERVED",
+        title=f"{ax.upper()} offsets of the extruders spread over {spread:.2f} mm (above {p['max_spread_mm']:g} mm)",
+        hypotheses=[{"id": "h1", "text": p["hypothesis"], "label": "COMMUNITY_HYPOTHESIS"}],
+        missing=["Whether a print actually failed on the start line, and which head started the print."]
+        + ([] if low else [f"No extruder object reports a {ax.upper()} offset below {p['low_mm']:g} mm."]),
+        safe=["Do not edit offsets by hand from this finding: run the official offset calibration, then contact Snapmaker support if the spread stays."],
+        refs=_community(p["reference_url"]),
+        limits=[f"The {p['max_spread_mm']:g} mm and {p['low_mm']:g} mm figures come from one forum report, not from Snapmaker.", NAMES, UNTESTED],
+        quality=_quality([o]))]
+
+
+def ev_sensor_implausible(rule: Rule, obs: list[Obs], rs_hash: str, rs_id: str) -> list[dict[str, Any]]:
+    """Bed or cavity sensor below a physically implausible value, or the two reading exactly the same all window long."""
+    p = rule["params"]
+    o = _latest(obs, p["event_type"])
+    if o is None or not isinstance(o["value"].get("sensors"), dict):
+        return _not_observable(rule, obs, rs_hash, rs_id)
+    sens = o["value"]["sensors"]
+    notes: list[str] = []
+    for n in p["sensors"]:
+        d = sens.get(n)
+        lo = _number(d.get("min_c")) if isinstance(d, dict) else None
+        if lo is not None and lo < p["below_c"]:
+            notes.append(f"{n} read {lo:g} degC (below {p['below_c']:g} degC).")
+    bc = o["value"].get("bed_cavity")
+    pairs = bc.get("pairs") if isinstance(bc, dict) else None
+    same = bc.get("identical") if isinstance(bc, dict) else None
+    if isinstance(pairs, int) and isinstance(same, int) and pairs >= p["min_pairs"] and same == pairs:
+        notes.append(f"Bed and cavity sensors gave exactly the same value in all {pairs} paired readings.")
+    if not notes:
+        return []
+    return [_make(
+        rule, rs_hash, rs_id, [(o, " ".join(notes))], classification="OBSERVED",
+        title="Bed or cavity temperature reading is implausible", hypotheses=[{"id": "h1", "text": p["hypothesis"], "label": "COMMUNITY_HYPOTHESIS"}],
+        missing=["Whether the printer showed an error code, and the Klipper log message (for example an ADC out-of-range shutdown)."],
+        safe=["Power the printer off before touching any cable; follow the official procedure for any displayed code.", "If the code is 0003-0526-0000-0000, read the forum cause in the code decoder before replacing the bed."],
+        refs=_community(p["reference_url"]),
+        limits=[f"The {p['below_c']:g} degC limit is a plausibility bound chosen by U1 Doctor, not an official value.",
+                "Identical readings can be a coincidence when both sensors sit at room temperature.", UNTESTED],
+        quality=_quality([o]))]
+
+
+def ev_heater_no_rise(rule: Rule, obs: list[Obs], rs_hash: str, rs_id: str) -> list[dict[str, Any]]:
+    """A heater target set well above the reading, and the reading did not rise during the window."""
+    p = rule["params"]
+    o = _latest(obs, p["event_type"])
+    if o is None or not isinstance(o["value"].get("sensors"), dict):
+        return _not_observable(rule, obs, rs_hash, rs_id)
+    notes: list[str] = []
+    for n, d in sorted(o["value"]["sensors"].items()):
+        if not isinstance(d, dict):
+            continue
+        f, la, tg, s = (_number(d.get(k)) for k in ("first_c", "last_c", "target_c", "seconds"))
+        if None in (f, la, tg, s) or tg <= 0 or s < p["min_window_s"] or tg - f < p["min_gap_c"]:  # type: ignore[operator]
+            continue
+        if la - f < p["min_rise_c"]:  # type: ignore[operator]
+            notes.append(f"{n}: target {tg:g} degC, {f:g} -> {la:g} degC in {s:g} s.")
+    if not notes:
+        return []
+    return [_make(
+        rule, rs_hash, rs_id, [(o, " ".join(notes))], classification="OBSERVED",
+        title=f"Heater target set but the temperature rose less than {p['min_rise_c']:g} degC during the capture", hypotheses=[],
+        missing=["Heater power over time, and whether the printer showed a heating error code.", "A longer window: heating may start late."],
+        safe=["Watch the temperature on the printer screen; if it does not rise, follow the official heating troubleshooting page."],
+        refs=[], limits=[f"Window of {p['min_window_s']:g} s and rise of {p['min_rise_c']:g} degC are U1 Doctor display thresholds, not official values.", NAMES, UNTESTED],
+        quality=_quality([o]))]
+
+
+def ev_nozzle_compare(rule: Rule, obs: list[Obs], rs_hash: str, rs_id: str) -> list[dict[str, Any]]:
+    """Reported nozzle diameter per extruder object, against each other and against an analysed G-code (sets, not slots)."""
+    p = rule["params"]
+    o = _latest(obs, p["event_type"])
+    if o is None:
+        return _not_observable(rule, obs, rs_hash, rs_id)
+    rep = {n: d for n, raw in sorted(o["value"].items()) if (d := _number(raw)) is not None}
+    if not rep:
+        return []
+    listed = ", ".join(f"{n} {v:g} mm" for n, v in rep.items())
+    base_missing = ["The diameter configured in printer.cfg (not read: the whole configuration is outside the capture budget)."]
+    limits = [NAMES, UNTESTED]
+    refs = _community(p["reference_url"])
+    hyp = [{"id": "h1", "text": p["hypothesis"], "label": "COMMUNITY_HYPOTHESIS"}]
+    out: list[dict[str, Any]] = []
+    if len(set(rep.values())) > 1:
+        out.append(_make(
+            rule, rs_hash, rs_id, [(o, f"Reported: {listed}.")], classification="OBSERVED",
+            title="Extruder objects report different nozzle diameters", hypotheses=hyp, missing=base_missing,
+            safe=["Compare with Settings > Maintenance > Toolhead Info on the printer and with the nozzles actually installed."],
+            refs=refs, limits=["Different diameters can be intentional.", *limits], quality=_quality([o])))
+    g = _latest(obs, p["gcode_event_type"])
+    gm = sorted({v for x in g["value"].get("mm", []) if (v := _number(x)) is not None}) if g else []
+    extra = [x for x in gm if x not in set(rep.values())]
+    if g is not None and extra:
+        out.append(_make(
+            rule, rs_hash, rs_id, [(o, f"Reported: {listed}."), (g, f"G-code nozzle_diameter: {', '.join(f'{x:g}' for x in gm)} mm.")], classification="OBSERVED",
+            title=f"G-code nozzle diameter {', '.join(f'{x:g}' for x in extra)} mm is not reported by any extruder object", hypotheses=hyp, missing=base_missing,
+            safe=["Check the installed nozzles on the printer and the nozzle set in the slicer before printing this file."],
+            refs=refs, limits=["The G-code value is the slicer setting found in the analysed file (IMPORTED), not a machine observation.", *limits],
+            quality="WEAK"))
+    return out
+
+
+def ev_clock_gap(rule: Rule, obs: list[Obs], rs_hash: str, rs_id: str) -> list[dict[str, Any]]:
+    """Controller clock (main MCU) much shorter than the host clock while printing: a restart left the host running."""
+    p = rule["params"]
+    o = _latest(obs, p["event_type"])
+    if o is None:
+        return _not_observable(rule, obs, rs_hash, rs_id)
+    h, m, st = _number(o["value"].get("host_s")), _number(o["value"].get("mcu_s")), o["value"].get("print_state")
+    if h is None or m is None or st not in p["states"] or h - m <= p["min_gap_s"]:
+        return []
+    return [_make(
+        rule, rs_hash, rs_id, [(o, f"Host clock {h:g} s, controller clock {m:g} s, print state '{st}'.")], classification="OBSERVED",
+        title=f"Controller clock is {h - m:.0f} s shorter than the host clock during a print",
+        hypotheses=[{"id": "h1", "text": p["hypothesis"], "label": "COMMUNITY_HYPOTHESIS"}],
+        missing=["Whether the touchscreen is responsive, and the time of the last Klipper or firmware restart."],
+        safe=["If the touchscreen does not respond, control the print from Fluidd on the local network; power-cycle the printer fully once the print is over."],
+        refs=_community(p["reference_url"]),
+        limits=["Host clock: the eventtime Klipper stamps on each update (host monotonic clock). Controller clock: toolhead.estimated_print_time (main MCU clock). It resets when the MCU restarts; a Klipper service restart without an MCU reset is not visible.",
+                f"The {p['min_gap_s']:g} s gap is a U1 Doctor display threshold, not an official value.", UNTESTED],
+        quality=_quality([o]))]
+
+
+def ev_disk_usage(rule: Rule, obs: list[Obs], rs_hash: str, rs_id: str) -> list[dict[str, Any]]:
+    """Disk usage of the partition holding the `logs` root, as numbers, with the 'save the bundle now' pointer."""
+    p = rule["params"]
+    o = _latest(obs, p["event_type"])
+    if o is None:
+        return _not_observable(rule, obs, rs_hash, rs_id)
+    tot, used, free = (_number(o["value"].get(k)) for k in ("total_bytes", "used_bytes", "free_bytes"))
+    if tot is None or used is None or free is None or tot <= 0:
+        return []
+    return [_make(
+        rule, rs_hash, rs_id, [(o, f"total {tot:.0f} B, used {used:.0f} B, free {free:.0f} B.")], classification="OBSERVED",
+        title=f"Log partition: {free / 1e6:.1f} MB free of {tot / 1e6:.1f} MB ({100 * used / tot:.0f} % used)",
+        hypotheses=[{"id": "h1", "text": p["hypothesis"], "label": "COMMUNITY_HYPOTHESIS"}],
+        missing=["How fast the logs rotate on this printer, and whether the configuration lives on the same partition."],
+        safe=["Save the bundle now: export the system log from the touchscreen and a U1-DEB bundle before the logs rotate."],
+        refs=_community(p["reference_url"]),
+        limits=["Numbers as reported by Moonraker for the partition holding its `logs` root; no fill level is judged normal or not.", UNTESTED],
+        quality=_quality([o]))]
+
+
+def ev_extruder_activity(rule: Rule, obs: list[Obs], rs_hash: str, rs_id: str) -> list[dict[str, Any]]:
+    """Per extruder object: state changes and counter changes during the window. Counts only, in a fixed order, no ranking."""
+    p = rule["params"]
+    o = _latest(obs, p["event_type"])
+    if o is None or not isinstance(o["value"].get("extruders"), dict):
+        return _not_observable(rule, obs, rs_hash, rs_id)
+    parts: list[str] = []
+    changed = False
+    for n, d in sorted(o["value"]["extruders"].items()):
+        if not isinstance(d, dict):
+            continue
+        sc = d.get("state_changes", 0)
+        bits = [f"{sc} state changes"]
+        changed |= isinstance(sc, int) and sc > 0
+        for k in ("switch_count", "retry_count", "error_count"):
+            v = d.get(k)
+            if isinstance(v, list) and len(v) == 2 and all(isinstance(x, int) for x in v):
+                bits.append(f"{k} {v[1]} ({v[1] - v[0]:+d})")
+                changed |= v[1] != v[0]
+        parts.append(f"{n}: " + ", ".join(bits) + ".")
+    hc = o["value"].get("homing_changes", 0)
+    changed |= isinstance(hc, int) and hc > 0
+    if not changed:
+        return []
+    return [_make(
+        rule, rs_hash, rs_id, [(o, " ".join(parts) + f" Homed-axes changes: {hc}.")], classification="OBSERVED",
+        title="Toolhead activity during the capture, per extruder object (counts, not ranked)", hypotheses=[],
+        missing=["What each counter means in the U1 firmware (not documented officially)."],
+        safe=["No action from counts alone; compare them with the printer screen if a toolhead misbehaves."], refs=[],
+        limits=["Counters are the firmware's own totals; only their change during this window is an event of this capture.", NAMES, UNTESTED],
+        quality=_quality([o]))]
+
+
+def ev_bed_mesh_stats(rule: Rule, obs: list[Obs], rs_hash: str, rs_id: str) -> list[dict[str, Any]]:
+    """Bed-mesh statistics as numbers only: no 'normal' judgement (no official threshold in the repo)."""
+    p = rule["params"]
+    o = _latest(obs, p["event_type"])
+    if o is None:
+        return _not_observable(rule, obs, rs_hash, rs_id)
+    v = o["value"]
+    if not v.get("points"):
+        return [_make(
+            rule, rs_hash, rs_id, [(o, "The bed_mesh object reported no probed points.")], classification="INCONCLUSIVE",
+            title="No probed bed mesh in this capture", hypotheses=[], missing=["A loaded bed-mesh profile."],
+            safe=["No action."], refs=[], limits=["Absence of a mesh says nothing about the bed.", UNTESTED], quality="UNKNOWN")]
+    nums = [_number(v.get(k)) for k in ("range_mm", "stdev_mm", "min_mm", "max_mm")]
+    if None in nums:
+        return []
+    rng, sd, lo, hi = nums
+    return [_make(
+        rule, rs_hash, rs_id, [(o, f"{v['points']} points ({v.get('rows')} x {v.get('cols')}), min {lo:g} mm, max {hi:g} mm.")], classification="OBSERVED",
+        title=f"Bed mesh: {v['points']} points, range {rng:.3f} mm, standard deviation {sd:.3f} mm", hypotheses=[],
+        missing=["An official flatness tolerance for the U1 bed (none in U1 Doctor's sources)."],
+        safe=["No action from these numbers alone."], refs=[],
+        limits=["Statistics of the probed points only; U1 Doctor does not judge them normal or abnormal.", UNTESTED],
+        quality=_quality([o]))]
+
+
 DRYRUN_EVIDENCE_CAP = 20
 
 
@@ -380,6 +632,14 @@ EVALUATORS: dict[str, Callable[..., list[dict[str, Any]]]] = {
     "dryrun_prediction": ev_dryrun_prediction,
     "drop_probe": ev_drop_probe,
     "fan_off_hot": ev_fan_off_hot,
+    "offset_spread": ev_offset_spread,
+    "sensor_implausible": ev_sensor_implausible,
+    "heater_no_rise": ev_heater_no_rise,
+    "nozzle_compare": ev_nozzle_compare,
+    "clock_gap": ev_clock_gap,
+    "disk_usage": ev_disk_usage,
+    "extruder_activity": ev_extruder_activity,
+    "bed_mesh_stats": ev_bed_mesh_stats,
 }
 
 

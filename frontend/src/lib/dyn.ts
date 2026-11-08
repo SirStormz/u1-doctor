@@ -6,6 +6,7 @@
 import type { Lang } from "./i18n";
 import { txCatalog } from "./dyn-catalog";
 import { txSignals } from "./dyn-signals";
+import { txLive } from "./dyn-live";
 
 const SEV: Record<string, string> = { warning: "avertissement", error: "erreur", notice: "notice", invalid: "invalide" };
 const MODULE: Record<string, string> = {
@@ -18,6 +19,9 @@ const EVENT: Record<string, string> = {
   state_transition: "changement d'état", user_reported_error_code: "code d'erreur déclaré", capture_gap: "trou de capture",
   connection_timeout: "expiration de la connexion", extruder_temperature: "température de l'extrudeur", temperature_sample: "échantillon de température",
   bed_temperature_sample: "échantillon de température du plateau", transport_denied: "appel refusé", machine_action_code: "code d'action machine",
+  extruder_offsets: "décalages des extrudeurs", nozzle_diameters: "diamètres de buse", gcode_nozzle_diameter: "diamètre de buse du G-code",
+  heater_window: "fenêtre de chauffe", clock_check: "contrôle des horloges", disk_usage: "occupation du disque", extruder_activity: "activité des extrudeurs",
+  bed_mesh_points: "points du maillage du plateau", live_coverage: "couverture de la capture", connectivity_check: "autodiagnostic de la connexion",
 };
 const ENTITY: Record<string, string> = { printer: "imprimante", toolhead_1: "tête 1", toolhead_2: "tête 2", toolhead_3: "tête 3", toolhead_4: "tête 4", unmapped: "non associé" };
 
@@ -110,7 +114,7 @@ export function tx(lang: Lang, s: string): string {
   if ((m = /^Print state changed: (\w+) -> (\w+)$/.exec(s))) return `L'état de l'impression est passé de « ${st(m[1]!)} » à « ${st(m[2]!)} »`;
   if ((m = /^Observed state '(\w+)'\.$/.exec(s))) return `État observé « ${st(m[1]!)} ».`;
   if ((m = /^(\w+) \/ validity (\w+)$/.exec(s))) return `${EVENT[m[1]!] ?? m[1]} / validité ${tok(lang, "validity", m[2]!).toLowerCase()}`;
-  return txSignals(s) ?? txCatalog(s) ?? s;
+  return txSignals(s) ?? txLive(s) ?? txCatalog(s) ?? s;
 }
 
 const TOK: Record<string, Record<string, string>> = {
@@ -120,10 +124,10 @@ const TOK: Record<string, Record<string, string>> = {
   validity: { FRESH: "FRAÎCHE", STALE: "PÉRIMÉE", UNAVAILABLE: "INDISPONIBLE", UNKNOWN: "INCONNUE" },
   mapping: { VERIFIED: "VÉRIFIÉ", INFERRED: "DÉDUIT", UNMAPPED: "NON ASSOCIÉ", UNKNOWN: "INCONNU", PROVEN: "PROUVÉ" },
   status: { UNTESTED: "NON TESTÉ", TESTED_SYNTHETIC: "TESTÉ (SYNTHÉTIQUE)", TESTED_REAL: "TESTÉ (RÉEL)", UNAVAILABLE: "INDISPONIBLE" },
-  label: { OFFICIAL_REFERENCE: "RÉFÉRENCE OFFICIELLE" },
+  label: { OFFICIAL_REFERENCE: "RÉFÉRENCE OFFICIELLE", COMMUNITY_HYPOTHESIS: "HYPOTHÈSE DE LA COMMUNAUTÉ" },
   access: { NONE_IN_THIS_BUILD: "AUCUN (CETTE VERSION)", READ_ONLY_ON_CONSENT: "LECTURE SEULE, SUR ACCORD" },
   match: { MATCH: "IDENTIQUE", MISMATCH: "DIFFÉRENT" },
-  refkind: { OFFICIAL_WIKI: "WIKI OFFICIEL", OFFICIAL_DOC: "DOCUMENTATION OFFICIELLE" },
+  refkind: { OFFICIAL_WIKI: "WIKI OFFICIEL", OFFICIAL_DOC: "DOCUMENTATION OFFICIELLE", COMMUNITY_THREAD: "SUJET DU FORUM" },
 };
 export type TokKind = keyof typeof TOK;
 
@@ -152,6 +156,9 @@ const SCENARIOS: Record<string, [string, string]> = {
   signal_drop_klipper_stopped: ["Stream dropped, Klipper reports a stop", "Flux coupé, Klipper signale un arrêt"],
   signal_drop_unreachable: ["Stream dropped, printer unreachable", "Flux coupé, imprimante injoignable"],
   signal_fan_off_hot: ["Nozzle fan at 0 while hot", "Ventilateur de buse à 0 en chauffe"],
+  live_rules_positive: ["Live rules S17-S24 · every rule fires", "Règles en direct S17-S24 · chaque règle se déclenche"],
+  live_rules_normal: ["Live rules S17-S24 · usual values", "Règles en direct S17-S24 · valeurs habituelles"],
+  live_rules_absent: ["Live rules S17-S24 · data not observable", "Règles en direct S17-S24 · données non observables"],
   security_denied_call: ["Call denied by the security policy", "Appel refusé par la politique de sécurité"],
   state_changed_no_code: ["State change without code", "Changement d'état sans code"],
   timeout: ["Connection timeout", "Expiration de connexion"],
