@@ -1,0 +1,212 @@
+{
+  "version": "0.1.0",
+  "checked_at": "2026-11-08",
+  "kind": "COMMUNITY_REPORT",
+  "note": "Causes reported by owners on the public Snapmaker forum, rewritten in our words with a link to each topic. Not official, not observed by U1 Doctor, never ranked: a lead to check, not a diagnosis. Nothing here is ever sent to a printer.",
+  "codes_not_in_catalog": ["0001-0531-0000-0015", "0003-0531-0000-0014", "0003-0528-0000-0027"],
+  "causes": [
+    {
+      "id": "CC-BED-ADC-FEEDER-FFC",
+      "codes": ["0003-0526-0000-0000"],
+      "reported_as": ["0003-0526-0000-0000"],
+      "cause": {
+        "en": "One owner saw the bed and chamber sensors both read about -1035.8 °C with the Klipper message \"MCU shutdown: ADC out of range\". The fault was not the heated bed: a tiny piece of debris sat inside a ribbon-cable connector of one filament feeder. The thread calls the code misleading.",
+        "fr": "Un propriétaire a vu les sondes du plateau et de la chambre afficher toutes deux environ -1035,8 °C, avec le message Klipper d'arrêt du MCU « ADC hors plage ». Le plateau chauffant n'était pas en cause : un minuscule débris se trouvait dans un connecteur de nappe d'un module d'alimentation en filament. Le fil de discussion juge ce code trompeur."
+      },
+      "check": [
+        {"en": "Do the bed and chamber temperatures both show the same impossible value (around -1035.8 °C)?", "fr": "Les températures du plateau et de la chambre affichent-elles toutes deux la même valeur impossible (environ -1035,8 °C) ?"},
+        {"en": "Does the error follow one feeder? The owner isolated it by connecting the feeders one at a time, with the printer fully powered off before each change.", "fr": "L'erreur suit-elle un seul module d'alimentation ? Le propriétaire l'a isolé en rebranchant les modules un par un, machine entièrement hors tension avant chaque changement."}
+      ],
+      "scope": {
+        "en": "One resolved report (November 2026). The touchscreen showed \"Heated Bed Temperature Abnormal\" while the official table names this code \"Heated Bed Temperature Exceeded\". A community-team member forwarded the case to engineering and said the wiki team would add it to the troubleshooting guide.",
+        "fr": "Un seul cas résolu (novembre 2026). L'écran affichait « température du plateau anormale » alors que le tableau officiel nomme ce code « température du plateau dépassée ». Un membre de l'équipe communautaire a transmis le cas aux ingénieurs et annoncé son ajout au guide de dépannage du wiki."
+      },
+      "sources": [{"url": "https://forum.snapmaker.com/t/44067", "title": "\"Heated Bed Temperature Abnormal\" - Error Code: 0003-0526-0000-0000 - Resolved", "posted": "2026-11-04"}]
+    },
+    {
+      "id": "CC-Y1-START-LINE-OFFSET",
+      "codes": ["0003-0522-0001-0013"],
+      "reported_as": ["0003-0522-0001-0013"],
+      "cause": {
+        "en": "The stock start G-code draws its purge line with G0 X85 Y1. On one printer the print failed on that move (\"Move out of range\" on Y in the Klipper log) whenever the starting toolhead had a Y offset below about -1.0 mm. Owners changed the line to Y5 as a local workaround and a profile change to Y5 was proposed to Snapmaker.",
+        "fr": "Le G-code de démarrage d'origine trace sa ligne de purge avec G0 X85 Y1. Sur une machine, l'impression échouait sur ce déplacement (« déplacement hors limites » sur Y dans le journal Klipper) chaque fois que la tête de départ avait un décalage Y inférieur à environ -1,0 mm. Des propriétaires ont remplacé la ligne par Y5 comme contournement local, et un changement de profil vers Y5 a été proposé à Snapmaker."
+      },
+      "check": [
+        {"en": "Compare the Y values of the four extruder_offset entries: is the spread between the lowest and the highest head above about 2 mm? (U1 Doctor does not read these values yet.)", "fr": "Comparez les valeurs Y des quatre décalages extruder_offset : l'écart entre la tête la plus basse et la plus haute dépasse-t-il environ 2 mm ? (U1 Doctor ne lit pas encore ces valeurs.)"},
+        {"en": "Do the failing heads all sit below about -1.0 mm in Y while one head sits far on the positive side?", "fr": "Les têtes en échec sont-elles toutes sous environ -1,0 mm en Y, alors qu'une tête se trouve loin du côté positif ?"}
+      ],
+      "scope": {
+        "en": "One printer (Y spread 2.26 mm) compared with a second one (0.24 mm, no failure). The thread concluded that one outlier head was the likely cause and the owner opened a support ticket. A community-team member first pointed to the official article (no error at slicing, error during printing). Editing the start G-code is a workaround, not an official fix.",
+        "fr": "Une machine (écart Y de 2,26 mm) comparée à une seconde (0,24 mm, sans échec). Le fil conclut qu'une tête hors norme était la cause probable, et le propriétaire a ouvert un ticket au support. Un membre de l'équipe communautaire a d'abord renvoyé à l'article officiel (pas d'erreur au tranchage, erreur pendant l'impression). Modifier le G-code de démarrage est un contournement, pas une correction officielle."
+      },
+      "sources": [{"url": "https://forum.snapmaker.com/t/44046", "title": "U1 start G-code line \"G0 X85 Y1 Z2\" gave \"Move out of range on Y axis\" (0003-0522-0001-0013)", "posted": "2026-11-04"}]
+    },
+    {
+      "id": "CC-ALL-HEADS-DEAD-BISECT",
+      "codes": ["0003-0522-0100-0006"],
+      "reported_as": ["0003-0522-0100-0006"],
+      "cause": {
+        "en": "Reported with all four toolheads dark (no light, no connection) after a print stopped. The owner found two faulty toolheads (1 and 3); support sent replacement toolhead boards. A similar case cited in the thread was traced to a faulty internal USB hub cable.",
+        "fr": "Signalé avec les quatre têtes éteintes (aucun voyant, aucune liaison) après l'arrêt d'une impression. Le propriétaire a trouvé deux têtes défectueuses (1 et 3) ; le support a envoyé des cartes de tête de remplacement. Un cas proche cité dans le fil venait d'un câble défectueux du concentrateur USB interne."
+      },
+      "check": [
+        {"en": "With the printer powered off, were the toolheads reconnected one at a time? In this report the working heads connected and a faulty one stopped all heads from connecting.", "fr": "Machine hors tension, les têtes ont-elles été rebranchées une par une ? Dans ce cas, les têtes saines se connectaient et une tête défectueuse empêchait toutes les autres de se connecter."}
+      ],
+      "scope": {
+        "en": "One report (August 2026). The USB hub cable case is second-hand (found by the owner through a web search).",
+        "fr": "Un seul cas (août 2026). Le cas du câble de concentrateur USB est rapporté de seconde main (trouvé par le propriétaire au moyen d'une recherche en ligne)."
+      },
+      "sources": [{"url": "https://forum.snapmaker.com/t/42831", "title": "Has anyone else had this issue and error code? 0003-0522-0100-0006", "posted": "2026-08-05"}]
+    },
+    {
+      "id": "CC-PRINTING-ANOMALY-FEEDER",
+      "codes": ["0002-0523-0000-0038", "0002-0523-0001-0038", "0002-0523-0002-0038", "0002-0523-0003-0038"],
+      "reported_as": ["0002-0524-0001-0038"],
+      "cause": {
+        "en": "In one resolved report the filament feeder was at fault, not the toolhead: after support asked to swap the left and right feeders, the anomaly moved with the feeder and support replaced it. Another owner found excess grease inside a feeder and cleaned it out.",
+        "fr": "Dans un cas résolu, le module d'alimentation en filament était en cause, pas la tête : après un échange des modules gauche et droit demandé par le support, l'anomalie a suivi le module, que le support a remplacé. Un autre propriétaire a trouvé un excès de graisse dans un module et l'a nettoyé."
+      },
+      "check": [
+        {"en": "After swapping the 1/2 and 3/4 feeders with the printer powered off, does the anomaly follow the feeder?", "fr": "Après échange des modules 1/2 et 3/4, machine hors tension, l'anomalie suit-elle le module ?"},
+        {"en": "Is there visible excess grease inside the feeder?", "fr": "Voit-on un excès de graisse dans le module ?"}
+      ],
+      "scope": {
+        "en": "The forum post quotes the code as 0002 0524 0001 0038; its message text matches the official row 0002-0523-0001-0038 (Toolhead 2: Printing Anomaly). Reports cover toolheads 1, 2 and 3 (July 2026).",
+        "fr": "Le message du forum cite le code 0002 0524 0001 0038 ; son texte correspond à la ligne officielle 0002-0523-0001-0038 (tête 2 : anomalie d'impression). Les cas concernent les têtes 1, 2 et 3 (juillet 2026)."
+      },
+      "sources": [{"url": "https://forum.snapmaker.com/t/42400", "title": "\"Printing Anomaly\" Error Code: 0002 0524 0001 0038 - resolved", "posted": "2026-07-01"}]
+    },
+    {
+      "id": "CC-FILAMENT-INFO-RESUME",
+      "codes": ["0002-0523-0000-0039", "0002-0523-0001-0039", "0002-0523-0002-0039", "0002-0523-0003-0039"],
+      "reported_as": ["0002-0523-0003-0039"],
+      "cause": {
+        "en": "After a filament break, the print would not resume until the filament type and colour were entered again for that toolhead on the Filament page; another owner noticed the toolhead showed no filament information at all.",
+        "fr": "Après une rupture de filament, l'impression ne reprenait qu'une fois le type et la couleur du filament saisis à nouveau pour cette tête sur la page Filament ; un autre propriétaire a remarqué que la tête n'affichait plus aucune information de filament."
+      },
+      "check": [
+        {"en": "Does the Filament page show a type and a colour for the toolhead named in the message?", "fr": "La page Filament affiche-t-elle un type et une couleur pour la tête nommée dans le message ?"}
+      ],
+      "scope": {
+        "en": "Reported on toolhead 4 (October 2026). The official release notes say firmware 1.1.1 and 1.3.0 changed this behaviour (see the firmware notes of this code).",
+        "fr": "Signalé sur la tête 4 (octobre 2026). Les notes de version officielles indiquent que les firmwares 1.1.1 et 1.3.0 ont modifié ce comportement (voir les notes de firmware de ce code)."
+      },
+      "sources": [{"url": "https://forum.snapmaker.com/t/43754", "title": "Fixed Filament Anomaly Error, Won't Resume", "posted": "2026-10-24"}]
+    },
+    {
+      "id": "CC-EXTRUDER-MAP-STALE",
+      "codes": ["0003-0522-0000-0000"],
+      "reported_as": ["003-0522-0000-0000"],
+      "cause": {
+        "en": "The message \"[print_task_config] not allowed to set extruder map during printing\" appeared while prints kept running normally. A community-team member relayed the technical team's reply: it may come from a message-server backlog on a weak network, already expired when shown; an improvement was announced for the next release (March 2026). The owner quoted a notice saying it does not affect printing and can be confirmed.",
+        "fr": "Le message « [print_task_config] » refusant de modifier la table des extrudeurs pendant l'impression est apparu alors que les impressions continuaient normalement. Un membre de l'équipe communautaire a relayé la réponse de l'équipe technique : il pourrait venir d'un retard de file de messages sur un réseau faible, déjà périmé à son affichage ; une amélioration était annoncée pour la version suivante (mars 2026). Le propriétaire a cité un avis indiquant qu'il ne gêne pas l'impression et peut être confirmé."
+      },
+      "check": [
+        {"en": "Does the print keep running normally after the message, and is the network weak at that moment?", "fr": "L'impression continue-t-elle normalement après le message, et le réseau est-il faible à ce moment ?"}
+      ],
+      "scope": {
+        "en": "March 2026, firmware of that time; a later release may behave differently. The technical reply was hedged (\"may\").",
+        "fr": "Mars 2026, firmware de l'époque ; une version ultérieure peut se comporter autrement. La réponse technique restait prudente (« pourrait »)."
+      },
+      "sources": [{"url": "https://forum.snapmaker.com/t/41518", "title": "This error is getting more constant during prints", "posted": "2026-03-17"}]
+    },
+    {
+      "id": "CC-EXTRUDER-MAP-ON-SEND",
+      "codes": ["0001-0531-0000-0015"],
+      "reported_as": ["0001 0531 0000 0015"],
+      "cause": {
+        "en": "The same extruder-map message was reported with this code when sending a file to the printer, and the owner could not get past it. No confirmed fix in the thread; a beta tester suggested sending the file without starting the print.",
+        "fr": "Le même message sur la table des extrudeurs a été signalé avec ce code lors de l'envoi d'un fichier à la machine, sans moyen de le passer. Aucune solution confirmée dans le fil ; un bêta-testeur a suggéré d'envoyer le fichier sans lancer l'impression."
+      },
+      "check": [
+        {"en": "Was a print already running when the file was sent?", "fr": "Une impression était-elle déjà en cours lors de l'envoi du fichier ?"},
+        {"en": "Does it happen with every file or with one file only, and which slicer produced it?", "fr": "Cela arrive-t-il avec tous les fichiers ou un seul, et quel trancheur l'a produit ?"}
+      ],
+      "scope": {
+        "en": "April 2026, unresolved in the thread. This code is not in the official table read on 2026-11-06.",
+        "fr": "Avril 2026, sans solution dans le fil. Ce code ne figure pas dans le tableau officiel lu le 2026-11-06."
+      },
+      "sources": [{"url": "https://forum.snapmaker.com/t/41815", "title": "I keep getting this error when sending a file to the printer: error code: 0001 0531 0000 0015", "posted": "2026-04-22"}]
+    },
+    {
+      "id": "CC-0014-AFTER-FW-151",
+      "codes": ["0003-0531-0000-0014"],
+      "reported_as": ["0003-0531-0000-0014"],
+      "cause": {
+        "en": "Reported on a new printer right after updating to firmware 1.5.1, before any print. A community-team member said the notice could be skipped this time and suggested firmware 1.5.2; the owner then long-pressed the file so it was rescanned under the new firmware, and the print worked.",
+        "fr": "Signalé sur une machine neuve juste après la mise à jour vers le firmware 1.5.1, avant toute impression. Un membre de l'équipe communautaire a indiqué que l'avis pouvait être ignoré cette fois et suggéré le firmware 1.5.2 ; le propriétaire a ensuite fait un appui long sur le fichier pour qu'il soit relu avec le nouveau firmware, et l'impression a fonctionné."
+      },
+      "check": [
+        {"en": "Which Snapmaker Orca version sliced the file (staff asked whether it was V2.3.5)?", "fr": "Quelle version de Snapmaker Orca a tranché le fichier (l'équipe a demandé s'il s'agissait de la V2.3.5) ?"},
+        {"en": "Was the file sliced or scanned before the firmware update?", "fr": "Le fichier a-t-il été tranché ou lu avant la mise à jour du firmware ?"}
+      ],
+      "scope": {
+        "en": "One report (July 2026). This code is not in the official table read on 2026-11-06.",
+        "fr": "Un seul cas (juillet 2026). Ce code ne figure pas dans le tableau officiel lu le 2026-11-06."
+      },
+      "sources": [{"url": "https://forum.snapmaker.com/t/42569", "title": "Cannot even print once after setup", "posted": "2026-07-20"}]
+    },
+    {
+      "id": "CC-FORCE-MOVE-BUG",
+      "codes": ["0003-0522-0000-0002"],
+      "reported_as": ["0003-0522-0000-0002"],
+      "cause": {
+        "en": "With FORCE_MOVE enabled in the Klipper configuration, issuing FORCE_MOVE shut the printer down with \"Internal error on command FORCE_MOVE\" (a Klipper argument-count error). A community-team member called it a minor bug known to the developers, to be fixed in the next release (planned around mid-February 2026).",
+        "fr": "Avec FORCE_MOVE activé dans la configuration Klipper, la commande FORCE_MOVE arrêtait la machine sur une erreur interne (un nombre d'arguments erroné dans Klipper). Un membre de l'équipe communautaire l'a qualifiée de bogue mineur connu des développeurs, à corriger dans la version suivante (prévue vers la mi-février 2026)."
+      },
+      "check": [
+        {"en": "Was FORCE_MOVE (an advanced Klipper command) used just before the error?", "fr": "FORCE_MOVE (une commande Klipper avancée) a-t-elle été utilisée juste avant l'erreur ?"},
+        {"en": "Which firmware is installed? The report dates from January 2026.", "fr": "Quel firmware est installé ? Le cas date de janvier 2026."}
+      ],
+      "scope": {
+        "en": "One report (January 2026). It only applies when FORCE_MOVE was used; the same code covers other system anomalies.",
+        "fr": "Un seul cas (janvier 2026). Il ne vaut que si FORCE_MOVE a été utilisée ; le même code couvre d'autres anomalies système."
+      },
+      "sources": [{"url": "https://forum.snapmaker.com/t/41082", "title": "Help: FORCE_MOVE crashes the printer", "posted": "2026-01-25"}]
+    },
+    {
+      "id": "CC-TOOLHEAD-USB-SEATING",
+      "codes": ["0003-0522-0002-0006", "0003-0522-0003-0006", "0003-0522-0004-0006", "0003-0522-0005-0006", "0003-0522-0002-0008", "0003-0522-0003-0008", "0003-0522-0004-0008", "0003-0522-0005-0008"],
+      "reported_as": ["0003-0522-0005-0006", "0003 0522 0002 0008"],
+      "cause": {
+        "en": "Owners cleared these by reseating the toolhead USB cables: one swapped the cables of toolheads 3 and 4, another found that the cables on the machine side must be screwed down firmly (the toolhead screws are thread-cutting: do not overtighten them); a third saw it once and a reboot cleared it.",
+        "fr": "Des propriétaires ont résolu ces erreurs en remettant en place les câbles USB des têtes : l'un a interverti les câbles des têtes 3 et 4, un autre a constaté que les câbles côté machine doivent être vissés fermement (les vis côté tête sont autotaraudeuses : ne pas trop serrer) ; un troisième ne l'a vue qu'une fois et un redémarrage a suffi."
+      },
+      "check": [
+        {"en": "With the printer powered off, are both ends of each toolhead cable fully seated and screwed in?", "fr": "Machine hors tension, les deux extrémités de chaque câble de tête sont-elles bien enfoncées et vissées ?"},
+        {"en": "Does the error move to another toolhead when two cables are swapped?", "fr": "L'erreur passe-t-elle à une autre tête quand deux câbles sont intervertis ?"}
+      ],
+      "scope": {
+        "en": "January to March 2026, after the official toolhead-disconnected guide had been followed. Reports name toolheads 1 and 4, and \"2 or 3\" heads without numbers.",
+        "fr": "Janvier à mars 2026, après application du guide officiel sur les têtes déconnectées. Les cas citent les têtes 1 et 4, ainsi que « 2 ou 3 » têtes sans numéro."
+      },
+      "sources": [{"url": "https://forum.snapmaker.com/t/40933", "title": "Error: 0003-0522-0005-0006 - Toolhead 4 MCU connection failed", "posted": "2026-01-13"}]
+    },
+    {
+      "id": "CC-HOMING-BELT-PARK",
+      "codes": ["0003-0528-0000-0027", "0002-0528-0000-0011"],
+      "reported_as": ["0003-0528-0000-0027", "0002-0528-0000-0011"],
+      "cause": {
+        "en": "Homing failed repeatedly during first setup. Support told one owner the two belt adjustment screws may have been over-tightened; other owners reported it worked after the head was moved to the middle by hand with the printer off, or after toolhead pick and park coordinate tweaks; in one case a visibly bowed frame led to a replacement printer.",
+        "fr": "La prise d'origine échouait sans cesse pendant la première installation. Le support a indiqué à un propriétaire que les deux vis de réglage des courroies étaient peut-être trop serrées ; d'autres ont réussi après avoir déplacé la tête au centre à la main, machine éteinte, ou après un réglage des coordonnées de prise et de dépose des têtes ; dans un cas, un cadre visiblement bombé a conduit au remplacement de la machine."
+      },
+      "check": [
+        {"en": "Were the belt tension screws over-tightened? The official article also warns against it.", "fr": "Les vis de tension des courroies ont-elles été trop serrées ? L'article officiel met aussi en garde contre cela."},
+        {"en": "Was the head left at the X/Y 0,0 corner before the machine was started?", "fr": "La tête était-elle restée dans le coin X/Y 0,0 avant la mise en marche ?"},
+        {"en": "Is the top front of the frame visibly bowed?", "fr": "Le haut de la façade du cadre est-il visiblement bombé ?"}
+      ],
+      "scope": {
+        "en": "Reports from December 2025 to March 2026. 0003-0528-0000-0027 is not in the official table read on 2026-11-06 but has its own official article; in topic 41512 the owner had already followed it and was advised to contact support.",
+        "fr": "Cas de décembre 2025 à mars 2026. 0003-0528-0000-0027 ne figure pas dans le tableau officiel lu le 2026-11-06 mais possède son propre article officiel ; dans le sujet 41512, le propriétaire l'avait déjà appliqué et a été orienté vers le support."
+      },
+      "articles": [
+        {"title": "U1 Corexy home is unstable", "url": "https://wiki.snapmaker.com/en/snapmaker_u1/troubleshooting/corexy_home_is_unstable"},
+        {"title": "U1 How to adjust the pick & park coordinates", "url": "https://wiki.snapmaker.com/en/snapmaker_u1/troubleshooting/u1_how_to_adjust_the_pick_and_park_coordinates"}
+      ],
+      "sources": [
+        {"url": "https://forum.snapmaker.com/t/41512", "title": "U1 eror code", "posted": "2026-03-17"},
+        {"url": "https://forum.snapmaker.com/t/40742", "title": "U1 Homing Anomaly 0002-0528-0000-0011", "posted": "2025-12-29"}
+      ]
+    }
+  ]
+}

@@ -17,7 +17,7 @@ Method: public wiki pages only, fetched like a browser (173 of 185 English U1 pa
 
 ## 2. Logs and support
 - **Official logs are encrypted**: the exported archive cannot be read locally; only Snapmaker support can open it. U1 Doctor therefore offers what the owner cannot get otherwise: owner-readable, shareable evidence.
-- Export paths: touchscreen Settings > About > System Log > to USB (FAT32/EXT2/EXT4, ≤ 64 GB) or, from firmware 1.1.1, to the Fluidd `logs` folder. AI-monitoring photos can be included.
+- Export paths (official article `snapmaker_u1/troubleshooting/U1_export_log`, linked from the ticket-ready summary): touchscreen Settings > About > System Log > to USB (FAT32/EXT2/EXT4, ≤ 64 GB) or, from firmware 1.1.1, to the Fluidd `logs` folder. AI-monitoring photos can be included.
 - Support asks for: the code, photos/video, the G-code used, and logs for axis/calibration/MCU-timeout cases; for pick/park it sends a test G-code (100 cycles) to be filmed. First-layer issues: photo, firmware version, print file, whether bed leveling was on.
 - Support ticket form lives on the official site (not copied here).
 

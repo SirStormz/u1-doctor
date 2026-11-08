@@ -45,11 +45,25 @@ export interface FwNote { component: string; version: string; kind: string; text
 export interface FirmwareView {
   given: string | null; valid: boolean | null; latest: { version: string; date: string; source: string } | null; behind_latest: boolean | null; notes: FwNote[];
 }
+export interface L10nText { en: string; fr: string }
+export interface ForumSource { url: string; title: string; posted: string }
+/** Forum report attached to a code: always a community report, never official, never an observation, never ranked. */
+export interface CommunityCause {
+  id: string; codes: string[]; reported_as: string[]; cause: L10nText; check: L10nText[]; scope: L10nText;
+  articles?: { title: string; url: string }[]; sources: ForumSource[];
+}
+export interface MessageMatch {
+  id: string; patterns: string[]; title: L10nText; explanation: L10nText;
+  articles: { title: string; url: string; relation: "about" | "related" }[]; sources: ForumSource[]; related_codes: string[];
+}
 export interface InterpretOut {
   decoding: Decoding;
   official_reference: string;
   catalog_verified_at: string;
   limits: string[];
+  community?: { kind: "COMMUNITY_REPORT"; checked_at: string; causes: CommunityCause[] };
+  input?: { normalized: string | null; suggestions: { code: string; title: string }[] };
+  messages?: MessageMatch[];
 }
 export interface ReplayOut {
   matches_golden: boolean;

@@ -24,7 +24,16 @@ from .engine.canonical import sha256_hex
 from .gcode_preflight import MAX_BYTES as PREFLIGHT_MAX_BYTES
 from .gcode_preflight import PreflightError
 from .gcode_preflight import analyze as preflight_analyze
-from .knowledge import interpret, load_catalog, load_known_issues
+from .knowledge import (
+    community_for,
+    interpret,
+    load_catalog,
+    load_community_causes,
+    load_known_issues,
+    match_messages,
+    normalize_code,
+    suggest_codes,
+)
 from .live import LiveError, run_live_capture
 from .paths import ROOT
 from .support import checklist as support_checklist
@@ -88,7 +97,7 @@ class SupportIn(BaseModel):
 
 
 class InterpretIn(BaseModel):
-    code: str = Field(max_length=64)
+    code: str = Field(max_length=200)  # a code, or a message without a code (matched against knowledge/u1_messages.json)
     firmware: str | None = Field(default=None, max_length=32)  # stated by the user, e.g. "1.5.2"
 
 
@@ -171,7 +180,18 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
         cat = load_catalog()
         dec = interpret(body.code, body.firmware)
         dec.pop("entry", None) if dec.get("status") != "KNOWN" else None
+        exact = dec.get("status") != "MALFORMED"
+        norm = normalize_code(body.code)
+        suggestions = [] if dec.get("status") == "KNOWN" else [c for c in suggest_codes(body.code) if c != body.code]
+        by = cat["_by_code"]
+        community = load_community_causes()
         return {"source": "USER_REPORTED", "decoding": dec, "catalog_version": cat["catalog_version"],
+                # forum reports for this exact code: labelled COMMUNITY_REPORT, never official, never an observation, never ranked
+                "community": {"kind": community["kind"], "checked_at": community["checked_at"],
+                              "causes": community_for(body.code) if exact else []},
+                "input": {"normalized": norm if norm != body.code else None,
+                          "suggestions": [{"code": c, "title": by[c]["title"]} for c in suggestions]},
+                "messages": match_messages(body.code) if not exact else [],
                 "catalog_verified_at": cat["last_verified_at"], "official_reference": cat["source_url"],
                 "limits": ["The displayed code may not represent the actual fault source (official wiki note).",
                            "Code declared by the user; not verified from the machine."]}

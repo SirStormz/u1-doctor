@@ -1,0 +1,106 @@
+{
+  "version": "0.1.0",
+  "checked_at": "2026-11-08",
+  "note": "Messages without a dddd-dddd-dddd-dddd code. Our own short explanation; an official article is linked only when one exists in the wiki pages read on 2026-11-06, otherwise a community topic is cited or nothing. Never a diagnosis.",
+  "messages": [
+    {
+      "id": "MSG-NO-NETWORK",
+      "patterns": ["no network connection", "network environment of the software"],
+      "title": {"en": "\"No network connection\" (software side)", "fr": "« Pas de connexion réseau » (côté logiciel)"},
+      "explanation": {
+        "en": "This text is not a printer error code. Its wording points to the slicer or the app saying it cannot reach the network or the printer. No official article for this exact message was found. The official page on static DHCP leases explains that a printer looks offline when its IP address changes.",
+        "fr": "Ce texte n'est pas un code d'erreur de la machine. Sa formulation indique que le trancheur ou l'application ne parvient pas à joindre le réseau ou la machine. Aucun article officiel n'a été trouvé pour ce message exact. La page officielle sur les baux DHCP fixes explique qu'une machine semble hors ligne quand son adresse IP change."
+      },
+      "articles": [{"title": "U1 How to set a static DHCP lease", "url": "https://wiki.snapmaker.com/en/snapmaker_u1/set-static-ip-for-u1", "relation": "related"}],
+      "sources": [],
+      "related_codes": []
+    },
+    {
+      "id": "MSG-HTTP-401",
+      "patterns": ["error 401", "401 unauthorized", "401: unauthorized", "unauthorized"],
+      "title": {"en": "\"Error 401: Unauthorized\"", "fr": "« Erreur 401 : non autorisé »"},
+      "explanation": {
+        "en": "401 is a web status meaning the request was refused because its authorisation was missing or rejected. It comes from a web service (app, cloud account or the printer's web interface), not from the printer's error table. No official article for this message was found.",
+        "fr": "401 est un statut web signifiant que la demande a été refusée faute d'autorisation valide. Il vient d'un service web (application, compte cloud ou interface web de la machine), pas du tableau des codes d'erreur. Aucun article officiel n'a été trouvé pour ce message."
+      },
+      "articles": [],
+      "sources": [],
+      "related_codes": []
+    },
+    {
+      "id": "MSG-FOREIGN-OBJECT",
+      "patterns": ["foreign object"],
+      "title": {"en": "Foreign object detection (AI monitoring)", "fr": "Détection d'objet étranger (surveillance IA)"},
+      "explanation": {
+        "en": "Foreign object detection is part of the AI monitoring added in firmware 1.0.0, according to the official release notes: the camera flagged something unexpected on the build plate. It is a camera-based detection, not a sensor fault code. The release notes say AI monitoring needs Snapmaker Orca V2.2.1 and that later firmware improved detection.",
+        "fr": "La détection d'objet étranger fait partie de la surveillance IA ajoutée dans le firmware 1.0.0, selon les notes de version officielles : la caméra a repéré quelque chose d'inattendu sur le plateau. C'est une détection par caméra, pas un code de défaut de capteur. Les notes de version indiquent que la surveillance IA demande Snapmaker Orca V2.2.1 et que des firmwares ultérieurs ont amélioré la détection."
+      },
+      "articles": [{"title": "U1 firmware release notes V1.0.0", "url": "https://wiki.snapmaker.com/en/snapmaker_u1/firmware/release_notes/v100", "relation": "about"}],
+      "sources": [],
+      "related_codes": []
+    },
+    {
+      "id": "MSG-SPAGHETTI",
+      "patterns": ["spaghetti"],
+      "title": {"en": "Spaghetti detection (AI monitoring)", "fr": "Détection de « spaghetti » (surveillance IA)"},
+      "explanation": {
+        "en": "Spaghetti detection is part of the AI monitoring added in firmware 1.0.0, according to the official release notes: the camera saw what looks like a failed, stringy print. It is a camera-based detection, not a sensor fault code; firmware 1.2.0 reduced false positives according to its release notes.",
+        "fr": "La détection de « spaghetti » fait partie de la surveillance IA ajoutée dans le firmware 1.0.0, selon les notes de version officielles : la caméra a vu ce qui ressemble à une impression ratée en fils. C'est une détection par caméra, pas un code de défaut de capteur ; selon ses notes de version, le firmware 1.2.0 a réduit les fausses alertes."
+      },
+      "articles": [{"title": "U1 firmware release notes V1.0.0", "url": "https://wiki.snapmaker.com/en/snapmaker_u1/firmware/release_notes/v100", "relation": "about"}],
+      "sources": [],
+      "related_codes": []
+    },
+    {
+      "id": "MSG-TANGLE",
+      "patterns": ["tangle", "tangled", "entanglement"],
+      "title": {"en": "Tangled filament detected", "fr": "Filament emmêlé détecté"},
+      "explanation": {
+        "en": "Tangle detection compares the extrusion length asked by the G-code with how far the feeder's odometer wheel turned. The official article covers this message; another official page explains how to free a tangled spool. Detection sensitivity can be adjusted since firmware 0.9.4 (official release notes).",
+        "fr": "La détection d'emmêlement compare la longueur d'extrusion demandée par le G-code avec la rotation de la roue de mesure du module d'alimentation. L'article officiel traite ce message ; une autre page officielle explique comment démêler une bobine. La sensibilité se règle depuis le firmware 0.9.4 (notes de version officielles)."
+      },
+      "articles": [
+        {"title": "U1 Tangled Filament Detected", "url": "https://wiki.snapmaker.com/en/snapmaker_u1/troubleshooting/printing_anomaly", "relation": "about"},
+        {"title": "Tangled filament resolution", "url": "https://wiki.snapmaker.com/en/snapmaker_u1/troubleshooting/tangled-filament-resolution", "relation": "related"}
+      ],
+      "sources": [],
+      "related_codes": ["0002-0523-0000-0038", "0002-0523-0001-0038", "0002-0523-0002-0038", "0002-0523-0003-0038"]
+    },
+    {
+      "id": "MSG-FIRMWARE-RESTART",
+      "patterns": ["firmware restart", "firmware_restart"],
+      "title": {"en": "\"Firmware Restart\"", "fr": "« Redémarrage du firmware »"},
+      "explanation": {
+        "en": "FIRMWARE_RESTART is the Klipper command that reloads the configuration and restarts the firmware after a shutdown; it is offered once the system has stopped to protect itself. It is not a cause: the cause is the error shown just before it, so decode that code. U1 Doctor never sends this command. No official article for this message was found; topic 41082 shows the Klipper text that suggests it.",
+        "fr": "FIRMWARE_RESTART est la commande Klipper qui recharge la configuration et redémarre le firmware après un arrêt ; elle est proposée quand le système s'est arrêté pour se protéger. Ce n'est pas une cause : la cause est l'erreur affichée juste avant, décodez donc ce code. U1 Doctor n'envoie jamais cette commande. Aucun article officiel n'a été trouvé pour ce message ; le sujet 41082 montre le texte Klipper qui la propose."
+      },
+      "articles": [],
+      "sources": [{"url": "https://forum.snapmaker.com/t/41082", "title": "Help: FORCE_MOVE crashes the printer", "posted": "2026-01-25"}],
+      "related_codes": []
+    },
+    {
+      "id": "MSG-TOOLHEAD-ANOMALY",
+      "patterns": ["toolhead anomaly", "toolhead 1 anomaly", "toolhead 2 anomaly", "toolhead 3 anomaly", "toolhead 4 anomaly"],
+      "title": {"en": "\"Toolhead Anomaly\" (generic title)", "fr": "« Anomalie de tête » (titre générique)"},
+      "explanation": {
+        "en": "\"Anomaly\" titles are shared by many rows of the official error table (printing, filament, swapping, calibration and more, per toolhead). The title alone does not say which one: the dddd-dddd-dddd-dddd code shown under it identifies the row, so enter that code here.",
+        "fr": "Les titres « anomalie » sont partagés par de nombreuses lignes du tableau officiel (impression, filament, changement, calibrage et autres, par tête). Le titre seul ne dit pas laquelle : c'est le code dddd-dddd-dddd-dddd affiché dessous qui identifie la ligne, saisissez-le ici."
+      },
+      "articles": [{"title": "U1 error codes", "url": "https://wiki.snapmaker.com/en/snapmaker_u1/troubleshooting/u1_error_codes", "relation": "about"}],
+      "sources": [],
+      "related_codes": []
+    },
+    {
+      "id": "MSG-SELECT-FILAMENT-TYPE",
+      "patterns": ["select filament type", "filament type"],
+      "title": {"en": "\"Please Select Filament Type\"", "fr": "« Veuillez choisir le type de filament »"},
+      "explanation": {
+        "en": "This prompt asks for the filament type of a toolhead. No official article for this exact text was found. A possibly related official code family is \"Filament information not set\" (0002-0523-xxxx-0039); a community report (topic 43754) says a paused print resumed only after type and colour were entered again on the Filament page.",
+        "fr": "Cette invite demande le type de filament d'une tête. Aucun article officiel n'a été trouvé pour ce texte exact. Une famille de codes officiels peut-être liée est « informations de filament non renseignées » (0002-0523-xxxx-0039) ; un témoignage de la communauté (sujet 43754) indique qu'une impression en pause n'a repris qu'après une nouvelle saisie du type et de la couleur sur la page Filament."
+      },
+      "articles": [],
+      "sources": [{"url": "https://forum.snapmaker.com/t/43754", "title": "Fixed Filament Anomaly Error, Won't Resume", "posted": "2026-10-24"}],
+      "related_codes": ["0002-0523-0000-0039", "0002-0523-0001-0039", "0002-0523-0002-0039", "0002-0523-0003-0039"]
+    }
+  ]
+}

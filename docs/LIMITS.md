@@ -31,6 +31,8 @@ What U1 Doctor cannot know or has not yet proven. Each item cites the document i
 | The "inspect these toolheads" hints come from wiki wording; the named heads are not always the failing one. | `docs/wiki-findings.md` section 1 |
 | Twelve wiki pages answered 403 and were not read; the page-content API was refused to anonymous visitors and was not worked around. | `docs/wiki-findings.md` |
 | Firmware-dependent facts need the firmware version; a finding about MCU timeouts should state it when known. | `docs/wiki-findings.md` section 4 |
+| "Reported by the community" causes come from public forum topics (read 2026-11-08): one or a few owners each, often on an older firmware, rewritten in our words. They are not official, not observed by U1 Doctor, never ranked, and can be outdated. Three of their codes are not in the official table (`0001-0531-0000-0015`, `0003-0531-0000-0014`, `0003-0528-0000-0027`). | `knowledge/u1_community_causes.json` |
+| "Did you mean" suggestions rank spellings only (edit distance on the digits); they say nothing about the fault, and nothing is decoded until the owner picks one. Messages without a code are matched by plain substrings on a curated list of 8; anything else stays unmatched. | `backend/app/knowledge/__init__.py`, `knowledge/u1_messages.json` |
 
 ## Replay and determinism
 
@@ -69,6 +71,7 @@ What U1 Doctor cannot know or has not yet proven. Each item cites the document i
 | Only a Windows executable is released (plus a Docker image and source); no macOS or Linux executable. Not audited: screen reader, 200 % zoom, widths under 1024 px. | `IMPLEMENTATION_STATUS.md` |
 | The GitHub Action that validates a bundle runs in this repository's CI (job `deb-action`); it has not been used by third-party repositories. | `BACKLOG.md` (#12), `docs/U1-DEB.md` |
 | Network: HTTP to the printer is unencrypted on the LAN. A changed printer IP is not detected yet. | `docs/threat-model.md`, `BACKLOG.md` #42 |
+| The ticket-ready summary only contains what the owner typed and the facts of the loaded source; firmware, slicer and filaments are never detected. It does not replace the printer's encrypted system log. The "save the bundle now" reminder is static text: the printer's log storage usage is not read (planned with the live rules, `BACKLOG.md` #57). | `frontend/src/lib/ticket-text.ts` |
 
 ## What U1 Doctor will never claim
 

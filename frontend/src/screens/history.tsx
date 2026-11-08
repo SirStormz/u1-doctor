@@ -6,6 +6,7 @@ import { tok, tx } from "../lib/dyn";
 import { usePrefs } from "../lib/prefs";
 import { errText } from "../lib/errors";
 import { ReconPanel } from "./recon";
+import { EvidenceNotice } from "../components/evidence-notice";
 
 function SessionFindings({ id }: { id: string }) {
   const { t, lang } = usePrefs();
@@ -77,6 +78,7 @@ export function HistoryView() {
     <>
       <Panel title={t.histTitle} icon={<HistoryIcon size={17} />} i={0} active>
         <p className="text-ink2">{t.histSub}</p>
+        <EvidenceNotice />
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <Button onClick={() => void run(() => historyApi.saveSource("synthetic:demo_extrusion_blockage", `${t.histOrigin.synthetic} · demo_extrusion_blockage`))}>{t.histSaveDemo}</Button>
           <Button onClick={() => void run(() => historyApi.saveSource("real:h02_normal_print", `${t.histOrigin.real_capture} · H-02`))}>{t.histSaveReal}</Button>

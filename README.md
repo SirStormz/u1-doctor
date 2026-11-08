@@ -58,13 +58,13 @@ Screenshots were taken in **Expert mode** with **demo mode** on, which shows the
 | 01 | **Welcome** | What the tool is, and its promises: no account, no cloud, no AI, nothing leaves your PC |
 | 02 | **Connect** | Take a short **read-only capture** of your own U1: type its private address, tick the approval box |
 | 03 | **Overview** | What is actually known about the incident and where it comes from, with the U1 in 3D (illustrative controls) |
-| 04 | **Error codes** | Decode any of the 413 official codes. Also here: firmware notes, which toolheads to inspect, the "what support will ask" checklist, 5 documented known issues, and an offline **G-code pre-flight** (10 checks on a sliced file) |
+| 04 | **Error codes** | Decode any of the 413 official codes. Also here: firmware notes, which toolheads to inspect, the "what support will ask" checklist, 5 documented known issues, causes **reported by the community** on the forum (11 entries, each with its topic link, never official), "did you mean" for mistyped codes, explanations for 8 messages that carry no code, and an offline **G-code pre-flight** (10 checks on a sliced file) |
 | 05 | **Print quality** | The "needs your eyes" assistant: 16 symptoms, causes in the official order, evidence only from numbers you type or saved temperatures. No ranking, no score |
 | 06 | **Incident timeline** | The observed window with phases and explicit gaps. Also here: the **History** of your saved sessions (never merged) and the import of **U1 Dry Run** reports |
 | 07 | **Findings** | Every conclusion of the 12 rules, ordered by status then evidence quality. Open one to see what supports it, what contradicts it, what is missing and its limits |
 | 08 | **Evidence detail** | The observations behind every finding, with source, time quality and hashes (in the menu in Expert mode; in Simple mode it opens from "Open" on a finding) |
 | 09 | **Replay lab** | Rerun the rules on frozen synthetic data and check the result is identical, byte for byte (in the menu in Expert mode) |
-| 10 | **Report composer** | Prepare a privacy-checked **evidence bundle** of the demo scenario or of **your own saved capture**, and import someone else's |
+| 10 | **Report composer** | Prepare a privacy-checked **evidence bundle** of the demo scenario or of **your own saved capture**, import someone else's, and copy a **ticket-ready summary** (versions, code, toolhead, LAN or cloud, filaments, what you tried, capture facts) for a support ticket or a forum post |
 | 11 | **Settings** | Language (English or French), **Simple or Expert** display level, 3 themes, 2 densities, replay of the guided start, versions and the compatibility list |
 
 Press `Ctrl K` anywhere to jump to a screen or paste an error code.
@@ -114,6 +114,8 @@ The capture never contains your address or file names. If the live stream closes
 | Saved-session **history** and import of U1 Dry Run reports | tested |
 | **G-code pre-flight**: 10 offline checks on a sliced file (for example decimal commas, a 0 °C bed, nozzle diameter, more than 4 filaments, `#` in the file name) | tested |
 | "What support will ask" checklist per code, firmware notes, 5 documented known issues | tested |
+| Community-reported causes: 11 entries covering 25 codes (forum topics read 2026-11-08, labelled as community reports), near-match for mistyped codes, matcher for 8 messages without a code | tested |
+| Ticket-ready summary (copy to clipboard, nothing sent) and a "save the bundle now" reminder in the capture and history screens | tested |
 | Print-quality assistant ("needs your eyes"): 16 symptoms, causes in the official order, evidence only from numbers you type or saved temperatures | tested |
 | Timeline of the **observed window**: phases, explicit gaps, source and time quality per row | tested on real captures and 17 synthetic scenarios |
 | `U1-DEB` evidence bundle: **export of the demo scenarios or of your own saved captures**, safe import and replay ([spec](docs/U1-DEB.md)) | tested; a ready-made example and a validator are in the repo |

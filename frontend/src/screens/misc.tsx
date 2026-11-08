@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Ban, Cpu, ExternalLink, FlaskConical, History, Play, Plug, Search, ShieldCheck, Settings as SettingsIcon, TriangleAlert } from "lucide-react";
-import { api, knownIssues, liveApi, LiveRefused, preflight, supportChecklist, PreflightRefused, type InterpretOut, type LiveOut, type KnownIssues, type PreflightOut } from "../api";
+import { Ban, Cpu, ExternalLink, FlaskConical, History, MessageSquareText, Play, Plug, Search, ShieldCheck, Settings as SettingsIcon, TriangleAlert, Users } from "lucide-react";
+import { api, knownIssues, liveApi, LiveRefused, preflight, supportChecklist, PreflightRefused, type CommunityCause, type InterpretOut, type LiveOut, type KnownIssues, type MessageMatch, type PreflightOut } from "../api";
 import { Button, Chip, Kbd, Panel, ProvenanceChip, SeverityChip, Seal, StateBlock } from "../components/ui";
 import { PageTitle } from "../components/shell";
 import { useIncident } from "../lib/data";
@@ -10,6 +10,7 @@ import { moduleLabel, scenarioLabel, tok, tx } from "../lib/dyn";
 import { pfLimit, pfView } from "../lib/preflight-text";
 import { buildRequest, supNote, supText, type SupportOut } from "../lib/support-text";
 import type { RouteName } from "../lib/router";
+import { EvidenceNotice } from "../components/evidence-notice";
 
 type Go = (n: RouteName, p?: string) => void;
 
@@ -107,6 +108,7 @@ export function Connect() {
               </dl>
               {out.findings.length === 0 && <p className="mt-3 text-sm text-ink2">{t.liveNoFind}</p>}
               <p className="mt-3 text-xs text-ink3">{out.session ? t.liveSaved : t.liveNotSaved}</p>
+              <EvidenceNotice />
             </Panel>
           )}
           <Panel title={t.allowlist} icon={<ShieldCheck size={17} />} i={2} demo={false}>
@@ -140,13 +142,15 @@ export function Explorer({ param }: { param?: string }) {
   const d = res?.decoding;
   const entry = d?.entry as ({ title: string; summary: string; toolhead?: number | null; inspect_toolheads?: number[]; inspect_scope?: "listed" | "all" | "this_head" }) | null | undefined;
   const crit = d?.severity === "error";
+  const pick = (c: string) => { setCode(c); void run(c); };
+  const msgs = d?.status === "MALFORMED" ? res?.messages ?? [] : [];
   return (
     <>
       <PageTitle title={t.nav.explorer} sub={t.explorerSub} icon={<Search size={26} />} />
       <div className="grid gap-d xl:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">
         <Panel title={t.codeLabel} i={0} active>
           <form onSubmit={(e) => { e.preventDefault(); void run(code); }} className="grid gap-3">
-            <input value={code} maxLength={64} onChange={(e) => setCode(e.target.value)} placeholder="0002-0525-0002-0002" aria-label={t.codeLabel} className="mono rounded-lg border border-control bg-surface2 px-3 py-2.5 text-base text-ink" />
+            <input value={code} maxLength={200} onChange={(e) => setCode(e.target.value)} placeholder="0002-0525-0002-0002" aria-label={t.codeLabel} className="mono rounded-lg border border-control bg-surface2 px-3 py-2.5 text-base text-ink" />
             <label className="grid gap-1.5"><span className="micro">{t.fwLabel}</span>
               <input value={fw} maxLength={32} onChange={(e) => setFw(e.target.value)} placeholder="2.1.0" aria-label={t.fwLabel} className="mono rounded-lg border border-control bg-surface2 px-3 py-2.5 text-base text-ink" />
               <span className="text-xs text-ink3">{t.fwHint}</span></label>
@@ -158,7 +162,8 @@ export function Explorer({ param }: { param?: string }) {
         <div aria-live="polite">
           {err && <StateBlock kind="error" title={t.error} body={err} />}
           {!res && !err && <StateBlock kind="empty" title={t.empty} body={t.explorerEmpty} />}
-          {res && d && (
+          {res && d && msgs.length > 0 && <MessagesPanel items={msgs} onPick={pick} />}
+          {res && d && msgs.length === 0 && (
             <Panel i={1} active={!crit} title={<span className="flex items-center gap-2">{d.status === "MALFORMED" ? t.statusMalformed : entry?.title ? tx(lang, entry.title) : t.statusStructure}</span>} actions={<SeverityChip level={d.severity} />}>
               {crit && <div role="alert" className="mb-4 flex gap-3 rounded-lg border p-3" style={{ borderColor: "var(--danger)", background: "color-mix(in srgb, var(--danger) 10%, var(--surface-1))" }}><TriangleAlert className="shrink-0 text-danger" aria-hidden /><p>{t.criticalNote}</p></div>}
               <div className="flex flex-wrap items-center gap-2"><ProvenanceChip status="USER_REPORTED" /><span className="mono text-xs text-ink2">{res.decoding.status === "MALFORMED" ? code : (d as unknown as { code?: string }).code}</span>
@@ -187,17 +192,84 @@ export function Explorer({ param }: { param?: string }) {
                 </div>
               )}
               {d.reason && <p className="mt-3 text-danger">{tx(lang, d.reason)}</p>}
+              {res.input && res.input.suggestions.length > 0 && <Suggestions items={res.input.suggestions} normalized={res.input.normalized} onPick={pick} />}
               <h3 className="micro mt-5 mb-2">{t.limits}</h3>
               <ul className="grid gap-1.5">{res.limits.map((l) => <li key={l} className="flex gap-2"><span className="text-warn" aria-hidden>▲</span>{tx(lang, l)}</li>)}</ul>
               <a href={res.official_reference} target="_blank" rel="noreferrer noopener" className="btn btn-secondary mt-4 w-fit">{t.openOfficial}<ExternalLink size={15} aria-hidden /></a>
               <p className="mt-2 text-xs text-ink3">{t.catalogNote.replace("{d}", res.catalog_verified_at)}</p>
             </Panel>
           )}
+          {res?.community && res.community.causes.length > 0 && <CommunityPanel causes={res.community.causes} checkedAt={res.community.checked_at} />}
         </div>
       </div>
       <KnownIssuesPanel code={res && d && d.status !== "MALFORMED" ? ((d as unknown as { code?: string }).code ?? code) : null} />
       <Preflight onCode={(c) => { setCode(c); void run(c); window.scrollTo({ top: 0, behavior: "smooth" }); }} />
     </>
+  );
+}
+
+/** "Did you mean": closest catalog codes to a mistyped one, by spelling only. Decoded only when the owner picks one. */
+function Suggestions({ items, normalized, onPick }: { items: { code: string; title: string }[]; normalized: string | null; onPick: (c: string) => void }) {
+  const { t, lang } = usePrefs();
+  return (
+    <div className="mt-4" data-testid="code-suggestions">
+      <h3 className="micro mb-1">{t.nm.title}</h3>
+      {normalized && <p className="mono mb-1 text-xs text-ink3">{t.nm.normalized.replace("{c}", normalized)}</p>}
+      <ul className="flex flex-wrap gap-2">{items.map((s) => <li key={s.code}><button type="button" className="chip" data-tone="accent" onClick={() => onPick(s.code)}><span className="mono">{s.code}</span> · {tx(lang, s.title)}</button></li>)}</ul>
+      <p className="mt-2 text-xs text-ink3">{t.nm.note}</p>
+    </div>
+  );
+}
+
+/** Forum reports for this exact code: a separate block, always labelled as a community report with its source and date. */
+function CommunityPanel({ causes, checkedAt }: { causes: CommunityCause[]; checkedAt: string }) {
+  const { t, lang } = usePrefs();
+  return (
+    <div className="mt-4">
+      <Panel title={t.cc.title} icon={<Users size={17} />} i={2} demo={false}>
+        <p className="text-ink2">{t.cc.note}</p>
+        <ul className="mt-3 grid gap-3" data-testid="community-causes">
+          {causes.map((c) => (
+            <li key={c.id} data-cause={c.id} className="rounded-lg border-2 border-dashed p-3" style={{ borderColor: "var(--control-line)" }}>
+              <div className="flex flex-wrap items-center gap-2"><Chip tone="neutral" icon={<Users size={12} aria-hidden />}>{t.cc.kind}</Chip>{c.reported_as.some((r) => !c.codes.includes(r)) && <span className="mono text-xs text-ink3">{t.cc.reportedAs} · {c.reported_as.join(", ")}</span>}</div>
+              <dl className="mt-2 grid gap-1.5 text-[15px]">
+                <div><dt className="micro">{t.cc.cause}</dt><dd className="m-0">{c.cause[lang]}</dd></div>
+                <div><dt className="micro">{t.cc.check}</dt><dd className="m-0"><ul className="grid gap-1">{c.check.map((k) => <li key={k.en} className="flex gap-2"><span className="text-ink3" aria-hidden>·</span>{k[lang]}</li>)}</ul></dd></div>
+                <div><dt className="micro">{t.cc.scope}</dt><dd className="m-0 text-ink2">{c.scope[lang]}</dd></div>
+              </dl>
+              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs">
+                {c.sources.map((s) => <a key={s.url} href={s.url} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 underline">{t.cc.source} {s.url.split("/").pop()} · {t.cc.posted.replace("{d}", s.posted)}<ExternalLink size={12} aria-hidden /></a>)}
+                {(c.articles ?? []).map((a) => <a key={a.url} href={a.url} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 underline">{t.cc.article}{lang === "en" ? ` · ${a.title}` : ""}<ExternalLink size={12} aria-hidden /></a>)}
+              </div>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-2 text-xs text-ink3">{t.cc.checked.replace("{d}", checkedAt)}</p>
+      </Panel>
+    </div>
+  );
+}
+
+/** A text without a dddd-dddd-dddd-dddd code that matches a curated message. */
+function MessagesPanel({ items, onPick }: { items: MessageMatch[]; onPick: (c: string) => void }) {
+  const { t, lang } = usePrefs();
+  return (
+    <Panel i={1} active title={t.msg.title} icon={<MessageSquareText size={17} />} actions={<ProvenanceChip status="USER_REPORTED" />}>
+      <p className="text-ink2">{t.msg.note}</p>
+      <ul className="mt-3 grid gap-3" data-testid="message-matches">
+        {items.map((m) => (
+          <li key={m.id} data-message={m.id} className="rounded-lg border border-control p-3">
+            <strong>{m.title[lang]}</strong>
+            <p className="mt-1.5 text-[15px]">{m.explanation[lang]}</p>
+            {m.related_codes.length > 0 && <div className="mt-2 flex flex-wrap items-center gap-2"><span className="micro">{t.msg.relatedCodes}</span>{m.related_codes.map((c) => <button key={c} type="button" className="chip mono" data-tone="accent" onClick={() => onPick(c)}>{c}</button>)}</div>}
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs">
+              {m.articles.map((a) => <a key={a.url} href={a.url} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 underline">{a.relation === "about" ? t.msg.about : t.msg.related}{lang === "en" ? ` · ${a.title}` : ""}<ExternalLink size={12} aria-hidden /></a>)}
+              {m.sources.map((s) => <a key={s.url} href={s.url} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 underline">{t.msg.community} · {t.cc.source} {s.url.split("/").pop()} · {t.cc.posted.replace("{d}", s.posted)}<ExternalLink size={12} aria-hidden /></a>)}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </Panel>
   );
 }
 

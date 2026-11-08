@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/SirStormz/u1-doctor/main/schemas/messages.schema.json",
+  "title": "U1 Doctor messages without a code",
+  "description": "Curated texts that carry no dddd-dddd-dddd-dddd code, mapped to a short explanation, an official article when one exists, or a community topic. No score, probability or rank field exists by design.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "checked_at", "note", "messages"],
+  "$defs": {
+    "date": {"type": "string", "pattern": "^20[0-9]{2}-[01][0-9]-[0-3][0-9]$"},
+    "l10n": {"type": "object", "additionalProperties": false, "required": ["en", "fr"], "properties": {"en": {"type": "string", "minLength": 1, "maxLength": 600}, "fr": {"type": "string", "minLength": 1, "maxLength": 700}}}
+  },
+  "properties": {
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "checked_at": {"$ref": "#/$defs/date"},
+    "note": {"type": "string", "minLength": 1},
+    "messages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "patterns", "title", "explanation", "articles", "sources", "related_codes"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^MSG-[A-Z0-9-]+$"},
+          "patterns": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^[a-z0-9 :_-]{3,80}$"}},
+          "title": {"$ref": "#/$defs/l10n"},
+          "explanation": {"$ref": "#/$defs/l10n"},
+          "articles": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["title", "url", "relation"], "properties": {"title": {"type": "string", "minLength": 1}, "url": {"type": "string", "pattern": "^https://wiki\\.snapmaker\\.com/en/snapmaker_u1/"}, "relation": {"enum": ["about", "related"]}}}},
+          "sources": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["url", "title", "posted"], "properties": {"url": {"type": "string", "pattern": "^https://forum\\.snapmaker\\.com/t/[0-9]+$"}, "title": {"type": "string", "minLength": 1}, "posted": {"$ref": "#/$defs/date"}}}},
+          "related_codes": {"type": "array", "items": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$"}}
+        }
+      }
+    }
+  }
+}

@@ -11,6 +11,7 @@ import { usePrefs } from "../lib/prefs";
 import { errText } from "../lib/errors";
 import { tok, tx } from "../lib/dyn";
 import { ImportPanel } from "./deb";
+import { declaredCode, TicketPanel } from "./ticket";
 
 interface FileRow { name: string; sha?: string; bytes?: number }
 
@@ -72,7 +73,8 @@ export function Report() {
   }, [source]);
 
   if (inc.status !== "ready") return <StateBlock kind={inc.status === "error" ? "error" : "loading"} title={inc.status === "error" ? t.error : t.loading} body={inc.status === "error" ? errText(t, inc.error) : undefined} />;
-  if (!sel) return <><PageTitle title={t.nav.report} sub={t.reportSub} icon={<FileText size={26} />} /><NoData /><div className="mt-4"><ImportPanel /></div></>;
+  const appVersion = inc.health?.app_version ?? null;
+  if (!sel) return <><PageTitle title={t.nav.report} sub={t.reportSub} icon={<FileText size={26} />} /><NoData /><div className="mt-4"><TicketPanel appVersion={appVersion} source={{ kind: "none" }} obs={[]} findings={[]} initialCode="" /></div><div className="mt-4"><ImportPanel /></div></>;
   const clean = built ? built.scan.every(([, n]) => n === 0) : false;
   const title = inc.decoding?.decoding.entry?.title ? tx(lang, inc.decoding.decoding.entry.title) : t.nav.report;
 
@@ -163,6 +165,10 @@ export function Report() {
           </Panel>
           {previewOpen && privacyJson && <Panel title="privacy-report.json" i={0}><pre className="mono max-h-48 overflow-auto whitespace-pre-wrap break-all text-xs text-ink2">{privacyJson}</pre></Panel>}
         </div>
+      </div>
+      <div className="mt-4">
+        <TicketPanel appVersion={appVersion} obs={shown?.obs ?? []} findings={shown?.findings ?? []} initialCode={sel === "demo" ? (inc.code ?? "") : declaredCode(shown?.obs ?? [])}
+          source={sel === "demo" ? { kind: "demo" } : { kind: "saved", label: session?.label ?? sel, statusMix: session?.status_mix ?? [] }} />
       </div>
       <div className="mt-4"><ImportPanel /></div>
     </>
