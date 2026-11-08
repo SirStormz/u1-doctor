@@ -490,8 +490,8 @@ def test_compatibility_marks_what_ran_on_the_real_u1_and_what_did_not():
         assert caps[n] == "TESTED_REAL"
     # quiet on a healthy print, positive case never seen on a real printer
     assert caps["Live rules S17-S21"] == "UNTESTED"
-    # BACKLOG #65: code only, the orchestrator's supervised read-only check has not run yet
-    assert caps["Job history totals read"] == "UNTESTED" and caps["Maintenance reminders"] == "UNTESTED"
+    # BACKLOG #65: the totals read ran on the real U1 (2026-11-08, HTTP 200, 21 jobs); the reminders screen never ran on a real result
+    assert caps["Job history totals read"] == "TESTED_REAL" and caps["Maintenance reminders"] == "UNTESTED"
 
 
 def test_synthetic_live_fixtures_validate_against_the_schema():

@@ -202,7 +202,7 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
                 ("Log partition usage read", "TESTED_REAL"), ("Cavity sensor and bed mesh subscription", "TESTED_REAL"),
                 ("Live rules S22-S24", "TESTED_REAL"), ("Live rules S17-S21", "UNTESTED"), ("Connectivity self-check", "TESTED_REAL"),
                 # BACKLOG #65 (2026-11-08, code only): the job-history read and the local reminders never ran on a real U1.
-                ("Job history totals read", "UNTESTED"), ("Maintenance reminders", "UNTESTED")]
+                ("Job history totals read", "TESTED_REAL"), ("Maintenance reminders", "UNTESTED")]
         return {"verified_on_hardware": True, "firmware_target": "V2.1.0",
                 "capabilities": [{"name": n, "status": s} for n, s in caps],
                 "rows": [{"firmware": fw, "rest_readonly": "TESTED_REAL" if fw == "V2.1.0" else "UNTESTED",
