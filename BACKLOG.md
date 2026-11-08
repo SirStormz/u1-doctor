@@ -8,7 +8,7 @@ Hard rules: read-only; no U1 contact without the owner's explicit go; nothing in
 G0 audit/ADRs/transport allowlist · G1 offline engine, API, exe · G0.5 design v4 (10 screens, FR/EN, 3 themes) · G2 H-01 + H-02 on the real U1 (3 GET + 1 WS subscribe, 0 write) · G3 timeline on the real capture · G4 U1-DEB export/import/replay · CI (backend + frontend) · English README · originality audit · forum scan of 25 competing entries (2026-11-06; no entry combines logs + code decoding + timeline + bundle).
 
 ## Not done yet (carried over)
-S04 (needs probe observations) · REQ-004/005 manual IP + object discovery in the UI · persistent history · clean-Win11 test · public repo/release · official form · independent tester · cross-OS replay hash (T-025) · no real fault captured.
+S04 (needs probe observations) · REQ-004/005 manual IP + object discovery in the UI · persistent history · clean-Win11 test · public repo/release · independent tester · cross-OS replay hash (T-025) · no real fault captured.
 
 ## Roadmap — 32 items
 Legend: 🟢 no U1 needed · 🔴 needs the owner's explicit go on the U1 · 👤 owner decision. Status: ☐ todo · ◐ in progress · ☑ done.
