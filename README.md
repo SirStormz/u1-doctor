@@ -62,28 +62,32 @@ Screenshots were taken with **demo mode** on, which shows the built-in **synthet
 | 05 | **Print quality** | The "needs your eyes" assistant: 16 symptoms, causes in the official order, evidence only from numbers you type or saved temperatures. No ranking, no score |
 | 06 | **Incident timeline** | The observed window with phases and explicit gaps. Also here: the **History** of your saved sessions (never merged) and the import of **U1 Dry Run** reports |
 | 07 | **Findings** | Every conclusion of the 12 rules, ordered by status then evidence quality. Open one to see what supports it, what contradicts it, what is missing and its limits |
-| 08 | **Evidence detail** | The observations behind every finding, with source, time quality and hashes |
-| 09 | **Replay lab** | Rerun the rules on frozen synthetic data and check the result is identical, byte for byte |
+| 08 | **Evidence detail** | The observations behind every finding, with source, time quality and hashes (in the menu in Expert mode; in Simple mode it opens from "Open" on a finding) |
+| 09 | **Replay lab** | Rerun the rules on frozen synthetic data and check the result is identical, byte for byte (in the menu in Expert mode) |
 | 10 | **Report composer** | Prepare a privacy-checked **evidence bundle** of the demo scenario or of **your own saved capture**, and import someone else's |
-| 11 | **Settings** | Language (English or French), 3 themes, 2 densities, versions and the compatibility list |
+| 11 | **Settings** | Language (English or French), **Simple or Expert** display level, 3 themes, 2 densities, replay of the guided start, versions and the compatibility list |
 
 Press `Ctrl K` anywhere to jump to a screen or paste an error code.
 
+**Simple or Expert.** The *Expert mode* switch in the header (or the display level in Settings) chooses how much you see. **Simple** (the default) keeps plain language and folds the technical part of each block under *Technical details*; **Expert** shows all 11 screens and opens those details. Nothing is removed in Simple: you can still open any detail, and the two expert screens stay one click away.
+
+**First start.** A three-step assistant asks for your language and display level, offers the demo or the connection to your own printer, and explains the three marks used everywhere (*Observed*, *Suspected*, *Missing*). Press `Esc` to skip it. A *Getting started* list on the Overview ticks itself as you use the app; both can be replayed from Settings.
+
 ## Get started in two minutes (Windows)
 
-1. Download `u1-doctor-0.1.6-g1-win64.zip` and its `.sha256.txt` from the [latest release](https://github.com/SirStormz/u1-doctor/releases/latest).
+1. Download `u1-doctor-0.1.7-g1-win64.zip` and its `.sha256.txt` from the [latest release](https://github.com/SirStormz/u1-doctor/releases/latest).
 2. Check the file was not altered (optional, 10 seconds):
    ```powershell
-   Get-FileHash .\u1-doctor-0.1.6-g1-win64.zip -Algorithm SHA256
+   Get-FileHash .\u1-doctor-0.1.7-g1-win64.zip -Algorithm SHA256
    ```
-   Compare with the value in the release notes: `B744D8C9CF7B3A275AA474FC8A44FD7C3E9CBC3C1A00CE73002DF798ADD2FB92`.
+   Compare with the value in the release notes: `137D74A73CD12687844C781186B1BCD21002BCF53F3735B1E0B0B0AA2442D4E7`.
 3. Right-click the zip, **Extract all** (not WinRAR or 7-Zip, so Windows keeps the download mark), then double-click `u1-doctor.exe`.
 4. A window opens with the app: no console, no browser. If the Microsoft WebView2 component is missing (some Windows 10 PCs), the app offers to install it once with Microsoft's own installer shipped in the zip (internet and a Windows permission prompt needed).
 
 **Good to know**
 - The app is **not code-signed**, so Windows SmartScreen may warn: choose "More info", then "Run anyway".
-- VirusTotal scan of this zip (2026-11-07): 0 engines out of 67 flagged it. [Report](https://www.virustotal.com/gui/file/b744d8c9cf7b3a275aa474fc8a44fd7c3e9cbc3c1a00ce73002df798add2fb92). Earlier builds: 0.1.0-g1 was flagged by 1 engine out of 66, 0.1.1-g1 by 2 out of 65, 0.1.2-g1 by 1 out of 66 (Zillya, `Trojan.Stealer.Win64.2764`) and 0.1.5-g1 by 0 out of 65 ([report](https://www.virustotal.com/gui/file/594599bf711db552a6e8b01c27c25f642b6c816a162cfdf7d57410ae6b8812b9)); we believe the earlier detections were false positives typical of unsigned PyInstaller executables. A clean scan is not a guarantee and detections can change: the source is public, the build is made by GitHub Actions, and the app reads no browser data, cookies, passwords or clipboard. It reads one Windows registry value (the installed WebView2 version, to know whether its window can open) and removes the "downloaded from the Internet" mark from its own `.dll` files so that window can start.
-- It **starts empty**: nothing is shown until you import a bundle or capture a printer. The **Demo mode** switch in the header fills the screens with clearly labelled synthetic data (off again at every start). Everything works offline and nothing is sent anywhere.
+- VirusTotal: this 0.1.7-g1 zip has **not been scanned yet** (SHA-256 above, so you can look it up yourself). The previous build, 0.1.6-g1, scored 0 engines out of 67 ([report](https://www.virustotal.com/gui/file/b744d8c9cf7b3a275aa474fc8a44fd7c3e9cbc3c1a00ce73002df798add2fb92)). Earlier builds: 0.1.0-g1 was flagged by 1 engine out of 66, 0.1.1-g1 by 2 out of 65, 0.1.2-g1 by 1 out of 66 (Zillya, `Trojan.Stealer.Win64.2764`) and 0.1.5-g1 by 0 out of 65 ([report](https://www.virustotal.com/gui/file/594599bf711db552a6e8b01c27c25f642b6c816a162cfdf7d57410ae6b8812b9)); we believe the earlier detections were false positives typical of unsigned PyInstaller executables. A clean scan is not a guarantee and detections can change: the source is public, the build is made by GitHub Actions, and the app reads no browser data, cookies, passwords or clipboard. It reads one Windows registry value (the installed WebView2 version, to know whether its window can open) and removes the "downloaded from the Internet" mark from its own `.dll` files so that window can start.
+- It opens with a short **first-start assistant** (skippable), then **starts empty**: nothing is shown until you import a bundle or capture a printer. The **Demo mode** switch in the header fills the screens with clearly labelled synthetic data (off again at every start). Everything works offline and nothing is sent anywhere.
 - Linux, macOS and Docker: see the [install guide](docs/INSTALL.md).
 
 ## Use it with your own U1

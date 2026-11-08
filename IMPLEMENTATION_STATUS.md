@@ -1,10 +1,10 @@
-# IMPLEMENTATION_STATUS — updated 2026-11-07 (release v0.1.6-g1 published; G0–G2, G4 U1-DEB and G3 timeline done)
+# IMPLEMENTATION_STATUS — updated 2026-11-08 (release v0.1.7-g1 published; G0–G2, G4 U1-DEB and G3 timeline done)
 
 States: PLANNED · IMPLEMENTED_UNTESTED · TESTED_SYNTHETIC · TESTED_REAL · BLOCKED. **H-01 passed 2026-11-05 (TESTED_REAL for: Moonraker HTTP :7125, objects list, official version read; nothing else).** H-02 passed 2026-11-05 (WS subscribe, 27 min normal print, 9 333 frames, no gap > 0.74 s). Machine calls made so far: **3 read-only GET + 1 WS subscribe** (see `docs/evidence/H-01/manifest.json`). Observed: Moonraker 2.1.0, Klipper 2.1.0.157, 197 objects, `exception_manager` component present.
 
 | REQ | P | State | Evidence / note |
 |---|---|---|---|
-| REQ-001 Onboarding FR/EN | M | TESTED_SYNTHETIC | Welcome + FR/EN (vitest: key parity, banner). A11y/zoom not audited |
+| REQ-001 Onboarding FR/EN | M | TESTED_SYNTHETIC | Welcome + FR/EN, three-step first-start assistant (language, Simple/Expert level, demo or connect, the three marks; Esc skips), self-ticking *Getting started* list, replay from Settings; Simple/Expert display level (vitest + Playwright). No test with real new users; A11y/zoom not audited |
 | REQ-002 Offline decoder | M | TESTED_SYNTHETIC | 413 catalog rows from the official table (read 2026-11-06, own wording + article links, mapping provenance), unknown ⇒ INCONCLUSIVE, malformed rejected (`test_scenarios.py`) |
 | REQ-003 Critical cases | M | PARTIAL / TESTED_SYNTHETIC | level 0003 ⇒ "do not continue printing" + official ref; support link only generic |
 | REQ-004 Manual IP connect | M | TESTED_REAL (once, idle) | Connect screen, RFC1918 literal only; run on the owner's U1 on 2026-11-07 |
@@ -17,8 +17,8 @@ States: PLANNED · IMPLEMENTED_UNTESTED · TESTED_SYNTHETIC · TESTED_REAL · BL
 | REQ-012 Replay | M | TESTED_SYNTHETIC (one machine) | in-app replay of SYNTHETIC scenarios and of the real capture; imported bundles replayed with the local ruleset (findings always recomputed); same ruleset hash from source and from frozen exe. 2nd machine / OS not tested (T-025) |
 | REQ-013 DEMO is explicit | M | TESTED_SYNTHETIC | the app starts empty; demo mode is a header switch (off at every start) that shows the synthetic data under a permanent DEMO banner and badge; the only machine route is `POST /api/v1/live/capture` (consent required); socket guard test |
 | REQ-014 Non-mutation | M | TESTED_SYNTHETIC | 113 transport tests (mock) + 1 supervised real session (H-02: 1 outbound frame = subscribe, 0 write). No in-app live capture yet |
-| REQ-015 Windows exe | M | TESTED_REAL (developer PC only) | PyInstaller one-folder exe built by GitHub Actions (`release.yml`), opens in its own window (pywebview/WebView2), v0.1.6-g1 published, VirusTotal 0/67. Run on the owner's Windows 11 PC with a browser-downloaded zip (window opens, no WebView2 message). **Not tested on a PC without WebView2 or on a clean second Windows 11** |
-| REQ-016 GitHub / EN docs | M | DONE | public GitHub repo, CI (Windows, Linux, macOS, e2e), GitHub Pages presentation, English README and install guide, security policy, code of conduct, six releases (current v0.1.6-g1); originality audit `docs/ORIGINALITY_AUDIT.md` |
+| REQ-015 Windows exe | M | TESTED_REAL (developer PC only) | PyInstaller one-folder exe built by GitHub Actions (`release.yml`), opens in its own window (pywebview/WebView2), v0.1.7-g1 published (VirusTotal not run yet; v0.1.6-g1 was 0/67). Run on the owner's Windows 11 PC with a browser-downloaded zip (window opens, no WebView2 message). **Not tested on a PC without WebView2 or on a clean second Windows 11** |
+| REQ-016 GitHub / EN docs | M | DONE | public GitHub repo, CI (Windows, Linux, macOS, e2e), GitHub Pages presentation, English README and install guide, security policy, code of conduct, six releases (current v0.1.7-g1); originality audit `docs/ORIGINALITY_AUDIT.md` |
 | REQ-017 Physical U1 tests | M | PARTIAL (owner-approved sessions only) | H-01 and H-02 done 2026-11-05 (3 GET + 1 WS subscribe, no write). H-03/H-04 need a new explicit owner accord. No real fault captured |
 | REQ-018..026 | S/C | PLANNED | — |
 
