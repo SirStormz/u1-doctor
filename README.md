@@ -84,8 +84,11 @@ Press `Ctrl K` anywhere to jump to a screen or paste an error code.
    Get-FileHash .\u1-doctor-0.1.8-g1-win64.zip -Algorithm SHA256
    ```
    Compare with the value in the release notes: `265D992EC37D537D861D03183B765148A48F3C5F0671BD67FC64339F554A5E07`.
+   Optional too, for builds from 0.1.8-g1 on: `gh attestation verify .\u1-doctor-0.1.8-g1-win64.zip --repo SirStormz/u1-doctor` confirms the zip was built by this repository's release workflow (see [`docs/INSTALL.md`](docs/INSTALL.md)).
 3. Right-click the zip, **Extract all** (not WinRAR or 7-Zip, so Windows keeps the download mark), then double-click `u1-doctor.exe`.
 4. A window opens with the app: no console, no browser. If the Microsoft WebView2 component is missing (some Windows 10 PCs), the app offers to install it once with Microsoft's own installer shipped in the zip (internet and a Windows permission prompt needed).
+
+**Keyboard.** `Ctrl K` opens the search palette; `Alt G` toggles the cinematic landing. There is no single-key shortcut.
 
 **Good to know**
 - The app is **not code-signed**, so Windows SmartScreen may warn: choose "More info", then "Run anyway".
@@ -119,7 +122,7 @@ The capture never contains your address or file names. It sends 5 GET requests (
 | Explainable findings: evidence for, evidence against, what is missing, limits, official references. No score, no percentage | tested |
 | Read-only live capture from the Connect screen, with read-only probes if the stream closes early | tested against a mock and on the owner's U1 (no write ever sent) |
 | Saved-session **history** and import of U1 Dry Run reports | tested |
-| **G-code pre-flight**: 20 offline checks on a sliced `.gcode` or the G-code embedded in a sliced `.3mf` (for example decimal commas, a 0 °C bed, nozzle diameter, `#` in the file name; and, from community reports, M191, a start line at Y1, the probing temperature, tool order and auto-mapping, another printer's profile, prime tower outside the bed, TPU settings, purge used, a final travel at the last layer height) | tested on synthetic files |
+| **G-code pre-flight**: 20 offline checks on a sliced `.gcode` or the G-code embedded in a sliced `.3mf` (every plate is checked, one tab per plate; only the embedded G-code and project settings are read) (for example decimal commas, a 0 °C bed, nozzle diameter, `#` in the file name; and, from community reports, M191, a start line at Y1, the probing temperature, tool order and auto-mapping, another printer's profile, prime tower outside the bed, TPU settings, purge used, a final travel at the last layer height) | tested on synthetic files |
 | Known issues per firmware version: 13 entries (official release notes or labelled community reports, checked 2026-11-08) | tested |
 | "What support will ask" checklist per code, firmware notes, 5 documented known issues | tested |
 | Community-reported causes: 11 entries covering 25 codes (forum topics read 2026-11-08, labelled as community reports), near-match for mistyped codes, matcher for 8 messages without a code | tested |
