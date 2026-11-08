@@ -451,10 +451,13 @@ def test_gcode_nozzle_values_are_bounded(bad):
     assert _post(_client(), gcode_nozzle_mm=bad).status_code == 422
 
 
-def test_compatibility_marks_the_new_reads_and_rules_untested():
+def test_compatibility_marks_what_ran_on_the_real_u1_and_what_did_not():
     caps = {c["name"]: c["status"] for c in _client().get("/api/v1/compatibility").json()["capabilities"]}
-    for n in ("Log partition usage read", "Cavity sensor and bed mesh subscription", "Live rules S17-S24", "Connectivity self-check"):
-        assert caps[n] == "UNTESTED"
+    # one supervised read-only capture on the owner's U1 (2026-11-08) proved these
+    for n in ("Log partition usage read", "Cavity sensor and bed mesh subscription", "Live rules S22-S24", "Connectivity self-check"):
+        assert caps[n] == "TESTED_REAL"
+    # quiet on a healthy print, positive case never seen on a real printer
+    assert caps["Live rules S17-S21"] == "UNTESTED"
 
 
 def test_synthetic_live_fixtures_validate_against_the_schema():

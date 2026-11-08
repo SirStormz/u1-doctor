@@ -71,6 +71,18 @@ def load_firmware_issues(path: Path = FIRMWARE_ISSUES_PATH) -> dict[str, Any]:
     return data
 
 
+GOOD_TO_KNOW_PATH = ROOT / "knowledge" / "u1_good_to_know.json"
+
+
+@lru_cache(maxsize=1)
+def load_good_to_know(path: Path = GOOD_TO_KNOW_PATH) -> dict[str, Any]:
+    """Static good-to-know notes from the forum (own wording + topic links, dated). Always a COMMUNITY_REPORT, never official."""
+    data: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
+    ids = [n["id"] for n in data["notes"]]
+    assert len(set(ids)) == len(ids), "duplicate good-to-know id"
+    return data
+
+
 def firmware_issues_for(version: str) -> list[dict[str, Any]]:
     """Issues whose affected range [min, max] contains the stated version (open bounds allowed), in file order."""
     v = parse_firmware(version)

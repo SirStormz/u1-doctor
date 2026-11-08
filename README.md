@@ -17,6 +17,7 @@ A local, read-only evidence tool for the Snapmaker U1. No cloud, no telemetry, n
 <p align="center">
 <a href="https://github.com/SirStormz/u1-doctor/releases/latest"><b>Download for Windows</b></a> &nbsp;·&nbsp;
 <a href="https://sirstormz.github.io/u1-doctor/presentation/"><b>Illustrated presentation</b></a> (EN/FR) &nbsp;·&nbsp;
+<a href="https://sirstormz.github.io/u1-doctor/sample-report/"><b>Sample report</b></a> (synthetic data) &nbsp;·&nbsp;
 <a href="docs/INSTALL.md"><b>Install guide</b></a> &nbsp;·&nbsp;
 <a href="docs/LIMITS.md"><b>What it does not do</b></a>
 </p>
@@ -56,12 +57,12 @@ Screenshots were taken in **Expert mode** with **demo mode** on, which shows the
 | # | Screen | What you do there |
 |---|---|---|
 | 01 | **Welcome** | What the tool is, and its promises: no account, no cloud, no AI, nothing leaves your PC |
-| 02 | **Connect** | Take a short **read-only capture** of your own U1: type its private address, tick the approval box |
+| 02 | **Connect** | Take a short **read-only capture** of your own U1: type its private address, tick the approval box. A new observed finding or an error/shutdown state in the result raises an **on-screen alert** (banner + `(!)` in the window title; no system notification, can be turned off in Settings) |
 | 03 | **Overview** | What is actually known about the incident and where it comes from, with the U1 in 3D (illustrative controls) |
-| 04 | **Error codes** | Decode any of the 413 official codes. Also here: firmware notes, which toolheads to inspect, the "what support will ask" checklist, 5 documented known issues, **known issues per firmware version** (13 dated, sourced entries from 1.0.0 to 2.1.0, filterable by version, may be out of date), causes **reported by the community** on the forum (11 entries, each with its topic link, never official), "did you mean" for mistyped codes, explanations for 8 messages that carry no code, and an offline **G-code pre-flight** (20 checks on a sliced `.gcode` or on the G-code inside a sliced `.3mf`) |
+| 04 | **Error codes** | Decode any of the 413 official codes. Also here: firmware notes, which toolheads to inspect, the "what support will ask" checklist, 5 documented known issues, **known issues per firmware version** (13 dated, sourced entries from 1.0.0 to 2.1.0, filterable by version, may be out of date), causes **reported by the community** on the forum (11 entries, each with its topic link, never official), 3 **good-to-know notes** reported by the community (camera not shown in Fluidd, read-only configuration files until Advanced Mode, encrypted logs), "did you mean" for mistyped codes, explanations for 8 messages that carry no code, and an offline **G-code pre-flight** (20 checks on a sliced `.gcode` or on the G-code inside a sliced `.3mf`) |
 | 05 | **Print quality** | The "needs your eyes" assistant: 16 symptoms, causes in the official order, evidence only from numbers you type or saved temperatures. No ranking, no score |
 | 06 | **Incident timeline** | The observed window with phases and explicit gaps. Also here: the **History** of your saved sessions (never merged) and the import of **U1 Dry Run** reports |
-| 07 | **Findings** | Every conclusion of the 20 rules (the 8 live rules S17-S24 are UNTESTED on a real U1), ordered by status then evidence quality. Open one to see what supports it, what contradicts it, what is missing and its limits |
+| 07 | **Findings** | Every conclusion of the 20 rules (live rules S22-S24 fired on a real U1 print on 2026-11-08, S17-S21 stayed quiet there and are UNTESTED on a real fault), ordered by status then evidence quality. Open one to see what supports it, what contradicts it, what is missing and its limits |
 | 08 | **Evidence detail** | The observations behind every finding, with source, time quality and hashes (in the menu in Expert mode; in Simple mode it opens from "Open" on a finding) |
 | 09 | **Replay lab** | Rerun the rules on frozen synthetic data and check the result is identical, byte for byte (in the menu in Expert mode) |
 | 10 | **Report composer** | Prepare a privacy-checked **evidence bundle** of the demo scenario or of **your own saved capture**, import someone else's, and copy a **ticket-ready summary** (versions, code, toolhead, LAN or cloud, filaments, what you tried, capture facts) for a support ticket or a forum post |
@@ -103,7 +104,7 @@ Press `Ctrl K` anywhere to jump to a screen or paste an error code.
 
 The capture never contains your address or file names. It sends 4 GET requests (one of them, `/server/files/directory?path=logs`, only reads the free space of the log partition) and 1 live subscription message. If the live stream closes early, the app checks with up to 6 more read-only status GET requests whether the printer itself still answers, so a lost connection is not mistaken for a stopped printer: 10 GET at most.
 
-**Live rules and connectivity self-check (UNTESTED).** From the same capture, eight rules (S17-S24) report the spread of the toolhead Y offsets, implausible bed or cavity readings, a heater that does not warm up, nozzle diameters that disagree (with a G-code you analysed in the app), a controller clock reset while printing, the log partition usage, toolhead counters and bed-mesh numbers. They were written from forum reports and have not been checked on a real U1 fault: each says "not observable" when the printer does not report the data. The Connect screen also shows how long each request took, whether the stream dropped and whether the address changed since the last capture (only a keyed fingerprint of the address is kept, never the address).
+**Live rules and connectivity self-check.** From the same capture, eight rules (S17-S24) report the spread of the toolhead Y offsets, implausible bed or cavity readings, a heater that does not warm up, nozzle diameters that disagree (with a G-code you analysed in the app), a controller clock reset while printing, the log partition usage, toolhead counters and bed-mesh numbers. They were written from forum reports. One supervised read-only capture on the owner's U1 (firmware 2.1.0, printing, 2026-11-08; 4 GET and 1 subscription, nothing written) read every source and fired S22, S23 and S24; S17 to S21 stayed quiet on that healthy print, so their positive case has never been seen on a real printer. Each rule says "not observable" when the printer does not report the data. The Connect screen also shows how long each request took, whether the stream dropped and whether the address changed since the last capture (only a keyed fingerprint of the address is kept, never the address).
 
 ## What works today
 
@@ -119,6 +120,9 @@ The capture never contains your address or file names. It sends 4 GET requests (
 | "What support will ask" checklist per code, firmware notes, 5 documented known issues | tested |
 | Community-reported causes: 11 entries covering 25 codes (forum topics read 2026-11-08, labelled as community reports), near-match for mistyped codes, matcher for 8 messages without a code | tested |
 | Ticket-ready summary (copy to clipboard, nothing sent) and a "save the bundle now" reminder in the capture and history screens | tested |
+| **Sample report** on GitHub Pages ([`docs/sample-report/`](https://sirstormz.github.io/u1-doctor/sample-report/)): the ticket-ready summary and the findings of the SYNTHETIC demo incident, built by the app's own Report-composer code (`npm run sample-report` in `frontend/` regenerates it) | tested (a test checks it is up to date, labelled SYNTHETIC and free of external requests) |
+| On-screen alert when a capture or a replay ends with a new observed finding or an error/shutdown state: in-page banner and `(!)` title prefix only, no OS notification, toggle in Settings (on by default) | tested on mocked results |
+| Good-to-know notes: 3 community-reported notes (forum topics re-read 2026-11-08, labelled not official) | tested |
 | Print-quality assistant ("needs your eyes"): 16 symptoms, causes in the official order, evidence only from numbers you type or saved temperatures | tested |
 | Timeline of the **observed window**: phases, explicit gaps, source and time quality per row | tested on real captures and 20 synthetic scenarios |
 | `U1-DEB` evidence bundle: **export of the demo scenarios or of your own saved captures**, safe import and replay ([spec](docs/U1-DEB.md)) | tested; a ready-made example and a validator are in the repo |
@@ -198,7 +202,7 @@ cd backend; .venv\Scripts\python.exe -m pytest
 cd frontend; npm test
 ```
 
-At the time of writing: 1,159 backend tests, 138 frontend tests and 16 browser (Playwright) tests pass, with `ruff`, `mypy` and `tsc` clean. CI runs the same checks on Windows, Linux and macOS.
+At the time of writing: 1,166 backend tests, 150 frontend tests and 16 browser (Playwright) tests pass, with `ruff`, `mypy` and `tsc` clean. CI runs the same checks on Windows, Linux and macOS.
 
 ## More documentation
 
@@ -229,7 +233,7 @@ No code is copied from these projects. The comparison is in [`docs/ORIGINALITY_A
 - **Tout reste sur ton PC** : pas de cloud, pas de télémétrie, pas d'IA. L'application n'écoute que sur `127.0.0.1`.
 - **Démarrer** : télécharge le zip de la [dernière release](https://github.com/SirStormz/u1-doctor/releases/latest), extrais-le avec « Extraire tout », double-clique `u1-doctor.exe` : une fenêtre s'ouvre avec l'application (sans console ni navigateur ; si le composant Microsoft WebView2 manque, l'app propose de l'installer une fois). Windows peut afficher un avertissement SmartScreen, car l'exe n'est pas signé.
 - **Bilingue** : l'interface existe en français et en anglais, avec un bouton en haut à droite.
-- **Statut honnête** : seules des impressions normales ont été capturées sur une vraie U1 ; aucune panne réelle pour l'instant, donc tous les incidents de démonstration sont marqués `SYNTHETIC`. La [présentation illustrée](https://sirstormz.github.io/u1-doctor/presentation/) est aussi disponible en français.
+- **Statut honnête** : seules des impressions normales ont été capturées sur une vraie U1 ; aucune panne réelle pour l'instant, donc tous les incidents de démonstration sont marqués `SYNTHETIC`. La [présentation illustrée](https://sirstormz.github.io/u1-doctor/presentation/) est aussi disponible en français. Un [exemple de rapport](https://sirstormz.github.io/u1-doctor/sample-report/) bilingue, produit à partir de l'incident de démonstration synthétique, est en ligne.
 
 </details>
 

@@ -30,7 +30,7 @@ function mock() {
     else if (url.endsWith("/api/v1/history")) body = { sessions: [], totals: { sessions: 0, observations: 0 }, limits: { max_sessions: 200, max_observations: 1 } };
     else if (url.endsWith("/compatibility")) body = { verified_on_hardware: true, firmware_target: "V2.1.0", rows: [], capabilities: [
       { name: "Log partition usage read", status: "UNTESTED" }, { name: "Cavity sensor and bed mesh subscription", status: "UNTESTED" },
-      { name: "Live rules S17-S24", status: "UNTESTED" }, { name: "Connectivity self-check", status: "UNTESTED" }, { name: "Objects list", status: "TESTED_REAL" }] };
+      { name: "Live rules S17-S21", status: "UNTESTED" }, { name: "Connectivity self-check", status: "UNTESTED" }, { name: "Objects list", status: "TESTED_REAL" }] };
     else if (url.includes("/demo/scenarios/")) body = { observations: [], golden_findings: [] };
     else if (url.endsWith("/replays")) body = { mode: "REPLAY", matches_golden: true, findings: [], ruleset_hash: "sha256:" + "a".repeat(64), findings_sha256: "b".repeat(64), input_sha256: "c".repeat(64) };
     else if (url.endsWith("/health")) body = { status: "ok", api_version: "1", app_version: "0.1.7-g1", mode: "DEMO", machine_access: "READ_ONLY_ON_CONSENT", db_schema: 2 };
@@ -121,7 +121,7 @@ for (const lang of ["en", "fr"] as const) {
     localStorage.setItem("u1d.lang", lang);
     render(<App />);
     await go("#/settings");
-    const name = lang === "en" ? "Live rules S17-S24" : "Règles en direct S17-S24";
+    const name = lang === "en" ? "Live rules S17-S21" : "Règles en direct S17-S21";
     const cell = await screen.findByText(name);
     const row = cell.closest("tr")!;
     expect(row.textContent).toContain(lang === "en" ? "UNTESTED" : "NON TESTÉ");

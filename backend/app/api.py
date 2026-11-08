@@ -36,6 +36,7 @@ from .knowledge import (
     load_catalog,
     load_community_causes,
     load_firmware_issues,
+    load_good_to_know,
     load_known_issues,
     match_messages,
     normalize_code,
@@ -192,12 +193,14 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
     def compatibility() -> dict[str, Any]:
         # TESTED_REAL only where docs/evidence/H-01 and H-02 prove it on the owner's U1 (Klipper 2.1.0.157).
         # Objects query never ran on the machine and is not allowed by the transport (BACKLOG #52 L3).
-        # BACKLOG #57/#59 (owner decision 2026-11-08: defensive code, UNTESTED): the new reads and live rules never ran on a U1.
+        # BACKLOG #57/#59: one supervised read-only capture on the owner's U1 (firmware 2.1.0, printing, 2026-11-08) proved the
+        # log-partition read, the cavity/bed-mesh subscription, the connectivity numbers and rules S22-S24. S17-S21 stayed quiet
+        # on a healthy print (negative case only): their positive case never ran on a U1, so they stay UNTESTED.
         caps = [("Moonraker HTTP :7125", "TESTED_REAL"), ("Objects list", "TESTED_REAL"), ("Objects query", "UNTESTED"), ("WebSocket subscribe", "TESTED_REAL"),
                 ("Live error codes", "UNTESTED"), ("Toolhead 1-4 mapping", "UNTESTED"), ("Official firmware version", "TESTED_REAL"),
                 ("Offline code decoder", "TESTED_SYNTHETIC"), ("Deterministic replay", "TESTED_REAL"),
-                ("Log partition usage read", "UNTESTED"), ("Cavity sensor and bed mesh subscription", "UNTESTED"),
-                ("Live rules S17-S24", "UNTESTED"), ("Connectivity self-check", "UNTESTED")]
+                ("Log partition usage read", "TESTED_REAL"), ("Cavity sensor and bed mesh subscription", "TESTED_REAL"),
+                ("Live rules S22-S24", "TESTED_REAL"), ("Live rules S17-S21", "UNTESTED"), ("Connectivity self-check", "TESTED_REAL")]
         return {"verified_on_hardware": True, "firmware_target": "V2.1.0",
                 "capabilities": [{"name": n, "status": s} for n, s in caps],
                 "rows": [{"firmware": fw, "rest_readonly": "TESTED_REAL" if fw == "V2.1.0" else "UNTESTED",
@@ -252,6 +255,11 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
         if parse_firmware(version) is None:
             raise HTTPException(422, {"code": "BAD_FIRMWARE", "message": "firmware must look like 2.1.0"})
         return {**data, "issues": firmware_issues_for(version), "filter": version}
+
+    @app.get("/api/v1/knowledge/good-to-know")
+    def good_to_know() -> dict[str, Any]:
+        """Static community-reported notes (camera in Fluidd, read-only config, encrypted logs). Never read from a printer."""
+        return load_good_to_know()
 
     @app.get("/api/v1/knowledge/symptoms")
     def symptom_catalog() -> dict[str, Any]:

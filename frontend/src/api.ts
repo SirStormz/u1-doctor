@@ -171,6 +171,10 @@ export interface FirmwareIssue {
 export interface FirmwareIssues { version: string; checked_at: string; note: string; versions: { version: string; date: string }[]; issues: FirmwareIssue[]; filter?: string }
 export const firmwareIssues = (version?: string) =>
   fetch(`/api/v1/knowledge/firmware-issues${version ? `?version=${encodeURIComponent(version)}` : ""}`).then(j<FirmwareIssues>);
+/** Static good-to-know notes: always a community report (forum topics + optional official article), never official, never read from a printer. */
+export interface GoodToKnowNote { id: string; title: L10n; text: L10n; scope: L10n; articles?: { title: string; url: string }[]; sources: ForumSource[] }
+export interface GoodToKnow { version: string; checked_at: string; kind: "COMMUNITY_REPORT"; note: string; notes: GoodToKnowNote[] }
+export const goodToKnow = () => fetch("/api/v1/knowledge/good-to-know").then(j<GoodToKnow>);
 export const supportChecklist = (code: string, firmware?: string) =>
   fetch("/api/v1/support/checklist", { method: "POST", headers: hdr("application/json"), body: JSON.stringify(firmware ? { code, firmware } : { code }) }).then(j<SupportOut>);
 

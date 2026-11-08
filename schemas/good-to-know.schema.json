@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/SirStormz/u1-doctor/main/schemas/good-to-know.schema.json",
+  "title": "U1 Doctor good-to-know notes",
+  "description": "Static notes reported by owners on the public forum (own wording, topic links, check date). Always a community report, never official, never an observation. An official wiki article may be linked as context. No score, probability or rank field exists by design.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "checked_at", "kind", "note", "notes"],
+  "$defs": {
+    "date": {"type": "string", "pattern": "^20[0-9]{2}-[01][0-9]-[0-3][0-9]$"},
+    "l10n": {"type": "object", "additionalProperties": false, "required": ["en", "fr"], "properties": {"en": {"type": "string", "minLength": 1, "maxLength": 600}, "fr": {"type": "string", "minLength": 1, "maxLength": 700}}},
+    "source": {"type": "object", "additionalProperties": false, "required": ["url", "title", "posted"], "properties": {"url": {"type": "string", "pattern": "^https://forum\\.snapmaker\\.com/t/[0-9]+$"}, "title": {"type": "string", "minLength": 1}, "posted": {"$ref": "#/$defs/date"}}},
+    "article": {"type": "object", "additionalProperties": false, "required": ["title", "url"], "properties": {"title": {"type": "string", "minLength": 1}, "url": {"type": "string", "pattern": "^https://wiki\\.snapmaker\\.com/en/snapmaker_u1/"}}}
+  },
+  "properties": {
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "checked_at": {"$ref": "#/$defs/date"},
+    "kind": {"const": "COMMUNITY_REPORT"},
+    "note": {"type": "string", "minLength": 1},
+    "notes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "text", "scope", "sources"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^GK-[A-Z0-9-]+$"},
+          "title": {"$ref": "#/$defs/l10n"},
+          "text": {"$ref": "#/$defs/l10n"},
+          "scope": {"$ref": "#/$defs/l10n"},
+          "articles": {"type": "array", "items": {"$ref": "#/$defs/article"}},
+          "sources": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/source"}}
+        }
+      }
+    }
+  }
+}

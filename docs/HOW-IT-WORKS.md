@@ -51,7 +51,7 @@ A live capture runs only after you type a private (RFC1918) IPv4 address and tic
 | U1-S23-TOOLHEAD-ACTIVITY | Changes of the firmware's toolhead counters during the capture | U1 Doctor | Counters are firmware totals; only their change in this window is an event; UNTESTED |
 | U1-S24-BED-MESH-STATS | Number, min and max of the probed bed-mesh points | U1 Doctor | Statistics only, not judged normal or abnormal; no mesh says nothing about the bed; UNTESTED |
 
-Rules S17-S24 say "not observable in this capture" when the printer does not report the data. Real captures so far are normal prints only: **no real fault has been captured**. Full list of limits: [`LIMITS.md`](LIMITS.md).
+Rules S17-S24 say "not observable in this capture" when the printer does not report the data. Real captures so far are normal prints only (the 2026-11-08 one read every source and fired S22 to S24; S17 to S21 stayed quiet): **no real fault has been captured**. Full list of limits: [`LIMITS.md`](LIMITS.md).
 
 ## Around the rules
 

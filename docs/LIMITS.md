@@ -60,6 +60,13 @@ What U1 Doctor cannot know or has not yet proven. Each item cites the document i
 | 13 curated entries (1.0.0 to 2.1.0), re-read on 2026-11-08 and **possibly out of date**. Official entries come from the wiki release notes; the others come from the public forum or the u1-klipper repository and are labelled community reports, with "staff answered" only where a Snapmaker staff reply was seen. "Fixed in" is shown only when a source states it. Affected ranges list only versions where a source places the issue; two lower bounds are ours and say so (nozzle rules since 1.3.0, Top Cover since 1.5.0). The version filter uses the version you pick; it is never read from the printer. | `knowledge/u1_firmware_issues.json` |
 | Not kept: a cold bed in one 2.1.0 report (cause unclear), the claim that the part-fan delay exists in every version (not reproduced), a 1.5.1 second-layer report (single), a 1.5.1 nozzle-mismatch error on an old file (not tied to the 1.5.2 fix), and the 1.0.0 Orca language issue (slicer, not firmware). | `knowledge/u1_firmware_issues.json` |
 
+## Good-to-know notes
+
+| Limit | Source |
+|---|---|
+| 3 static notes (camera not shown in Fluidd on stock firmware, Fluidd configuration files read-only until Advanced Mode is turned on under Maintenance, encrypted system log), each from public forum topics re-read on 2026-11-08 (40853, 43564, 42072; 41385; 40865) and labelled **community-reported, not official**. The log note also links the official export article. They may be out of date and are never read from your printer. The read-only answer came from an owner, on firmware 1.1.1; the Fluidd camera behaviour on 2.x (frozen picture, updates only while the Snapmaker app shows the camera) comes from a few owners. | `knowledge/u1_good_to_know.json` |
+| Nothing was dropped: all three topics' claims were confirmed on re-reading. Not kept as advice: the custom firmware and third-party camera bridges named in those topics (U1 Doctor neither installs nor recommends them). | `knowledge/u1_good_to_know.json` |
+
 ## Replay and determinism
 
 | Limit | Source |
@@ -99,6 +106,8 @@ What U1 Doctor cannot know or has not yet proven. Each item cites the document i
 | The GitHub Action that validates a bundle runs in this repository's CI (job `deb-action`); it has not been used by third-party repositories. | `BACKLOG.md` (#12), `docs/U1-DEB.md` |
 | Network: HTTP to the printer is unencrypted on the LAN. A changed printer address is reported only between two captures made in the app (keyed local fingerprint, mock-tested, UNTESTED on a real U1); it is not watched over time. | `docs/threat-model.md`, `BACKLOG.md` #42 |
 | The ticket-ready summary only contains what the owner typed and the facts of the loaded source; firmware, slicer and filaments are never detected. It does not replace the printer's encrypted system log. The "save the bundle now" reminder is static text; the log partition usage is read only during a live capture (rule S22, UNTESTED on a real U1) and is not judged. | `frontend/src/lib/ticket-text.ts` |
+| The **on-screen alert** is in-page only: a banner above the result and a `(!)` prefix on the window title, no Notification API, no sound, nothing sent. A capture is one-shot (the backend returns once the listening time ends), so the alert comes when the result arrives, not during the capture. "New" means not already alerted on that screen since it was opened; leaving the screen clears it. It reacts only to OBSERVED findings and to error/shutdown states the result carries. Toggle in Settings (on by default, stored in browser storage, which may be lost). | `frontend/src/components/capture-alert.tsx` |
+| The **sample report** on Pages (`docs/sample-report/index.html`) is built from the SYNTHETIC demo incident only, with the app's Report-composer code (`npm run sample-report` in `frontend/`); it shows no real fault and is not an official Snapmaker document. | `frontend/src/lib/sample-report.ts` |
 
 ## What U1 Doctor will never claim
 

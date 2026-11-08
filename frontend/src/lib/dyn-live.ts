@@ -47,7 +47,8 @@ const EXACT: Record<string, string> = {
   // capability rows of the compatibility table
   "Log partition usage read": "Lecture de l'occupation de la partition des journaux",
   "Cavity sensor and bed mesh subscription": "Abonnement à la sonde de l'enceinte et au maillage du plateau",
-  "Live rules S17-S24": "Règles en direct S17-S24",
+  "Live rules S22-S24": "Règles en direct S22-S24",
+  "Live rules S17-S21": "Règles en direct S17-S21",
   "Connectivity self-check": "Autodiagnostic de la connexion",
 };
 

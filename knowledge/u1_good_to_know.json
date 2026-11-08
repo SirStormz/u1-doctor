@@ -1,0 +1,58 @@
+{
+  "version": "0.1.0",
+  "checked_at": "2026-11-08",
+  "kind": "COMMUNITY_REPORT",
+  "note": "Good-to-know notes from the public Snapmaker forum, rewritten in our words with a link to each topic (and to the official article when one exists). Community-reported, not official, never ranked. Static text: nothing here is read from or sent to a printer.",
+  "notes": [
+    {
+      "id": "GK-FLUIDD-CAMERA",
+      "title": {"en": "The built-in camera is not shown in Fluidd", "fr": "La caméra intégrée n'apparaît pas dans Fluidd"},
+      "text": {
+        "en": "On stock firmware the built-in camera does not appear in Fluidd by default; the Snapmaker app and Snapmaker Orca show it. Owners report that adding a camera by hand in Fluidd's settings can show it, but on 2.x firmware the picture may freeze or update only while the Snapmaker app has the camera open. Others use custom firmware or a third-party bridge; U1 Doctor installs neither.",
+        "fr": "Avec le firmware d'origine, la caméra intégrée n'apparaît pas dans Fluidd par défaut ; l'application Snapmaker et Snapmaker Orca l'affichent. Des propriétaires indiquent qu'ajouter une caméra à la main dans les réglages de Fluidd peut l'afficher, mais qu'avec le firmware 2.x l'image peut se figer ou ne se mettre à jour que lorsque l'application Snapmaker affiche la caméra. D'autres utilisent un firmware modifié ou une passerelle tierce ; U1 Doctor n'installe ni l'un ni l'autre."
+      },
+      "scope": {
+        "en": "Three topics from January to November 2026 (firmware 1.4.0 to 2.x). One is a feature request; staff answered it by pointing to the support ticket form. No official statement on the camera in Fluidd was found.",
+        "fr": "Trois sujets de janvier à novembre 2026 (firmware 1.4.0 à 2.x). L'un est une demande de fonction ; le personnel y a répondu en renvoyant au formulaire de demande d'assistance. Aucune déclaration officielle sur la caméra dans Fluidd n'a été trouvée."
+      },
+      "sources": [
+        {"url": "https://forum.snapmaker.com/t/40853", "title": "Camera feed in Fluid Interface", "posted": "2026-01-06"},
+        {"url": "https://forum.snapmaker.com/t/43564", "title": "Cameras in Fluidd, Firmware 2.0.0", "posted": "2026-10-05"},
+        {"url": "https://forum.snapmaker.com/t/42072", "title": "Support internal camera in Fluidd", "posted": "2026-05-27"}
+      ]
+    },
+    {
+      "id": "GK-FLUIDD-CONFIG-READ-ONLY",
+      "title": {"en": "Fluidd shows the configuration files as read-only", "fr": "Fluidd affiche les fichiers de configuration en lecture seule"},
+      "text": {
+        "en": "In Fluidd, printer.cfg and the other configuration files and folders carry a lock: they open in the editor but cannot be saved. An owner explained that this is a protection and that the files become editable only after turning on Advanced Mode under Maintenance on the printer's screen. U1 Doctor never edits these files.",
+        "fr": "Dans Fluidd, printer.cfg et les autres fichiers et dossiers de configuration portent un cadenas : ils s'ouvrent dans l'éditeur mais ne peuvent pas être enregistrés. Un propriétaire explique qu'il s'agit d'une protection et que les fichiers ne deviennent modifiables qu'après activation du mode avancé, dans le menu Maintenance de l'écran de la machine. U1 Doctor ne modifie jamais ces fichiers."
+      },
+      "scope": {
+        "en": "One topic on firmware 1.1.1 (March 2026); the person who asked confirmed that it worked. The answer came from an owner, not from staff. Not checked on later versions.",
+        "fr": "Un sujet sur le firmware 1.1.1 (mars 2026) ; la personne qui posait la question a confirmé que cela fonctionnait. La réponse vient d'un propriétaire, pas du personnel. Non vérifié sur les versions suivantes."
+      },
+      "sources": [
+        {"url": "https://forum.snapmaker.com/t/41385", "title": "All files & folders I Fluidd Read Only", "posted": "2026-03-06"}
+      ]
+    },
+    {
+      "id": "GK-LOGS-ENCRYPTED",
+      "title": {"en": "The printer's logs are encrypted", "fr": "Les journaux de la machine sont chiffrés"},
+      "text": {
+        "en": "The system log the printer exports is encrypted and cannot be read on your computer; the official article says to send it to Snapmaker support. On the forum, staff answer \"why did my print pause?\" by showing how to export that log. U1 Doctor does not read or decrypt it: its bundle is a readable complement, not a replacement.",
+        "fr": "Le journal système exporté par la machine est chiffré et ne peut pas être lu sur votre ordinateur ; l'article officiel indique de l'envoyer au support Snapmaker. Sur le forum, le personnel répond à « pourquoi mon impression s'est-elle mise en pause ? » en montrant comment exporter ce journal. U1 Doctor ne le lit pas et ne le déchiffre pas : son dossier de preuves est un complément lisible, pas un remplaçant."
+      },
+      "scope": {
+        "en": "One topic (January 2026) with a staff reply; a later post quotes the official article on the encryption. The article was re-read on 2026-11-08.",
+        "fr": "Un sujet (janvier 2026) avec une réponse du personnel ; un message plus tardif cite l'article officiel sur le chiffrement. L'article a été relu le 2026-11-08."
+      },
+      "articles": [
+        {"title": "Export logs (U1)", "url": "https://wiki.snapmaker.com/en/snapmaker_u1/troubleshooting/U1_export_log"}
+      ],
+      "sources": [
+        {"url": "https://forum.snapmaker.com/t/40865", "title": "Logs for Troubleshooting?", "posted": "2026-01-07"}
+      ]
+    }
+  ]
+}

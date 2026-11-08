@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Ban, Cpu, ExternalLink, FlaskConical, History, MessageSquareText, Play, Plug, Search, ShieldCheck, Settings as SettingsIcon, TriangleAlert, Users } from "lucide-react";
-import { api, firmwareIssues, knownIssues, liveApi, LiveRefused, preflight, supportChecklist, PreflightRefused, type CommunityCause, type InterpretOut, type LiveOut, type FirmwareIssues, type KnownIssues, type MessageMatch, type PreflightOut } from "../api";
+import { Ban, Cpu, ExternalLink, FlaskConical, History, Info, MessageSquareText, Play, Plug, Search, ShieldCheck, Settings as SettingsIcon, TriangleAlert, Users } from "lucide-react";
+import { api, firmwareIssues, goodToKnow, knownIssues, liveApi, LiveRefused, preflight, supportChecklist, PreflightRefused, type CommunityCause, type InterpretOut, type LiveOut, type FirmwareIssues, type GoodToKnow, type KnownIssues, type MessageMatch, type PreflightOut } from "../api";
 import { Button, Chip, Kbd, Panel, ProvenanceChip, SeverityChip, Seal, StateBlock } from "../components/ui";
 import { PageTitle } from "../components/shell";
 import { useIncident } from "../lib/data";
@@ -12,6 +12,7 @@ import { buildRequest, supNote, supText, type SupportOut } from "../lib/support-
 import type { RouteName } from "../lib/router";
 import { EvidenceNotice } from "../components/evidence-notice";
 import { LiveNet } from "../components/live-net";
+import { CaptureAlert, useCaptureAlert } from "../components/capture-alert";
 import { loadGcodeNozzle, nozzleFromPreflight, saveGcodeNozzle } from "../lib/gcode-nozzle";
 
 type Go = (n: RouteName, p?: string) => void;
@@ -65,10 +66,15 @@ export function Connect() {
   const [err, setErr] = useState<string | null>(null);
   const [out, setOut] = useState<LiveOut | null>(null);
   const [gcodeMm] = useState<number[] | null>(() => loadGcodeNozzle());
+  const alert = useCaptureAlert("live-result");
 
   async function run() {
-    setBusy(true); setErr(null); setOut(null);
-    try { setOut(await liveApi.capture(host.trim(), secs, save, gcodeMm ?? undefined)); }
+    setBusy(true); setErr(null); setOut(null); alert.clear();
+    try {
+      const r = await liveApi.capture(host.trim(), secs, save, gcodeMm ?? undefined);
+      setOut(r);
+      alert.raise(r.findings, r.observations, [r.printer.klippy_state, r.printer.printer_state]);
+    }
     catch (e) { setErr((e instanceof LiveRefused ? t.liveErr[e.code] ?? t.apiErr[e.code] : undefined) ?? t.liveErr["UNKNOWN"] ?? ""); }
     finally { setBusy(false); }
   }
@@ -76,6 +82,7 @@ export function Connect() {
   return (
     <>
       <PageTitle title={t.nav.connect} sub={t.connectSub} icon={<Plug size={26} />} actions={<Chip tone="ok" icon={<ShieldCheck size={12} aria-hidden />}>{t.notInBuild}</Chip>} />
+      <CaptureAlert cause={alert.cause} kind="capture" onView={alert.view} onDismiss={alert.clear} />
       <div className="grid gap-d xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <Panel title={t.connSteps} icon={<Cpu size={17} />} i={0} active demo={false}>
           <ol className="grid gap-3">
@@ -98,6 +105,7 @@ export function Connect() {
         </Panel>
         <div className="col-fill">
           {out && (
+            <div id="live-result" tabIndex={-1} className="outline-none">
             <Panel title={t.liveDone} icon={<Cpu size={17} />} i={1} demo={false}>
               <div className="mb-3 flex flex-wrap gap-2"><Chip tone="ok">{t.liveReal}</Chip><Chip tone={out.audit.non_read_operations === 0 ? "ok" : "danger"}>{t.liveWrites}: {out.audit.non_read_operations}</Chip><Chip tone="neutral">{t.liveReads}: {out.audit.read_operations}</Chip></div>
               <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
@@ -114,6 +122,7 @@ export function Connect() {
               <p className="mt-3 text-xs text-ink3">{out.session ? t.liveSaved : t.liveNotSaved}</p>
               <EvidenceNotice />
             </Panel>
+            </div>
           )}
           {out?.connectivity && <LiveNet net={out.connectivity} />}
           <Panel title={t.allowlist} icon={<ShieldCheck size={17} />} i={2} demo={false}>
@@ -209,6 +218,7 @@ export function Explorer({ param }: { param?: string }) {
       </div>
       <KnownIssuesPanel code={res && d && d.status !== "MALFORMED" ? ((d as unknown as { code?: string }).code ?? code) : null} />
       <FirmwareIssuesPanel />
+      <GoodToKnowPanel />
       <Preflight onCode={(c) => { setCode(c); void run(c); window.scrollTo({ top: 0, behavior: "smooth" }); }} />
     </>
   );
@@ -374,6 +384,38 @@ function FirmwareIssuesPanel() {
   );
 }
 
+/** Good-to-know notes: static, community-reported, each with its forum topics, date and (when one exists) the official article. */
+function GoodToKnowPanel() {
+  const { t, lang } = usePrefs();
+  const [data, setData] = useState<GoodToKnow | null>(null);
+  const [fail, setFail] = useState(false);
+  useEffect(() => { let live = true; goodToKnow().then((x) => { if (!live) return; if (Array.isArray(x?.notes)) setData(x); else setFail(true); }).catch(() => { if (live) setFail(true); }); return () => { live = false; }; }, []);
+  return (
+    <div className="mt-4">
+      <Panel title={t.gk.title} icon={<Info size={17} />} i={4} demo={false}>
+        <p className="text-ink2">{t.gk.note}</p>
+        {fail && <p className="mt-3 text-ink3">{t.gk.loadFail}</p>}
+        {data && (
+          <ul className="mt-3 grid gap-2" data-testid="good-to-know">
+            {data.notes.map((n) => (
+              <li key={n.id} data-note={n.id} className="rounded-lg border-2 border-dashed p-3" style={{ borderColor: "var(--control-line)" }}>
+                <div className="flex flex-wrap items-center gap-2"><strong>{n.title[lang]}</strong><Chip tone="warn" icon={<Users size={12} aria-hidden />}>{t.gk.kind}</Chip></div>
+                <p className="mt-2 text-[15px]">{n.text[lang]}</p>
+                <p className="mt-1.5 text-sm text-ink2"><span className="micro">{t.gk.scope}</span> {n.scope[lang]}</p>
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs">
+                  {n.sources.map((s) => <a key={s.url} href={s.url} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 underline">{t.cc.source} {s.url.split("/").pop()} · {t.cc.posted.replace("{d}", s.posted)}<ExternalLink size={12} aria-hidden /></a>)}
+                  {(n.articles ?? []).map((a) => <a key={a.url} href={a.url} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 underline">{t.cc.article}{lang === "en" ? ` · ${a.title}` : ""}<ExternalLink size={12} aria-hidden /></a>)}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+        {data && <p className="mt-2 text-xs text-ink3" data-testid="gk-checked">{t.cc.checked.replace("{d}", data.checked_at)}</p>}
+      </Panel>
+    </div>
+  );
+}
+
 /** Schematic of the four dock slots: which toolheads the official table row tells you to inspect. Slot numbers only, no geometry. */
 function DockHint({ reported, inspect, scope }: { reported: number | null; inspect: number[]; scope: "listed" | "all" | "this_head" }) {
   const { t } = usePrefs();
@@ -509,17 +551,19 @@ export function Replay({ onMode }: { onMode: (r: boolean) => void }) {
   const [sel, setSel] = useState("");
   const [runs, setRuns] = useState<Run[]>([]);
   const [err, setErr] = useState<string | null>(null);
+  const alert = useCaptureAlert("replay-result");
   useEffect(() => { api.scenarios().then((s) => { setNames(s.scenarios); setSel(s.scenarios.includes("demo_extrusion_blockage") ? "demo_extrusion_blockage" : s.scenarios[0] ?? ""); }).catch((e) => setErr(errText(t, e))); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { onMode(false); }, [sel, onMode]);
   async function run() {
     setErr(null);
-    try { const r = await api.replay(sel); setRuns((x) => [{ n: x.length + 1, scenario: sel, hash: r.findings_sha256, ok: r.matches_golden, count: r.findings.length }, ...x].slice(0, 6)); onMode(true); } catch (e) { setErr(errText(t, e)); }
+    try { const r = await api.replay(sel); alert.raise(r.findings, []); setRuns((x) => [{ n: x.length + 1, scenario: sel, hash: r.findings_sha256, ok: r.matches_golden, count: r.findings.length }, ...x].slice(0, 6)); onMode(true); } catch (e) { setErr(errText(t, e)); }
   }
   const last = runs[0];
   const prev = runs.find((r, i) => i > 0 && r.scenario === last?.scenario);
   return (
     <>
       <PageTitle title={t.nav.replay} sub={t.replaySub} icon={<History size={26} />} />
+      <CaptureAlert cause={alert.cause} kind="replay" onView={alert.view} onDismiss={alert.clear} />
       <div className="grid gap-d xl:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
         <Panel title={t.scenario} i={0} active>
           <label className="grid gap-1 text-sm">{t.scenario}
@@ -529,7 +573,7 @@ export function Replay({ onMode }: { onMode: (r: boolean) => void }) {
           <p className="mt-3 text-xs text-ink3">{t.replayHelp}</p>
           {err && <StateBlock kind="error" title={t.error} body={err} />}
         </Panel>
-        <div className="col-fill">
+        <div id="replay-result" tabIndex={-1} className="col-fill outline-none">
           {!last ? <StateBlock kind="empty" title={t.empty} body={t.replayEmpty} /> : (
             <>
               <Seal ok={last.ok} label={last.ok ? t.sameResult : t.differs} sub={`${t.replaySeal} · ${last.count} ${t.findings.toLowerCase()}`} hash={last.hash} />
@@ -553,7 +597,7 @@ const SW: Record<Theme, string[]> = { night: ["#10100e", "#161614", "#ffc400"], 
 const RELEASES_URL = "https://github.com/SirStormz/u1-doctor/releases";
 
 export function SettingsScreen() {
-  const { t, theme, setTheme, density, setDensity, lang, setLang, mode, setMode, restartOnboarding } = usePrefs();
+  const { t, theme, setTheme, density, setDensity, lang, setLang, mode, setMode, alerts, setAlerts, restartOnboarding } = usePrefs();
   const inc = useIncident();
   return (
     <>
@@ -572,6 +616,10 @@ export function SettingsScreen() {
           <fieldset className="mt-5"><legend className="micro mb-2">{t.mode}</legend>
             <div className="flex gap-2">{(["simple", "expert"] as Mode[]).map((m) => <Button key={m} aria-pressed={mode === m} variant={mode === m ? "primary" : "secondary"} onClick={() => setMode(m)}>{t.modes[m]}</Button>)}</div>
             <p className="mt-2 max-w-prose text-xs text-ink3">{t.modeHelp}</p>
+          </fieldset>
+          <fieldset className="mt-5"><legend className="micro mb-2">{t.al.setting}</legend>
+            <div className="flex gap-2">{([true, false] as const).map((on) => <Button key={String(on)} aria-pressed={alerts === on} variant={alerts === on ? "primary" : "secondary"} onClick={() => setAlerts(on)}>{on ? t.al.on : t.al.off}</Button>)}</div>
+            <p className="mt-2 max-w-prose text-xs text-ink3">{t.al.help}</p>
           </fieldset>
           <fieldset className="mt-5"><legend className="micro mb-2">{t.onb.restart}</legend>
             <Button onClick={restartOnboarding}>{t.onb.restart}</Button>
