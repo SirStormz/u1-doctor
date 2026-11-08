@@ -4,12 +4,15 @@ U1 Doctor is a local, read-only tool. Full analysis: [`docs/threat-model.md`](do
 
 ## Security model in brief
 
-- **Read-only transport allowlist.** Requests are checked before any network I/O. Allowed: `GET /server/info`, `GET /printer/info`, `GET /printer/objects/list`, `POST /printer/objects/query` (query body only), and one WebSocket method, `printer.objects.subscribe`. Everything else is refused, including pause, resume, cancel, restart, emergency stop and `printer.gcode.script`.
+- **Read-only transport allowlist.** Requests are checked before any network I/O. Allowed: `GET /server/info`, `GET /printer/info`, `GET /printer/objects/list`, and one WebSocket method, `printer.objects.subscribe`. Everything else is refused, including `POST /printer/objects/query` (never used, removed from the allowlist), pause, resume, cancel, restart, emergency stop and `printer.gcode.script`.
+- **What one live capture sends.** 3 GET and 1 WebSocket subscribe message; if the stream drops early, up to 6 more status GET (3 probes of `/server/info` and `/printer/info`). The WebSocket client sends no keepalive pings (it only answers the printer at protocol level: pong, closing handshake). One capture at a time.
 - **Target restriction.** A literal private (RFC1918) IPv4 address, port 7125 only. Hostnames, IPv6, loopback and public addresses are refused. Redirects are not followed and proxy environment variables are ignored.
 - **Mandatory consent.** A real connection needs an explicit owner consent object matching the target host.
 - **Local-only binding.** The app listens on `127.0.0.1` only. No cloud, no telemetry.
+- **No cross-site requests (CSRF).** Any web page open in the browser could POST to `127.0.0.1` without CORS (a no-cors `fetch` or a form, raw body). Every non-GET request is therefore refused (403) when it carries an `Origin` other than the app's own, or lacks the `X-U1D: 1` header that the app's front end adds; a browser only sends a custom header cross-origin after a CORS preflight, which the app never answers. GET routes read local data only.
+- **Windows exe housekeeping.** At start the exe removes the "downloaded from the Internet" mark (`Zone.Identifier`) from the `.dll` files inside its bundled `_internal` folder only, so WebView2 can load them; no other file is touched. If the window cannot start it writes `%APPDATA%\U1 Doctor\error.log`, with the user profile path replaced by `%USERPROFILE%`; read it before attaching it to an issue.
 - **Untrusted imports.** U1-DEB bundles are validated (file-name allowlist, size and ratio caps, no symlinks or encrypted entries, SHA-256 and schema checks) and nothing in them is executed. See [`docs/U1-DEB.md`](docs/U1-DEB.md).
-- **Known residual risks.** The policy is tested against a mock plus supervised read-only sessions on the owner's U1 (see `docs/evidence`); HTTP on the LAN is unencrypted; export redaction is best effort.
+- **Known residual risks.** The policy is tested against a mock plus supervised read-only sessions on the owner's U1 (see `docs/evidence`); HTTP on the LAN is unencrypted; export redaction is best effort (pattern based: IPv4/IPv6, MAC, e-mail, URLs, `.local`/`.lan` host names, local and home paths, print file names, serial-like tokens, credential `key=value` pairs).
 
 ## Reporting a vulnerability
 

@@ -5,6 +5,8 @@ ADR-0004: Alembic/SQLAlchemy deferred; revisit when schema complexity warrants.
 from __future__ import annotations
 
 import sqlite3
+import threading
+from typing import Any
 
 MIGRATIONS: list[str] = [
     # 1
@@ -44,8 +46,24 @@ MIGRATIONS: list[str] = [
 ]
 
 
+class _Connection(sqlite3.Connection):
+    """One connection shared by the server's worker threads (check_same_thread=False): every use holds `lock`."""
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.lock = threading.RLock()
+
+
+_NO_LOCK = threading.RLock()  # for a plain sqlite3 connection opened elsewhere (tests)
+
+
+def lock(conn: sqlite3.Connection) -> threading.RLock:
+    """The lock serializing every read and transaction on `conn` across threads."""
+    return getattr(conn, "lock", _NO_LOCK)
+
+
 def connect(path: str) -> sqlite3.Connection:
-    conn = sqlite3.connect(path, check_same_thread=False)
+    conn = sqlite3.connect(path, check_same_thread=False, factory=_Connection)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys=ON")
     migrate(conn)
@@ -53,7 +71,8 @@ def connect(path: str) -> sqlite3.Connection:
 
 
 def schema_version(conn: sqlite3.Connection) -> int:
-    return conn.execute("PRAGMA user_version").fetchone()[0]
+    with lock(conn):
+        return conn.execute("PRAGMA user_version").fetchone()[0]
 
 
 def migrate(conn: sqlite3.Connection) -> int:

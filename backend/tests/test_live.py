@@ -7,6 +7,8 @@ from fastapi.testclient import TestClient
 
 from app.api import create_app
 
+APP = {"X-U1D": "1"}  # sent by the app's own front end on every non-GET request (CSRF guard)
+
 HOST = "192.168.50.20"
 
 
@@ -45,7 +47,7 @@ def client():
     app = create_app(":memory:")
     conn = Conn(frames())
     app.state.live_hooks = {"http_transport": httpx.MockTransport(handler), "connect": lambda: conn}
-    c = TestClient(app)
+    c = TestClient(app, headers=APP)
     c.conn = conn
     return c
 
@@ -98,7 +100,7 @@ def test_unreachable_printer_gives_a_safe_error():
         raise httpx.ConnectError("boom 192.168.50.20")
 
     app.state.live_hooks = {"http_transport": httpx.MockTransport(down), "connect": lambda: Conn([])}
-    r = TestClient(app).post("/api/v1/live/capture", json={"host": HOST, "consent": True})
+    r = TestClient(app, headers=APP).post("/api/v1/live/capture", json={"host": HOST, "consent": True})
     assert r.status_code == 502 and r.json()["detail"]["code"] == "UNREACHABLE" and HOST not in r.text
 
 
@@ -123,7 +125,7 @@ def _drop_client(monkeypatch, handler_fn):
     app = create_app(":memory:")
     conn = DropConn(frames())
     app.state.live_hooks = {"http_transport": httpx.MockTransport(handler_fn), "connect": lambda: conn}
-    return TestClient(app)
+    return TestClient(app, headers=APP)
 
 
 def test_dropped_stream_is_probed_read_only_and_feeds_s04(monkeypatch):
@@ -154,7 +156,7 @@ def test_dropped_stream_with_unreachable_printer_is_inconclusive(monkeypatch):
 def test_normal_end_has_no_probe():
     app = create_app(":memory:")
     app.state.live_hooks = {"http_transport": httpx.MockTransport(handler), "connect": lambda: Conn(frames())}
-    j = TestClient(app).post("/api/v1/live/capture", json={"host": HOST, "consent": True, "seconds": 3}).json()
+    j = TestClient(app, headers=APP).post("/api/v1/live/capture", json={"host": HOST, "consent": True, "seconds": 3}).json()
     assert j["stream_dropped"] is False and "link_probe" not in [o["event_type"] for o in j["observations"]]
 
 
@@ -187,3 +189,30 @@ def test_observations_endpoint_and_no_resave_of_a_history_source(client):
     assert client.get("/api/v1/history/h000000000000/observations").status_code == 404
     again = client.post("/api/v1/history/source", json={"source": f"history:{sid}"})
     assert again.status_code == 422
+
+
+def test_a_second_concurrent_capture_is_refused_not_queued():
+    import threading
+
+    app = create_app(":memory:")
+    entered, release = threading.Event(), threading.Event()
+
+    def slow_connect():
+        entered.set()
+        release.wait(10)
+        return Conn(frames())
+
+    app.state.live_hooks = {"http_transport": httpx.MockTransport(handler), "connect": slow_connect}
+    c = TestClient(app, headers=APP)
+    first: dict = {}
+    t = threading.Thread(target=lambda: first.setdefault("r", post(c)))
+    t.start()
+    try:
+        assert entered.wait(10)
+        r = post(c)
+        assert r.status_code == 409 and r.json()["detail"]["code"] == "LIVE_BUSY"
+    finally:
+        release.set()
+        t.join(30)
+    assert first["r"].status_code == 200
+    assert post(c, save=False).status_code == 200  # the slot is free again

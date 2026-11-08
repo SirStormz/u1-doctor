@@ -86,7 +86,8 @@ Press `Ctrl K` anywhere to jump to a screen or paste an error code.
 
 **Good to know**
 - The app is **not code-signed**, so Windows SmartScreen may warn: choose "More info", then "Run anyway".
-- VirusTotal: this 0.1.7-g1 zip scored **0 engines out of 52** ([report](https://www.virustotal.com/gui/file/137d74a73cd12687844c781186b1bcd21002bcf53f3735b1e0b0b0aa2442d4e7)). The previous build, 0.1.6-g1, scored 0 engines out of 67 ([report](https://www.virustotal.com/gui/file/b744d8c9cf7b3a275aa474fc8a44fd7c3e9cbc3c1a00ce73002df798add2fb92)). Earlier builds: 0.1.0-g1 was flagged by 1 engine out of 66, 0.1.1-g1 by 2 out of 65, 0.1.2-g1 by 1 out of 66 (Zillya, `Trojan.Stealer.Win64.2764`) and 0.1.5-g1 by 0 out of 65 ([report](https://www.virustotal.com/gui/file/594599bf711db552a6e8b01c27c25f642b6c816a162cfdf7d57410ae6b8812b9)); we believe the earlier detections were false positives typical of unsigned PyInstaller executables. A clean scan is not a guarantee and detections can change: the source is public, the build is made by GitHub Actions, and the app reads no browser data, cookies, passwords or clipboard. It reads one Windows registry value (the installed WebView2 version, to know whether its window can open) and removes the "downloaded from the Internet" mark from its own `.dll` files so that window can start.
+- If the window cannot start, the app opens in your browser instead and writes the reason to `%APPDATA%\U1 Doctor\error.log`. Your user folder path is replaced by `%USERPROFILE%` in that file, but read it before attaching it to an issue: it may still hold other folder or file names.
+- VirusTotal: this 0.1.7-g1 zip scored **0 engines out of 52** ([report](https://www.virustotal.com/gui/file/137d74a73cd12687844c781186b1bcd21002bcf53f3735b1e0b0b0aa2442d4e7)). The previous build, 0.1.6-g1, scored 0 engines out of 67 ([report](https://www.virustotal.com/gui/file/b744d8c9cf7b3a275aa474fc8a44fd7c3e9cbc3c1a00ce73002df798add2fb92)). Earlier builds: 0.1.0-g1 was flagged by 1 engine out of 66, 0.1.1-g1 by 2 out of 65, 0.1.2-g1 by 1 out of 66 (Zillya, `Trojan.Stealer.Win64.2764`) and 0.1.5-g1 by 0 out of 65 ([report](https://www.virustotal.com/gui/file/594599bf711db552a6e8b01c27c25f642b6c816a162cfdf7d57410ae6b8812b9)); we believe the earlier detections were false positives typical of unsigned PyInstaller executables. A clean scan is not a guarantee and detections can change: the source is public, the build is made by GitHub Actions, and the app reads no browser data, cookies, passwords or clipboard. It reads one Windows registry value (the installed WebView2 version, to know whether its window can open) and removes the "downloaded from the Internet" mark from the `.dll` files inside its own bundled `_internal` folder (and no other file, not even other files you put next to the exe) so that window can start.
 - It opens with a short **first-start assistant** (skippable), then **starts empty**: nothing is shown until you import a bundle or capture a printer. The **Demo mode** switch in the header fills the screens with clearly labelled synthetic data (off again at every start). Everything works offline and nothing is sent anywhere.
 - Linux, macOS and Docker: see the [install guide](docs/INSTALL.md).
 
@@ -100,7 +101,7 @@ Press `Ctrl K` anywhere to jump to a screen or paste an error code.
 
 ![The Connect screen](docs/media/screens/02-connect.png)
 
-The capture never contains your address or file names. If the live stream closes early, the app checks with a few more read-only status requests whether the printer itself still answers, so a lost connection is not mistaken for a stopped printer.
+The capture never contains your address or file names. If the live stream closes early, the app checks with up to 6 more read-only status GET requests whether the printer itself still answers, so a lost connection is not mistaken for a stopped printer.
 
 ## What works today
 
@@ -126,7 +127,8 @@ The capture never contains your address or file names. If the live stream closes
 U1 Doctor never controls the printer.
 
 - One single module may open a network connection to a printer. The web interface reaches it through one route (`POST /api/v1/live/capture`) that refuses to run without explicit owner consent, accepts one private IPv4 address, and rejects requests that do not come from the app itself.
-- Every request is checked against a frozen allowlist **before** any network I/O: `GET /server/info`, `GET /printer/info`, `GET /printer/objects/list`, `POST /printer/objects/query` (read-only query) and one WebSocket method, `printer.objects.subscribe`. Anything else is refused.
+- Every request is checked against a frozen allowlist **before** any network I/O: `GET /server/info`, `GET /printer/info`, `GET /printer/objects/list` and one WebSocket method, `printer.objects.subscribe`. Anything else is refused, including `POST /printer/objects/query`, which the app never needed.
+- The local API refuses any POST or DELETE that does not come from the app's own page (foreign `Origin` or missing `X-U1D` header), so another web page open in your browser cannot drive it.
 - Pause, resume, cancel, restart, emergency stop and `printer.gcode.script` are covered by tests that must stay refused.
 - Supervised sessions on the owner's U1 (scripted runs, a capture from the Connect screen and a 55-minute passive watch of a print) recorded **0 non-read operations**. The evidence is in [`docs/evidence/`](docs/evidence/).
 - The app listens on `127.0.0.1` only. Nothing leaves your machine.

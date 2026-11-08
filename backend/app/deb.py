@@ -59,14 +59,25 @@ _SHA = re.compile(r"^[0-9a-f]{64}$")
 _RS_HASH = re.compile(r"^sha256:[0-9a-f]{64}$")
 
 # Redaction: values that must never leave the owner's machine in the default format.
+# The privacy report's `default_exclusions` (_EXCLUSIONS) must only promise what these patterns cover.
+_H4 = r"[0-9A-Fa-f]{1,4}"
 _PRIVATE = (
     ("ipv4", re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")),
+    ("ipv6", re.compile(rf"(?<![\w:])(?:(?:{_H4}:){{7}}{_H4}|(?:{_H4}:){{1,7}}:(?:{_H4}(?::{_H4}){{0,5}})?|::{_H4}(?::{_H4}){{0,6}})(?![\w:])")),
     ("mac", re.compile(r"\b[0-9A-Fa-f]{2}(?:[:-][0-9A-Fa-f]{2}){5}\b")),
     ("email", re.compile(r"[^\s@]+@[^\s@]+\.[A-Za-z]{2,}")),
     ("url", re.compile(r"\b[a-z][a-z0-9+.-]*://", re.IGNORECASE)),
-    ("path", re.compile(r"(?:[A-Za-z]:\\|\\\\|/(?:home|Users|root|mnt|media|var|tmp|etc)/)")),
+    ("hostname", re.compile(r"\b[A-Za-z0-9](?:[A-Za-z0-9-]{0,62})(?:\.[A-Za-z0-9-]{1,63})*\.(?:local|lan|home|internal|localdomain)\b", re.IGNORECASE)),
+    ("path", re.compile(r"(?:[A-Za-z]:\\|\\\\|/(?:home|Users|root|mnt|media|var|tmp|etc)/|(?<![\w~])~[/\\]|%USERPROFILE%)")),
     ("print_file", re.compile(r"\.(?:gcode|gco|3mf|ufp|bgcode)\b", re.IGNORECASE)),
+    # 12+ upper-case letters and digits mixed (case-sensitive: lower-case hashes stay), the shape of a machine serial;
+    # also any `serial`/`sn` key=value pair
+    ("serial", re.compile(r"\b(?=[A-Z0-9]*[A-Z])(?=[A-Z0-9]*\d)[A-Z0-9]{12,}\b|(?i:\b(?:serial(?:_?(?:number|no))?|sn)\s*[=:]\s*\S)")),
+    ("credential", re.compile(r"\b(?:api[_-]?key|access[_-]?token|token|password|passwd|pwd|secret|key)\s*[=:]\s*\S", re.IGNORECASE)),
 )
+_EXCLUSIONS = ["IPv4 and IPv6 addresses", "MAC addresses", "e-mail addresses", "URLs", "local network host names (.local, .lan, .home, .internal)",
+               "local and home paths (drive letters, network shares, user home folders)", "print file names",
+               "serial-like tokens and serial=value pairs", "credential key=value pairs (passwords, tokens, API keys)"]
 
 
 class BundleError(ValueError):
@@ -195,10 +206,15 @@ def _scrub(value: Any, counts: dict[str, int]) -> Any:
         return [_scrub(v, counts) for v in value]
     if isinstance(value, dict):
         out: dict[str, Any] = {}
+        masked = 0
         for k, v in value.items():
             if any(rx.search(k) for _, rx in _PRIVATE):
                 counts["key"] = counts.get("key", 0) + 1
-                k = "[REDACTED_KEY]"
+                masked += 1
+                k = f"[REDACTED_KEY_{masked}]"  # numbered: two masked keys never collapse into one
+                while k in value:
+                    masked += 1
+                    k = f"[REDACTED_KEY_{masked}]"
             out[k] = _scrub(v, counts)
         return out
     return value
@@ -325,7 +341,7 @@ def export_bundle(observations: list[dict[str, Any]], ruleset: dict[str, Any], *
         "privacy-report.json": canon({
             "rules": [n for n, _ in _PRIVATE] + ["sensitive_value", "key"],
             "redactions": dict(sorted(counts.items())),
-            "default_exclusions": ["IP addresses", "hostnames", "file names", "local paths", "serial numbers", "credentials"],
+            "default_exclusions": _EXCLUSIONS,
             "remaining_fields": "Allowlisted derived observation fields only; review before sharing publicly.",
             "automatic_redaction_is_best_effort": True}) + b"\n",
         "README.txt": (

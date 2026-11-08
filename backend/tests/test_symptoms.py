@@ -8,6 +8,8 @@ from fastapi.testclient import TestClient
 from app import symptoms
 from app.api import create_app
 
+APP = {"X-U1D": "1"}  # sent by the app's own front end on every non-GET request (CSRF guard)
+
 ROOT = Path(__file__).resolve().parents[2]
 REAL = [json.loads(x) for x in (ROOT / "fixtures/real/real_h02_normal_print.observations.jsonl").read_text(encoding="utf-8").splitlines()]
 DATA = symptoms.load_symptoms()
@@ -174,7 +176,7 @@ def test_non_fresh_or_bad_samples_are_ignored():
 # ---- routes -------------------------------------------------------------------
 @pytest.fixture
 def client(tmp_path):
-    return TestClient(create_app(str(tmp_path / "t.sqlite3")), base_url="http://127.0.0.1")
+    return TestClient(create_app(str(tmp_path / "t.sqlite3")), base_url="http://127.0.0.1", headers=APP)
 
 
 def test_routes(client):

@@ -58,6 +58,10 @@ export interface ReplayOut {
   findings: Finding[];
 }
 
+// Every non-GET request carries this header: the backend refuses a POST/DELETE without it, so a web page open in the
+// browser cannot drive the local API with a no-cors form or fetch (CSRF guard, see SECURITY.md).
+const hdr = (contentType?: string): Record<string, string> => (contentType ? { "content-type": contentType, "x-u1d": "1" } : { "x-u1d": "1" });
+
 async function j<T>(res: Response): Promise<T> {
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return (await res.json()) as T;
@@ -67,9 +71,9 @@ export const api = {
   scenarios: () => fetch("/api/v1/demo/scenarios").then(j<{ banner: string; scenarios: string[] }>),
   scenario: (n: string) => fetch(`/api/v1/demo/scenarios/${encodeURIComponent(n)}`).then(j<{ observations: Observation[] }>),
   replay: (scenario: string) =>
-    fetch("/api/v1/replays", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ scenario }) }).then(j<ReplayOut>),
+    fetch("/api/v1/replays", { method: "POST", headers: hdr("application/json"), body: JSON.stringify({ scenario }) }).then(j<ReplayOut>),
   interpret: (code: string, firmware?: string) =>
-    fetch("/api/v1/errors/interpret", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(firmware ? { code, firmware } : { code }) }).then(j<InterpretOut>),
+    fetch("/api/v1/errors/interpret", { method: "POST", headers: hdr("application/json"), body: JSON.stringify(firmware ? { code, firmware } : { code }) }).then(j<InterpretOut>),
 };
 
 export interface Capability { name: string; status: "UNTESTED" | "TESTED_SYNTHETIC" | "UNAVAILABLE" | string }
@@ -101,7 +105,7 @@ export interface LiveOut {
 export class LiveRefused extends Error { constructor(public code: string) { super(code); } }
 export const liveApi = {
   capture: async (host: string, seconds: number, save: boolean): Promise<LiveOut> => {
-    const r = await fetch("/api/v1/live/capture", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ host, consent: true, seconds, save }) });
+    const r = await fetch("/api/v1/live/capture", { method: "POST", headers: hdr("application/json"), body: JSON.stringify({ host, consent: true, seconds, save }) });
     if (r.status >= 400 && r.status < 600 && r.status !== 500) {
       const b = (await r.json().catch(() => ({}))) as { detail?: { code?: string } };
       throw new LiveRefused(b.detail?.code ?? "UNKNOWN");
@@ -118,12 +122,12 @@ export interface BundleImport {
   support_checklist?: { present: boolean; codes: string[]; matches_local: boolean | null };
 }
 export class BundleRefused extends Error { constructor(public code: string) { super(code); } }
-const post = (url: string, source: string) => fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ source }) });
+const post = (url: string, source: string) => fetch(url, { method: "POST", headers: hdr("application/json"), body: JSON.stringify({ source }) });
 export const bundles = {
   preview: (source: string) => post("/api/v1/bundles/preview", source).then(j<BundlePreview>),
   export: async (source: string) => { const r = await post("/api/v1/bundles/export", source); if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.blob(); },
   import: async (data: Blob): Promise<BundleImport> => {
-    const r = await fetch("/api/v1/bundles/import", { method: "POST", headers: { "content-type": "application/zip" }, body: data });
+    const r = await fetch("/api/v1/bundles/import", { method: "POST", headers: hdr("application/zip"), body: data });
     if (r.status === 422) { const b = (await r.json()) as { detail?: { code?: string } }; throw new BundleRefused(b.detail?.code ?? "UNKNOWN"); }
     return j<BundleImport>(r);
   },
@@ -131,7 +135,7 @@ export const bundles = {
 
 export const knownIssues = () => fetch("/api/v1/knowledge/known-issues").then(j<KnownIssues>);
 export const supportChecklist = (code: string, firmware?: string) =>
-  fetch("/api/v1/support/checklist", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(firmware ? { code, firmware } : { code }) }).then(j<SupportOut>);
+  fetch("/api/v1/support/checklist", { method: "POST", headers: hdr("application/json"), body: JSON.stringify(firmware ? { code, firmware } : { code }) }).then(j<SupportOut>);
 
 export interface PreflightOut {
   file: { bytes: number; lines: number; name_provided: boolean }; slicer: { name: string | null; version: string | null };
@@ -139,7 +143,7 @@ export interface PreflightOut {
 }
 export class PreflightRefused extends Error { constructor(public code: string) { super(code); } }
 export const preflight = async (file: File): Promise<PreflightOut> => {
-  const r = await fetch(`/api/v1/preflight/gcode?name=${encodeURIComponent(file.name.slice(0, 255))}`, { method: "POST", headers: { "content-type": "text/plain" }, body: file });
+  const r = await fetch(`/api/v1/preflight/gcode?name=${encodeURIComponent(file.name.slice(0, 255))}`, { method: "POST", headers: hdr("text/plain"), body: file });
   if (r.status === 422) { const b = (await r.json()) as { detail?: { code?: string } }; throw new PreflightRefused(b.detail?.code ?? "UNKNOWN"); }
   return j<PreflightOut>(r);
 };
@@ -157,12 +161,12 @@ async function saved(r: Response): Promise<Saved> {
 }
 export const historyApi = {
   list: () => fetch("/api/v1/history").then(j<HistoryList>),
-  saveSource: (source: string, label?: string) => fetch("/api/v1/history/source", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(label ? { source, label } : { source }) }).then(saved),
-  saveBundle: (f: File) => fetch(`/api/v1/history/bundle?label=${encodeURIComponent(f.name.slice(0, 80))}`, { method: "POST", headers: { "content-type": "application/zip" }, body: f }).then(saved),
-  saveDryrun: (f: File) => fetch(`/api/v1/history/dryrun?label=${encodeURIComponent(f.name.slice(0, 80))}`, { method: "POST", headers: { "content-type": "application/json" }, body: f }).then(saved),
+  saveSource: (source: string, label?: string) => fetch("/api/v1/history/source", { method: "POST", headers: hdr("application/json"), body: JSON.stringify(label ? { source, label } : { source }) }).then(saved),
+  saveBundle: (f: File) => fetch(`/api/v1/history/bundle?label=${encodeURIComponent(f.name.slice(0, 80))}`, { method: "POST", headers: hdr("application/zip"), body: f }).then(saved),
+  saveDryrun: (f: File) => fetch(`/api/v1/history/dryrun?label=${encodeURIComponent(f.name.slice(0, 80))}`, { method: "POST", headers: hdr("application/json"), body: f }).then(saved),
   observations: (id: string) => fetch(`/api/v1/history/${encodeURIComponent(id)}/observations`).then(j<{ observations: Observation[] }>),
   findings: (id: string) => fetch(`/api/v1/history/${encodeURIComponent(id)}/findings`).then(j<{ findings: Finding[]; ruleset: { id: string; version: string; hash: string } }>),
-  remove: (id: string) => fetch(`/api/v1/history/${encodeURIComponent(id)}`, { method: "DELETE" }).then(j<{ deleted: string }>),
+  remove: (id: string) => fetch(`/api/v1/history/${encodeURIComponent(id)}`, { method: "DELETE", headers: hdr() }).then(j<{ deleted: string }>),
 };
 
 export interface TimelineEntry {
@@ -198,7 +202,7 @@ export class SymptomRefused extends Error { constructor(public code: string, pub
 export const symptomsApi = {
   catalog: () => fetch("/api/v1/knowledge/symptoms").then(j<SymptomCatalog>),
   evaluate: async (symptom: string, answers: Record<string, string | number>, session?: string): Promise<SymptomResult> => {
-    const r = await fetch("/api/v1/symptoms/evaluate", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(session ? { symptom, answers, session } : { symptom, answers }) });
+    const r = await fetch("/api/v1/symptoms/evaluate", { method: "POST", headers: hdr("application/json"), body: JSON.stringify(session ? { symptom, answers, session } : { symptom, answers }) });
     if (r.status === 422) { const b = (await r.json()) as { detail?: { code?: string; message?: string } }; throw new SymptomRefused(b.detail?.code ?? "UNKNOWN", b.detail?.message ?? ""); }
     return j<SymptomResult>(r);
   },

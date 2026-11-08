@@ -49,7 +49,7 @@ export function Welcome({ go }: { go: Go }) {
 }
 
 /* ---------------- Connect (read-only live capture, owner-approved) ---------------- */
-const ALLOW = [["GET", "/server/info"], ["GET", "/printer/info"], ["GET", "/printer/objects/list"], ["POST", "/printer/objects/query"], ["WS", "printer.objects.subscribe"]];
+const ALLOW = [["GET", "/server/info"], ["GET", "/printer/info"], ["GET", "/printer/objects/list"], ["WS", "printer.objects.subscribe"]];
 const DENY = ["printer.gcode.script", "printer.print.*", "printer.restart", "machine.*", "server.files.*"];
 export function Connect() {
   const { t } = usePrefs();

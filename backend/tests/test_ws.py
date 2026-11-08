@@ -106,3 +106,15 @@ def test_real_connect_against_local_server_caps_inbound():
             conn.recv(timeout=2)
     finally:
         srv.shutdown()
+
+
+def test_real_client_sends_no_keepalive_pings(monkeypatch):
+    # BACKLOG #52 L4: websockets pings every 20 s by default; the client must send only the subscribe message
+    import websockets.sync.client as wsc
+
+    from app.transport import ws as ws_mod
+
+    seen: dict = {}
+    monkeypatch.setattr(wsc, "connect", lambda uri, **kw: seen.update(kw) or FakeConn())
+    ws_mod._real_connect(HOST, 1.0)
+    assert seen["ping_interval"] is None and seen["ping_timeout"] is None and seen["proxy"] is None

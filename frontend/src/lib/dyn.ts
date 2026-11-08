@@ -89,7 +89,7 @@ const FR: Record<string, string> = {
   "X-axis movement went beyond its travel limit; a dedicated official article exists.": "Le mouvement de l'axe X a dépassé sa limite de course ; un article officiel dédié existe.",
   // chart lanes, capabilities
   "Toolhead 3 · nozzle": "Tête 3 · buse", Bed: "Plateau", "Print state": "État d'impression",
-  "Moonraker HTTP :7125": "Moonraker HTTP :7125", "Objects list / query": "Liste / requête d'objets", "WebSocket subscribe": "Abonnement WebSocket",
+  "Moonraker HTTP :7125": "Moonraker HTTP :7125", "Objects list": "Liste d'objets", "Objects query": "Requête d'objets", "WebSocket subscribe": "Abonnement WebSocket",
   "Live error codes": "Codes d'erreur en direct", "Toolhead 1-4 mapping": "Association des têtes 1-4", "Official firmware version": "Version officielle du firmware",
   "Offline code decoder": "Décodeur de codes hors ligne", "Deterministic replay": "Rejeu déterministe",
 };

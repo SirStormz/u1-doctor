@@ -70,7 +70,7 @@ class ReadOnlyMoonrakerTransport:
             headers={"User-Agent": "U1-Doctor/0 (read-only)"},
         )
 
-    # --- the only four operations -------------------------------------
+    # --- the only three operations (all GET) --------------------------
     def get_server_info(self) -> dict[str, Any]:
         return self._send("GET", "/server/info")
 
@@ -79,10 +79,6 @@ class ReadOnlyMoonrakerTransport:
 
     def list_objects(self) -> dict[str, Any]:
         return self._send("GET", "/printer/objects/list")
-
-    def query_objects(self, objects: dict[str, list[str] | None]) -> dict[str, Any]:
-        body = json.dumps({"objects": objects}, separators=(",", ":")).encode()
-        return self._send("POST", "/printer/objects/query", body)
 
     # --- internals ----------------------------------------------------
     def _send(self, method: str, path: str, body: bytes | None = None) -> dict[str, Any]:

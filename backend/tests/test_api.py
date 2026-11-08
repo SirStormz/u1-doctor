@@ -1,5 +1,6 @@
 """G1 API tests: 0 machine calls, demo/replay, db migration, host checks."""
 import ast
+import json
 import socket
 import sqlite3
 from pathlib import Path
@@ -9,6 +10,8 @@ from fastapi.testclient import TestClient
 
 from app import db
 from app.api import create_app
+
+APP = {"X-U1D": "1"}  # sent by the app's own front end on every non-GET request (CSRF guard)
 
 
 @pytest.fixture
@@ -27,7 +30,7 @@ def client(monkeypatch):
 
     monkeypatch.setattr(socket.socket, "connect", guard(real_connect))
     monkeypatch.setattr(socket.socket, "connect_ex", guard(real_connect_ex))
-    return TestClient(create_app(":memory:"))
+    return TestClient(create_app(":memory:"), headers=APP)
 
 
 def test_health_declares_no_machine_access(client):
@@ -92,8 +95,10 @@ def test_docs_endpoints_disabled(client):
 def test_compatibility_claims_only_what_h01_h02_prove(client):
     j = client.get("/api/v1/compatibility").json()
     real = {c["name"] for c in j["capabilities"] if c["status"] == "TESTED_REAL"}
-    assert real == {"Moonraker HTTP :7125", "Objects list / query", "WebSocket subscribe", "Official firmware version", "Deterministic replay"}
-    never = {c["name"]: c["status"] for c in j["capabilities"] if c["name"] in ("Live error codes", "Toolhead 1-4 mapping")}
+    assert real == {"Moonraker HTTP :7125", "Objects list", "WebSocket subscribe", "Official firmware version", "Deterministic replay"}
+    # POST /printer/objects/query never ran on the machine (and left the allowlist): it must not be claimed
+    never = {c["name"]: c["status"] for c in j["capabilities"] if c["name"] in ("Live error codes", "Toolhead 1-4 mapping", "Objects query")}
+    assert len(never) == 3
     assert set(never.values()) == {"UNTESTED"}
     assert all(r["errors_live"] == "UNTESTED" and r["toolhead_mapping"] == "UNTESTED" for r in j["rows"])
     assert [r["rest_readonly"] for r in j["rows"] if r["firmware"] == "V2.0.0"] == ["UNTESTED"]  # only the observed firmware is claimed
@@ -171,3 +176,45 @@ def test_timeline_endpoint_real_and_synthetic(client):
 def test_known_issues_endpoint(client):
     j = client.get("/api/v1/knowledge/known-issues").json()
     assert j["checked_at"] and {i["id"] for i in j["issues"]} >= {"KI-ORCA-DECIMAL-COMMA", "KI-NOZZLE-CLOG-LOAD"}
+
+
+# ---- CSRF guard (BACKLOG #52 H2): non-GET needs no foreign Origin and the app header
+CSRF_ROUTES = [("/api/v1/history/bundle", b"PK"), ("/api/v1/history/dryrun", b"{}"), ("/api/v1/imports/dryrun", b"{}"),
+               ("/api/v1/bundles/import", b"PK"), ("/api/v1/preflight/gcode", b"G28"), ("/api/v1/replays", b"{}")]
+
+
+@pytest.mark.parametrize("path,body", CSRF_ROUTES)
+def test_foreign_origin_is_refused_on_every_post(client, path, body):
+    r = client.post(path, content=body, headers={"Origin": "http://evil.example", "Content-Type": "text/plain"})
+    assert r.status_code == 403 and r.json()["detail"]["code"] == "FOREIGN_ORIGIN"
+
+
+@pytest.mark.parametrize("path,body", CSRF_ROUTES)
+def test_missing_app_header_is_refused_on_every_post(path, body):
+    bare = TestClient(create_app(":memory:"))  # a no-cors page cannot add a custom header
+    r = bare.post(path, content=body, headers={"Content-Type": "text/plain"})
+    assert r.status_code == 403 and r.json()["detail"]["code"] == "MISSING_APP_HEADER"
+    assert bare.delete("/api/v1/history/h000000000000").status_code == 403
+    assert bare.get("/api/v1/health").status_code == 200  # reads stay open to the app's own pages
+
+
+def test_null_origin_is_refused(client):
+    r = client.post("/api/v1/replays", json={"scenario": "known_code_feeder3"}, headers={"Origin": "null"})
+    assert r.status_code == 403 and r.json()["detail"]["code"] == "FOREIGN_ORIGIN"
+
+
+def test_local_origin_with_app_header_is_accepted(client):
+    r = client.post("/api/v1/replays", json={"scenario": "known_code_feeder3"}, headers={"Origin": "http://testserver"})
+    assert r.status_code == 200 and r.json()["matches_golden"] is True
+
+
+# ---- uploads read in chunks without quadratic copies (BACKLOG #52 M2)
+def test_chunked_upload_is_joined_intact_and_capped(client, monkeypatch):
+    import app.api as api_mod
+
+    report = json.dumps({"file": "x.gcode", "moves": 1, "tool_changes": 0, "errors": [], "scars": []}).encode()
+    r = client.post("/api/v1/imports/dryrun", content=iter([report[:5], report[5:20], report[20:]]))
+    assert r.status_code == 200 and r.json()["summary"]["moves"] == 1
+    monkeypatch.setattr(api_mod, "DRYRUN_MAX_BYTES", 10)
+    big = TestClient(api_mod.create_app(":memory:"), headers=APP).post("/api/v1/imports/dryrun", content=iter([b"x" * 6, b"x" * 6]))
+    assert big.status_code == 413

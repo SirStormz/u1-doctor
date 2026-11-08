@@ -366,3 +366,41 @@ def test_support_checklist_from_another_catalog_version_is_not_compared():
     doc = json.loads(entries(export(CODE_OBS))[deb.SUPPORT_FILE])
     doc["catalog_version"] = "9.9.9"
     assert deb.import_bundle(with_support(doc), RS)["support_checklist"]["matches_local"] is None
+
+
+@pytest.mark.parametrize("value,rule", [
+    ("link fe80::1c2b:3aff:fe4d:5e6f up", "ipv6"), ("2001:0db8:85a3:0000:0000:8a2e:0370:7334", "ipv6"), ("bound to ::1", "ipv6"),
+    ("u1-workshop.local answered", "hostname"), ("printer.lan", "hostname"), ("NAS.home", "hostname"),
+    ("~/prints/cube", "path"), ("%USERPROFILE%\\Desktop", "path"), ("C:\\Users\\bob\\Documents", "path"),
+    ("SN U1A2B3C4D5E6F7", "serial"), ("serial_number: 4711", "serial"), ("sn=AB12", "serial"),
+    ("api_key=abcd1234", "credential"), ("token: eyJhbGciOi", "credential"), ("password=hunter2", "credential"), ("KEY=xyz", "credential"),
+])
+def test_redaction_covers_every_promised_category(value, rule):
+    base = dict(REAL[0])
+    red, counts = deb.redact([{**base, "observation_id": "x_1", "event_type": "note", "value": {"text": value}}])
+    assert red[0]["value"] == {"text": "[REDACTED]"} and counts == {rule: 1}
+
+
+@pytest.mark.parametrize("value", ["10:00:00", "standby", "0002-0525-0002-0002", "v1.5.2", "toolhead.homed_axes", "extruder1",
+                                   "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "klippy_state: ready"])
+def test_redaction_keeps_ordinary_values(value):
+    base = dict(REAL[0])
+    red, counts = deb.redact([{**base, "observation_id": "x_1", "event_type": "note", "value": {"text": value}}])
+    assert red[0]["value"] == {"text": value} and counts == {}
+
+
+def test_masked_keys_never_collapse_into_one():
+    base = dict(REAL[0])
+    value = {"192.168.1.9": "a", "10.0.0.2": "b", "[REDACTED_KEY_1]": "c", "plain": "d"}
+    red, counts = deb.redact([{**base, "observation_id": "x_1", "event_type": "note", "value": value}])
+    out = red[0]["value"]
+    assert len(out) == 4 and sorted(out.values()) == ["a", "b", "c", "d"] and counts == {"key": 2}
+    assert "192.168.1.9" not in out and "10.0.0.2" not in out
+
+
+def test_privacy_report_promises_only_covered_categories():
+    rep = json.loads(entries(export(REAL))["privacy-report.json"])
+    assert {n for n, _ in deb._PRIVATE} == {"ipv4", "ipv6", "mac", "email", "url", "hostname", "path", "print_file", "serial", "credential"}
+    text = " ".join(rep["default_exclusions"]).lower()
+    for promised in ("ipv6", "host names", "paths", "serial", "credential"):
+        assert promised in text

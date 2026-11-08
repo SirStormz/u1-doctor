@@ -12,18 +12,16 @@ from types import MappingProxyType
 from typing import Any
 
 DEFAULT_PORT = 7125
-MAX_BODY_BYTES = 8 * 1024
 MAX_WS_MESSAGE_BYTES = 16 * 1024
 MAX_OBJECTS_PER_QUERY = 64
 
-# (method, exact path) -> audit tag. Frozen. GET /printer/objects/query is
-# deliberately absent until a formal audit adds it (cahier §6.1 "option").
+# (method, exact path) -> audit tag. Frozen. Only GET. /printer/objects/query (GET or POST) is
+# deliberately absent: the app never uses it (BACKLOG #52 L3, ADR-0002 amendment).
 ALLOWED_HTTP = MappingProxyType(
     {
         ("GET", "/server/info"): "server.info",
         ("GET", "/printer/info"): "printer.info",
         ("GET", "/printer/objects/list"): "printer.objects.list",
-        ("POST", "/printer/objects/query"): "printer.objects.query",
     }
 )
 
@@ -54,23 +52,9 @@ def check_http_request(method: str, target: str, body: bytes | None = None) -> s
     tag = ALLOWED_HTTP.get((method, target))
     if tag is None:
         raise PolicyViolation(f"{method} {target!r} not in allowlist")
-    if method == "GET":
-        if body:
-            raise PolicyViolation("GET must not carry a body")
-        return tag
-    # Only POST /printer/objects/query remains.
-    _validate_query_body(body)
+    if body:  # every allowed request is a GET
+        raise PolicyViolation("GET must not carry a body")
     return tag
-
-
-def _validate_query_body(body: bytes | None) -> None:
-    if body is None or len(body) == 0 or len(body) > MAX_BODY_BYTES:
-        raise PolicyViolation("query body missing or too large")
-    try:
-        doc = json.loads(body, object_pairs_hook=_no_dup_keys)
-    except (ValueError, UnicodeDecodeError) as exc:
-        raise PolicyViolation("query body is not valid JSON") from exc
-    _validate_objects_param(doc)
 
 
 def _no_dup_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:

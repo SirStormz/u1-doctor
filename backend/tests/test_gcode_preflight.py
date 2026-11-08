@@ -110,7 +110,7 @@ def test_api_route(tmp_path):
 
     from app.api import create_app
 
-    c = TestClient(create_app(str(tmp_path / "t.sqlite3")), base_url="http://127.0.0.1")
+    c = TestClient(create_app(str(tmp_path / "t.sqlite3")), base_url="http://127.0.0.1", headers={"X-U1D": "1"})
     ok = c.post("/api/v1/preflight/gcode?name=part.gcode", content=(CLEAN + "G1 X1,5\n").encode())
     assert ok.status_code == 200 and ok.json()["summary"]["FAIL"] == 1
     bad = c.post("/api/v1/preflight/gcode", content=b"")

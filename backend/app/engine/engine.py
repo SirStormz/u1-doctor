@@ -26,7 +26,8 @@ def _ts(o: Obs) -> datetime:
 
 
 def sort_observations(observations: list[Obs]) -> list[Obs]:
-    return sorted(observations, key=lambda o: (o["capture_utc"], o["observation_id"]))
+    # On the parsed instant, not the string: "10:00:00.5Z" sorts before "10:00:00Z" as text.
+    return sorted(observations, key=lambda o: (_ts(o), o["observation_id"]))
 
 
 def _prefix(obs: list[Obs]) -> str:

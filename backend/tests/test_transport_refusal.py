@@ -8,6 +8,7 @@ import httpx
 import pytest
 
 from app.transport import (
+    ALLOWED_HTTP,
     Consent,
     PolicyViolation,
     ReadOnlyMoonrakerTransport,
@@ -52,7 +53,8 @@ FORBIDDEN_HTTP = [
     ("POST", "/server/restart"),
     ("GET", "/printer/gcode/help"),
     ("GET", "/printer/query_endstops/status"),
-    ("GET", "/printer/objects/query"),  # optional, not audited yet
+    ("GET", "/printer/objects/query"),  # never used by the app: not allowed (BACKLOG #52 L3)
+    ("POST", "/printer/objects/query"),
     ("GET", "/server/files/list"),
     ("GET", "/access/oneshot_token"),
     # method mismatches on allowed paths
@@ -94,14 +96,12 @@ def test_allowed_operations_work_and_are_audited():
     t.get_server_info()
     t.get_printer_info()
     t.list_objects()
-    t.query_objects({"print_stats": ["state"], "extruder": None})
     assert [(c.method, c.url.path) for c in spy.calls] == [
         ("GET", "/server/info"),
         ("GET", "/printer/info"),
         ("GET", "/printer/objects/list"),
-        ("POST", "/printer/objects/query"),
     ]
-    assert all(e.allowed for e in t.audit) and len(t.audit) == 4
+    assert all(e.allowed for e in t.audit) and len(t.audit) == 3
 
 
 @pytest.mark.parametrize(
@@ -122,9 +122,16 @@ def test_allowed_operations_work_and_are_audited():
         b"x" * 9000,
     ],
 )
-def test_bad_query_bodies_denied(body):
+def test_objects_query_denied_whatever_the_body(body):
+    # POST /printer/objects/query left the allowlist (unused); a well-formed query body is refused too
     with pytest.raises(PolicyViolation):
         check_http_request("POST", "/printer/objects/query", body)
+
+
+def test_allowlist_is_get_only():
+    assert {m for m, _ in ALLOWED_HTTP} == {"GET"}
+    with pytest.raises(PolicyViolation):
+        check_http_request("POST", "/printer/objects/query", b'{"objects":{"print_stats":["state"]}}')
 
 
 def test_get_with_body_denied():
@@ -249,4 +256,4 @@ def test_env_proxy_ignored(monkeypatch):
 
 def test_no_public_generic_request_surface():
     public = {n for n in dir(ReadOnlyMoonrakerTransport) if not n.startswith("_")}
-    assert public == {"get_server_info", "get_printer_info", "list_objects", "query_objects", "close"}
+    assert public == {"get_server_info", "get_printer_info", "list_objects", "close"}

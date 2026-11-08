@@ -24,8 +24,8 @@ Canonical JSON everywhere (sorted keys, no spaces, UTF-8). `generated_at` is met
 ## Export
 
 1. Every observation is validated against the observation schema.
-2. Redaction (best-effort, reported in `privacy-report.json`): IPv4, MAC, e-mail, URLs, local paths and print-file names (`.gcode`, `.3mf`, …) are replaced by `[REDACTED]`; observations flagged `sensitive` lose their value; matching keys are renamed. Findings are computed **after** redaction, so replay of the bundle is consistent.
-3. Hostnames, serial numbers, credentials and file names are excluded by design (never collected). Redaction cannot guarantee anonymity: review before sharing.
+2. Redaction (best-effort, reported in `privacy-report.json`): IPv4 and IPv6 addresses, MAC, e-mail, URLs, local network host names (`.local`, `.lan`, `.home`, `.internal`), local and home paths (`C:\`, `\\server`, `/home/`, `/Users/`, `~/`, `%USERPROFILE%`), print-file names (`.gcode`, `.3mf`, …), serial-like tokens (12+ upper-case letters and digits, `serial=`/`sn=` pairs) and credential `key=value` pairs (`password=`, `token:`, `api_key=`, …) are replaced by `[REDACTED]`; observations flagged `sensitive` lose their value; matching keys are renamed `[REDACTED_KEY_1]`, `[REDACTED_KEY_2]`, … so two keys never merge. Findings are computed **after** redaction, so replay of the bundle is consistent.
+3. The capture does not collect host names, serial numbers, credentials or print file names in the first place; the patterns above are a second net, not a guarantee. Redaction cannot guarantee anonymity: review before sharing.
 
 ## Import (untrusted input, nothing is executed)
 

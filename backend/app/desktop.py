@@ -145,12 +145,16 @@ def unblock_bundle() -> int:
     """Remove Windows' "downloaded from the Internet" mark from the DLLs shipped with the exe.
 
     A zip extracted by some tools marks every file; .NET then refuses to load the marked WebView2/pythonnet DLLs and the window
-    cannot start. Only the app's own .dll files are touched, and only their mark. Returns how many were unblocked.
+    cannot start. Only the .dll files inside the bundled `_internal` folder (PyInstaller's, next to the exe) are touched, and
+    only their mark: nothing else in the exe folder, even if the user put other files there. Returns how many were unblocked.
     """
     if sys.platform != "win32" or not getattr(sys, "frozen", False):
         return 0
+    internal = os.path.join(os.path.dirname(os.path.abspath(sys.executable)), "_internal")
+    if not os.path.isdir(internal):
+        return 0
     count = 0
-    for root, _dirs, files in os.walk(os.path.dirname(os.path.abspath(sys.executable))):
+    for root, _dirs, files in os.walk(internal):
         for name in files:
             if name.lower().endswith(".dll"):
                 try:
@@ -161,13 +165,24 @@ def unblock_bundle() -> int:
     return count
 
 
+def scrub_user_paths(text: str) -> str:
+    """Replace the user's profile folder (it holds the Windows account name) with %USERPROFILE%, in any letter case."""
+    homes = {h.rstrip("\\/") for h in (os.environ.get("USERPROFILE") or "", os.path.expanduser("~"))}
+    for home in sorted(homes | {h.replace("\\", "/") for h in homes}, key=len, reverse=True):  # C:\Users\x and C:/Users/x
+        if len(home) > 3:  # never a bare drive or root
+            text = re.sub(re.escape(home), "%USERPROFILE%", text, flags=re.IGNORECASE)
+    return text
+
+
 def write_error_log() -> str:
-    """Save the current exception's traceback next to the app data so a failure can be diagnosed without a console."""
+    """Save the current exception's traceback next to the app data so a failure can be diagnosed without a console.
+
+    The user's profile path is replaced by %USERPROFILE% so the file can be attached to an issue after a quick read."""
     import traceback
 
     path = os.path.join(os.path.dirname(user_data_dir()), "error.log")
     with open(path, "w", encoding="utf-8") as f:
-        f.write(traceback.format_exc())
+        f.write(scrub_user_paths(traceback.format_exc()))
     return path
 
 

@@ -89,7 +89,7 @@ $r.firewall_rules_for_exe = Try-Get { @(Get-NetFirewallApplicationFilter -ErrorA
 # 5. API checks
 function Http($method, $path, $body, $ct) {
   try {
-    $a = @{ Uri = "$base$path"; Method = $method; UseBasicParsing = $true; TimeoutSec = 20 }
+    $a = @{ Uri = "$base$path"; Method = $method; UseBasicParsing = $true; TimeoutSec = 20; Headers = @{ "X-U1D" = "1" } }  # app header: required on every non-GET request
     if ($null -ne $body) { $a.Body = $body; $a.ContentType = $ct }
     $x = Invoke-WebRequest @a
     return [ordered]@{ status = [int]$x.StatusCode; bytes = $x.RawContentLength; text = $x.Content }

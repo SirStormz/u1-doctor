@@ -87,3 +87,39 @@ def test_webview2_installed_answers_a_bool():
 
 def test_unblock_bundle_does_nothing_outside_the_frozen_exe():
     assert desktop.unblock_bundle() == 0
+
+
+def test_unblock_bundle_only_touches_dlls_inside_internal(monkeypatch, tmp_path):
+    # BACKLOG #53 M7: never the user's other files next to the exe, only PyInstaller's bundled _internal folder
+    for rel in ("_internal/a.dll", "_internal/sub/b.DLL", "_internal/c.txt", "mine.dll", "other/d.dll"):
+        (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
+        (tmp_path / rel).write_bytes(b"")
+    removed: list[str] = []
+    monkeypatch.setattr(desktop.sys, "platform", "win32")
+    monkeypatch.setattr(desktop.sys, "frozen", True, raising=False)
+    monkeypatch.setattr(desktop.sys, "executable", str(tmp_path / "u1-doctor.exe"))
+    monkeypatch.setattr(desktop.os, "remove", removed.append)
+    assert desktop.unblock_bundle() == 2
+    internal = str(tmp_path / "_internal")
+    assert len(removed) == 2 and all(p.startswith(internal) and p.endswith(":Zone.Identifier") for p in removed)
+
+
+def test_unblock_bundle_without_internal_folder_does_nothing(monkeypatch, tmp_path):
+    (tmp_path / "mine.dll").write_bytes(b"")
+    monkeypatch.setattr(desktop.sys, "platform", "win32")
+    monkeypatch.setattr(desktop.sys, "frozen", True, raising=False)
+    monkeypatch.setattr(desktop.sys, "executable", str(tmp_path / "u1-doctor.exe"))
+    monkeypatch.setattr(desktop.os, "remove", lambda p: pytest.fail("nothing may be touched"))
+    assert desktop.unblock_bundle() == 0
+
+
+def test_error_log_hides_the_user_profile_path(monkeypatch, tmp_path):
+    # BACKLOG #52 L5: error.log is meant to be attached to an issue; the Windows account name must not be in it
+    monkeypatch.setenv("USERPROFILE", r"C:\Users\Jane Doe")
+    monkeypatch.setattr(desktop, "user_data_dir", lambda: str(tmp_path / "webview"))
+    try:
+        raise RuntimeError(r"cannot load c:\users\jane doe\Downloads\u1\_internal\x.dll and C:/Users/Jane Doe/y")
+    except RuntimeError:
+        path = desktop.write_error_log()
+    text = open(path, encoding="utf-8").read()
+    assert "jane" not in text.lower() and text.count("%USERPROFILE%") >= 2

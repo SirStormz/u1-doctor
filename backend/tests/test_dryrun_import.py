@@ -77,7 +77,7 @@ def test_api_route(tmp_path):
 
     from app.api import create_app
 
-    c = TestClient(create_app(str(tmp_path / "t.sqlite3")), base_url="http://127.0.0.1")
+    c = TestClient(create_app(str(tmp_path / "t.sqlite3")), base_url="http://127.0.0.1", headers={"X-U1D": "1"})
     ok = c.post("/api/v1/imports/dryrun", content=raw(REPORT))
     assert ok.status_code == 200 and ok.json()["summary"]["scar_count"] == 1
     bad = c.post("/api/v1/imports/dryrun", content=b"[]")
@@ -88,3 +88,11 @@ def test_too_large():
     with pytest.raises(DryRunError) as e:
         normalize(b" " * (5 * 1024 * 1024 + 1), AT)
     assert e.value.code == "TOO_LARGE"
+
+
+def test_deeply_nested_json_is_a_clean_refusal():
+    # BACKLOG #52 L1: json.loads raises RecursionError on deep nesting; it must be BAD_JSON (HTTP 422), never a 500
+    deep = b"[" * 200_000 + b"]" * 200_000
+    with pytest.raises(DryRunError) as e:
+        normalize(deep, "2026-11-08T00:00:00Z")
+    assert e.value.code == "BAD_JSON"

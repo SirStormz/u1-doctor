@@ -9,6 +9,8 @@ from fastapi.testclient import TestClient
 from app import db, deb, history
 from app.api import create_app
 
+APP = {"X-U1D": "1"}  # sent by the app's own front end on every non-GET request (CSRF guard)
+
 ROOT = Path(__file__).resolve().parents[2]
 RS = json.loads((ROOT / "rulesets" / "u1-starter" / "ruleset.json").read_text(encoding="utf-8"))
 
@@ -104,7 +106,7 @@ def test_history_survives_a_restart(tmp_path):
 # ---- routes ---------------------------------------------------------------
 @pytest.fixture
 def client(tmp_path):
-    return TestClient(create_app(str(tmp_path / "t.sqlite3")), base_url="http://127.0.0.1")
+    return TestClient(create_app(str(tmp_path / "t.sqlite3")), base_url="http://127.0.0.1", headers=APP)
 
 
 def test_routes_save_list_timeline_delete(client):
@@ -148,3 +150,73 @@ def test_route_history_findings_recomputed_per_session(client):
     assert [f["rule_id"] for f in r["findings"] if f["rule_id"] == "U1-S15-DRYRUN-PREDICTION"] == ["U1-S15-DRYRUN-PREDICTION"]
     assert client.get("/api/v1/history/h000000000000/findings").status_code == 404
     assert client.get("/api/v1/history/not-an-id/findings").status_code == 404
+
+
+def test_fractional_and_whole_second_timestamps_sort_by_instant(conn):
+    # BACKLOG #53 M1: as text "10:00:00.5Z" < "10:00:00Z" ("." < "Z"); the instant order must win
+    from app.engine import sort_observations
+
+    base = dict(REAL[0])
+    late = {**base, "observation_id": "real_t_a", "capture_utc": "2026-11-05T10:00:00.5Z"}
+    early = {**base, "observation_id": "real_t_b", "capture_utc": "2026-11-05T10:00:00Z"}
+    assert [o["observation_id"] for o in sort_observations([late, early])] == ["real_t_b", "real_t_a"]
+    s, _ = history.save(conn, [late, early], "real_capture", None, "x")
+    assert s["first_utc"] == "2026-11-05T10:00:00Z" and s["last_utc"] == "2026-11-05T10:00:00.5Z"
+    assert [o["observation_id"] for o in history.observations(conn, s["id"])] == ["real_t_b", "real_t_a"]
+
+
+def test_concurrent_saves_of_the_same_content_make_one_session(tmp_path):
+    # BACKLOG #52 L2: one connection shared by the server threads; check + insert must be atomic
+    import threading
+
+    c = db.connect(str(tmp_path / "t.sqlite3"))
+    results: list = []
+    start = threading.Barrier(8)
+
+    def worker():
+        start.wait()
+        results.append(history.save(c, SYN, "synthetic", None, "x"))
+
+    threads = [threading.Thread(target=worker) for _ in range(8)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join(30)
+    assert len(results) == 8 and len({s["id"] for s, _ in results}) == 1
+    assert sorted(already for _, already in results) == [False] + [True] * 7
+    assert history.list_sessions(c)["totals"]["sessions"] == 1
+    c.close()
+
+
+def test_unique_violation_from_another_connection_is_the_duplicate_path(tmp_path):
+    # Another process saved the same content between our check and our insert: answer "already saved", not a 500
+    path = str(tmp_path / "t.sqlite3")
+    other, mine = db.connect(path), db.connect(path)
+
+    class Racy:
+        """Hides the row on the first duplicate check, as if the other save landed just after it."""
+
+        def __init__(self, inner):
+            self.inner, self.hidden = inner, True
+
+        def execute(self, sql, *a):
+            if self.hidden and sql.startswith("SELECT * FROM history_sessions WHERE id=?"):
+                self.hidden = False
+                history.save(other, SYN, "synthetic", None, "x")
+                return self.inner.execute("SELECT * FROM history_sessions WHERE 0")
+            return self.inner.execute(sql, *a)
+
+        def __getattr__(self, name):
+            return getattr(self.inner, name)
+
+        def __enter__(self):
+            return self.inner.__enter__()
+
+        def __exit__(self, *exc):
+            return self.inner.__exit__(*exc)
+
+    session, already = history.save(Racy(mine), SYN, "synthetic", None, "x")
+    assert already is True and history.list_sessions(mine)["totals"]["sessions"] == 1
+    assert history.observations(mine, session["id"]) == history.observations(other, session["id"])
+    other.close()
+    mine.close()

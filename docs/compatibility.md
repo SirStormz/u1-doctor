@@ -13,7 +13,7 @@ Values: SUPPORTED · PARTIAL · NOT_AVAILABLE · UNTESTED · FAILED. Last update
 | Moonraker on :7125 | `lava/moonraker.conf` (repo) | UNVERIFIED_ON_HARDWARE |
 | Open HTTP for LAN clients (no login) | `trusted_clients` incl. private ranges (repo) | UNVERIFIED_ON_HARDWARE |
 | `GET /server/info`, `/printer/info`, `/printer/objects/list` | Moonraker docs | UNVERIFIED_ON_HARDWARE |
-| `POST /printer/objects/query` | Moonraker docs | UNVERIFIED_ON_HARDWARE |
+| `POST /printer/objects/query` | Moonraker docs | NOT USED: removed from the allowlist (never run on the machine) |
 | WS `printer.objects.subscribe` | Moonraker docs | UNVERIFIED_ON_HARDWARE |
 | Object `exception_manager` (`exceptions[]`) | u1-klipper source | UNVERIFIED_ON_HARDWARE; oneshot codes likely absent from it |
 | Live error codes via WS notification | inferred from source | UNVERIFIED_ON_HARDWARE (mechanism of rebroadcast unread) |

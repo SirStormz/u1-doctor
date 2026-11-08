@@ -1,8 +1,10 @@
 """Owner-triggered live capture from the UI (BACKLOG #3 and #8). Read-only, bounded, on explicit consent.
 
-Sends at most 3 GET requests and one WebSocket `printer.objects.subscribe` frame to one RFC1918 address on
-port 7125, then listens for a few seconds. Nothing else can be sent: the only senders are the allowlisted
-methods of `app.transport`. The result keeps derived facts only; the address, host names and file names are
+Sends 3 GET requests and one WebSocket `printer.objects.subscribe` message to one RFC1918 address on port 7125,
+then listens for a few seconds. If the stream drops early, it probes with up to PROBES x 2 = 6 more read-only
+status GET (/server/info, /printer/info). Nothing else can be sent: the only senders are the allowlisted methods
+of `app.transport`. The WebSocket client sends no keepalive pings; it only answers the peer at protocol level
+(pong to a ping, the closing handshake). The result keeps derived facts only; the address, host names and file names are
 never returned, stored or logged. Raw frames stay in memory and are dropped when the call ends.
 """
 from __future__ import annotations

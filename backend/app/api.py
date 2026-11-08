@@ -4,11 +4,12 @@ from __future__ import annotations
 
 import json
 import re
+import threading
 from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query, Request
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from starlette.middleware.trustedhost import TrustedHostMiddleware
@@ -61,6 +62,26 @@ def _local_origins(request: Request) -> set[str]:
     return {f"http://{host}"}
 
 
+APP_HEADER = "x-u1d"  # sent by the app's own front end on every non-GET request (frontend/src/api.ts)
+_SAFE_METHODS = frozenset({"GET", "HEAD", "OPTIONS"})
+
+
+def _cross_site_refusal(request: Request) -> JSONResponse | None:
+    """CSRF guard: any web page open in the browser could POST here without CORS (no-cors, text/plain, raw body).
+
+    A non-GET request is refused when it carries an `Origin` that is not this app, or lacks the custom header. A browser
+    only adds a custom header cross-origin after a CORS preflight, which this app never answers.
+    """
+    if request.method in _SAFE_METHODS:
+        return None
+    origin = request.headers.get("origin")
+    if origin is not None and origin not in _local_origins(request):
+        return JSONResponse({"detail": {"code": "FOREIGN_ORIGIN", "message": "request must come from this app"}}, 403)
+    if request.headers.get(APP_HEADER) != "1":
+        return JSONResponse({"detail": {"code": "MISSING_APP_HEADER", "message": "request must come from this app"}}, 403)
+    return None
+
+
 class SupportIn(BaseModel):
     code: str = Field(max_length=64)
     firmware: str | None = Field(default=None, max_length=32)
@@ -106,6 +127,12 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost", "testserver"])
     conn = db.connect(db_path)
     app.state.db = conn
+    live_busy = threading.Lock()  # one live capture at a time: a second one is refused, never queued
+
+    @app.middleware("http")
+    async def same_app_only(request: Request, call_next: Any) -> Any:
+        refused = _cross_site_refusal(request)
+        return refused if refused is not None else await call_next(request)
 
     @app.get("/api/v1/health")
     def health() -> dict[str, Any]:
@@ -115,7 +142,8 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
     @app.get("/api/v1/compatibility")
     def compatibility() -> dict[str, Any]:
         # TESTED_REAL only where docs/evidence/H-01 and H-02 prove it on the owner's U1 (Klipper 2.1.0.157).
-        caps = [("Moonraker HTTP :7125", "TESTED_REAL"), ("Objects list / query", "TESTED_REAL"), ("WebSocket subscribe", "TESTED_REAL"),
+        # Objects query never ran on the machine and is not allowed by the transport (BACKLOG #52 L3).
+        caps = [("Moonraker HTTP :7125", "TESTED_REAL"), ("Objects list", "TESTED_REAL"), ("Objects query", "UNTESTED"), ("WebSocket subscribe", "TESTED_REAL"),
                 ("Live error codes", "UNTESTED"), ("Toolhead 1-4 mapping", "UNTESTED"), ("Official firmware version", "TESTED_REAL"),
                 ("Offline code decoder", "TESTED_SYNTHETIC"), ("Deterministic replay", "TESTED_REAL")]
         return {"verified_on_hardware": True, "firmware_target": "V2.1.0",
@@ -192,10 +220,10 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
         findings = evaluate(obs, rs)
         out = canon(findings) + b"\n"
         match = out == gold
-        cur = conn.execute(
-            "INSERT INTO replays(created_at,scenario,source_mix,ruleset_hash,input_sha256,findings_sha256,matches_golden) VALUES (?,?,?,?,?,?,?)",
-            (datetime.now(UTC).isoformat(), body.scenario, "SYNTHETIC", ruleset_hash(rs), sha256_hex(raw), sha256_hex(out), int(match)))
-        conn.commit()
+        with db.lock(conn), conn:
+            cur = conn.execute(
+                "INSERT INTO replays(created_at,scenario,source_mix,ruleset_hash,input_sha256,findings_sha256,matches_golden) VALUES (?,?,?,?,?,?,?)",
+                (datetime.now(UTC).isoformat(), body.scenario, "SYNTHETIC", ruleset_hash(rs), sha256_hex(raw), sha256_hex(out), int(match)))
         return {"mode": "REPLAY", "source_status": "REPLAYED_FROM_SYNTHETIC", "replay_id": cur.lastrowid,
                 "ruleset_hash": ruleset_hash(rs), "input_sha256": sha256_hex(raw), "findings_sha256": sha256_hex(out),
                 "matches_golden": match, "findings": findings}
@@ -232,12 +260,14 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
         declared = request.headers.get("content-length")
         if declared is not None and declared.isdigit() and int(declared) > limit:
             raise HTTPException(413, f"{what} too large")
-        data = b""
+        parts: list[bytes] = []  # joined once at the end (`data += chunk` was quadratic on large uploads)
+        size = 0
         async for chunk in request.stream():
-            data += chunk
-            if len(data) > limit:
+            size += len(chunk)
+            if size > limit:
                 raise HTTPException(413, f"{what} too large")
-        return data
+            parts.append(chunk)
+        return b"".join(parts)
 
     def _saved(obs: list[dict[str, Any]], origin: str, label: str | None, default: str) -> dict[str, Any]:
         try:
@@ -318,14 +348,7 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
 
     @app.post("/api/v1/bundles/import")
     async def bundles_import(request: Request) -> dict[str, Any]:
-        declared = request.headers.get("content-length")
-        if declared is not None and declared.isdigit() and int(declared) > MAX_ZIP_BYTES:
-            raise HTTPException(413, "bundle too large")
-        data = b""
-        async for chunk in request.stream():
-            data += chunk
-            if len(data) > MAX_ZIP_BYTES:
-                raise HTTPException(413, "bundle too large")
+        data = await _body(request, MAX_ZIP_BYTES, "bundle")
         try:
             return import_bundle(data, _ruleset())
         except BundleError as e:
@@ -334,14 +357,7 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
     @app.post("/api/v1/imports/dryrun")
     async def import_dryrun(request: Request) -> dict[str, Any]:
         """Normalize a U1 Dry Run report.json into IMPORTED observations (a prediction, not a machine observation)."""
-        declared = request.headers.get("content-length")
-        if declared is not None and declared.isdigit() and int(declared) > DRYRUN_MAX_BYTES:
-            raise HTTPException(413, "report too large")
-        data = b""
-        async for chunk in request.stream():
-            data += chunk
-            if len(data) > DRYRUN_MAX_BYTES:
-                raise HTTPException(413, "report too large")
+        data = await _body(request, DRYRUN_MAX_BYTES, "report")
         try:
             return dryrun_normalize(data, datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"))
         except DryRunError as e:
@@ -357,32 +373,30 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
     @app.post("/api/v1/preflight/gcode")
     async def preflight_gcode(request: Request, name: str | None = Query(default=None, max_length=255)) -> dict[str, Any]:
         """Static pre-flight of a sliced file. The file is read as text only; its name is never echoed back."""
-        declared = request.headers.get("content-length")
-        if declared is not None and declared.isdigit() and int(declared) > PREFLIGHT_MAX_BYTES:
-            raise HTTPException(413, "file too large")
-        data = b""
-        async for chunk in request.stream():
-            data += chunk
-            if len(data) > PREFLIGHT_MAX_BYTES:
-                raise HTTPException(413, "file too large")
+        data = await _body(request, PREFLIGHT_MAX_BYTES, "file")
         try:
             return preflight_analyze(data, name)
         except PreflightError as e:
             raise HTTPException(422, {"code": e.code, "message": str(e)}) from e
 
     @app.post("/api/v1/live/capture")
-    def live_capture(body: LiveIn, request: Request) -> dict[str, Any]:
-        """Owner-triggered read-only capture (3 GET + 1 WS subscribe) from one private address. Needs `consent: true`."""
-        origin = request.headers.get("origin")
-        if origin is not None and origin not in _local_origins(request):
-            raise HTTPException(403, {"code": "FOREIGN_ORIGIN", "message": "request must come from this app"})
+    def live_capture(body: LiveIn) -> dict[str, Any]:
+        """Owner-triggered read-only capture from one private address. Needs `consent: true`.
+
+        3 GET + 1 WebSocket subscribe message; if the stream drops early, up to 6 more read-only status GET (see app.live).
+        A foreign `Origin` or a missing app header is refused by the `same_app_only` middleware before this runs.
+        """
         if body.consent is not True:
             raise HTTPException(403, {"code": "CONSENT_REQUIRED", "message": "explicit owner consent is required"})
+        if not live_busy.acquire(blocking=False):
+            raise HTTPException(409, {"code": "LIVE_BUSY", "message": "a live capture is already running"})
         hooks = getattr(app.state, "live_hooks", {})
         try:
             out = run_live_capture(body.host, seconds=body.seconds, **hooks)
         except LiveError as e:
             raise HTTPException(422 if e.code.startswith("REFUSED") else 502, {"code": e.code, "message": str(e)}) from e
+        finally:
+            live_busy.release()
         rs = _ruleset()
         out["ruleset"] = {"id": rs["ruleset_id"], "version": rs["version"], "hash": ruleset_hash(rs)}
         out["findings"] = evaluate(out["observations"], rs) if out["observations"] else []

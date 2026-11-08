@@ -38,6 +38,8 @@ def _real_connect(host: str, timeout_s: float) -> _Conn:
         f"ws://{host}:{DEFAULT_PORT}/websocket",
         proxy=None,  # ignore HTTP(S)_PROXY from the environment
         compression=None,
+        ping_interval=None,  # no keepalive pings: after the subscribe message the client only answers the peer (pong, close)
+        ping_timeout=None,
         max_size=MAX_INBOUND_BYTES,
         open_timeout=timeout_s,
         additional_headers={"User-Agent": "U1-Doctor/0 (read-only)"},

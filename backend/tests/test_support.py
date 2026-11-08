@@ -56,7 +56,7 @@ def test_api(tmp_path):
 
     from app.api import create_app
 
-    c = TestClient(create_app(str(tmp_path / "t.sqlite3")), base_url="http://127.0.0.1")
+    c = TestClient(create_app(str(tmp_path / "t.sqlite3")), base_url="http://127.0.0.1", headers={"X-U1D": "1"})
     ok = c.post("/api/v1/support/checklist", json={"code": "0003-0522-0001-0016"})
     assert ok.status_code == 200 and ok.json()["ticket"]["url"].startswith("https://")
     assert c.post("/api/v1/support/checklist", json={"code": "x"}).status_code == 422

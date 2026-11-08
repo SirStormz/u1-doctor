@@ -75,7 +75,7 @@ def test_api_accepts_firmware(tmp_path):
 
     from app.api import create_app
 
-    c = TestClient(create_app(str(tmp_path / "t.sqlite3")), base_url="http://127.0.0.1")
+    c = TestClient(create_app(str(tmp_path / "t.sqlite3")), base_url="http://127.0.0.1", headers={"X-U1D": "1"})
     r = c.post("/api/v1/errors/interpret", json={"code": MCU, "firmware": "1.3.0"})
     assert r.status_code == 200 and r.json()["decoding"]["firmware"]["notes"][0]["applies"] == "BEFORE"
     assert c.post("/api/v1/errors/interpret", json={"code": MCU, "firmware": "x" * 33}).status_code == 422

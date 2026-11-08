@@ -61,7 +61,7 @@ def normalize(raw: bytes, imported_at_utc: str) -> dict[str, Any]:
         raise DryRunError("TOO_LARGE", "report larger than 5 MiB")
     try:
         r = json.loads(raw.decode("utf-8"), parse_constant=_reject_constant)
-    except (UnicodeDecodeError, json.JSONDecodeError) as e:
+    except (UnicodeDecodeError, json.JSONDecodeError, RecursionError) as e:  # deeply nested JSON: a clean 422, not a 500
         raise DryRunError("BAD_JSON", "report is not valid UTF-8 JSON") from e
     if not isinstance(r, dict) or not {"file", "moves", "tool_changes", "errors", "scars"} <= set(r):
         raise DryRunError("BAD_REPORT", "not a U1 Dry Run report (missing file/moves/tool_changes/errors/scars)")

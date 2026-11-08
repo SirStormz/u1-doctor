@@ -12,6 +12,7 @@ import sqlite3
 from datetime import UTC, datetime
 from typing import Any
 
+from . import db
 from .deb import MAX_OBSERVATIONS, BundleError, validate_observation
 from .engine import canon, sort_observations
 from .engine.canonical import sha256_hex
@@ -59,39 +60,50 @@ def save(conn: sqlite3.Connection, observations: list[dict[str, Any]], origin: s
     obs = sort_observations(observations)
     digest = sha256_hex(b"".join(canon(o) + b"\n" for o in obs))
     sid = "h" + digest[:12]
-    existing = conn.execute("SELECT * FROM history_sessions WHERE id=?", (sid,)).fetchone()
-    if existing:
-        return _row(existing), True
-    n_sessions, n_obs = conn.execute("SELECT COUNT(*), COALESCE(SUM(observation_count),0) FROM history_sessions").fetchone()
-    if n_sessions >= MAX_SESSIONS or n_obs + len(obs) > MAX_TOTAL_OBSERVATIONS:
-        raise HistoryError("HISTORY_FULL", "local history is full: delete a session first")
     mix = ",".join(sorted({o["source_status"] for o in obs}))
     now = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
-    with conn:
-        conn.execute("INSERT INTO history_sessions(id,label,origin,saved_at,observation_count,first_utc,last_utc,status_mix,content_sha256) VALUES (?,?,?,?,?,?,?,?,?)",
-                     (sid, clean_label(label, default_label), origin, now, len(obs), obs[0]["capture_utc"], obs[-1]["capture_utc"], mix, digest))
-        conn.executemany("INSERT INTO history_observations(session_id,seq,payload) VALUES (?,?,?)", [(sid, i, canon(o).decode("utf-8")) for i, o in enumerate(obs)])
-    return _row(conn.execute("SELECT * FROM history_sessions WHERE id=?", (sid,)).fetchone()), False
+    with db.lock(conn):  # the duplicate check, the quota check and the insert are one step for every thread
+        existing = conn.execute("SELECT * FROM history_sessions WHERE id=?", (sid,)).fetchone()
+        if existing:
+            return _row(existing), True
+        n_sessions, n_obs = conn.execute("SELECT COUNT(*), COALESCE(SUM(observation_count),0) FROM history_sessions").fetchone()
+        if n_sessions >= MAX_SESSIONS or n_obs + len(obs) > MAX_TOTAL_OBSERVATIONS:
+            raise HistoryError("HISTORY_FULL", "local history is full: delete a session first")
+        try:
+            with conn:
+                conn.execute("INSERT INTO history_sessions(id,label,origin,saved_at,observation_count,first_utc,last_utc,status_mix,content_sha256) VALUES (?,?,?,?,?,?,?,?,?)",
+                             (sid, clean_label(label, default_label), origin, now, len(obs), obs[0]["capture_utc"], obs[-1]["capture_utc"], mix, digest))
+                conn.executemany("INSERT INTO history_observations(session_id,seq,payload) VALUES (?,?,?)", [(sid, i, canon(o).decode("utf-8")) for i, o in enumerate(obs)])
+        except sqlite3.IntegrityError:  # saved meanwhile through another connection to the same file: same content, same session
+            existing = conn.execute("SELECT * FROM history_sessions WHERE id=?", (sid,)).fetchone()
+            if existing is None:
+                raise
+            return _row(existing), True
+        return _row(conn.execute("SELECT * FROM history_sessions WHERE id=?", (sid,)).fetchone()), False
 
 
 def list_sessions(conn: sqlite3.Connection) -> dict[str, Any]:
-    rows = conn.execute("SELECT * FROM history_sessions ORDER BY saved_at DESC, id").fetchall()
-    total = conn.execute("SELECT COALESCE(SUM(observation_count),0) FROM history_sessions").fetchone()[0]
+    with db.lock(conn):
+        rows = conn.execute("SELECT * FROM history_sessions ORDER BY saved_at DESC, id").fetchall()
+        total = conn.execute("SELECT COALESCE(SUM(observation_count),0) FROM history_sessions").fetchone()[0]
     return {"sessions": [_row(r) for r in rows], "totals": {"sessions": len(rows), "observations": total},
             "limits": {"max_sessions": MAX_SESSIONS, "max_observations": MAX_TOTAL_OBSERVATIONS}}
 
 
 def get(conn: sqlite3.Connection, sid: str) -> dict[str, Any] | None:
-    r = conn.execute("SELECT * FROM history_sessions WHERE id=?", (sid,)).fetchone()
+    with db.lock(conn):
+        r = conn.execute("SELECT * FROM history_sessions WHERE id=?", (sid,)).fetchone()
     return _row(r) if r else None
 
 
 def observations(conn: sqlite3.Connection, sid: str) -> list[dict[str, Any]]:
     import json
-    return [json.loads(r["payload"]) for r in conn.execute("SELECT payload FROM history_observations WHERE session_id=? ORDER BY seq", (sid,))]
+    with db.lock(conn):
+        rows = conn.execute("SELECT payload FROM history_observations WHERE session_id=? ORDER BY seq", (sid,)).fetchall()
+    return [json.loads(r["payload"]) for r in rows]
 
 
 def delete(conn: sqlite3.Connection, sid: str) -> bool:
-    with conn:
+    with db.lock(conn), conn:
         n = conn.execute("DELETE FROM history_sessions WHERE id=?", (sid,)).rowcount
     return n > 0
