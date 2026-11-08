@@ -59,7 +59,7 @@ Legend: 🟢 no U1 needed · 🔴 needs the owner's explicit go on the U1 · �
 | 25 | Post early once a clean release exists (edits allowed with timestamp) instead of waiting for 15–18 Dec | 🟢 | ☐ |
 | 26 | Useful replies on other entries' threads | 🟢 | ☐ |
 | 27 | Ask staff (Zoe_M) the exact EasyPromos vote dates | 🟢 | ☐ |
-| 28 | Video 90–150 s EN subs: to redo from scratch with the owner's U1_Jay model and the current app (old video and sources deleted 2026-11-06); add repo URL on the end card once public | 👤 | ☐ |
+| 28 | Video 90–150 s EN subs: to redo from scratch with the owner's U1_Jay model and the current app (old video and sources deleted 2026-11-06); add repo URL on the end card once public | 👤 | ☑ 16:9 done 2026-11-08: 90 s EN + FR-subtitled cut (Blender EEVEE shots of U1_Jay, ElevenLabs voice/music/SFX, repo URL on the end card), embedded in the README and the Pages presentation · ☐ **9:16 version on hold, to do later** (sources in the local `01-VIDZ-U1DOCTOR/` project) |
 
 ### F. Owner decisions
 | # | Item | | Status |

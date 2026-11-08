@@ -28,3 +28,6 @@ U1_Jay_Pack_Complet.zip
 
 # local backups (kept inside the project folder, never committed)
 backups/
+
+# launch-film project (HyperFrames + Blender): its own local git repo, renders are heavy
+01-VIDZ-U1DOCTOR/
