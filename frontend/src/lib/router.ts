@@ -2,6 +2,9 @@ import { useCallback, useEffect, useState } from "react";
 
 export const ROUTES = ["welcome", "connect", "overview", "explorer", "symptoms", "timeline", "findings", "evidence", "replay", "report", "settings"] as const;
 export type RouteName = (typeof ROUTES)[number];
+/** Simple mode hides the two expert screens from the menu; they stay reachable by link ("Open", "See the evidence") and by direct URL. */
+export const EXPERT_ONLY: readonly RouteName[] = ["evidence", "replay"];
+export const visibleRoutes = (mode: "simple" | "expert"): readonly RouteName[] => (mode === "expert" ? ROUTES : ROUTES.filter((r) => !EXPERT_ONLY.includes(r)));
 export interface Route { name: RouteName; param?: string }
 
 export function parseHash(h: string): Route {

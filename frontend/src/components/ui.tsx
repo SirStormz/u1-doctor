@@ -43,6 +43,17 @@ export function ClassChip({ c }: { c: string }) {
   return <Chip tone={tone} icon={icon}>{tok(lang, "classification", c)}</Chip>;
 }
 
+/** Folds the technical part of a block. Closed in Simple mode, open in Expert mode; the reader can always toggle it. */
+export function TechDetails({ children, className = "" }: { children: ReactNode; className?: string }) {
+  const { t, mode } = usePrefs();
+  return (
+    <details key={mode} open={mode === "expert"} className={className}>
+      <summary className="cursor-pointer text-xs font-semibold text-ink2">{t.techDetails} <span className="font-normal text-ink3">· {t.techDetailsHint}</span></summary>
+      <div className="mt-2">{children}</div>
+    </details>
+  );
+}
+
 export function Panel({ title, icon, actions, active, demo = true, brackets, i = 0, className = "", children, label, bodyClass = "pad" }: {
   title?: ReactNode; icon?: ReactNode; actions?: ReactNode; active?: boolean; demo?: boolean; brackets?: boolean; i?: number; className?: string; children: ReactNode; label?: string; bodyClass?: string;
 }) {

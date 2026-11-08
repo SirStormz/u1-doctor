@@ -1,7 +1,7 @@
 import { Activity, ArrowRight, Boxes, FileSearch, Gauge, Layers, Radar } from "lucide-react";
 import hero from "../assets/keyart.png";
 import { MODEL_URL } from "../viz/u1model";
-import { Button, Chip, LedgerBars, Panel, ProvenanceChip, SeverityChip, Stat, StateBlock } from "../components/ui";
+import { Button, Chip, LedgerBars, Panel, ProvenanceChip, SeverityChip, Stat, StateBlock, TechDetails } from "../components/ui";
 import { PageTitle } from "../components/shell";
 import { hhmmss, tms, useIncident, val } from "../lib/data";
 import { usePrefs } from "../lib/prefs";
@@ -11,6 +11,7 @@ import { MiniStrip } from "../viz/HypothesisMap";
 import { U1Viewer } from "../viz/U1Viewer";
 import { RealCapturePanel } from "./real";
 import { NoData } from "../components/nodata";
+import { FirstSteps } from "../components/onboarding";
 
 export function Overview({ go }: { go: (n: RouteName, p?: string) => void }) {
   const { t, lang } = usePrefs();
@@ -34,6 +35,7 @@ export function Overview({ go }: { go: (n: RouteName, p?: string) => void }) {
   return (
     <>
       <PageTitle title={t.nav.overview} sub={t.overviewSub} icon={<Radar size={26} />} />
+      <div className="mb-d empty:hidden"><FirstSteps go={go} /></div>
       {!demo && <div className="mb-d"><NoData /></div>}
       <div className="grid gap-d xl:grid-cols-[minmax(0,1.618fr)_minmax(380px,1fr)]">
         <Panel title={t.machine} icon={<Boxes size={17} />} active brackets i={0} bodyClass="p-0" actions={<Chip tone="demo">{t.illustration}</Chip>} className="blueprint grain">
@@ -51,11 +53,13 @@ export function Overview({ go }: { go: (n: RouteName, p?: string) => void }) {
                 <p className="mt-1 text-ink2">{tx(lang, dec.entry.summary)}</p>
               </>
             ) : <p className="text-ink2">{t.noIncident}</p>}
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              {codeObs && <><ProvenanceChip status="USER_REPORTED" /><ProvenanceChip status={codeObs.source_status} /></>}
-              <span className="mono text-xs text-ink2">{code}</span>
-              {paused && <span className="text-xs text-ink3">· {t.pausedAt} {hhmmss(tms(paused))} UTC</span>}
-            </div>
+            <TechDetails className="mt-3">
+              <div className="flex flex-wrap items-center gap-2">
+                {codeObs && <><ProvenanceChip status="USER_REPORTED" /><ProvenanceChip status={codeObs.source_status} /></>}
+                <span className="mono text-xs text-ink2">{code}</span>
+                {paused && <span className="text-xs text-ink3">· {t.pausedAt} {hhmmss(tms(paused))} UTC</span>}
+              </div>
+            </TechDetails>
             <div className="mt-3"><MiniStrip obs={obs} gapLabel={t.gap} /></div>
             <div className="mt-4 flex flex-wrap gap-2">
               <Button variant="primary" icon={<ArrowRight size={16} />} onClick={() => go("timeline")}>{t.openTimeline}</Button>

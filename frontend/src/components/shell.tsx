@@ -1,10 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { Activity, Check, Command, Eye, FileSearch, FileText, FlaskConical, History, LayoutDashboard, ListChecks, Lock, Plug, Search, Settings, ShieldCheck } from "lucide-react";
+import { Activity, Check, Command, Eye, FileSearch, FileText, FlaskConical, History, LayoutDashboard, ListChecks, Lock, Plug, Search, Settings, ShieldCheck, Wrench } from "lucide-react";
 import { api, type InterpretOut } from "../api";
 import { useIncident } from "../lib/data";
-import { usePrefs, type Theme } from "../lib/prefs";
-import { parseHash, ROUTES, type RouteName } from "../lib/router";
+import { usePrefs, type StepId, type Theme } from "../lib/prefs";
+import { Onboarding } from "./onboarding";
+import { parseHash, ROUTES, visibleRoutes, type RouteName } from "../lib/router";
 import { Chip, Kbd, Logo, SeverityChip } from "./ui";
 import { tok, tx } from "../lib/dyn";
 
@@ -12,6 +13,9 @@ const ICONS: Record<RouteName, ReactNode> = {
   welcome: <ShieldCheck size={18} />, connect: <Plug size={18} />, overview: <LayoutDashboard size={18} />, explorer: <Search size={18} />, symptoms: <Eye size={18} />, timeline: <Activity size={18} />,
   findings: <ListChecks size={18} />, evidence: <FileSearch size={18} />, replay: <History size={18} />, report: <FileText size={18} />, settings: <Settings size={18} />,
 };
+
+/** Screens that tick a "Getting started" step when they are opened. */
+const ROUTE_STEP: Partial<Record<RouteName, StepId>> = { explorer: "code", timeline: "timeline", evidence: "evidence", report: "report" };
 
 /* ---------- toasts ---------- */
 interface Toast { id: number; text: string }
@@ -32,12 +36,12 @@ function ToastHost({ toasts }: { toasts: Toast[] }) {
 /* ---------- command palette ---------- */
 const CODE = /^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$/;
 function Palette({ open, onClose, go }: { open: boolean; onClose: () => void; go: (n: RouteName, p?: string) => void }) {
-  const { t, lang } = usePrefs();
+  const { t, lang, mode } = usePrefs();
   const [q, setQ] = useState("");
   const [sel, setSel] = useState(0);
   const [dec, setDec] = useState<InterpretOut | null>(null);
   const input = useRef<HTMLInputElement>(null);
-  const items = useMemo(() => ROUTES.map((r) => ({ r, label: t.nav[r] })).filter((x) => x.label.toLowerCase().includes(q.trim().toLowerCase())), [q, t]);
+  const items = useMemo(() => visibleRoutes(mode).map((r) => ({ r, label: t.nav[r] })).filter((x) => x.label.toLowerCase().includes(q.trim().toLowerCase())), [q, t, mode]);
   const isCode = CODE.test(q.trim());
 
   useEffect(() => { if (open) { setQ(""); setSel(0); setDec(null); requestAnimationFrame(() => input.current?.focus()); } }, [open]);
@@ -99,8 +103,11 @@ function Palette({ open, onClose, go }: { open: boolean; onClose: () => void; go
 const THEMES: Theme[] = ["night", "graphite", "light"];
 
 export function Shell({ route, go, replay, children }: { route: RouteName; go: (n: RouteName, p?: string) => void; replay: boolean; children: ReactNode }) {
-  const { t, lang, setLang, theme, setTheme } = usePrefs();
+  const { t, lang, setLang, theme, setTheme, mode, setMode, markStep } = usePrefs();
+  const expert = mode === "expert";
   const { health, demo, setDemo } = useIncident();
+  useEffect(() => { if (demo) markStep("demo"); }, [demo, markStep]);
+  useEffect(() => { const s = ROUTE_STEP[route]; if (s) markStep(s); }, [route, markStep]);
   const [palette, setPalette] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const main = useRef<HTMLElement>(null);
@@ -147,6 +154,9 @@ export function Shell({ route, go, replay, children }: { route: RouteName; go: (
             <button type="button" aria-pressed={demo} onClick={() => setDemo(!demo)} title={demo ? t.demoToggleOn : t.demoToggleOff} className="btn btn-secondary !py-1.5" style={{ background: demo ? "#ffc400" : "#1e1e1b", color: demo ? "#0e0e0e" : "#f4f4f0", borderColor: demo ? "#ffc400" : "#8d8d84" }}>
               <FlaskConical size={15} aria-hidden /> <span>{t.demoToggle}</span>
             </button>
+            <button type="button" aria-pressed={expert} onClick={() => setMode(expert ? "simple" : "expert")} title={expert ? t.modeToggleOn : t.modeToggleOff} className="btn btn-secondary !py-1.5" style={{ background: expert ? "#ffc400" : "#1e1e1b", color: expert ? "#0e0e0e" : "#f4f4f0", borderColor: expert ? "#ffc400" : "#8d8d84" }}>
+              <Wrench size={15} aria-hidden /> <span>{t.modeToggle}</span>
+            </button>
             <button type="button" onClick={() => setPalette(true)} className="btn btn-secondary !py-1.5" style={{ background: "#1e1e1b", color: "#f4f4f0", borderColor: "#8d8d84" }} aria-label={`${t.palette} — ${t.palettePlaceholder.split("…")[0]}… Ctrl K`}>
               <Search size={15} aria-hidden /> <span className="hidden min-[1500px]:inline">{t.palettePlaceholder.split("…")[0]}…</span> <span className="max-sm:hidden"><Kbd>Ctrl K</Kbd></span>
             </button>
@@ -169,7 +179,7 @@ export function Shell({ route, go, replay, children }: { route: RouteName; go: (
         </div>
         <nav aria-label={t.navLabel} className="indexbar">
           <div className="wrap flex">
-          {ROUTES.map((r, k) => (
+          {visibleRoutes(mode).map((r, k) => (
             <button key={r} type="button" className="navitem" aria-current={route === r ? "page" : undefined} onClick={() => go(r)} title={t.nav[r]} aria-label={`${String(k + 1).padStart(2, "0")} ${t.nav[r]}`}>
               {route === r && <motion.span layoutId="nav-ind" className="nav-ind" transition={{ duration: 0.324, ease: [0.618, 0, 0.382, 1] }} aria-hidden />}
               <span className="nn" aria-hidden>{String(k + 1).padStart(2, "0")}</span><span className="nl" aria-hidden>{t.nav[r]}</span>
@@ -190,16 +200,20 @@ export function Shell({ route, go, replay, children }: { route: RouteName; go: (
         </footer>
       </div>
       <Palette open={palette} onClose={() => setPalette(false)} go={go} />
+      <Onboarding go={go} />
       <ToastHost toasts={toasts} />
     </ToastCtx.Provider>
   );
 }
 
 export function PageTitle({ title, sub, actions, icon }: { title: string; sub?: string; actions?: ReactNode; icon?: ReactNode }) {
+  const { mode } = usePrefs();
+  const current = parseHash(location.hash).name;
+  const list = visibleRoutes(mode).includes(current) ? visibleRoutes(mode) : ROUTES; // an expert screen opened from a link in Simple mode keeps its full-list position
   return (
     <div className="mb-[21px] flex flex-wrap items-end justify-between gap-3">
       <div>
-        <p className="fig reveal" aria-hidden>FIG. {String(ROUTES.indexOf(parseHash(location.hash).name) + 1).padStart(2, "0")} / {ROUTES.length}</p>
+        <p className="fig reveal" aria-hidden>FIG. {String(list.indexOf(current) + 1).padStart(2, "0")} / {list.length}</p>
         <div className="title-mask"><h1 className="mt-1 flex items-center gap-3 text-[length:var(--t-5)] font-extrabold leading-[1.02] tracking-[-0.045em]">{icon && <span aria-hidden className="grid h-10 w-10 place-items-center bg-yellow text-[#0e0e0e]">{icon}</span>}{title}</h1></div>
         {sub && <p className="reveal mt-1 max-w-3xl text-ink2" style={{ "--i": 2 } as React.CSSProperties}>{sub}</p>}
       </div>

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Copy, ExternalLink, FileSearch, Fingerprint, ListChecks, ShieldAlert } from "lucide-react";
 import type { Finding } from "../api";
-import { Button, Chip, ClassChip, Panel, ProvenanceChip, StateBlock, TimeChip } from "../components/ui";
+import { Button, Chip, ClassChip, Panel, ProvenanceChip, StateBlock, TechDetails, TimeChip } from "../components/ui";
 import { PageTitle, useToast } from "../components/shell";
 import { NoData } from "../components/nodata";
 import { hhmmss, tms, useIncident } from "../lib/data";
@@ -38,7 +38,7 @@ export function Findings({ go }: { go: (n: RouteName, p?: string) => void }) {
               {rows.map((f, k) => (
                 <tr key={f.finding_id} style={{ "--i": k } as React.CSSProperties} className="rowin rowhover cursor-pointer border-t border-line hover:bg-surface2" onClick={() => go("evidence", f.finding_id)}>
                   <td className="px-4 py-3"><ClassChip c={f.classification} /></td>
-                  <td className="py-3 pr-4"><p className="font-medium">{L(f.human_title)}</p><p className="mono text-xs text-ink3">{f.rule_id} v{f.rule_version}</p></td>
+                  <td className="py-3 pr-4"><p className="font-medium">{L(f.human_title)}</p><div onClick={(e) => e.stopPropagation()}><TechDetails className="mt-1"><p className="mono text-xs text-ink3">{f.rule_id} v{f.rule_version}</p></TechDetails></div></td>
                   <td className="mono py-3 pr-4">{f.evidence_for.length} / {f.evidence_against.length} / {f.missing_data.length}</td>
                   <td className="py-3 pr-4"><Chip>{tok(lang, "quality", f.evidence_quality)}</Chip></td>
                   <td className="px-4 py-3 text-right"><button type="button" className="btn btn-ghost" onClick={(e) => { e.stopPropagation(); go("evidence", f.finding_id); }}>{t.open} <ChevronRight size={15} aria-hidden /></button></td>

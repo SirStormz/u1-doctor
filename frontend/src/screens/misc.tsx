@@ -4,7 +4,7 @@ import { api, knownIssues, liveApi, LiveRefused, preflight, supportChecklist, Pr
 import { Button, Chip, Kbd, Panel, ProvenanceChip, SeverityChip, Seal, StateBlock } from "../components/ui";
 import { PageTitle } from "../components/shell";
 import { useIncident } from "../lib/data";
-import { usePrefs, type Density, type Theme } from "../lib/prefs";
+import { usePrefs, type Density, type Mode, type Theme } from "../lib/prefs";
 import { moduleLabel, scenarioLabel, tok, tx } from "../lib/dyn";
 import { pfLimit, pfView } from "../lib/preflight-text";
 import { buildRequest, supNote, supText, type SupportOut } from "../lib/support-text";
@@ -403,7 +403,7 @@ export function Replay({ onMode }: { onMode: (r: boolean) => void }) {
 /* ---------------- Settings / compatibility ---------------- */
 const SW: Record<Theme, string[]> = { night: ["#10100e", "#161614", "#ffc400"], graphite: ["#191a1d", "#1f2023", "#ffc400"], light: ["#f4f4f0", "#fafaf7", "#ffc400"] };
 export function SettingsScreen() {
-  const { t, theme, setTheme, density, setDensity, lang, setLang } = usePrefs();
+  const { t, theme, setTheme, density, setDensity, lang, setLang, mode, setMode, restartOnboarding } = usePrefs();
   const inc = useIncident();
   return (
     <>
@@ -418,6 +418,14 @@ export function SettingsScreen() {
           </fieldset>
           <fieldset className="mt-5"><legend className="micro mb-2">{t.density}</legend>
             <div className="flex gap-2">{(["comfortable", "compact"] as Density[]).map((d) => <Button key={d} aria-pressed={density === d} variant={density === d ? "primary" : "secondary"} onClick={() => setDensity(d)}>{t.densities[d]}</Button>)}</div>
+          </fieldset>
+          <fieldset className="mt-5"><legend className="micro mb-2">{t.mode}</legend>
+            <div className="flex gap-2">{(["simple", "expert"] as Mode[]).map((m) => <Button key={m} aria-pressed={mode === m} variant={mode === m ? "primary" : "secondary"} onClick={() => setMode(m)}>{t.modes[m]}</Button>)}</div>
+            <p className="mt-2 max-w-prose text-xs text-ink3">{t.modeHelp}</p>
+          </fieldset>
+          <fieldset className="mt-5"><legend className="micro mb-2">{t.onb.restart}</legend>
+            <Button onClick={restartOnboarding}>{t.onb.restart}</Button>
+            <p className="mt-2 max-w-prose text-xs text-ink3">{t.onb.restartHelp}</p>
           </fieldset>
           <fieldset className="mt-5"><legend className="micro mb-2">{t.language}</legend>
             <div className="flex gap-2">{(["en", "fr"] as const).map((l) => <Button key={l} aria-pressed={lang === l} variant={lang === l ? "primary" : "secondary"} onClick={() => setLang(l)}>{l === "en" ? "English" : "Français"}</Button>)}</div>

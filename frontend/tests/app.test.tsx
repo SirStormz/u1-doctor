@@ -52,7 +52,7 @@ function mockApi() {
 }
 
 let calls: string[];
-beforeEach(() => { calls = mockApi(); location.hash = "#/overview"; localStorage.clear(); });
+beforeEach(() => { calls = mockApi(); location.hash = "#/overview"; localStorage.clear(); localStorage.setItem("u1d.onboarded", "1"); });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 const demoOn = async () => { fireEvent.click(await screen.findByRole("button", { name: /^(demo mode|mode démo)$/i })); };
@@ -90,13 +90,34 @@ test("live capture needs the approval box, then posts consent and shows 0 writes
   expect(document.body.textContent).not.toContain("192.168.50.20");
 });
 
-test("navigation has the 10 mandatory screens plus the print-quality assistant, and marks the current one", async () => {
+test("navigation has the 10 mandatory screens plus the print-quality assistant (Expert mode), and marks the current one", async () => {
+  localStorage.setItem("u1d.mode", "expert");
   render(<App />);
   const nav = await screen.findByRole("navigation", { name: /main navigation|navigation principale/i });
   const items = within(nav).getAllByRole("button");
   expect(items).toHaveLength(11);
   expect(items.map((b) => b.textContent)).toEqual(expect.arrayContaining([expect.stringMatching(/Print quality|Qualité d'impression/)]));
   expect(items.filter((b) => b.getAttribute("aria-current") === "page")).toHaveLength(1);
+});
+
+test("Simple mode (default) hides Evidence detail and Replay lab from the menu; Expert mode brings them back", async () => {
+  render(<App />);
+  const nav = await screen.findByRole("navigation", { name: /main navigation|navigation principale/i });
+  expect(within(nav).getAllByRole("button")).toHaveLength(9);
+  expect(within(nav).queryByRole("button", { name: /Evidence detail|Détail des preuves|Replay lab|Laboratoire de rejeu/ })).toBeNull();
+  const toggle = screen.getByRole("button", { name: /^(expert mode|mode expert)$/i });
+  expect(toggle).toHaveAttribute("aria-pressed", "false");
+  fireEvent.click(toggle);
+  expect(toggle).toHaveAttribute("aria-pressed", "true");
+  expect(within(nav).getAllByRole("button")).toHaveLength(11);
+  expect(localStorage.getItem("u1d.mode")).toBe("expert");
+});
+
+test("an expert screen stays reachable by direct link in Simple mode", async () => {
+  render(<App />);
+  await go("#/evidence");
+  await demoOn();
+  expect((await screen.findAllByText(/Evidence detail|Détail des preuves/)).length).toBeGreaterThan(0);
 });
 
 test("i18n: FR and EN dictionaries have identical shape", () => {
@@ -241,4 +262,48 @@ test("report: a saved capture can be chosen and exported through the same privac
   await waitFor(() => expect(calls.some((c) => c.includes("/history/h0123456789ab/observations"))).toBe(true));
   await waitFor(() => expect(calls.some((c) => c.startsWith("POST") && c.endsWith("/bundles/preview"))).toBe(true));
   expect((await screen.findAllByText("Live capture")).length).toBeGreaterThan(0);
+});
+
+test("onboarding: first run shows the 3-step assistant; choices set the mode and start the demo", async () => {
+  localStorage.removeItem("u1d.onboarded");
+  render(<App />);
+  const dlg = await screen.findByRole("dialog");
+  expect(within(dlg).getByText(/Step 1 of 3|Étape 1 sur 3/)).toBeInTheDocument();
+  fireEvent.click(within(dlg).getByRole("radio", { name: /^Expert/ }));
+  fireEvent.click(within(dlg).getByRole("button", { name: /^(Next|Suivant)$/ }));
+  expect(within(dlg).getByText(/Step 2 of 3|Étape 2 sur 3/)).toBeInTheDocument();
+  fireEvent.click(within(dlg).getByRole("button", { name: /^(Back|Retour)$/ }));
+  expect(within(dlg).getByRole("radio", { name: /^Expert/ })).toHaveAttribute("aria-checked", "true");
+  fireEvent.click(within(dlg).getByRole("button", { name: /^(Next|Suivant)$/ }));
+  fireEvent.click(within(dlg).getByRole("button", { name: /^(Next|Suivant)$/ }));
+  expect(within(dlg).getAllByText(/Observed|Observé/).length).toBeGreaterThan(0);
+  fireEvent.click(within(dlg).getByRole("button", { name: /^(Start|Commencer)$/ }));
+  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  expect(localStorage.getItem("u1d.onboarded")).toBe("1");
+  expect(localStorage.getItem("u1d.mode")).toBe("expert");
+  expect(await screen.findAllByText("DEMO")).not.toHaveLength(0);
+});
+
+test("onboarding: Escape skips without changing anything, and the checklist ticks itself from real use", async () => {
+  localStorage.removeItem("u1d.onboarded");
+  render(<App />);
+  const dlg = await screen.findByRole("dialog");
+  fireEvent.keyDown(dlg, { key: "Escape" });
+  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  expect(localStorage.getItem("u1d.mode") ?? "simple").toBe("simple");
+  const list = await screen.findByRole("region", { name: /Getting started|Premiers pas/ });
+  expect(within(list).getAllByRole("button").filter((b) => b.textContent?.includes("✓"))).toHaveLength(0);
+  await demoOn();
+  await waitFor(() => expect(within(list).getAllByRole("button").filter((b) => b.textContent?.includes("✓"))).toHaveLength(1));
+  fireEvent.click(within(list).getByRole("button", { name: /Hide this list|Masquer cette liste/ }));
+  await waitFor(() => expect(screen.queryByRole("region", { name: /Getting started|Premiers pas/ })).toBeNull());
+  expect(localStorage.getItem("u1d.checklistHidden")).toBe("1");
+});
+
+test("onboarding: Settings can replay it", async () => {
+  render(<App />);
+  await go("#/settings");
+  expect(screen.queryByRole("dialog")).toBeNull();
+  fireEvent.click(await screen.findByRole("button", { name: /Replay the guided start|Rejouer le démarrage guidé/ }));
+  expect(await screen.findByRole("dialog")).toBeInTheDocument();
 });

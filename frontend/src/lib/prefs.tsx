@@ -1,9 +1,11 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { messages, type Lang, type Messages } from "./i18n";
 
 export type Theme = "night" | "graphite" | "light";
 export type Density = "comfortable" | "compact";
-interface Prefs { lang: Lang; theme: Theme; density: Density; setLang: (l: Lang) => void; setTheme: (t: Theme) => void; setDensity: (d: Density) => void; t: Messages }
+export type Mode = "simple" | "expert";
+export type StepId = "demo" | "code" | "timeline" | "evidence" | "report";
+interface Prefs { lang: Lang; theme: Theme; density: Density; mode: Mode; onboarded: boolean; steps: StepId[]; checklistHidden: boolean; finishOnboarding: () => void; markStep: (s: StepId) => void; hideChecklist: () => void; restartOnboarding: () => void; setLang: (l: Lang) => void; setTheme: (t: Theme) => void; setDensity: (d: Density) => void; setMode: (m: Mode) => void; t: Messages }
 
 const read = (k: string, d: string) => { try { return localStorage.getItem(k) ?? d; } catch { return d; } };
 const write = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* storage unavailable: preferences stay in memory */ } };
@@ -13,10 +15,22 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
   const [lang, setLang] = useState<Lang>(() => (read("u1d.lang", navigator.language.toLowerCase().startsWith("fr") ? "fr" : "en") === "fr" ? "fr" : "en"));
   const [theme, setTheme] = useState<Theme>(() => { const v = read("u1d.theme", "light"); return v === "graphite" || v === "night" ? v : "light"; });
   const [density, setDensity] = useState<Density>(() => (read("u1d.density", "comfortable") === "compact" ? "compact" : "comfortable"));
+  const [mode, setMode] = useState<Mode>(() => (read("u1d.mode", "simple") === "expert" ? "expert" : "simple"));
+  useEffect(() => { write("u1d.mode", mode); }, [mode]);
+  const [onboarded, setOnboarded] = useState(() => read("u1d.onboarded", "") === "1");
+  const [steps, setSteps] = useState<StepId[]>(() => { try { const v = JSON.parse(read("u1d.steps", "[]")); return Array.isArray(v) ? v : []; } catch { return []; } });
+  const [checklistHidden, setChecklistHidden] = useState(() => read("u1d.checklistHidden", "") === "1");
+  useEffect(() => { write("u1d.onboarded", onboarded ? "1" : ""); }, [onboarded]);
+  useEffect(() => { write("u1d.steps", JSON.stringify(steps)); }, [steps]);
+  useEffect(() => { write("u1d.checklistHidden", checklistHidden ? "1" : ""); }, [checklistHidden]);
+  const finishOnboarding = useCallback(() => setOnboarded(true), []);
+  const markStep = useCallback((id: StepId) => setSteps((x) => (x.includes(id) ? x : [...x, id])), []);
+  const hideChecklist = useCallback(() => setChecklistHidden(true), []);
+  const restartOnboarding = useCallback(() => { setSteps([]); setChecklistHidden(false); setOnboarded(false); }, []);
   useEffect(() => { document.documentElement.lang = lang; write("u1d.lang", lang); }, [lang]);
   useEffect(() => { document.documentElement.dataset.theme = theme; write("u1d.theme", theme); }, [theme]);
   useEffect(() => { document.documentElement.dataset.density = density; write("u1d.density", density); }, [density]);
-  const value = useMemo(() => ({ lang, theme, density, setLang, setTheme, setDensity, t: messages[lang] }), [lang, theme, density]);
+  const value = useMemo(() => ({ lang, theme, density, mode, onboarded, steps, checklistHidden, finishOnboarding, markStep, hideChecklist, restartOnboarding, setLang, setTheme, setDensity, setMode, t: messages[lang] }), [lang, theme, density, mode, onboarded, steps, checklistHidden, finishOnboarding, markStep, hideChecklist, restartOnboarding]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
