@@ -78,10 +78,10 @@ Press `Ctrl K` anywhere to jump to a screen or paste an error code.
 
 ## Get started in two minutes (Windows)
 
-1. Download `u1-doctor-0.1.7-g1-win64.zip` and its `.sha256.txt` from the [latest release](https://github.com/SirStormz/u1-doctor/releases/latest).
+1. Download `u1-doctor-0.1.8-g1-win64.zip` and its `.sha256.txt` from the [latest release](https://github.com/SirStormz/u1-doctor/releases/latest).
 2. Check the file was not altered (optional, 10 seconds):
    ```powershell
-   Get-FileHash .\u1-doctor-0.1.7-g1-win64.zip -Algorithm SHA256
+   Get-FileHash .\u1-doctor-0.1.8-g1-win64.zip -Algorithm SHA256
    ```
    Compare with the value in the release notes: `137D74A73CD12687844C781186B1BCD21002BCF53F3735B1E0B0B0AA2442D4E7`.
 3. Right-click the zip, **Extract all** (not WinRAR or 7-Zip, so Windows keeps the download mark), then double-click `u1-doctor.exe`.
@@ -90,7 +90,7 @@ Press `Ctrl K` anywhere to jump to a screen or paste an error code.
 **Good to know**
 - The app is **not code-signed**, so Windows SmartScreen may warn: choose "More info", then "Run anyway".
 - If the window cannot start, the app opens in your browser instead and writes the reason to `%APPDATA%\U1 Doctor\error.log`. Your user folder path is replaced by `%USERPROFILE%` in that file, but read it before attaching it to an issue: it may still hold other folder or file names.
-- VirusTotal: this 0.1.7-g1 zip scored **0 engines out of 52** ([report](https://www.virustotal.com/gui/file/137d74a73cd12687844c781186b1bcd21002bcf53f3735b1e0b0b0aa2442d4e7)). The previous build, 0.1.6-g1, scored 0 engines out of 67 ([report](https://www.virustotal.com/gui/file/b744d8c9cf7b3a275aa474fc8a44fd7c3e9cbc3c1a00ce73002df798add2fb92)). Earlier builds: 0.1.0-g1 was flagged by 1 engine out of 66, 0.1.1-g1 by 2 out of 65, 0.1.2-g1 by 1 out of 66 (Zillya, `Trojan.Stealer.Win64.2764`) and 0.1.5-g1 by 0 out of 65 ([report](https://www.virustotal.com/gui/file/594599bf711db552a6e8b01c27c25f642b6c816a162cfdf7d57410ae6b8812b9)); we believe the earlier detections were false positives typical of unsigned PyInstaller executables. A clean scan is not a guarantee and detections can change: the source is public, the build is made by GitHub Actions, and the app reads no browser data, cookies, passwords or clipboard. It reads one Windows registry value (the installed WebView2 version, to know whether its window can open) and removes the "downloaded from the Internet" mark from the `.dll` files inside its own bundled `_internal` folder (and no other file, not even other files you put next to the exe) so that window can start.
+- VirusTotal: this 0.1.8-g1 zip has **not been scanned yet** (SHA-256 above, so you can look it up yourself). The previous builds scored 0 engines out of 52 for 0.1.7-g1 ([report](https://www.virustotal.com/gui/file/137d74a73cd12687844c781186b1bcd21002bcf53f3735b1e0b0b0aa2442d4e7)) and 0 engines out of 67 for 0.1.6-g1 ([report](https://www.virustotal.com/gui/file/b744d8c9cf7b3a275aa474fc8a44fd7c3e9cbc3c1a00ce73002df798add2fb92)). Earlier builds: 0.1.0-g1 was flagged by 1 engine out of 66, 0.1.1-g1 by 2 out of 65, 0.1.2-g1 by 1 out of 66 (Zillya, `Trojan.Stealer.Win64.2764`) and 0.1.5-g1 by 0 out of 65 ([report](https://www.virustotal.com/gui/file/594599bf711db552a6e8b01c27c25f642b6c816a162cfdf7d57410ae6b8812b9)); we believe the earlier detections were false positives typical of unsigned PyInstaller executables. A clean scan is not a guarantee and detections can change: the source is public, the build is made by GitHub Actions, and the app reads no browser data, cookies, passwords or clipboard. It reads one Windows registry value (the installed WebView2 version, to know whether its window can open) and removes the "downloaded from the Internet" mark from the `.dll` files inside its own bundled `_internal` folder (and no other file, not even other files you put next to the exe) so that window can start.
 - It opens with a short **first-start assistant** (skippable), then **starts empty**: nothing is shown until you import a bundle or capture a printer. The **Demo mode** switch in the header fills the screens with clearly labelled synthetic data (off again at every start). Everything works offline and nothing is sent anywhere.
 - Linux, macOS and Docker: see the [install guide](docs/INSTALL.md).
 
