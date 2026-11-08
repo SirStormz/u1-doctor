@@ -2,8 +2,8 @@
 # Windows version resource of u1-doctor.exe (PyInstaller --version-file). Metadata only: it changes no behaviour.
 VSVersionInfo(
   ffi=FixedFileInfo(
-    filevers=(0, 1, 7, 0),
-    prodvers=(0, 1, 7, 0),
+    filevers=(0, 1, 8, 0),
+    prodvers=(0, 1, 8, 0),
     mask=0x3f,
     flags=0x0,
     OS=0x40004,
@@ -17,12 +17,12 @@ VSVersionInfo(
         '040904B0',
         [StringStruct('CompanyName', 'U1 Doctor contributors'),
          StringStruct('FileDescription', 'U1 Doctor - local, read-only diagnostic evidence tool for the Snapmaker U1'),
-         StringStruct('FileVersion', '0.1.7.0'),
+         StringStruct('FileVersion', '0.1.8.0'),
          StringStruct('InternalName', 'u1-doctor'),
          StringStruct('LegalCopyright', 'MIT licence. Unofficial, not affiliated with Snapmaker.'),
          StringStruct('OriginalFilename', 'u1-doctor.exe'),
          StringStruct('ProductName', 'U1 Doctor'),
-         StringStruct('ProductVersion', '0.1.7-g1'),
+         StringStruct('ProductVersion', '0.1.8-g1'),
          StringStruct('Comments', 'Source: https://github.com/SirStormz/u1-doctor')])
     ]),
     VarFileInfo([VarStruct('Translation', [1033, 1200])])

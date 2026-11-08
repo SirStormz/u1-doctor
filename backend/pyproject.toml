@@ -1,6 +1,6 @@
 [project]
 name = "u1-doctor-backend"
-version = "0.1.7"
+version = "0.1.8"
 description = "U1 Doctor - read-only diagnostic forensics engine (G0 skeleton)"
 requires-python = ">=3.12"
 dependencies = ["fastapi>=0.115,<1", "uvicorn>=0.32,<1", "httpx>=0.28,<1", "pydantic>=2.9,<3", "websockets>=15,<16"]
