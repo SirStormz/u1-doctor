@@ -49,7 +49,7 @@ U1 Doctor runs **on your own PC**. It gives you three things:
 |---|---|---|
 | ![Overview](docs/media/screens/03-overview.png) | ![Timeline](docs/media/screens/06-timeline.png) | ![Error codes](docs/media/screens/04-error-codes.png) |
 
-Screenshots were taken with **demo mode** on, which shows the built-in **synthetic demo data** (the `DEMO` banner is visible whenever it is on). All 11 screens are in [`docs/media/screens/`](docs/media/screens/).
+Screenshots were taken in **Expert mode** with **demo mode** on, which shows the built-in **synthetic demo data** (the `DEMO` banner is visible whenever it is on). All 11 screens are in [`docs/media/screens/`](docs/media/screens/).
 
 ## What is inside: the 11 screens
 
