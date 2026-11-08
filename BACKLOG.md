@@ -4,13 +4,25 @@ Contest: Snapmaker Innovation Fund Phase 2, Cash Fund, software. Posting closes 
 
 Hard rules: read-only; no U1 contact without the owner's explicit go; nothing invented; DEMO/SYNTHETIC always visible; unknown = INCONCLUSIVE.
 
-## Where we are (2026-11-08, night)
-- **Shipped on `main` (CI green), NOT released:** audit fixes #52-#54, #61; forum roadmap #55-#60 and #64; the published exe/Latest is still **v0.1.7-g1** and has none of this. Version in the code is still 0.1.7-g1.
-- **Checked on the real U1 once (2026-11-08, supervised, read-only):** the new reads and S22-S24 work; S17-S21 positive cases and the address-change check are still unseen. Second and third supervised captures (same night, 5 GET + 1 WS): `GET /server/history/totals` works (history component on, 21 jobs, ~71 print hours, `total_jobs` is a float on the U1: fixed); maintenance reminders screen itself not yet used on a real result.
-- **Added later on 2026-11-08 (code + mocks only, NOT committed by this pass, UNTESTED on a U1):** #65 maintenance reminders (one new GET `/server/history/totals`, budget now **5 GET + 1 WS, 11 GET at most**, consent text FR/EN updated), every plate of a multi-plate 3MF checked, the flaky History Vitest fixed. Needs ONE supervised read-only check of `/server/history/totals` on the U1 before the compatibility rows leave UNTESTED.
-- **Also added on 2026-11-08 (frontend only, Vitest, NOT committed by this pass):** #51 (a) the three one-time hints in Simple mode and (b) more blocks folded under *Technical details* (Print quality, Error codes, Report). Not in any release yet.
-- **Next, in this order:** (1) owner decision on the release **0.1.8-g1** (bump, workflow run = first real test of the pinned deps + attestation, publish Latest, VirusTotal of the new zip, docs/Pages/memory sync) · (2) update the forum topic: message 1 still says "12 rules" and 0.1.6-g1 (post a short reply with the new figures, or edit with an update timestamp) · (3) real fault capture or volunteer U1-DEB bundles (weakest contest point) · (4) clean Windows 11 test · (5) item #65 below.
-- **Contest deadline:** post before **2026-12-23 23:59 UTC** (official table says 12-24).
+## Where we are (2026-11-08, late night) — the one list to follow
+**Code state:** everything below is committed and pushed on `main` (last commit 59d456c, CI green). The published exe / Latest release is still **v0.1.7-g1** and contains NONE of the 2026-11-08 work; the version in the code is still 0.1.7-g1. Local = GitHub = backup (`backups/…-59d456c`). Tests: 1192 backend, 181 UI, 16 e2e.
+
+**Done 2026-11-08 (checked item by item against the audit and forum lists):** audit #52-#54 and #61 (H1, H2, M1-M7, L1-L10, missing tests, stale docs) · forum roadmap #55-#60 (causes, near-match, message matcher, ticket summary, evidence reminder, rules S17-S24, 10 G-code checks + 3MF with every plate, firmware issues table, connectivity self-check) · #64 (alert, good-to-know notes, sample report on Pages) · maintenance reminders · #51 hints and folded blocks · flaky test fixed · HOW-IT-WORKS.md.
+**Proven on the real U1 (supervised, read-only, 3 captures, nothing written):** log-partition read, cavity + bed-mesh subscription, S22-S24, connectivity numbers, `/server/history/totals`.
+
+**STILL OPEN, in this order**
+1. **Release 0.1.8-g1** (owner decision): bump version in the 6 places (a test checks them), run `release.yml` (first real run of the pinned deps + SHA-pinned actions + attestation; creates a DRAFT and a public attestation), publish as Latest, VirusTotal of the new zip, then README/INSTALL/LIMITS/Pages/memory sync and re-record the exe SHA-256.
+2. **Forum topic** (owner posts): message 1 still says "12 rules" and v0.1.6-g1; post a short reply with the new figures (20 rules, 20 checks, 0.1.8) after the release.
+3. **Film:** `docs/media/film/fr.vtt` (and the voice) say "douze règles"; now 20 rules. Leave or redo.
+4. **Real fault capture or volunteer U1-DEB bundles** (weakest contest point), plus a second capture in the real app to exercise the address-change fingerprint.
+5. **Clean Windows 11 test** of the next exe (second-PC kit in `scripts/second-pc-test/`).
+6. **Untested on a real fault:** positive cases of S17-S21; maintenance reminders screen on a real result.
+7. **Needs a machine I do not have:** macOS/Linux builds, one-line install.
+8. **Contest, not code (#62):** plainer topic title, retest on firmware 2.1.1, useful replies on other threads, ask staff the vote dates (#27), independent tester (#22).
+9. **Small leftovers (decided or minor):** WebP textures of the GLB and PNG fallback of the key art (skipped on purpose) · `actionlint` · Wi-Fi fields of Moonraker unverified · stray empty file `E:	mp_noop` (owner deletes).
+**Decided NOT to do:** read `printer.cfg` (the reported nozzle diameter already comes from it), `homing` per toolhead (data does not exist), push notifications, anything that writes or commands the printer, reading the encrypted logs.
+
+**Contest deadline:** post before **2026-12-23 23:59 UTC** (official table says 12-24).
 
 ## Done (evidence in `IMPLEMENTATION_STATUS.md`)
 G0 audit/ADRs/transport allowlist · G1 offline engine, API, exe · G0.5 design v4 (10 screens, FR/EN, 3 themes) · G2 H-01 + H-02 on the real U1 (3 GET + 1 WS subscribe, 0 write) · G3 timeline on the real capture · G4 U1-DEB export/import/replay · CI (backend + frontend) · English README · originality audit · forum scan of 25 competing entries (2026-11-06; no entry combines logs + code decoding + timeline + bundle).
