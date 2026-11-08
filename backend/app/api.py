@@ -24,17 +24,22 @@ from .dryrun_import import DryRunError
 from .dryrun_import import normalize as dryrun_normalize
 from .engine import canon, evaluate, ruleset_hash
 from .engine.canonical import sha256_hex
+from .gcode_preflight import MAX_3MF_BYTES as PREFLIGHT_MAX_3MF_BYTES
 from .gcode_preflight import MAX_BYTES as PREFLIGHT_MAX_BYTES
 from .gcode_preflight import PreflightError
 from .gcode_preflight import analyze as preflight_analyze
+from .gcode_preflight import analyze_3mf as preflight_analyze_3mf
 from .knowledge import (
     community_for,
+    firmware_issues_for,
     interpret,
     load_catalog,
     load_community_causes,
+    load_firmware_issues,
     load_known_issues,
     match_messages,
     normalize_code,
+    parse_firmware,
     suggest_codes,
 )
 from .live import LiveError, run_live_capture
@@ -238,6 +243,16 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
     def known_issues() -> dict[str, Any]:
         return load_known_issues()
 
+    @app.get("/api/v1/knowledge/firmware-issues")
+    def firmware_issues(version: str | None = Query(default=None, max_length=32)) -> dict[str, Any]:
+        """All entries, or only those whose affected range contains `version` (a version the user picks, never read from a printer)."""
+        data = load_firmware_issues()
+        if version is None:
+            return data
+        if parse_firmware(version) is None:
+            raise HTTPException(422, {"code": "BAD_FIRMWARE", "message": "firmware must look like 2.1.0"})
+        return {**data, "issues": firmware_issues_for(version), "filter": version}
+
     @app.get("/api/v1/knowledge/symptoms")
     def symptom_catalog() -> dict[str, Any]:
         return symptoms.catalog()
@@ -434,6 +449,15 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
         data = await _body(request, PREFLIGHT_MAX_BYTES, "file")
         try:
             return preflight_analyze(data, name)
+        except PreflightError as e:
+            raise HTTPException(422, {"code": e.code, "message": str(e)}) from e
+
+    @app.post("/api/v1/preflight/3mf")
+    async def preflight_3mf(request: Request, name: str | None = Query(default=None, max_length=255)) -> dict[str, Any]:
+        """Same pre-flight on the sliced G-code embedded in a 3MF (zip). Only Metadata/*.gcode and the project settings are read."""
+        data = await _body(request, PREFLIGHT_MAX_3MF_BYTES, "file")
+        try:
+            return preflight_analyze_3mf(data, name)
         except PreflightError as e:
             raise HTTPException(422, {"code": e.code, "message": str(e)}) from e
 

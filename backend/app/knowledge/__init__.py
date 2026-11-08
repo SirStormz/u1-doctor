@@ -59,6 +59,31 @@ def load_messages(path: Path = MESSAGES_PATH) -> dict[str, Any]:
     return data
 
 
+FIRMWARE_ISSUES_PATH = ROOT / "knowledge" / "u1_firmware_issues.json"
+
+
+@lru_cache(maxsize=1)
+def load_firmware_issues(path: Path = FIRMWARE_ISSUES_PATH) -> dict[str, Any]:
+    """Known issues per firmware version (own wording + source links, dated). May be out of date; never ranked."""
+    data: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
+    ids = [i["id"] for i in data["issues"]]
+    assert len(set(ids)) == len(ids), "duplicate firmware-issue id"
+    return data
+
+
+def firmware_issues_for(version: str) -> list[dict[str, Any]]:
+    """Issues whose affected range [min, max] contains the stated version (open bounds allowed), in file order."""
+    v = parse_firmware(version)
+    if v is None:
+        return []
+    out = []
+    for i in load_firmware_issues()["issues"]:
+        lo, hi = (parse_firmware(i["affected"][k]) if i["affected"][k] else None for k in ("min", "max"))
+        if (lo is None or v >= lo) and (hi is None or v <= hi):
+            out.append(i)
+    return out
+
+
 def community_for(code: str) -> list[dict[str, Any]]:
     """Community reports attached to an exact code, in file order (never ranked)."""
     return [c for c in load_community_causes()["causes"] if code in c["codes"]]

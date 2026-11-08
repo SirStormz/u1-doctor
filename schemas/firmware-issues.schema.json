@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/SirStormz/u1-doctor/main/schemas/firmware-issues.schema.json",
+  "title": "U1 Doctor known issues per firmware version",
+  "description": "Dated, sourced issues per U1 firmware version. OFFICIAL_RELEASE_NOTE entries must cite a wiki release note; COMMUNITY_REPORT entries cite the forum or the public u1-klipper repository and are never official. No score, probability or rank field exists by design.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "checked_at", "note", "versions", "versions_source", "issues"],
+  "$defs": {
+    "date": {"type": "string", "pattern": "^20[0-9]{2}-[01][0-9]-[0-3][0-9]$"},
+    "fw": {"type": "string", "pattern": "^[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}$"},
+    "fw_or_null": {"oneOf": [{"$ref": "#/$defs/fw"}, {"type": "null"}]},
+    "code": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$"},
+    "l10n": {"type": "object", "additionalProperties": false, "required": ["en", "fr"], "properties": {"en": {"type": "string", "minLength": 1, "maxLength": 600}, "fr": {"type": "string", "minLength": 1, "maxLength": 700}}},
+    "source": {
+      "type": "object", "additionalProperties": false, "required": ["url", "title", "posted"],
+      "properties": {
+        "url": {"type": "string", "pattern": "^(https://forum\\.snapmaker\\.com/t/[0-9]+|https://wiki\\.snapmaker\\.com/en/snapmaker_u1/firmware/release_notes/v[0-9]{3}|https://github\\.com/Snapmaker/u1-klipper/issues/[0-9]+)$"},
+        "title": {"type": "string", "minLength": 1},
+        "posted": {"$ref": "#/$defs/date"}
+      }
+    }
+  },
+  "properties": {
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "checked_at": {"$ref": "#/$defs/date"},
+    "note": {"type": "string", "minLength": 1},
+    "versions": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["version", "date"], "properties": {"version": {"$ref": "#/$defs/fw"}, "date": {"$ref": "#/$defs/date"}}}},
+    "versions_source": {"const": "https://wiki.snapmaker.com/en/snapmaker_u1/firmware/release_notes"},
+    "issues": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "type", "affected", "fixed_in", "origin", "staff_confirmed", "codes", "symptom", "scope", "sources"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^FW-[A-Z0-9-]+$"},
+          "type": {"enum": ["bug", "behaviour"]},
+          "affected": {"type": "object", "additionalProperties": false, "required": ["min", "max"], "properties": {"min": {"$ref": "#/$defs/fw_or_null"}, "max": {"$ref": "#/$defs/fw_or_null"}}},
+          "fixed_in": {"$ref": "#/$defs/fw_or_null"},
+          "origin": {"enum": ["OFFICIAL_RELEASE_NOTE", "COMMUNITY_REPORT"]},
+          "staff_confirmed": {"type": "boolean"},
+          "codes": {"type": "array", "items": {"$ref": "#/$defs/code"}, "uniqueItems": true},
+          "symptom": {"$ref": "#/$defs/l10n"},
+          "workaround": {"$ref": "#/$defs/l10n"},
+          "scope": {"$ref": "#/$defs/l10n"},
+          "sources": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/source"}}
+        }
+      }
+    }
+  }
+}

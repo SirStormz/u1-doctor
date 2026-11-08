@@ -34,6 +34,32 @@ What U1 Doctor cannot know or has not yet proven. Each item cites the document i
 | "Reported by the community" causes come from public forum topics (read 2026-11-08): one or a few owners each, often on an older firmware, rewritten in our words. They are not official, not observed by U1 Doctor, never ranked, and can be outdated. Three of their codes are not in the official table (`0001-0531-0000-0015`, `0003-0531-0000-0014`, `0003-0528-0000-0027`). | `knowledge/u1_community_causes.json` |
 | "Did you mean" suggestions rank spellings only (edit distance on the digits); they say nothing about the fault, and nothing is decoded until the owner picks one. Messages without a code are matched by plain substrings on a curated list of 8; anything else stays unmatched. | `backend/app/knowledge/__init__.py`, `knowledge/u1_messages.json` |
 
+## G-code pre-flight
+
+20 static checks, never a simulation (U1 Dry Run simulates the firmware). Checks 1-10 rest on the official wiki and release notes. Checks 11-20 (#58) rest on public forum topics re-read on 2026-11-08 (one or a few owners each; labelled "reported by the community", never official) and only report what the file text shows. Macros hide commands; the installed nozzle, plate, toolhead offsets and firmware version are unknown here.
+
+| Check | Detection rule | Limit | Source |
+|---|---|---|---|
+| `m191_chamber_wait` | any `M191` command → WARN | Owners reported (April 2026, before the Top Cover) that the U1 does not wait on M191; the 2.0.0 release note mentions chamber waiting with the Top Cover, so behaviour may differ | forum 41689, 41736 |
+| `start_line_y_edge` | any absolute `G0`/`G1` whose Y is ≤ 1 mm → WARN, code `0003-0522-0001-0013` | The offsets are not in the file: it only fails on a head whose Y offset is below about -1 mm (one reported printer) | forum 44046 |
+| `probe_temperature` | nozzle targets > 0 before the first extrusion; a lower one than the last is reported (INFO), never judged | A start macro (e.g. `START_PRINT`) may set its own temperature | forum 42422 |
+| `tool_mapping` | `Tn` used beyond the slicer's filament list → WARN; several tools → INFO with the file's order | Filament Auto Mapping happens on the printer and cannot be predicted from the file | release note 1.0.0, forum 42496 |
+| `foreign_profile` | `G4` ≥ 5 s within 30 lines of a `Tn`, Bambu-only `M620`-`M623`/`M1002`, a `printer_model` without "U1", or a Bambu Studio header → WARN | Heuristic: a deliberate dwell or a renamed profile is not distinguished | forum 43690 |
+| `prime_tower_bounds` | extreme X/Y reached in prime-tower sections (`;TYPE:`/`; FEATURE:` prime/wipe tower, `; CP TOOLCHANGE` blocks), or `wipe_tower_x/y` + `prime_tower_width`, outside `printable_area` → WARN, code `0003-0522-0000-0013`; **skipped when `printable_area` is absent** | The tower depth is not in the settings, so the settings fallback checks only the tower origin in Y | staff post, forum 40862 |
+| `colour_block` | several tools used and neither `extruder_colour` nor `filament_colour` → WARN | The link between these lines and auto-mapping comes from one owner's report | forum 42496 |
+| `tpu_profile` | `filament_type` contains TPU → INFO with retraction length/speed and max volumetric speed found; no verdict | Values shown as written; `nil` falls back to the printer-wide value | forum 40952, 43560 |
+| `purge_summary` | tool changes = consecutive `Tn` that differ; purge = filament extruded between `; CP TOOLCHANGE START` and `END` (mm, and mm³ only if `filament_diameter` is present); otherwise "not derivable" | Sparse tower layers and purges into infill or objects are not counted; nothing is estimated | U1 Doctor's own count |
+| `last_move_scar` | after the last extrusion on the part, a tool-change marker, then the first XY travel > 1 mm at Z ≤ that layer + 0.1 mm → INFO with a check | Text only: it does not know whether the travel crosses the part (U1 Dry Run tracks that) | forum 43865 |
+
+**3MF input.** A `.3mf` is accepted only to read the sliced G-code inside it (`Metadata/<name>.gcode`; the lowest `plate_N` is checked, the others are counted) and `Metadata/project_settings.config` (used only for keys the G-code lacks; per-plate lists use their first value). Nothing is sliced: a 3MF without G-code is refused with `NO_GCODE`. Zip safety: archive ≤ 50 MiB, each read entry ≤ 50 MiB, read entries ≤ 100 MiB in total, compression ratio ≤ 200 (the U1-DEB import limits), at most 4096 entries, every entry name must be a safe relative path (no `..`, no absolute path), no encrypted entry, regular files only; other entries are never opened. Refusals: `NOT_A_3MF`, `UNSAFE_ENTRY`, `ENCRYPTED`, `ARCHIVE_TOO_LARGE`, `NO_GCODE`.
+
+## Known issues per firmware version
+
+| Limit | Source |
+|---|---|
+| 13 curated entries (1.0.0 to 2.1.0), re-read on 2026-11-08 and **possibly out of date**. Official entries come from the wiki release notes; the others come from the public forum or the u1-klipper repository and are labelled community reports, with "staff answered" only where a Snapmaker staff reply was seen. "Fixed in" is shown only when a source states it. Affected ranges list only versions where a source places the issue; two lower bounds are ours and say so (nozzle rules since 1.3.0, Top Cover since 1.5.0). The version filter uses the version you pick; it is never read from the printer. | `knowledge/u1_firmware_issues.json` |
+| Not kept: a cold bed in one 2.1.0 report (cause unclear), the claim that the part-fan delay exists in every version (not reproduced), a 1.5.1 second-layer report (single), a 1.5.1 nozzle-mismatch error on an old file (not tied to the 1.5.2 fix), and the 1.0.0 Orca language issue (slicer, not firmware). | `knowledge/u1_firmware_issues.json` |
+
 ## Replay and determinism
 
 | Limit | Source |

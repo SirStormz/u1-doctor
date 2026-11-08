@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Ban, Cpu, ExternalLink, FlaskConical, History, MessageSquareText, Play, Plug, Search, ShieldCheck, Settings as SettingsIcon, TriangleAlert, Users } from "lucide-react";
-import { api, knownIssues, liveApi, LiveRefused, preflight, supportChecklist, PreflightRefused, type CommunityCause, type InterpretOut, type LiveOut, type KnownIssues, type MessageMatch, type PreflightOut } from "../api";
+import { api, firmwareIssues, knownIssues, liveApi, LiveRefused, preflight, supportChecklist, PreflightRefused, type CommunityCause, type InterpretOut, type LiveOut, type FirmwareIssues, type KnownIssues, type MessageMatch, type PreflightOut } from "../api";
 import { Button, Chip, Kbd, Panel, ProvenanceChip, SeverityChip, Seal, StateBlock } from "../components/ui";
 import { PageTitle } from "../components/shell";
 import { useIncident } from "../lib/data";
@@ -208,6 +208,7 @@ export function Explorer({ param }: { param?: string }) {
         </div>
       </div>
       <KnownIssuesPanel code={res && d && d.status !== "MALFORMED" ? ((d as unknown as { code?: string }).code ?? code) : null} />
+      <FirmwareIssuesPanel />
       <Preflight onCode={(c) => { setCode(c); void run(c); window.scrollTo({ top: 0, behavior: "smooth" }); }} />
     </>
   );
@@ -314,6 +315,65 @@ function KnownIssuesPanel({ code }: { code: string | null }) {
   );
 }
 
+/** Known issues per firmware version (#60): dated, sourced, filterable by the version the user picks. Never read from a printer. */
+function FirmwareIssuesPanel() {
+  const { t, lang } = usePrefs();
+  const [ver, setVer] = useState("");
+  const [data, setData] = useState<FirmwareIssues | null>(null);
+  const [all, setAll] = useState<FirmwareIssues | null>(null);
+  const [fail, setFail] = useState(false);
+  useEffect(() => {
+    let live = true;
+    firmwareIssues(ver || undefined).then((x) => { if (!live) return; if (Array.isArray(x?.issues)) { setData(x); if (!ver) setAll(x); } else setFail(true); }).catch(() => { if (live) setFail(true); });
+    return () => { live = false; };
+  }, [ver]);
+  const range = (a: { min: string | null; max: string | null }) =>
+    a.min && a.max ? (a.min === a.max ? a.min : `${a.min} – ${a.max}`) : a.min ? t.fwiFrom.replace("{v}", a.min) : t.fwiUpTo.replace("{v}", a.max ?? "?");
+  return (
+    <div className="mt-4">
+      <Panel title={t.fwiTitle} icon={<TriangleAlert size={17} />} i={4} demo={false}>
+        <p className="text-ink2">{t.fwiNote}</p>
+        {all && <p className="mt-2 text-sm text-warn" data-testid="fwi-stale">{t.fwiStale.replace("{d}", all.checked_at)}</p>}
+        {all && (
+          <label className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+            <span className="micro">{t.fwiFilter}</span>
+            <select className="w-fit rounded-lg border border-control bg-surface2 px-3 py-2 text-ink" value={ver} onChange={(e) => setVer(e.target.value)} data-testid="fwi-filter">
+              <option value="">{t.fwiAll}</option>
+              {all.versions.map((v) => <option key={v.version} value={v.version}>{v.version} ({v.date})</option>)}
+            </select>
+          </label>
+        )}
+        {fail && <p className="mt-3 text-ink3">{t.fwiLoadFail}</p>}
+        {data && data.issues.length === 0 && <p className="mt-3 text-ink3">{t.fwiNone}</p>}
+        {data && data.issues.length > 0 && (
+          <ul className="mt-3 grid gap-2" data-testid="fw-issues">
+            {data.issues.map((k) => (
+              <li key={k.id} data-origin={k.origin} className="rounded-lg border-2 p-3" style={{ borderColor: "var(--control-line)" }}>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Chip>{t.fwiAffected} {range(k.affected)}</Chip>
+                  <Chip tone={k.fixed_in ? "ok" : "neutral"}>{k.fixed_in ? t.fwiFixed.replace("{v}", k.fixed_in) : t.fwiNotFixed}</Chip>
+                  <Chip tone={k.origin === "OFFICIAL_RELEASE_NOTE" ? "accent" : "warn"}>{k.origin === "OFFICIAL_RELEASE_NOTE" ? t.fwiOfficial : t.fwiCommunity}</Chip>
+                  {k.staff_confirmed && <Chip>{t.fwiStaff}</Chip>}
+                  {k.type === "behaviour" && <Chip>{t.fwiBehaviour}</Chip>}
+                  {k.codes.map((c) => <span key={c} className="mono text-xs text-ink3">{c}</span>)}
+                </div>
+                <p className="mt-2 text-[15px]">{k.symptom[lang]}</p>
+                <dl className="mt-2 grid gap-1 text-sm">
+                  {k.workaround && <div><dt className="micro">{t.fwiWorkaround}</dt><dd className="m-0">{k.workaround[lang]}</dd></div>}
+                  <div><dt className="micro">{t.fwiScope}</dt><dd className="m-0 text-ink2">{k.scope[lang]}</dd></div>
+                </dl>
+                <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-ink3">
+                  {k.sources.map((x) => <a key={x.url} href={x.url} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 underline">{x.title} ({x.posted})<ExternalLink size={12} aria-hidden /></a>)}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Panel>
+    </div>
+  );
+}
+
 /** Schematic of the four dock slots: which toolheads the official table row tells you to inspect. Slot numbers only, no geometry. */
 function DockHint({ reported, inspect, scope }: { reported: number | null; inspect: number[]; scope: "listed" | "all" | "this_head" }) {
   const { t } = usePrefs();
@@ -396,7 +456,7 @@ function Preflight({ onCode }: { onCode: (code: string) => void }) {
         <p className="text-ink2">{t.pfSub}</p>
         <label className="btn btn-primary mt-4 w-fit cursor-pointer">
           <FlaskConical size={16} aria-hidden />{busy ? t.pfBusy : t.pfPick}
-          <input type="file" accept=".gcode,.gco,.nc,.txt,text/plain" className="sr-only" disabled={busy} onChange={(e) => { void pick(e.target.files?.[0]); e.target.value = ""; }} />
+          <input type="file" accept=".gcode,.gco,.nc,.txt,.3mf,text/plain" className="sr-only" disabled={busy} onChange={(e) => { void pick(e.target.files?.[0]); e.target.value = ""; }} />
         </label>
         <div aria-live="polite" className="mt-4">
           {err && <StateBlock kind="error" title={t.pfRefused} body={err} />}
@@ -407,6 +467,9 @@ function Preflight({ onCode }: { onCode: (code: string) => void }) {
                 {(["FAIL", "WARN", "UNKNOWN", "INFO", "PASS"] as const).map((k) => <Chip key={k} tone={PF_TONE[k]}>{t[`pf${k}` as "pfFAIL"]} · {res.summary[k]}</Chip>)}
                 <span className="mono text-xs text-ink3">{res.file.lines.toLocaleString(lang)} {t.pfLines}</span>
               </div>
+              {res.source?.kind === "3mf" && (
+                <p className="mt-2 text-sm text-ink2" data-testid="pf-3mf">{t.pfFrom3mf.replace("{entry}", res.source.entry).replace("{n}", String(res.source.plates))}{res.source.settings ? ` ${t.pfSettings3mf}` : ""}</p>
+              )}
               <ul className="mt-4 grid gap-3">
                 {checks.map((c) => {
                   const v = pfView(lang, c);
@@ -419,6 +482,12 @@ function Preflight({ onCode }: { onCode: (code: string) => void }) {
                         {c.code && <button type="button" className="chip" data-tone="accent" onClick={() => onCode(c.code!)}>{c.code} · {t.pfOpenCode}</button>}
                         <a href={c.reference.url} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 underline">{c.reference.title}<ExternalLink size={12} aria-hidden /></a>
                       </div>
+                      {c.community && (
+                        <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-ink3" data-testid="pf-community">
+                          <Chip tone="warn">{t.pfCommunity.replace("{d}", c.community.checked)}</Chip>
+                          {c.community.sources.filter((x) => x.url !== c.reference.url).map((x) => <a key={x.url} href={x.url} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 underline">{x.title}<ExternalLink size={12} aria-hidden /></a>)}
+                        </div>
+                      )}
                     </li>
                   );
                 })}

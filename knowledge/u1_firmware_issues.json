@@ -1,0 +1,311 @@
+{
+  "version": "0.1.0",
+  "checked_at": "2026-11-08",
+  "note": "Known issues per firmware version, rewritten in our words with a link to each source. Official entries come from the wiki release notes; community entries come from the public forum or the public u1-klipper repository and are never official, even when a Snapmaker staff member answered. May be out of date: every entry carries the date it was checked. Never ranked, no probability. Nothing here is ever sent to a printer.",
+  "versions": [
+    {"version": "0.9.0", "date": "2025-11-06"},
+    {"version": "0.9.4", "date": "2025-12-16"},
+    {"version": "1.0.0", "date": "2025-12-31"},
+    {"version": "1.1.0", "date": "2026-01-26"},
+    {"version": "1.1.1", "date": "2026-02-09"},
+    {"version": "1.2.0", "date": "2026-03-23"},
+    {"version": "1.3.0", "date": "2026-04-14"},
+    {"version": "1.4.0", "date": "2026-05-25"},
+    {"version": "1.4.1", "date": "2026-06-11"},
+    {"version": "1.5.0", "date": "2026-07-01"},
+    {"version": "1.5.1", "date": "2026-07-03"},
+    {"version": "1.5.2", "date": "2026-07-30"},
+    {"version": "1.6.0", "date": "2026-08-25"},
+    {"version": "2.0.0", "date": "2026-09-15"},
+    {"version": "2.1.0", "date": "2026-11-04"}
+  ],
+  "versions_source": "https://wiki.snapmaker.com/en/snapmaker_u1/firmware/release_notes",
+  "issues": [
+    {
+      "id": "FW-100-FOD-FALSE-ALARM",
+      "type": "bug",
+      "affected": {"min": "1.0.0", "max": "1.0.0"},
+      "fixed_in": null,
+      "origin": "COMMUNITY_REPORT",
+      "staff_confirmed": true,
+      "codes": [],
+      "symptom": {
+        "en": "Foreign Object Detection (AI monitoring) raised alarms with nothing on the bed, for example with third-party blue build plates, or during calibration with collision detection on.",
+        "fr": "La détection de corps étrangers (surveillance par IA) déclenchait des alertes alors que rien ne se trouvait sur le plateau, par exemple avec des plaques bleues d'autres marques ou pendant l'étalonnage avec la détection de collision active."
+      },
+      "workaround": {
+        "en": "Staff advised turning AI monitoring off (Settings > Print Preferences > AI Monitoring) or not using third-party blue plates, and keeping the area behind the printer clear.",
+        "fr": "Le personnel conseillait de désactiver la surveillance par IA (Réglages > Préférences d'impression > Surveillance IA) ou de ne pas utiliser de plaques bleues d'autres marques, et de dégager la zone derrière l'imprimante."
+      },
+      "scope": {
+        "en": "Snapmaker staff known-issues post for firmware 1.0.0 (January 2026). It says fixes were planned for the next update; no fixed-in version is named there.",
+        "fr": "Message du personnel Snapmaker sur les problèmes connus du firmware 1.0.0 (janvier 2026). Il annonce des corrections pour la mise à jour suivante, sans nommer la version corrigée."
+      },
+      "sources": [{"url": "https://forum.snapmaker.com/t/40862", "title": "Known Issues, Workarounds, and Next Steps for Firmware V1.0.0 & Snapmaker Orca/App V2.2.1", "posted": "2026-01-07"}]
+    },
+    {
+      "id": "FW-100-PRIME-TOWER-X-LIMIT",
+      "type": "bug",
+      "affected": {"min": "1.0.0", "max": "1.0.0"},
+      "fixed_in": null,
+      "origin": "COMMUNITY_REPORT",
+      "staff_confirmed": true,
+      "codes": ["0003-0522-0000-0013"],
+      "symptom": {
+        "en": "\"X-axis movement exceeded travel limit\" errors, which staff linked to the new prime tower shape that came with Snapmaker Orca 2.2.1.",
+        "fr": "Erreurs de dépassement de la course de l'axe X, que le personnel reliait à la nouvelle forme de tour d'amorçage arrivée avec Snapmaker Orca 2.2.1."
+      },
+      "workaround": {
+        "en": "Change the prime tower shape (for example from Rib to Rectangle) or move the tower so it stays inside the printable area.",
+        "fr": "Changer la forme de la tour d'amorçage (par exemple de nervurée à rectangulaire) ou la déplacer pour qu'elle reste dans la zone imprimable."
+      },
+      "scope": {
+        "en": "Same staff post (January 2026). A beta tester added that a rectangle can be risky for tall towers. No fixed-in version is named.",
+        "fr": "Même message du personnel (janvier 2026). Un bêta-testeur a ajouté qu'un rectangle peut être risqué pour une tour haute. Aucune version corrigée n'est nommée."
+      },
+      "sources": [{"url": "https://forum.snapmaker.com/t/40862", "title": "Known Issues, Workarounds, and Next Steps for Firmware V1.0.0 & Snapmaker Orca/App V2.2.1", "posted": "2026-01-07"}]
+    },
+    {
+      "id": "FW-100-DHCP-DISCONNECT",
+      "type": "bug",
+      "affected": {"min": "1.0.0", "max": "1.0.0"},
+      "fixed_in": null,
+      "origin": "COMMUNITY_REPORT",
+      "staff_confirmed": true,
+      "codes": [],
+      "symptom": {
+        "en": "Intermittent disconnections linked to dynamic IP address (DHCP) changes.",
+        "fr": "Déconnexions intermittentes liées aux changements d'adresse IP dynamique (DHCP)."
+      },
+      "workaround": {
+        "en": "Staff asked for a support ticket describing the network setup. A beta tester suggested reserving a fixed address for the printer in the router.",
+        "fr": "Le personnel demandait un ticket de support décrivant le réseau. Un bêta-testeur suggérait de réserver une adresse fixe pour l'imprimante dans le routeur."
+      },
+      "scope": {
+        "en": "Staff said the DHCP client was adjusted and Wi-Fi power saving would be disabled in the next firmware, and that the behaviour depends on routers. The version carrying the change is not named.",
+        "fr": "Le personnel indiquait que le client DHCP avait été ajusté et que l'économie d'énergie Wi-Fi serait désactivée dans le firmware suivant, et que le comportement dépend des routeurs. La version qui apporte le changement n'est pas nommée."
+      },
+      "sources": [{"url": "https://forum.snapmaker.com/t/40862", "title": "Known Issues, Workarounds, and Next Steps for Firmware V1.0.0 & Snapmaker Orca/App V2.2.1", "posted": "2026-01-07"}]
+    },
+    {
+      "id": "FW-PRE110-NO-LAYER-COUNT",
+      "type": "bug",
+      "affected": {"min": null, "max": "1.0.0"},
+      "fixed_in": "1.1.0",
+      "origin": "OFFICIAL_RELEASE_NOTE",
+      "staff_confirmed": false,
+      "codes": [],
+      "symptom": {
+        "en": "The firmware could shut down when the start G-code had no layer count command.",
+        "fr": "Le firmware pouvait s'arrêter quand le G-code de démarrage ne contenait pas de commande de nombre de couches."
+      },
+      "scope": {
+        "en": "Listed as fixed in the 1.1.0 release note; the first affected version is not stated.",
+        "fr": "Indiqué comme corrigé dans la note de version 1.1.0 ; la première version concernée n'est pas indiquée."
+      },
+      "sources": [{"url": "https://wiki.snapmaker.com/en/snapmaker_u1/firmware/release_notes/v110", "title": "U1 firmware V1.1.0 release note", "posted": "2026-01-26"}]
+    },
+    {
+      "id": "FW-110-SCREEN-AFTER-KLIPPER-RESTART",
+      "type": "bug",
+      "affected": {"min": "1.1.0", "max": "1.1.0"},
+      "fixed_in": null,
+      "origin": "COMMUNITY_REPORT",
+      "staff_confirmed": false,
+      "codes": [],
+      "symptom": {
+        "en": "After updating to 1.1.0 and restarting Klipper without switching the printer off, the touchscreen stayed blank during the next print and did not wake on touch, so the print could not be paused or stopped from the screen.",
+        "fr": "Après la mise à jour vers 1.1.0 et un redémarrage de Klipper sans éteindre l'imprimante, l'écran tactile est resté noir pendant l'impression suivante et ne se réveillait pas au toucher : impossible de mettre en pause ou d'arrêter l'impression depuis l'écran."
+      },
+      "workaround": {
+        "en": "For the reporter, the screen worked normally after a full power cycle following the update.",
+        "fr": "Chez l'auteur, l'écran fonctionnait normalement après une mise hors tension complète suivant la mise à jour."
+      },
+      "scope": {
+        "en": "One owner's report (January 2026); not confirmed by staff in the thread.",
+        "fr": "Signalement d'un seul propriétaire (janvier 2026) ; non confirmé par le personnel dans le fil."
+      },
+      "sources": [{"url": "https://forum.snapmaker.com/t/41112", "title": "DEFECT: Firmware Version 1.1.0 - Touchscreen unavailable during Print", "posted": "2026-01-28"}]
+    },
+    {
+      "id": "FW-130-NOZZLE-RULES",
+      "type": "behaviour",
+      "affected": {"min": "1.3.0", "max": null},
+      "fixed_in": null,
+      "origin": "OFFICIAL_RELEASE_NOTE",
+      "staff_confirmed": false,
+      "codes": [],
+      "symptom": {
+        "en": "From 1.3.0 the printer applies nozzle rules: the nozzle diameter in the G-code cannot be mapped to a toolhead fitted with a different diameter, and auto-refill is refused between nozzles of different diameters.",
+        "fr": "Depuis 1.3.0, l'imprimante applique des règles de buse : le diamètre de buse du G-code ne peut pas être associé à une tête équipée d'un autre diamètre, et le réapprovisionnement automatique est refusé entre buses de diamètres différents."
+      },
+      "workaround": {
+        "en": "Set the installed diameters in Settings > Maintenance > Toolhead Info; after changing a nozzle, run Multi-toolhead Offset Calibration and Heated Bed Leveling.",
+        "fr": "Renseigner les diamètres installés dans Réglages > Maintenance > Infos tête ; après un changement de buse, lancer l'étalonnage des décalages multi-têtes et le nivellement du plateau chauffant."
+      },
+      "scope": {
+        "en": "Intended behaviour, not a bug. In 2.0.0, a standard-flow file on a high-flow nozzle changed from blocking the print to a warning.",
+        "fr": "Comportement voulu, pas un défaut. En 2.0.0, un fichier à débit standard sur une buse à haut débit est passé d'un blocage de l'impression à un simple avertissement."
+      },
+      "sources": [
+        {"url": "https://wiki.snapmaker.com/en/snapmaker_u1/firmware/release_notes/v130", "title": "U1 firmware V1.3.0 release note", "posted": "2026-04-14"},
+        {"url": "https://wiki.snapmaker.com/en/snapmaker_u1/firmware/release_notes/v200", "title": "U1 firmware V2.0.0 release note", "posted": "2026-09-15"}
+      ]
+    },
+    {
+      "id": "FW-150-FIRST-LAYER-SQUISHED",
+      "type": "bug",
+      "affected": {"min": "1.5.0", "max": "1.5.1"},
+      "fixed_in": "1.5.2",
+      "origin": "OFFICIAL_RELEASE_NOTE",
+      "staff_confirmed": true,
+      "codes": [],
+      "symptom": {
+        "en": "First layer overly squished when Heated Bed Leveling was not enabled before printing (1.5.0). On 1.5.1 it could still happen after the printer had been idle for a long time.",
+        "fr": "Première couche trop écrasée quand le nivellement du plateau chauffant n'était pas activé avant l'impression (1.5.0). En 1.5.1, cela pouvait encore arriver après une longue période d'inactivité."
+      },
+      "workaround": {
+        "en": "Update to 1.5.2 or later. If you had 1.5.0 or 1.5.1, run Multi-toolhead Offset Calibration again with all toolheads unloaded and enable Heated Bed Leveling before printing.",
+        "fr": "Passer en 1.5.2 ou plus récent. Si vous aviez 1.5.0 ou 1.5.1, relancer l'étalonnage des décalages multi-têtes avec toutes les têtes déchargées et activer le nivellement du plateau chauffant avant d'imprimer."
+      },
+      "scope": {
+        "en": "Fixed in 1.5.2 per the release note. A staff member confirmed several similar reports in the forum thread. The release note adds that first-layer quality also depends on the printer, its calibration and the settings.",
+        "fr": "Corrigé en 1.5.2 selon la note de version. Un membre du personnel a confirmé plusieurs signalements semblables dans le fil du forum. La note précise que la qualité de la première couche dépend aussi de l'imprimante, de son étalonnage et des réglages."
+      },
+      "sources": [
+        {"url": "https://wiki.snapmaker.com/en/snapmaker_u1/firmware/release_notes/v151", "title": "U1 firmware V1.5.1 release note", "posted": "2026-07-03"},
+        {"url": "https://wiki.snapmaker.com/en/snapmaker_u1/firmware/release_notes/v152", "title": "U1 firmware V1.5.2 release note", "posted": "2026-07-30"},
+        {"url": "https://forum.snapmaker.com/t/42416", "title": "Firmware 1.5.0 - Print Quality Degraded After Update (Improved After Downgrade + Full Recalibration)", "posted": "2026-07-03"}
+      ]
+    },
+    {
+      "id": "FW-152-FALSE-NOZZLE-MISMATCH",
+      "type": "bug",
+      "affected": {"min": "1.3.0", "max": "1.5.1"},
+      "fixed_in": "1.5.2",
+      "origin": "OFFICIAL_RELEASE_NOTE",
+      "staff_confirmed": false,
+      "codes": [],
+      "symptom": {
+        "en": "False nozzle diameter mismatch warnings could prevent prints from starting.",
+        "fr": "De fausses alertes de diamètre de buse incompatible pouvaient empêcher le démarrage des impressions."
+      },
+      "scope": {
+        "en": "Listed as fixed in the 1.5.2 release note, which does not say since when. The lower bound 1.3.0 is ours: the nozzle rules arrived with 1.3.0.",
+        "fr": "Indiqué comme corrigé dans la note de version 1.5.2, qui ne dit pas depuis quand. La borne basse 1.3.0 est la nôtre : les règles de buse sont arrivées avec 1.3.0."
+      },
+      "sources": [
+        {"url": "https://wiki.snapmaker.com/en/snapmaker_u1/firmware/release_notes/v152", "title": "U1 firmware V1.5.2 release note", "posted": "2026-07-30"},
+        {"url": "https://wiki.snapmaker.com/en/snapmaker_u1/firmware/release_notes/v130", "title": "U1 firmware V1.3.0 release note", "posted": "2026-04-14"}
+      ]
+    },
+    {
+      "id": "FW-PRE200-CHAMBER-WAIT-EXTERNAL",
+      "type": "bug",
+      "affected": {"min": "1.5.0", "max": "1.6.0"},
+      "fixed_in": "2.0.0",
+      "origin": "OFFICIAL_RELEASE_NOTE",
+      "staff_confirmed": false,
+      "codes": [],
+      "symptom": {
+        "en": "The printer still waited for the chamber to heat up when the Top Cover was in external circulation mode.",
+        "fr": "L'imprimante attendait encore la chauffe de la chambre quand le capot supérieur était en mode de circulation externe."
+      },
+      "scope": {
+        "en": "Listed as fixed in the 2.0.0 release note. The lower bound 1.5.0 is ours: Top Cover support arrived with 1.5.0.",
+        "fr": "Indiqué comme corrigé dans la note de version 2.0.0. La borne basse 1.5.0 est la nôtre : la prise en charge du capot supérieur est arrivée avec 1.5.0."
+      },
+      "sources": [
+        {"url": "https://wiki.snapmaker.com/en/snapmaker_u1/firmware/release_notes/v200", "title": "U1 firmware V2.0.0 release note", "posted": "2026-09-15"},
+        {"url": "https://wiki.snapmaker.com/en/snapmaker_u1/firmware/release_notes/v150", "title": "U1 firmware V1.5.0 release note", "posted": "2026-07-01"}
+      ]
+    },
+    {
+      "id": "FW-PRE200-HASH-FILENAME",
+      "type": "bug",
+      "affected": {"min": null, "max": "1.6.0"},
+      "fixed_in": "2.0.0",
+      "origin": "OFFICIAL_RELEASE_NOTE",
+      "staff_confirmed": false,
+      "codes": [],
+      "symptom": {
+        "en": "G-code file names starting with # could make the system shut down abnormally.",
+        "fr": "Les noms de fichiers G-code commençant par # pouvaient provoquer un arrêt anormal du système."
+      },
+      "workaround": {
+        "en": "Rename the file, or update to 2.0.0 or later. The G-code pre-flight flags such names.",
+        "fr": "Renommer le fichier, ou passer en 2.0.0 ou plus récent. Le pré-contrôle G-code signale ces noms."
+      },
+      "scope": {
+        "en": "Listed as fixed in the 2.0.0 release note; the first affected version is not stated.",
+        "fr": "Indiqué comme corrigé dans la note de version 2.0.0 ; la première version concernée n'est pas indiquée."
+      },
+      "sources": [{"url": "https://wiki.snapmaker.com/en/snapmaker_u1/firmware/release_notes/v200", "title": "U1 firmware V2.0.0 release note", "posted": "2026-09-15"}]
+    },
+    {
+      "id": "FW-2X-PART-FAN-EARLY",
+      "type": "bug",
+      "affected": {"min": "2.0.0", "max": "2.1.0"},
+      "fixed_in": null,
+      "origin": "COMMUNITY_REPORT",
+      "staff_confirmed": false,
+      "codes": [],
+      "symptom": {
+        "en": "The part cooling fan reacts to M106/M107 about 2 to 4 seconds before the toolhead reaches the command, so per-feature cooling (first layer, bridges, overhangs) lands in the wrong place.",
+        "fr": "Le ventilateur de pièce réagit à M106/M107 environ 2 à 4 secondes avant que la tête n'atteigne la commande : le refroidissement par zone (première couche, ponts, surplombs) tombe au mauvais endroit."
+      },
+      "scope": {
+        "en": "Opened as u1-klipper issue #18 on a third-party firmware build. A community member reproduced it on stock 2.0.0 and 2.1.0 in Klipper batch mode, without a printer (fan about 4.3 s early). Not confirmed by Snapmaker; no fix announced.",
+        "fr": "Ouvert comme ticket u1-klipper n° 18 sur un firmware tiers. Un membre de la communauté l'a reproduit sur les versions d'origine 2.0.0 et 2.1.0 en mode de traitement par lots de Klipper, sans imprimante (ventilateur environ 4,3 s trop tôt). Non confirmé par Snapmaker ; aucune correction annoncée."
+      },
+      "sources": [
+        {"url": "https://github.com/Snapmaker/u1-klipper/issues/18", "title": "M106/M107 (part cooling fan) not synchronized with motion queue", "posted": "2026-10-15"},
+        {"url": "https://forum.snapmaker.com/t/43655", "title": "[Firmware bug] Part cooling fan (M106) switches 2-4 s too early - not synced with motion", "posted": "2026-10-15"},
+        {"url": "https://forum.snapmaker.com/t/44036", "title": "U1 Fix Pack: firmware fixes for \"Move out of range\" after skipping an object, and the part fan switching early", "posted": "2026-11-03"}
+      ]
+    },
+    {
+      "id": "FW-2X-SKIP-OBJECT-RESUME",
+      "type": "bug",
+      "affected": {"min": "1.6.0", "max": "2.1.0"},
+      "fixed_in": null,
+      "origin": "COMMUNITY_REPORT",
+      "staff_confirmed": false,
+      "codes": [],
+      "symptom": {
+        "en": "After skipping an object and then pausing, Resume stops with \"Move out of range\".",
+        "fr": "Après avoir ignoré un objet puis mis en pause, la reprise s'arrête sur une erreur de mouvement hors limites."
+      },
+      "scope": {
+        "en": "Opened as u1-klipper issue #22, reported on a third-party build of 2.0.0 and on 1.6.0. A community member reproduced it on stock 2.0.0 and 2.1.0 in Klipper batch mode, without a printer. Not confirmed by Snapmaker; no fix announced.",
+        "fr": "Ouvert comme ticket u1-klipper n° 22, signalé sur une version tierce de 2.0.0 et sur 1.6.0. Un membre de la communauté l'a reproduit sur les versions d'origine 2.0.0 et 2.1.0 en mode de traitement par lots de Klipper, sans imprimante. Non confirmé par Snapmaker ; aucune correction annoncée."
+      },
+      "sources": [
+        {"url": "https://github.com/Snapmaker/u1-klipper/issues/22", "title": "Skipping an object, then pausing, makes Resume fail with \"Move out of range\"", "posted": "2026-10-31"},
+        {"url": "https://forum.snapmaker.com/t/44036", "title": "U1 Fix Pack: firmware fixes for \"Move out of range\" after skipping an object, and the part fan switching early", "posted": "2026-11-03"}
+      ]
+    },
+    {
+      "id": "FW-210-BLACK-SCREEN",
+      "type": "bug",
+      "affected": {"min": "2.1.0", "max": "2.1.0"},
+      "fixed_in": null,
+      "origin": "COMMUNITY_REPORT",
+      "staff_confirmed": false,
+      "codes": [],
+      "symptom": {
+        "en": "The touchscreen went black during a print and did not wake on touch, while the print went on. Both reporters had the screen timeout at 15 minutes.",
+        "fr": "L'écran tactile est devenu noir pendant une impression et ne se réveillait pas au toucher, alors que l'impression continuait. Les deux auteurs avaient la mise en veille de l'écran réglée sur 15 minutes."
+      },
+      "workaround": {
+        "en": "One reporter needed a power cycle to get the screen back; setting Settings > Screen Timeout to Never stopped it for that reporter.",
+        "fr": "Un auteur a dû éteindre et rallumer l'imprimante pour retrouver l'écran ; régler Réglages > Mise en veille de l'écran sur Jamais a fait cesser le problème chez lui."
+      },
+      "scope": {
+        "en": "Two owner reports (November 2026). A staff member asked for the system logs; the thread does not confirm the cause.",
+        "fr": "Signalements de deux propriétaires (novembre 2026). Un membre du personnel a demandé les journaux système ; le fil ne confirme pas la cause."
+      },
+      "sources": [{"url": "https://forum.snapmaker.com/t/44076", "title": "[BUG] Snapmaker U1 Firmware 2.1.0 - Touchscreen goes black during printing and won't wake up", "posted": "2026-11-04"}]
+    }
+  ]
+}

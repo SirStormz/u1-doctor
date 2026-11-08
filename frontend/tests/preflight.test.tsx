@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { App } from "../src/App";
-import { PF_FR_KEYS, pfKey, pfView, type PfCheck } from "../src/lib/preflight-text";
+import { PF_FR_KEYS, pfKey, pfLimit, pfView, type PfCheck } from "../src/lib/preflight-text";
 
 const check = (o: Partial<PfCheck>): PfCheck => ({ id: "x", status: "PASS", title: "T", detail: "D", evidence: { lines: [], count: 0 }, code: null, code_title: null, reference: { title: "R", url: "https://wiki.snapmaker.com/en/x" }, params: {}, ...o });
 
@@ -17,6 +17,17 @@ const CASES: PfCheck[] = [
   check({ id: "nozzle_diameters", status: "INFO", params: { v: "declared", diameter: 0.4 } }), check({ id: "nozzle_diameters", status: "UNKNOWN" }),
   check({ id: "filament_x", status: "PASS" }).id ? check({ id: "filename_hash", status: "WARN" }) : check({}), check({ id: "filename_hash", status: "PASS" }), check({ id: "filename_hash", status: "UNKNOWN" }),
   check({ id: "slicer", status: "INFO", params: { orca: true, name: "SnapmakerOrca", version: "2.2.1" } }), check({ id: "slicer", status: "INFO", params: { orca: false, name: "Cura", version: "5.0.0" } }), check({ id: "slicer", status: "UNKNOWN" }),
+  // checks 11-20 (#58)
+  check({ id: "m191_chamber_wait", status: "WARN" }), check({ id: "m191_chamber_wait", status: "PASS" }),
+  check({ id: "start_line_y_edge", status: "WARN", params: { n: 2 } }), check({ id: "start_line_y_edge", status: "PASS" }),
+  check({ id: "probe_temperature", status: "INFO", params: { v: "lower", probe: 130, print: 220 } }), check({ id: "probe_temperature", status: "INFO", params: { v: "single", print: 220 } }), check({ id: "probe_temperature", status: "UNKNOWN" }),
+  check({ id: "tool_mapping", status: "WARN", params: { tools: [3], filaments: 2 } }), check({ id: "tool_mapping", status: "INFO", params: { order: ["T0", "T1"], more: false, selections: 2, tools: [0, 1] } }), check({ id: "tool_mapping", status: "PASS" }),
+  check({ id: "foreign_profile", status: "WARN", params: { dwells: 2, dwell_max: 9, commands: ["M620"], model: "Bambu Lab X1", bambu: true } }), check({ id: "foreign_profile", status: "PASS" }),
+  check({ id: "prime_tower_bounds", status: "WARN", params: { v: "outside", reach: { x_max: 272 }, bed: [0, 270, 0, 270] } }), check({ id: "prime_tower_bounds", status: "PASS", params: { v: "inside", bed: [0, 270, 0, 270] } }), check({ id: "prime_tower_bounds", status: "PASS", params: { v: "none", bed: [0, 270, 0, 270] } }),
+  check({ id: "colour_block", status: "WARN" }), check({ id: "colour_block", status: "PASS", params: { v: "declared" } }), check({ id: "colour_block", status: "PASS", params: { v: "single" } }),
+  check({ id: "tpu_profile", status: "INFO", params: { slots: [2], retraction: [3], retraction_speed: [40], mvs: [3.6] } }), check({ id: "tpu_profile", status: "UNKNOWN", params: { slots: [1] } }), check({ id: "tpu_profile", status: "PASS" }),
+  check({ id: "purge_summary", status: "INFO", params: { v: "no_change" } }), check({ id: "purge_summary", status: "INFO", params: { v: "derived", changes: 2, blocks: 2, mm: 14, mm3: 34, per_block: 17 } }), check({ id: "purge_summary", status: "INFO", params: { v: "not_derivable", changes: 2 } }),
+  check({ id: "last_move_scar", status: "INFO", params: { v: "low", z: 0.4, part_z: 0.4 } }), check({ id: "last_move_scar", status: "PASS", params: { v: "lifted", z: 3.65, part_z: 3.05 } }), check({ id: "last_move_scar", status: "PASS", params: { v: "none" } }),
 ];
 
 test("every backend check has a French form and English stays untouched", () => {
@@ -76,4 +87,45 @@ test("dock hint highlights the slots named by the official row", async () => {
   expect([1, 2, 3, 4].map((n) => slot(n).dataset.inspect)).toEqual(["true", "true", "false", "false"]);
   expect(slot(4).dataset.reported).toBe("true");
   expect(box.textContent).toMatch(/names these toolheads/);
+});
+
+test("French values use a decimal comma and keep the numbers", () => {
+  const fr = pfView("fr", check({ id: "tpu_profile", status: "INFO", params: { slots: [2], retraction: [0.8, null], retraction_speed: [40], mvs: [3.6] } }));
+  expect(fr.detail).toContain("0,8 ; ?");
+  expect(fr.detail).toContain("3,6 mm³/s");
+  expect(pfView("fr", check({ id: "prime_tower_bounds", status: "WARN", params: { v: "outside", reach: { x_max: 272.5 }, bed: [0, 270, 0, 270] } })).detail).toContain("X max 272,5");
+});
+
+test("new limit lines have a French form", () => {
+  for (const l of ["Checks marked as reported by the community come from public forum topics (checked 2026-11-08): they are not official.", "Several checks read the slicer's comment lines; a file without them gives fewer results."]) {
+    expect(pfLimit("fr", l)).not.toBe(l);
+  }
+});
+
+test("a 3MF goes to the 3MF route and community checks show their date and sources", async () => {
+  const rep = {
+    ...REPORT, source: { kind: "3mf", entry: "Metadata/plate_1.gcode", plates: 2, settings: true },
+    checks: [check({ id: "m191_chamber_wait", status: "WARN", title: "M191 (wait for chamber temperature) is used", reference: { title: "Waiting for Chamber Temperature", url: "https://forum.snapmaker.com/t/41689" },
+      community: { kind: "COMMUNITY_REPORT", checked: "2026-11-08", sources: [{ url: "https://forum.snapmaker.com/t/41689", title: "Waiting for Chamber Temperature" }, { url: "https://forum.snapmaker.com/t/41736", title: "[Feature Request] Implement G-Code M191" }] } })],
+  };
+  vi.stubGlobal("fetch", vi.fn(async (url: string) => (String(url).includes("/preflight/3mf") ? { ok: true, status: 200, json: async () => rep } : { ok: true, status: 200, json: async () => ({}) })));
+  render(<App />);
+  const input = await screen.findByLabelText(/Choose a G-code file/i);
+  fireEvent.change(input, { target: { files: [new File(["PK"], "project.3mf")] } });
+  await waitFor(() => expect(screen.getByText("M191 (wait for chamber temperature) is used")).toBeTruthy());
+  const calls = (fetch as unknown as { mock: { calls: [string, RequestInit][] } }).mock.calls.filter((c) => String(c[0]).includes("preflight"));
+  expect(calls[0]![0]).toContain("/api/v1/preflight/3mf?name=project.3mf");
+  expect((calls[0]![1].headers as Record<string, string>)["content-type"]).toBe("application/zip");
+  expect(screen.getByTestId("pf-3mf").textContent).toContain("Metadata/plate_1.gcode");
+  const com = screen.getByTestId("pf-community");
+  expect(com.textContent).toContain("Reported by the community · checked 2026-11-08");
+  expect(com.querySelectorAll("a")).toHaveLength(1); // the first source is already the reference link
+});
+
+test("a 3MF without sliced G-code is refused with a translated message", async () => {
+  vi.stubGlobal("fetch", vi.fn(async (url: string) => (String(url).includes("/preflight/3mf") ? { ok: false, status: 422, json: async () => ({ detail: { code: "NO_GCODE" } }) } : { ok: true, status: 200, json: async () => ({}) })));
+  render(<App />);
+  const input = await screen.findByLabelText(/Choose a G-code file/i);
+  fireEvent.change(input, { target: { files: [new File(["PK"], "model.3mf")] } });
+  await waitFor(() => expect(screen.getByText(/U1 Doctor does not slice/)).toBeTruthy());
 });

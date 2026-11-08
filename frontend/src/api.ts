@@ -162,16 +162,27 @@ export const bundles = {
 };
 
 export const knownIssues = () => fetch("/api/v1/knowledge/known-issues").then(j<KnownIssues>);
+
+export interface FirmwareIssue {
+  id: string; type: "bug" | "behaviour"; affected: { min: string | null; max: string | null }; fixed_in: string | null;
+  origin: "OFFICIAL_RELEASE_NOTE" | "COMMUNITY_REPORT"; staff_confirmed: boolean; codes: string[];
+  symptom: L10n; workaround?: L10n; scope: L10n; sources: { url: string; title: string; posted: string }[];
+}
+export interface FirmwareIssues { version: string; checked_at: string; note: string; versions: { version: string; date: string }[]; issues: FirmwareIssue[]; filter?: string }
+export const firmwareIssues = (version?: string) =>
+  fetch(`/api/v1/knowledge/firmware-issues${version ? `?version=${encodeURIComponent(version)}` : ""}`).then(j<FirmwareIssues>);
 export const supportChecklist = (code: string, firmware?: string) =>
   fetch("/api/v1/support/checklist", { method: "POST", headers: hdr("application/json"), body: JSON.stringify(firmware ? { code, firmware } : { code }) }).then(j<SupportOut>);
 
 export interface PreflightOut {
   file: { bytes: number; lines: number; name_provided: boolean }; slicer: { name: string | null; version: string | null };
   checks: PfCheck[]; summary: Record<"FAIL" | "WARN" | "PASS" | "INFO" | "UNKNOWN", number>; limits: string[];
+  source?: { kind: "3mf"; entry: string; plates: number; settings: boolean };
 }
 export class PreflightRefused extends Error { constructor(public code: string) { super(code); } }
 export const preflight = async (file: File): Promise<PreflightOut> => {
-  const r = await fetch(`/api/v1/preflight/gcode?name=${encodeURIComponent(file.name.slice(0, 255))}`, { method: "POST", headers: hdr("text/plain"), body: file });
+  const route = /\.3mf$/i.test(file.name) ? "3mf" : "gcode";
+  const r = await fetch(`/api/v1/preflight/${route}?name=${encodeURIComponent(file.name.slice(0, 255))}`, { method: "POST", headers: hdr(route === "3mf" ? "application/zip" : "text/plain"), body: file });
   if (r.status === 422) { const b = (await r.json()) as { detail?: { code?: string } }; throw new PreflightRefused(b.detail?.code ?? "UNKNOWN"); }
   return j<PreflightOut>(r);
 };
