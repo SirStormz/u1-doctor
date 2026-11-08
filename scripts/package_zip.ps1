@@ -4,7 +4,7 @@ $ErrorActionPreference = "Stop"
 $root = (Get-Location).Path
 $app = Join-Path $root "build\dist\u1-doctor"
 if (-not (Test-Path (Join-Path $app "u1-doctor.exe"))) { throw "Build first: scripts\build_windows.ps1" }
-$name = "u1-doctor-0.1.6-g1-win64"
+$name = "u1-doctor-0.1.7-g1-win64"
 $stage = Join-Path $root "build\zip-stage\$name"
 if (Test-Path (Split-Path $stage)) { Remove-Item -Recurse -Force (Split-Path $stage) }
 New-Item -ItemType Directory -Force $stage | Out-Null
