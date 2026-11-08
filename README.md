@@ -191,7 +191,7 @@ cd backend; .venv\Scripts\python.exe -m pytest
 cd frontend; npm test
 ```
 
-At the time of writing: 933 backend tests, 88 frontend tests and 15 browser (Playwright) tests pass, with `ruff`, `mypy` and `tsc` clean. CI runs the same checks on Windows, Linux and macOS.
+At the time of writing: 933 backend tests, 93 frontend tests and 16 browser (Playwright) tests pass, with `ruff`, `mypy` and `tsc` clean. CI runs the same checks on Windows, Linux and macOS.
 
 ## More documentation
 
