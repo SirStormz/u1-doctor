@@ -168,7 +168,7 @@ const en = {
   replaySub: "Run the rules again on frozen data and check the result is identical.", scenario: "Scenario", runReplay: "Run replay", replayHelp: "Synthetic scenarios only. Findings are compared byte for byte with the frozen reference.",
   replayEmpty: "Run a replay to see the seal.", identicalPrev: "Identical to the previous run", differsPrev: "Differs from the previous run", runs: "Runs", matches: "Reference",
   // settings
-  settingsSub: "Appearance, versions and what is really supported.", appearance: "Appearance", versions: "Versions & mode", machineAccess: "Machine access", firmware: "Official firmware", fwNote: "not observed",
+  settingsSub: "Appearance, versions and what is really supported.", appearance: "Appearance", versions: "Versions & mode", releases: "Releases", releasesLink: "All releases on GitHub", releasesNote: "Opens in your browser. The app itself never checks for updates.", machineAccess: "Machine access", firmware: "Official firmware", fwNote: "not observed",
   retention: "Retention", retentionNote: "Nothing is stored except demo replay hashes.", compat: "Compatibility", capability: "Capability", status: "Status",
   compatNote: "TESTED_SYNTHETIC = verified on synthetic data only. UNTESTED = not tried on any real U1.",
   landing: {
@@ -363,7 +363,7 @@ const fr: Dict = {
   fromTable: "d'après la table officielle", catalogNote: "Catalogue paraphrasé depuis le wiki officiel, vérifié le {d}.",
   replaySub: "Relancez les règles sur des données figées et vérifiez que le résultat est identique.", scenario: "Scénario", runReplay: "Lancer le rejeu", replayHelp: "Scénarios synthétiques uniquement. Les conclusions sont comparées octet par octet à la référence figée.",
   replayEmpty: "Lancez un rejeu pour voir le sceau.", identicalPrev: "Identique à l'exécution précédente", differsPrev: "Différent de l'exécution précédente", runs: "Exécutions", matches: "Référence",
-  settingsSub: "Apparence, versions et ce qui est réellement pris en charge.", appearance: "Apparence", versions: "Versions et mode", machineAccess: "Accès machine", firmware: "Firmware officiel", fwNote: "non observé",
+  settingsSub: "Apparence, versions et ce qui est réellement pris en charge.", appearance: "Apparence", versions: "Versions et mode", releases: "Publications", releasesLink: "Toutes les versions sur GitHub", releasesNote: "S'ouvre dans votre navigateur. L'application ne cherche jamais elle-même de mise à jour.", machineAccess: "Accès machine", firmware: "Firmware officiel", fwNote: "non observé",
   retention: "Conservation", retentionNote: "Rien n'est stocké sauf les hashes de rejeu de démo.", compat: "Compatibilité", capability: "Capacité", status: "Statut",
   compatNote: "« Testé (synthétique) » = vérifié sur données synthétiques seulement. « Non testé » = jamais essayé sur une vraie U1.",
   landing: {

@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { motion, useReducedMotion, useScroll, useSpring } from "motion/react";
 import { ArrowRight, Check, ChevronDown, Lock, Pause, Play, Sparkles, X } from "lucide-react";
-import keyart from "../assets/keyart.png";
+import keyart from "../assets/keyart.webp";
 import { Chip, Kbd, Logo, SeverityChip } from "../components/ui";
 import { api } from "../api";
 import { hhmmss, tms, useIncident, val } from "../lib/data";

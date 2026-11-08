@@ -29,11 +29,19 @@ All 11 screens are in [`docs/media/screens/`](media/screens/).
 
    Compare the output with the published value: `137D74A73CD12687844C781186B1BCD21002BCF53F3735B1E0B0B0AA2442D4E7`. If they differ, do not run the file.
    (A SHA-256 proves the file was not altered or corrupted. It does not prove who made it.)
+
+   Optional, for builds released **after 0.1.7-g1** (the release workflow gained this step on 2026-11-08; `0.1.7-g1` and older have no attestation): check that the zip was built by this repository's GitHub Actions release workflow, with the [GitHub CLI](https://cli.github.com/):
+
+   ```powershell
+   gh attestation verify .\u1-doctor-<version>-win64.zip --repo SirStormz/u1-doctor
+   ```
+
+   It prints the workflow, commit and run that produced the file, or fails. This is GitHub's build provenance (Sigstore-signed): it says where and from which commit the zip was built, not that the code is safe.
 3. Unpack the zip with Windows Explorer (**Extract all**; WinRAR or 7-Zip would drop the download mark Windows uses for SmartScreen). It is one folder, no Python needed. Double-click `u1-doctor.exe`: a window opens with the app (no console, no browser). If the Microsoft WebView2 component is missing (some Windows 10 PCs), the app offers to install it once with Microsoft's own installer shipped in the zip (internet and a Windows permission prompt needed). The zip holds only the app: `u1-doctor.exe`, its runtime files, the WebView2 installer and the licence.
 4. The app serves itself on `127.0.0.1:8765` only (set `U1DOCTOR_PORT` to change the port); closing the window stops it. Your language and theme choices are kept between runs.
 5. If the window cannot start, the app opens in your browser instead and writes the reason to `%APPDATA%\U1 Doctor\error.log`. Your user folder path is replaced by `%USERPROFILE%` in that file, but read it before attaching it to an issue: it may still hold other folder or file names.
 
-The build is produced by `scripts\build_windows.ps1`. It bundles the owner's 3D model (`frontend/public/models/u1-jay.glb`).
+The build is produced by `scripts\build_windows.ps1`; the release workflow installs the Python dependencies at the exact versions of `backend/constraints-release.txt` and pins every GitHub Action by commit SHA. It bundles the owner's 3D model (`frontend/public/models/u1-jay.glb`).
 
 ## B. From source (Windows PowerShell)
 

@@ -63,6 +63,7 @@ export function U1Viewer({ src, fallbackSrc, text, className = "", hotspotLabel 
       try {
         const THREE = await import("three");
         const { GLTFLoader } = await import("three/examples/jsm/loaders/GLTFLoader.js");
+        const { MeshoptDecoder } = await import("three/examples/jsm/libs/meshopt_decoder.module.js"); // local, offline (EXT_meshopt_compression)
         const { OrbitControls } = await import("three/examples/jsm/controls/OrbitControls.js");
         const { RoomEnvironment } = await import("three/examples/jsm/environments/RoomEnvironment.js");
         if (cancelled || !host.current) return;
@@ -110,7 +111,7 @@ export function U1Viewer({ src, fallbackSrc, text, className = "", hotspotLabel 
         controls.autoRotateSpeed = 0.7;
         controls.autoRotate = auto && !REDUCED();
 
-        const gltf = await new GLTFLoader().loadAsync(src);
+        const gltf = await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(src);
         if (cancelled) return;
         const model = gltf.scene;
         model.scale.setScalar(MODEL_SCALE);

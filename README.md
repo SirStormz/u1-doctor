@@ -120,9 +120,9 @@ The capture never contains your address or file names. It sends 4 GET requests (
 | Community-reported causes: 11 entries covering 25 codes (forum topics read 2026-11-08, labelled as community reports), near-match for mistyped codes, matcher for 8 messages without a code | tested |
 | Ticket-ready summary (copy to clipboard, nothing sent) and a "save the bundle now" reminder in the capture and history screens | tested |
 | Print-quality assistant ("needs your eyes"): 16 symptoms, causes in the official order, evidence only from numbers you type or saved temperatures | tested |
-| Timeline of the **observed window**: phases, explicit gaps, source and time quality per row | tested on real captures and 17 synthetic scenarios |
+| Timeline of the **observed window**: phases, explicit gaps, source and time quality per row | tested on real captures and 20 synthetic scenarios |
 | `U1-DEB` evidence bundle: **export of the demo scenarios or of your own saved captures**, safe import and replay ([spec](docs/U1-DEB.md)) | tested; a ready-made example and a validator are in the repo |
-| Windows build (one folder, no Python needed) | started and checked on the developer PC; **not yet tested on a clean Windows 11** |
+| Windows build (one folder, no Python needed) | started and checked on the developer PC; an earlier build passed the second-PC test kit on a clean Windows 11 PC; the SmartScreen prompt and a PC without WebView2 are **not yet tested** |
 | English and French interface | both complete |
 
 **Honest status:** the real captures come from the owner's own U1 (firmware 2.1.0) and are normal prints: a 27-minute print (9,333 frames) and a 55-minute multi-colour print (18,339 frames). **No real fault has been captured yet**, so every incident you can open in the app is labelled `SYNTHETIC`. That is the main thing this project still needs: see [real incidents wanted](#real-incidents-wanted).
@@ -168,7 +168,7 @@ timeline + rules engine (pure function, pinned rule set)
 findings --> U1-DEB bundle (export / safe import / replay)
 ```
 
-Every fact carries its source and a time-quality marker. Findings point back to the observations that produced them. Imported bundles are labelled `IMPORTED`, and their findings are always recomputed with your local rule set. Architecture: [`docs/architecture.md`](docs/architecture.md).
+Every fact carries its source and a time-quality marker. Findings point back to the observations that produced them. Imported bundles are labelled `IMPORTED`, and their findings are always recomputed with your local rule set. **One-page summary of the 20 rules, their sources and limits, the live-read budget and a comparison with community tools: [`docs/HOW-IT-WORKS.md`](docs/HOW-IT-WORKS.md).** Architecture: [`docs/architecture.md`](docs/architecture.md).
 
 ## Real incidents wanted
 
@@ -198,10 +198,11 @@ cd backend; .venv\Scripts\python.exe -m pytest
 cd frontend; npm test
 ```
 
-At the time of writing: 933 backend tests, 93 frontend tests and 16 browser (Playwright) tests pass, with `ruff`, `mypy` and `tsc` clean. CI runs the same checks on Windows, Linux and macOS.
+At the time of writing: 1,159 backend tests, 138 frontend tests and 16 browser (Playwright) tests pass, with `ruff`, `mypy` and `tsc` clean. CI runs the same checks on Windows, Linux and macOS.
 
 ## More documentation
 
+- [`docs/HOW-IT-WORKS.md`](docs/HOW-IT-WORKS.md): one page on the rules, provenance, the live-read budget and how U1 Doctor differs from community tools.
 - [`docs/INSTALL.md`](docs/INSTALL.md): install guide (executable, source, Docker) and where your data lives.
 - [`docs/U1-DEB.md`](docs/U1-DEB.md): the evidence bundle format and its validator.
 - [`docs/LIMITS.md`](docs/LIMITS.md): what is not covered or not yet proven.

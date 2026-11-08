@@ -52,6 +52,7 @@ export function LandingScene({ src, rootRef, onReady, onFail, ctl, onPick }: Pro
       try {
         const THREE = await import("three");
         const { GLTFLoader } = await import("three/examples/jsm/loaders/GLTFLoader.js");
+        const { MeshoptDecoder } = await import("three/examples/jsm/libs/meshopt_decoder.module.js"); // local, offline (EXT_meshopt_compression)
         const { RoomEnvironment } = await import("three/examples/jsm/environments/RoomEnvironment.js");
         if (cancelled) return;
 
@@ -86,7 +87,7 @@ export function LandingScene({ src, rootRef, onReady, onFail, ctl, onPick }: Pro
         scene.add(rim2);
 
 
-        const gltf = await new GLTFLoader().loadAsync(src);
+        const gltf = await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(src);
         if (cancelled) return;
         const model = gltf.scene;
         model.scale.setScalar(MODEL_SCALE);

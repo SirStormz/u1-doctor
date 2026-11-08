@@ -308,6 +308,14 @@ test("onboarding: Settings can replay it", async () => {
   expect(await screen.findByRole("dialog")).toBeInTheDocument();
 });
 
+test("Settings shows the app version and a plain link to the releases page, with no request made for it", async () => {
+  render(<App />);
+  await go("#/settings");
+  const link = await screen.findByRole("link", { name: /All releases on GitHub|Toutes les versions sur GitHub/ });
+  expect(link).toHaveAttribute("href", "https://github.com/SirStormz/u1-doctor/releases");
+  expect(calls.some((c) => /github/i.test(c))).toBe(false);
+});
+
 const firstRun = async () => { localStorage.removeItem("u1d.onboarded"); };
 const flush = () => act(async () => { await new Promise((x) => setTimeout(x, 40)); });
 

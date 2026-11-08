@@ -1,5 +1,5 @@
 import { Activity, ArrowRight, Boxes, FileSearch, Gauge, Layers, Radar } from "lucide-react";
-import hero from "../assets/keyart.png";
+import hero from "../assets/keyart.webp";
 import { MODEL_URL } from "../viz/u1model";
 import { Button, Chip, LedgerBars, Panel, ProvenanceChip, SeverityChip, Stat, StateBlock, TechDetails } from "../components/ui";
 import { PageTitle } from "../components/shell";

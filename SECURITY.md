@@ -15,6 +15,12 @@ U1 Doctor is a local, read-only tool. Full analysis: [`docs/threat-model.md`](do
 - **Untrusted imports.** U1-DEB bundles are validated (file-name allowlist, size and ratio caps, no symlinks or encrypted entries, SHA-256 and schema checks) and nothing in them is executed. See [`docs/U1-DEB.md`](docs/U1-DEB.md).
 - **Known residual risks.** The policy is tested against a mock plus supervised read-only sessions on the owner's U1 (see `docs/evidence`); HTTP on the LAN is unencrypted; export redaction is best effort (pattern based: IPv4/IPv6, MAC, e-mail, URLs, `.local`/`.lan` host names, local and home paths, print file names, serial-like tokens, credential `key=value` pairs).
 
+## Verifying a release
+
+- Each release lists the SHA-256 of its zip (`Get-FileHash .\<zip> -Algorithm SHA256`).
+- Builds released after `0.1.7-g1` also carry a GitHub build provenance attestation: `gh attestation verify .\<zip> --repo SirStormz/u1-doctor` confirms the zip was produced by this repository's release workflow and shows the commit. Not available for `0.1.7-g1` and older. See [`docs/INSTALL.md`](docs/INSTALL.md).
+- The release build installs Python packages at pinned versions (`backend/constraints-release.txt`) and every GitHub Action is pinned by full commit SHA.
+
 ## Reporting a vulnerability
 
 Please do not open a public issue for a security problem. Use GitHub's private vulnerability reporting: the **Security** tab of this repository, then **Report a vulnerability**.

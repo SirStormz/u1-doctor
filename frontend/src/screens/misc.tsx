@@ -549,6 +549,9 @@ export function Replay({ onMode }: { onMode: (r: boolean) => void }) {
 
 /* ---------------- Settings / compatibility ---------------- */
 const SW: Record<Theme, string[]> = { night: ["#10100e", "#161614", "#ffc400"], graphite: ["#191a1d", "#1f2023", "#ffc400"], light: ["#f4f4f0", "#fafaf7", "#ffc400"] };
+/** A plain link the owner clicks: no update check, no network call from the app. */
+const RELEASES_URL = "https://github.com/SirStormz/u1-doctor/releases";
+
 export function SettingsScreen() {
   const { t, theme, setTheme, density, setDensity, lang, setLang, mode, setMode, restartOnboarding } = usePrefs();
   const inc = useIncident();
@@ -581,6 +584,7 @@ export function SettingsScreen() {
         <Panel title={t.versions} i={1}>
           <dl className="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2">
             <dt className="text-ink3">{t.th.app}</dt><dd className="mono">{inc.health?.app_version ?? "…"}</dd>
+            <dt className="text-ink3">{t.releases}</dt><dd><a href={RELEASES_URL} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 underline">{t.releasesLink}<ExternalLink size={12} aria-hidden /></a> <span className="text-xs text-ink3">{t.releasesNote}</span></dd>
             <dt className="text-ink3">{t.th.api}</dt><dd className="mono">v{inc.health?.api_version ?? "…"}</dd>
             <dt className="text-ink3">{t.th.db}</dt><dd className="mono">{inc.health?.db_schema ?? "…"}</dd>
             <dt className="text-ink3">{t.machineAccess}</dt><dd className="mono">{inc.health ? tok(lang, "access", inc.health.machine_access) : "…"}</dd>

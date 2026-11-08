@@ -64,7 +64,7 @@ What U1 Doctor cannot know or has not yet proven. Each item cites the document i
 
 | Limit | Source |
 |---|---|
-| Replay hashes are identical on Linux, Windows and macOS in CI (15 scenarios). They have not been checked on a user's own second machine. | `BACKLOG.md` #12, #17 |
+| Replay hashes are identical on Linux, Windows and macOS in CI (every committed scenario: 1 real capture and 20 synthetic scenarios on 2026-11-08). They have not been checked on a user's own second machine. | `BACKLOG.md` #12, #17 |
 | U1-DEB has been replayed by CI on three OS, not yet by an independent user. | `README.md` |
 | A SHA-256 on a bundle proves integrity only, never authorship or that data came from a real machine. | `docs/U1-DEB.md` |
 | Imported bundles are replayed with the local ruleset; with a different ruleset hash no replay is done. Findings are always recomputed locally. | `docs/U1-DEB.md` |
@@ -92,12 +92,13 @@ What U1 Doctor cannot know or has not yet proven. Each item cites the document i
 |---|---|
 | A U1 Dry Run `report.json` import is a **prediction made before printing, not an observation**. It is labelled `IMPORTED`. Its findings (rule S15) are SUSPECTED and WEAK, and sessions are never merged, so a Dry Run report is never correlated with another session. | `BACKLOG.md` #1, `docs/source-audit.md` |
 | The 3D view is **illustrative**: slider moves are not machine coordinates, and it shows one visible toolhead only. | `docs/design/3D_MODEL.md` |
-| The 3D model is the owner's own work, committed in the repository (`frontend/public/models/u1-jay.glb`) and bundled in the exe and the Docker image; it is a visual illustration, not official CAD, and shows the "snapmaker" wordmark. | `docs/design/3D_MODEL.md`, `scripts/build_windows.ps1` |
+| The 3D model is the owner's own work, committed in the repository (`frontend/public/models/u1-jay.glb`) and bundled in the exe and the Docker image; it is a visual illustration, not official CAD, and shows the "snapmaker" wordmark. Since 2026-11-08 it is stored with lossless meshopt compression (4.3 MB instead of 7.5 MB; vertices, triangles, normals, UVs, nodes and materials checked identical after decoding); the decoder ships with three.js, so nothing is fetched from the internet. | `docs/design/3D_MODEL.md`, `scripts/build_windows.ps1` |
 | The Windows executable is **unsigned**, so SmartScreen may warn; the SmartScreen prompt itself has not been tested. It was checked on a clean PC and scanned on VirusTotal (0/52 for v0.1.7-g1 and 0/67 for v0.1.6-g1 at publication). | `README.md`, `INSTALL.md`, `BACKLOG.md` #14 |
 | Only a Windows executable is released (plus a Docker image and source); no macOS or Linux executable. Not audited: screen reader, 200 % zoom, widths under 1024 px. | `IMPLEMENTATION_STATUS.md` |
+| Release build provenance: the release workflow pins its Python packages (`backend/constraints-release.txt`), pins every GitHub Action by commit SHA and attests the zip (`gh attestation verify`). These workflow changes were made on 2026-11-08 and are **untested until the next release run**; `v0.1.7-g1` and older releases have no attestation. | `.github/workflows/release.yml`, `docs/INSTALL.md` |
 | The GitHub Action that validates a bundle runs in this repository's CI (job `deb-action`); it has not been used by third-party repositories. | `BACKLOG.md` (#12), `docs/U1-DEB.md` |
-| Network: HTTP to the printer is unencrypted on the LAN. A changed printer IP is not detected yet. | `docs/threat-model.md`, `BACKLOG.md` #42 |
-| The ticket-ready summary only contains what the owner typed and the facts of the loaded source; firmware, slicer and filaments are never detected. It does not replace the printer's encrypted system log. The "save the bundle now" reminder is static text: the printer's log storage usage is not read (planned with the live rules, `BACKLOG.md` #57). | `frontend/src/lib/ticket-text.ts` |
+| Network: HTTP to the printer is unencrypted on the LAN. A changed printer address is reported only between two captures made in the app (keyed local fingerprint, mock-tested, UNTESTED on a real U1); it is not watched over time. | `docs/threat-model.md`, `BACKLOG.md` #42 |
+| The ticket-ready summary only contains what the owner typed and the facts of the loaded source; firmware, slicer and filaments are never detected. It does not replace the printer's encrypted system log. The "save the bundle now" reminder is static text; the log partition usage is read only during a live capture (rule S22, UNTESTED on a real U1) and is not judged. | `frontend/src/lib/ticket-text.ts` |
 
 ## What U1 Doctor will never claim
 
