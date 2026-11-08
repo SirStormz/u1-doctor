@@ -2,6 +2,9 @@ import { expect, test } from "@playwright/test";
 
 const ROUTES = ["welcome", "connect", "overview", "explorer", "symptoms", "timeline", "findings", "evidence", "replay", "report", "settings"];
 
+// the first-run assistant is a modal: every test starts as a returning user, except the onboarding test below
+test.beforeEach(async ({ page }) => { await page.addInitScript(() => { if (!sessionStorage.getItem("e2e-first-run")) localStorage.setItem("u1d.onboarded", "1"); }); });
+
 test.describe("every screen, demo mode on, read-only", () => {
   for (const route of ROUTES) {
     test(`#/${route} renders with the safety banners and no network beyond the app`, async ({ page, baseURL }) => {
@@ -61,4 +64,20 @@ test("the app starts empty and says so; demo mode is an explicit switch", async 
   await expect(toggle).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByText("DEMO", { exact: true }).first()).toBeVisible();
   await expect(page.getByText(/synthetic data · not from a printer|données synthétiques/).first()).toBeVisible();
+});
+
+test("first run: the assistant guides in three steps, can be skipped, and the list can hide", async ({ page }) => {
+  await page.addInitScript(() => { sessionStorage.setItem("e2e-first-run", "1"); localStorage.removeItem("u1d.onboarded"); });
+  await page.goto("/#/overview");
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText(/Step 1 of 3|Étape 1 sur 3/)).toBeVisible();
+  await dialog.getByRole("button", { name: /^(Next|Suivant)$/ }).click();
+  await expect(dialog.getByText(/Step 2 of 3|Étape 2 sur 3/)).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toHaveCount(0);
+  const list = page.getByRole("region", { name: /Getting started|Premiers pas/ });
+  await expect(list).toBeVisible();
+  await list.getByRole("button", { name: /Hide this list|Masquer cette liste/ }).click();
+  await expect(list).toHaveCount(0);
 });
