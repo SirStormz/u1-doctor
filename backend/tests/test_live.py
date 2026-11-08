@@ -222,3 +222,17 @@ def test_a_second_concurrent_capture_is_refused_not_queued():
         t.join(30)
     assert first["r"].status_code == 200
     assert post(c, save=False).status_code == 200  # the slot is free again
+
+
+def test_history_totals_accept_the_float_shape_of_the_real_u1():
+    # shape read from the owner's U1 (firmware 2.1.0, 2026-11-08): the job count is a float, 21.0
+    from app.live import _totals
+    doc = {"result": {"job_totals": {"total_jobs": 21.0, "total_time": 263380.308064298, "total_print_time": 255894.70372035698,
+                                     "total_filament_used": 528614.3225804678, "longest_job": 50667.45, "longest_print": 50544.01},
+                      "auxiliary_totals": []}}
+    got = _totals(doc, "2026-11-08T19:00:00Z")
+    assert got is not None and got["total_jobs"] == 21 and isinstance(got["total_jobs"], int)
+    assert got["total_print_time"] == 255894.7 and "longest_job" not in got
+    for bad in (21.5, -1.0, float("nan"), True, "21"):
+        d = {"result": {"job_totals": {**doc["result"]["job_totals"], "total_jobs": bad}}}
+        assert _totals(d, "t") is None

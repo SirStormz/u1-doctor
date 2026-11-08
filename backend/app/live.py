@@ -71,7 +71,11 @@ def _totals(doc: dict[str, Any], t: str) -> dict[str, Any] | None:
     if not isinstance(jt, dict):
         return None
     vals = {k: jt.get(k) for k in TOTALS_FIELDS}
-    if not (isinstance(vals["total_jobs"], int) and not isinstance(vals["total_jobs"], bool) and vals["total_jobs"] >= 0):
+    tj = vals["total_jobs"]
+    # the real U1 (2.1.0, 2026-11-08) reports the count as a float, 21.0: accept a whole, non-negative number
+    if isinstance(tj, float) and math.isfinite(tj) and tj == int(tj):
+        vals["total_jobs"] = tj = int(tj)
+    if not (isinstance(tj, int) and not isinstance(tj, bool) and tj >= 0):
         return None
     for k in TOTALS_FIELDS[1:]:
         v = vals[k]
