@@ -31,7 +31,7 @@ States: PLANNED · IMPLEMENTED_UNTESTED · TESTED_SYNTHETIC · TESTED_REAL · BL
 | ADD Version single source | — | TESTED_SYNTHETIC | `APP_VERSION` in `backend/app/api.py`; `test_version_sync.py` fails if pyproject, package.json, package-lock, zip name, Windows version resource or README disagree; version + releases link in Settings |
 | ADD Performance | — | TESTED (browser check) | 3D model 7.45 MB to 4.29 MB (lossless meshopt, local decoder); key art PNG 1.9 MB to WebP 131 kB; route-level lazy screens: start-up chunk 697 kB to 172 kB (+ react 219 kB, motion 137 kB cached chunks); three.js stays lazy |
 
-Tests run (Windows, Python 3.14 venv, 2026-11-08): `pytest` **1159 passed** · `vitest` **138 passed** · 16 Playwright e2e tests (run in CI) · `ruff` clean · `mypy app` clean · `tsc --noEmit` clean · `vite build` OK. CI (Python 3.12, Linux/Windows/macOS) green on main.
+Tests run (Windows, Python 3.14 venv, 2026-11-08): `pytest` **1192 passed** · `vitest` **181 passed** · 16 Playwright e2e tests (run in CI) · `ruff` clean · `mypy app` clean · `tsc --noEmit` clean · `vite build` OK. CI (Python 3.12, Linux/Windows/macOS) green on main.
 Deviations: stdlib migrations instead of Alembic (ADR-0004); no TanStack Query / i18n lib (plain fetch + dictionary).
 
 ## G0.5 — Product design & UX (2026-11-05) — **prototype built, design VALIDATED by owner 2026-11-05 (improvements later)**
