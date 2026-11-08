@@ -6,7 +6,10 @@ export type Density = "comfortable" | "compact";
 export type Mode = "simple" | "expert";
 export type StepId = "demo" | "code" | "timeline" | "evidence" | "report";
 const STEP_IDS: unknown[] = ["demo", "code", "timeline", "evidence", "report"] satisfies StepId[];
-interface Prefs { lang: Lang; theme: Theme; density: Density; mode: Mode; alerts: boolean; setAlerts: (on: boolean) => void; onboarded: boolean; steps: StepId[]; checklistHidden: boolean; finishOnboarding: () => void; markStep: (s: StepId) => void; hideChecklist: () => void; restartOnboarding: () => void; setLang: (l: Lang) => void; setTheme: (t: Theme) => void; setDensity: (d: Density) => void; setMode: (m: Mode) => void; t: Messages }
+/** The only contextual hints that exist (at most 3, each shown once in Simple mode). */
+export type HintId = "marks" | "timeline" | "palette";
+export const HINT_IDS: HintId[] = ["marks", "timeline", "palette"];
+interface Prefs { lang: Lang; theme: Theme; density: Density; mode: Mode; alerts: boolean; setAlerts: (on: boolean) => void; onboarded: boolean; steps: StepId[]; checklistHidden: boolean; hints: HintId[]; dismissHint: (h: HintId) => void; finishOnboarding: () => void; markStep: (s: StepId) => void; hideChecklist: () => void; restartOnboarding: () => void; setLang: (l: Lang) => void; setTheme: (t: Theme) => void; setDensity: (d: Density) => void; setMode: (m: Mode) => void; t: Messages }
 
 const read = (k: string, d: string) => { try { return localStorage.getItem(k) ?? d; } catch { return d; } };
 const write = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* storage unavailable: preferences stay in memory */ } };
@@ -25,17 +28,21 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
   // a corrupted value (not JSON, not a list, unknown ids) resets to an empty list instead of breaking the Overview
   const [steps, setSteps] = useState<StepId[]>(() => { try { const v: unknown = JSON.parse(read("u1d.steps", "[]")); return Array.isArray(v) ? v.filter((x): x is StepId => STEP_IDS.includes(x)) : []; } catch { return []; } });
   const [checklistHidden, setChecklistHidden] = useState(() => read("u1d.checklistHidden", "") === "1");
+  // hints already dismissed; same reset rule as u1d.steps (known ids only, no duplicates, so never more than 3)
+  const [hints, setHints] = useState<HintId[]>(() => { try { const v: unknown = JSON.parse(read("u1d.hints", "[]")); return Array.isArray(v) ? HINT_IDS.filter((h) => v.includes(h)) : []; } catch { return []; } });
   useEffect(() => { write("u1d.onboarded", onboarded ? "1" : ""); }, [onboarded]);
   useEffect(() => { write("u1d.steps", JSON.stringify(steps)); }, [steps]);
   useEffect(() => { write("u1d.checklistHidden", checklistHidden ? "1" : ""); }, [checklistHidden]);
+  useEffect(() => { write("u1d.hints", JSON.stringify(hints)); }, [hints]);
   const finishOnboarding = useCallback(() => setOnboarded(true), []);
   const markStep = useCallback((id: StepId) => setSteps((x) => (x.includes(id) ? x : [...x, id])), []);
   const hideChecklist = useCallback(() => setChecklistHidden(true), []);
-  const restartOnboarding = useCallback(() => { setSteps([]); setChecklistHidden(false); setOnboarded(false); }, []);
+  const dismissHint = useCallback((h: HintId) => setHints((x) => (x.includes(h) || !HINT_IDS.includes(h) ? x : [...x, h])), []);
+  const restartOnboarding = useCallback(() => { setSteps([]); setChecklistHidden(false); setHints([]); setOnboarded(false); }, []);
   useEffect(() => { document.documentElement.lang = lang; write("u1d.lang", lang); }, [lang]);
   useEffect(() => { document.documentElement.dataset.theme = theme; write("u1d.theme", theme); }, [theme]);
   useEffect(() => { document.documentElement.dataset.density = density; write("u1d.density", density); }, [density]);
-  const value = useMemo(() => ({ lang, theme, density, mode, alerts, setAlerts, onboarded, steps, checklistHidden, finishOnboarding, markStep, hideChecklist, restartOnboarding, setLang, setTheme, setDensity, setMode, t: messages[lang] }), [lang, theme, density, mode, alerts, onboarded, steps, checklistHidden, finishOnboarding, markStep, hideChecklist, restartOnboarding]);
+  const value = useMemo(() => ({ lang, theme, density, mode, alerts, setAlerts, onboarded, steps, checklistHidden, hints, dismissHint, finishOnboarding, markStep, hideChecklist, restartOnboarding, setLang, setTheme, setDensity, setMode, t: messages[lang] }), [lang, theme, density, mode, alerts, onboarded, steps, checklistHidden, hints, dismissHint, finishOnboarding, markStep, hideChecklist, restartOnboarding]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Copy, ExternalLink, FileSearch, Fingerprint, ListChecks, ShieldAlert } from "lucide-react";
 import type { Finding } from "../api";
-import { Button, Chip, ClassChip, Panel, ProvenanceChip, StateBlock, TechDetails, TimeChip } from "../components/ui";
+import { Button, Chip, ClassChip, Hint, Panel, ProvenanceChip, StateBlock, TechDetails, TimeChip } from "../components/ui";
 import { PageTitle, useToast } from "../components/shell";
 import { NoData } from "../components/nodata";
 import { hhmmss, tms, useIncident } from "../lib/data";
@@ -30,6 +30,7 @@ export function Findings({ go }: { go: (n: RouteName, p?: string) => void }) {
           <select value={filter} onChange={(e) => setFilter(e.target.value)} className="rounded-lg border border-control bg-surface2 px-2 py-1.5 text-ink">
             <option value="ALL">{t.all}</option><option value="OBSERVED">{tok(lang, "classification", "OBSERVED")}</option><option value="INCONCLUSIVE">{tok(lang, "classification", "INCONCLUSIVE")}</option>
           </select></label>} />
+      {rows.length > 0 && <Hint id="marks" className="mb-d" />}
       <Panel bodyClass="p-0" label={t.nav.findings} active>
         {rows.length === 0 ? <div className="p-4"><StateBlock kind="empty" title={t.empty} body={t.emptyFilter} action={<Button onClick={() => setFilter("ALL")}>{t.reset}</Button>} /></div> : (
           <div className="overflow-x-auto"><table className="w-full text-left">
@@ -88,6 +89,7 @@ export function Evidence({ param, go }: { param?: string; go: (n: RouteName, p?:
               {f.not_a_root_cause !== false && <Chip tone="accent">{t.notRootCause}</Chip>}
             </div>
             {f.hypotheses.map((h) => (<p key={h.id} className="mt-3 text-[15px]"><Chip tone="demo">{tok(lang, "label", h.label)}</Chip> {tx(lang, h.text)}</p>))}
+            <Hint id="marks" className="mt-3" />
           </Panel>
           <div className="grid min-w-0 gap-d md:grid-cols-3">
             <Panel title={<span className="text-ok">{t.evFor} · {f.evidence_for.length}</span>} i={1}><List items={f.evidence_for.map((e) => ({ id: e.observation_id, note: e.note }))} empty={t.none} /></Panel>

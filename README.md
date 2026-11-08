@@ -70,7 +70,9 @@ Screenshots were taken in **Expert mode** with **demo mode** on, which shows the
 
 Press `Ctrl K` anywhere to jump to a screen or paste an error code.
 
-**Simple or Expert.** The *Expert mode* switch in the header (or the display level in Settings) chooses how much you see. **Simple** (the default) keeps plain language and folds the technical part of each block under *Technical details*; **Expert** shows all 11 screens and opens those details. Nothing is removed in Simple: you can still open any detail, and the two expert screens stay one click away.
+**Simple or Expert.** The *Expert mode* switch in the header (or the display level in Settings) chooses how much you see. **Simple** (the default) keeps plain language and folds the technical part of each block under *Technical details*; **Expert** shows all 11 screens and opens those details. In Simple, the folded parts are rule and catalogue identifiers, the raw parts of an error code, the method notes of the print-quality assistant and the file hashes of the support bundle; the meaning, severity, official links, evidence, provenance labels (DEMO, SYNTHETIC, USER_REPORTED, IMPORTED, REAL), community sources and export buttons always stay in view. Nothing is removed in Simple: you can still open any detail, and the two expert screens stay one click away.
+
+**Hints.** In Simple mode, once the first-start assistant is closed, three short notes appear once each, next to what they explain: the *Observed / Suspected / Missing* marks, how to read the incident timeline, and the `Ctrl K` search button. *Got it* (or `Esc`) hides a note for good; *Replay the guided start* in Settings brings them back.
 
 **First start.** A three-step assistant asks for your language and display level, offers the demo or the connection to your own printer, and explains the three marks used everywhere (*Observed*, *Suspected*, *Missing*). Press `Esc` to skip it. A *Getting started* list on the Overview ticks itself as you use the app; both can be replayed from Settings.
 

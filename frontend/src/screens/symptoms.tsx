@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { ExternalLink, Eye, Play } from "lucide-react";
 import { historyApi, symptomsApi, SymptomRefused, type HistoryList, type SymptomCatalog, type SymptomCause, type SymptomEvidence, type SymptomResult } from "../api";
-import { Button, Chip, Panel } from "../components/ui";
+import { Button, Chip, Panel, TechDetails } from "../components/ui";
 import { PageTitle } from "../components/shell";
 import { usePrefs } from "../lib/prefs";
 import { errText } from "../lib/errors";
@@ -113,7 +113,8 @@ export function Symptoms() {
                 {res.causes.map((c, i) => <CauseCard key={c.id} c={c} n={i + 1} />)}
               </ol>
               <a href={res.symptom.url} target="_blank" rel="noreferrer noopener" className="btn btn-secondary mt-4 w-fit">{t.sy.open}<ExternalLink size={15} aria-hidden /></a>
-              <ul className="mt-4 grid gap-1 text-xs text-ink3">{(t.sy.notes as readonly string[]).map((n) => <li key={n}>{n}</li>)}</ul>
+              {/* method notes fold in Simple; the causes, their evidence and its provenance chip stay visible */}
+              <TechDetails className="mt-4"><ul className="grid gap-1 text-xs text-ink3" data-testid="symptom-notes">{(t.sy.notes as readonly string[]).map((n) => <li key={n}>{n}</li>)}</ul></TechDetails>
             </Panel></div>
           )}
         </div>

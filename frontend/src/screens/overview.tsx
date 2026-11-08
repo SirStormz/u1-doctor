@@ -1,7 +1,7 @@
 import { Activity, ArrowRight, Boxes, FileSearch, Gauge, Layers, Radar } from "lucide-react";
 import hero from "../assets/keyart.webp";
 import { MODEL_URL } from "../viz/u1model";
-import { Button, Chip, LedgerBars, Panel, ProvenanceChip, SeverityChip, Stat, StateBlock, TechDetails } from "../components/ui";
+import { Button, Chip, Hint, LedgerBars, Panel, ProvenanceChip, SeverityChip, Stat, StateBlock, TechDetails } from "../components/ui";
 import { PageTitle } from "../components/shell";
 import { hhmmss, tms, useIncident, val } from "../lib/data";
 import { usePrefs } from "../lib/prefs";
@@ -79,6 +79,7 @@ export function Overview({ go }: { go: (n: RouteName, p?: string) => void }) {
                 <Stat value={observed} label={t.observedFacts} tone="ok" />
                 <Stat value={inconclusive} label={t.inconclusive} tone="warn" />
               </div>
+              <Hint id="marks" className="mt-3" />
             </Panel>
           </div>
         </div>

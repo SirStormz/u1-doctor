@@ -1,7 +1,7 @@
 import { useEffect, useId, useState, type ButtonHTMLAttributes, type CSSProperties, type ReactNode } from "react";
-import { Ban, Check, CircleHelp, Clock, Download, FileText, FlaskConical, Hourglass, Info, TriangleAlert, User } from "lucide-react";
+import { Ban, Check, CircleHelp, Clock, Download, FileText, FlaskConical, Hourglass, Info, Lightbulb, TriangleAlert, User } from "lucide-react";
 import { animate, useReducedMotion } from "motion/react";
-import { usePrefs } from "../lib/prefs";
+import { usePrefs, type HintId } from "../lib/prefs";
 import { tok } from "../lib/dyn";
 
 export type Tone = "neutral" | "ok" | "warn" | "danger" | "demo" | "replay" | "accent";
@@ -51,6 +51,29 @@ export function TechDetails({ children, className = "" }: { children: ReactNode;
       <summary className="cursor-pointer text-xs font-semibold text-ink2">{t.techDetails} <span className="font-normal text-ink3">· {t.techDetailsHint}</span></summary>
       <div className="mt-2">{children}</div>
     </details>
+  );
+}
+
+/**
+ * One-time contextual note, placed right next to what it explains. Simple mode only, after the first-run assistant,
+ * gone for good once dismissed ("Got it" or Esc while focused). Non-modal: it never takes focus and covers nothing.
+ */
+export function Hint({ id, className = "" }: { id: HintId; className?: string }) {
+  const { t, mode, onboarded, hints, dismissHint } = usePrefs();
+  const uid = useId();
+  if (mode !== "simple" || !onboarded || hints.includes(id)) return null;
+  const close = (el: HTMLElement) => {
+    // the note disappears: if focus was inside it, hand it to the page instead of dropping it on <body>
+    if (el.contains(document.activeElement)) document.getElementById("main")?.focus({ preventScroll: true });
+    dismissHint(id);
+  };
+  return (
+    <div role="note" aria-labelledby={`${uid}-h`} data-hint={id} className={`hint flex max-w-[72ch] flex-wrap items-start gap-x-3 gap-y-2 border-2 border-dashed border-accent bg-surface2 px-3 py-2 text-sm text-ink ${className}`}
+      onKeyDown={(e) => { if (e.key === "Escape") { e.stopPropagation(); close(e.currentTarget); } }}>
+      <Lightbulb size={16} className="mt-0.5 shrink-0 text-accent" aria-hidden />
+      <p className="min-w-0 flex-1 basis-[24ch]"><strong id={`${uid}-h`}>{t.hint.title}</strong> <span id={`${uid}-b`}>{t.hint[id]}</span></p>
+      <button type="button" className="btn btn-secondary !py-1 text-xs" aria-describedby={`${uid}-b`} onClick={(e) => close(e.currentTarget.parentElement!)}>{t.hint.gotIt}</button>
+    </div>
   );
 }
 

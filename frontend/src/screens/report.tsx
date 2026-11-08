@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Download, Eye, FilePlus2, FileText, ShieldCheck, X, Check } from "lucide-react";
-import { Button, Chip, Panel, StateBlock } from "../components/ui";
+import { Button, Chip, Panel, StateBlock, TechDetails } from "../components/ui";
 import { PageTitle, useToast } from "../components/shell";
 import { NoData } from "../components/nodata";
 import { bundles, historyApi } from "../api";
@@ -124,7 +124,7 @@ export function Report() {
               {(shown?.findings ?? []).map((f) => <li key={f.finding_id} className="flex flex-col gap-0.5 sm:flex-row sm:gap-2"><span className="mono shrink-0 text-xs text-accent sm:w-52">{f.rule_id}</span><span>{tx(lang, f.human_title.replace(/^SYNTHETIC: /, ""))} <span className="text-ink3">— {tok(lang, "classification", f.classification)}</span></span></li>)}
             </ul>
             <h4 className="micro mt-5">{t.redactedPreview}</h4>
-            <dl className="mt-2 grid gap-2 text-sm">
+            <dl className="mt-2 grid gap-2 text-sm" data-testid="redaction-table">
               {redacted.map(([tag, label]) => (<div key={tag} className="flex items-center gap-3"><dt className="mono w-24 text-xs text-ink3">{tag}</dt><dd className="flex items-center gap-2"><span className="redact" role="img" aria-label={t.redactedAria.replace("{f}", label)} /><span className="text-xs text-ink3">{label}</span></dd></div>))}
             </dl>
             <p className="mt-3 text-xs text-ink3">{sel === "demo" ? t.redactNote : t.redactNoteSaved}</p>
@@ -132,8 +132,10 @@ export function Report() {
         </Panel>
 
         <Panel title={t.bundle} icon={<FilePlus2 size={17} />} i={1} active>
+          {/* file names, hashes and sizes fold in Simple; the export button and the privacy check stay visible */}
           {!files ? <StateBlock kind="loading" title={t.hashing} /> : (
-            <ul className="grid gap-2">
+            <TechDetails>
+            <ul className="grid gap-2" data-testid="bundle-files">
               {files.map((f) => (
                 <li key={f.name} className="flex items-center gap-3 rounded-lg border border-line bg-surface2 px-3 py-2">
                   <Check size={16} className="shrink-0 text-ok" aria-hidden />
@@ -142,6 +144,7 @@ export function Report() {
                 </li>
               ))}
             </ul>
+            </TechDetails>
           )}
           <p className="mt-3 text-xs text-ink3">{t.bundleNote}</p>
         </Panel>

@@ -20,6 +20,13 @@ const en = {
   modeToggle: "Expert mode", modeToggleOn: "Expert mode is on: all screens and technical details are shown. Click to go back to Simple.", modeToggleOff: "Simple mode: plain language, technical details folded. Click to turn Expert mode on.",
   modeHelp: "Simple keeps the essentials and folds the technical details under “Technical details”. Expert shows every screen (Evidence detail, Replay lab) and opens the details by default. Nothing is removed in Simple: you can still open any detail.",
   techDetails: "Technical details", techDetailsHint: "rule, source, identifiers",
+  hint: {
+    title: "Quick tip", gotIt: "Got it",
+    marks: "Observed: seen in the data. Suspected: a lead drawn from the rules. Missing: what we could not see.",
+    timeline: "The chip under each event says where it comes from (demo, real capture, typed by you). A data-gap band means nothing was received then: no value is drawn across it.",
+    palette: "Ctrl K (or this button) opens search: jump to any screen, or paste an error code to decode it.",
+  },
+  codeParts: { level: "Level", module: "Module code", sub: "Sub-code" },
   onb: {
     stepOf: "Step {n} of {total}", skip: "Skip", back: "Back", next: "Next", start: "Start", close: "Close", restart: "Replay the guided start", restartHelp: "Shows the welcome steps and the Getting started list again.",
     s1Title: "Welcome to U1 Doctor", s1Body: "Two quick choices. You can change both later in Settings.", level: "How do you want to read results?",
@@ -248,6 +255,13 @@ const fr: Dict = {
   modeToggle: "Mode expert", modeToggleOn: "Le mode expert est activé : tous les écrans et les détails techniques sont affichés. Cliquez pour revenir au mode Simple.", modeToggleOff: "Mode simple : langage clair, détails techniques repliés. Cliquez pour activer le mode expert.",
   modeHelp: "Simple garde l'essentiel et replie les informations techniques sous « Détails techniques ». Expert affiche tous les écrans (Détail des preuves, Laboratoire de rejeu) et ouvre les détails par défaut. Rien n'est supprimé en Simple : vous pouvez toujours ouvrir chaque détail.",
   techDetails: "Détails techniques", techDetailsHint: "règle, source, identifiants",
+  hint: {
+    title: "Astuce", gotIt: "Compris",
+    marks: "Observé : vu dans les mesures. Suspecté : une piste tirée des règles. Manquant : ce que nous n'avons pas pu voir.",
+    timeline: "La pastille sous chaque événement indique d'où il vient (démo, capture réelle, saisi par vous). Une bande « trou de données » signifie que rien n'a été reçu à ce moment : aucune valeur n'est tracée au travers.",
+    palette: "Ctrl K (ou ce bouton) ouvre la recherche : allez à n'importe quel écran, ou collez un code d'erreur pour le décoder.",
+  },
+  codeParts: { level: "Niveau", module: "Code du module", sub: "Sous-code" },
   onb: {
     stepOf: "Étape {n} sur {total}", skip: "Passer", back: "Retour", next: "Suivant", start: "Commencer", close: "Fermer", restart: "Rejouer le démarrage guidé", restartHelp: "Affiche à nouveau les étapes d'accueil et la liste Premiers pas.",
     s1Title: "Bienvenue dans U1 Doctor", s1Body: "Deux choix rapides. Vous pourrez les changer plus tard dans les Réglages.", level: "Comment voulez-vous lire les résultats ?",

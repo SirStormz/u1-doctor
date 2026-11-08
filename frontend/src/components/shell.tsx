@@ -6,7 +6,7 @@ import { useIncident } from "../lib/data";
 import { usePrefs, type StepId, type Theme } from "../lib/prefs";
 import { Onboarding } from "./onboarding";
 import { parseHash, ROUTES, visibleRoutes, type RouteName } from "../lib/router";
-import { Chip, Kbd, Logo, SeverityChip } from "./ui";
+import { Chip, Hint, Kbd, Logo, SeverityChip } from "./ui";
 import { tok, tx } from "../lib/dyn";
 
 const ICONS: Record<RouteName, ReactNode> = {
@@ -173,6 +173,7 @@ export function Shell({ route, go, replay, children }: { route: RouteName; go: (
               ))}
             </div>
           </div>
+          <Hint id="palette" className="ml-auto mb-1 basis-full" />
                   </div>
         </header>
         <div role="status" className={`strip-h flex items-center justify-center gap-2 px-4 text-xs font-bold ${replay || !demo ? "" : "hatch-demo"}`} style={stripStyle}>

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Activity, Clock, Table2, Waypoints } from "lucide-react";
-import { Button, Chip, Panel, ProvenanceChip, Seal, StateBlock, TimeChip } from "../components/ui";
+import { Button, Chip, Hint, Panel, ProvenanceChip, Seal, StateBlock, TimeChip } from "../components/ui";
 import { PageTitle } from "../components/shell";
 import { NoData } from "../components/nodata";
 import { hhmmss, tms, useIncident, val } from "../lib/data";
@@ -33,6 +33,7 @@ function DemoTimeline() {
     <>
       <PageTitle title={t.nav.timeline} sub={t.timelineSub} icon={<Activity size={26} />}
         actions={<Button icon={<Table2 size={16} />} aria-pressed={table} onClick={() => setTable((x) => !x)}>{table ? t.chartView : t.tableView}</Button>} />
+      <Hint id="timeline" className="mb-d" />
       <div className="grid gap-d xl:grid-cols-[270px_minmax(0,1fr)_350px]">
         <Panel title={t.events} icon={<Clock size={17} />} i={0} bodyClass="p-2">
           <ul className="grid gap-1" aria-label={t.events}>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Ban, Cpu, ExternalLink, FlaskConical, History, Info, MessageSquareText, Play, Plug, Search, ShieldCheck, Settings as SettingsIcon, TriangleAlert, Users } from "lucide-react";
 import { api, firmwareIssues, goodToKnow, knownIssues, liveApi, LiveRefused, preflight, supportChecklist, PreflightRefused, type CommunityCause, type InterpretOut, type LiveOut, type FirmwareIssues, type GoodToKnow, type KnownIssues, type MessageMatch, type PfPlate, type PreflightOut } from "../api";
-import { Button, Chip, Kbd, Panel, ProvenanceChip, SeverityChip, Seal, StateBlock } from "../components/ui";
+import { Button, Chip, Kbd, Panel, ProvenanceChip, SeverityChip, Seal, StateBlock, TechDetails } from "../components/ui";
 import { PageTitle } from "../components/shell";
 import { useIncident } from "../lib/data";
 import { usePrefs, type Density, type Mode, type Theme } from "../lib/prefs";
@@ -187,9 +187,12 @@ export function Explorer({ param }: { param?: string }) {
           {res && d && msgs.length === 0 && (
             <Panel i={1} active={!crit} title={<span className="flex items-center gap-2">{d.status === "MALFORMED" ? t.statusMalformed : entry?.title ? tx(lang, entry.title) : t.statusStructure}</span>} actions={<SeverityChip level={d.severity} />}>
               {crit && <div role="alert" className="mb-4 flex gap-3 rounded-lg border p-3" style={{ borderColor: "var(--danger)", background: "color-mix(in srgb, var(--danger) 10%, var(--surface-1))" }}><TriangleAlert className="shrink-0 text-danger" aria-hidden /><p>{t.criticalNote}</p></div>}
-              <div className="flex flex-wrap items-center gap-2"><ProvenanceChip status="USER_REPORTED" /><span className="mono text-xs text-ink2">{res.decoding.status === "MALFORMED" ? code : (d as unknown as { code?: string }).code}</span>
+              <div className="flex flex-wrap items-center gap-2"><ProvenanceChip status="USER_REPORTED" />
                 {d.module && <Chip>{moduleLabel(lang, d.module)}</Chip>}{entry?.toolhead != null && <Chip tone="accent">{t.toolhead} {entry.toolhead} · {t.fromTable}</Chip>}<Chip tone={d.status === "KNOWN" ? "ok" : "neutral"}>{tok(lang, "classification", d.classification)}</Chip></div>
               {entry && <p className="mt-3 text-[15px]">{tx(lang, entry.summary)}</p>}
+              {/* raw code and its parts fold in Simple; provenance, meaning, severity and the official link stay visible */}
+              <TechDetails className="mt-3"><p className="mono text-xs text-ink2" data-testid="code-parts">{res.decoding.status === "MALFORMED" ? code : (d as unknown as { code?: string }).code}
+                {d.level && <> · {t.codeParts.level} {d.level}</>}{d.module_code && <> · {t.codeParts.module} {d.module_code}</>}{d.index && d.number && <> · {t.codeParts.sub} {d.index}-{d.number}</>}</p></TechDetails>
               {d.status !== "MALFORMED" && <SupportList code={(d as unknown as { code?: string }).code ?? code} firmware={fw.trim() || undefined} title={entry?.title ?? null} />}
               {entry?.inspect_toolheads && entry.inspect_scope && <DockHint reported={entry.toolhead ?? null} inspect={entry.inspect_toolheads} scope={entry.inspect_scope} />}
               {d.firmware && (d.firmware.notes.length > 0 || d.firmware.valid === false) && (
@@ -217,7 +220,7 @@ export function Explorer({ param }: { param?: string }) {
               <h3 className="micro mt-5 mb-2">{t.limits}</h3>
               <ul className="grid gap-1.5">{res.limits.map((l) => <li key={l} className="flex gap-2"><span className="text-warn" aria-hidden>▲</span>{tx(lang, l)}</li>)}</ul>
               <a href={res.official_reference} target="_blank" rel="noreferrer noopener" className="btn btn-secondary mt-4 w-fit">{t.openOfficial}<ExternalLink size={15} aria-hidden /></a>
-              <p className="mt-2 text-xs text-ink3">{t.catalogNote.replace("{d}", res.catalog_verified_at)}</p>
+              <TechDetails className="mt-2"><p className="text-xs text-ink3" data-testid="catalog-meta">{t.catalogNote.replace("{d}", res.catalog_verified_at)}</p></TechDetails>
             </Panel>
           )}
           {res?.community && res.community.causes.length > 0 && <CommunityPanel causes={res.community.causes} checkedAt={res.community.checked_at} />}

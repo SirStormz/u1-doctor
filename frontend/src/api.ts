@@ -38,6 +38,8 @@ export interface Decoding {
   classification: string;
   severity?: string | null;
   module?: string | null;
+  /** raw code parts, sent for every well-formed code */
+  level?: string; module_code?: string; index?: string; number?: string;
   reason?: string;
   entry?: { title: string; summary: string } | null;
   firmware?: FirmwareView;
