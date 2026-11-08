@@ -37,7 +37,7 @@ beforeEach(() => {
     return { ok: true, status: 200, json: async () => ({}) };
   }));
 });
-afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
+afterEach(() => { cleanup(); vi.unstubAllGlobals(); localStorage.removeItem("u1d.lang"); });
 
 test("picking a symptom lists the wiki causes with 'needs your eyes' and no ranking", async () => {
   render(<App />);
@@ -77,12 +77,45 @@ test("a refused number shows the reason and keeps the page usable", async () => 
   fireEvent.click(await screen.findByTestId("symptom-first-layer-gaps"));
   fireEvent.change(await screen.findByLabelText(/Bed-mesh RANGE/), { target: { value: "99" } });
   fireEvent.click(screen.getByRole("button", { name: "Compare with the wiki" }));
-  expect((await screen.findByRole("alert")).textContent).toContain("mesh_range is outside 0 to 10");
+  expect((await screen.findByRole("alert")).textContent).toContain("Bed-mesh RANGE in mm (Fluidd, Tune view) — accepted range 0 to 10.");
 });
 
 test("French labels follow the language switch", async () => {
   localStorage.setItem("u1d.lang", "fr");
   render(<App />);
   expect(await screen.findByText("Plis ou trous dans la première couche")).toBeTruthy();
-  localStorage.removeItem("u1d.lang");
 });
+
+test("FR: a refused number is explained in French, never with the backend's English sentence", async () => {
+  localStorage.setItem("u1d.lang", "fr");
+  render(<App />);
+  fireEvent.click(await screen.findByTestId("symptom-first-layer-gaps"));
+  fireEvent.change(await screen.findByLabelText(/RANGE du maillage/), { target: { value: "99" } });
+  fireEvent.click(screen.getByRole("button", { name: /Comparer/ }));
+  const msg = (await screen.findByRole("alert")).textContent ?? "";
+  expect(msg).toBe("Les nombres ont été refusés : RANGE du maillage en mm (Fluidd, vue Tune) — plage acceptée de 0 à 10.");
+  expect(msg).not.toMatch(/outside|mesh_range/);
+});
+
+for (const [status, detail, fr] of [
+  [403, { code: "MISSING_APP_HEADER", message: "request must come from this app" }, "Refusé : la requête ne vient pas de cette application (en-tête de sécurité absent)."],
+  [403, { code: "FOREIGN_ORIGIN", message: "request must come from this app" }, "Refusé : la requête ne vient pas de cette application."],
+  [404, "unknown history session", "Introuvable : l'élément a peut-être été supprimé."],
+  [422, { code: "BAD_ANSWER", message: "unknown material" }, "Les nombres ont été refusés : Une valeur est hors de la plage acceptée ou absente de la liste. Vérifiez votre saisie."],
+] as const) {
+  test(`FR: backend error ${status} ${typeof detail === "string" ? detail : detail.code} is mapped to a French message`, async () => {
+    localStorage.setItem("u1d.lang", "fr");
+    vi.stubGlobal("fetch", vi.fn(async (url: string) => {
+      const u = String(url);
+      if (u.includes("/knowledge/symptoms")) return { ok: true, status: 200, json: async () => CAT };
+      if (u.includes("/symptoms/evaluate")) return { ok: false, status, json: async () => ({ detail }) };
+      return { ok: true, status: 200, json: async () => ({ sessions: [], totals: { sessions: 0, observations: 0 }, limits: { max_sessions: 1, max_observations: 1 } }) };
+    }));
+    render(<App />);
+    fireEvent.click(await screen.findByTestId("symptom-gloss"));
+    const msg = (await screen.findByRole("alert")).textContent ?? "";
+    expect(msg).toBe(fr);
+    expect(msg).not.toMatch(/request|unknown|session|material/i);
+    localStorage.removeItem("u1d.lang");
+  });
+}

@@ -8,6 +8,7 @@ import type { Finding, HistorySession, Observation } from "../api";
 import { canon } from "../lib/canon";
 import { DEMO_SCENARIO, tms, useIncident } from "../lib/data";
 import { usePrefs } from "../lib/prefs";
+import { errText } from "../lib/errors";
 import { tok, tx } from "../lib/dyn";
 import { ImportPanel } from "./deb";
 
@@ -70,7 +71,7 @@ export function Report() {
     return () => { live = false; };
   }, [source]);
 
-  if (inc.status !== "ready") return <StateBlock kind={inc.status === "error" ? "error" : "loading"} title={inc.status === "error" ? t.error : t.loading} body={inc.error} />;
+  if (inc.status !== "ready") return <StateBlock kind={inc.status === "error" ? "error" : "loading"} title={inc.status === "error" ? t.error : t.loading} body={inc.status === "error" ? errText(t, inc.error) : undefined} />;
   if (!sel) return <><PageTitle title={t.nav.report} sub={t.reportSub} icon={<FileText size={26} />} /><NoData /><div className="mt-4"><ImportPanel /></div></>;
   const clean = built ? built.scan.every(([, n]) => n === 0) : false;
   const title = inc.decoding?.decoding.entry?.title ? tx(lang, inc.decoding.decoding.entry.title) : t.nav.report;

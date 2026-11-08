@@ -35,13 +35,21 @@ test("landing: the call to action opens the app on the Overview screen", async (
   expect(location.hash).toBe("#/overview");
 });
 
-test("landing: G toggles the golden construction overlay", async () => {
+test("landing: Alt+G toggles the golden construction overlay; a bare G does nothing (WCAG 2.1.4)", async () => {
   render(<App />);
   await screen.findByRole("heading", { level: 1 });
   const btn = screen.getByRole("button", { name: new RegExp(messages.en.landing.spiral, "i") });
   expect(btn).toHaveAttribute("aria-pressed", "false");
-  await act(async () => { fireEvent.keyDown(window, { key: "g" }); });
+  await act(async () => { fireEvent.keyDown(window, { key: "g", code: "KeyG" }); });
+  expect(btn).toHaveAttribute("aria-pressed", "false");
+  await act(async () => { fireEvent.keyDown(window, { key: "©", code: "KeyG", altKey: true }); }); // macOS: Alt+G types ©
   expect(btn).toHaveAttribute("aria-pressed", "true");
+  const box = document.createElement("div");
+  box.setAttribute("contenteditable", "true");
+  document.body.appendChild(box);
+  await act(async () => { fireEvent.keyDown(box, { key: "g", code: "KeyG", altKey: true }); });
+  expect(btn).toHaveAttribute("aria-pressed", "true"); // typing in an editable area is never a shortcut
+  box.remove();
 });
 
 test("a11y (axe, structure/ARIA rules): landing", async () => {

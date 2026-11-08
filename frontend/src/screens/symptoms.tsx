@@ -4,6 +4,7 @@ import { historyApi, symptomsApi, SymptomRefused, type HistoryList, type Symptom
 import { Button, Chip, Panel } from "../components/ui";
 import { PageTitle } from "../components/shell";
 import { usePrefs } from "../lib/prefs";
+import { errText } from "../lib/errors";
 
 const TEMP_FIELDS = ["bed_temp", "nozzle_temp"];
 const DIR_TONE = { for: "warn", against: "neutral", unclear: "neutral", info: "replay" } as const;
@@ -33,7 +34,14 @@ export function Symptoms() {
       answers[k] = cat && k in cat.fields.numeric ? Number(x) : x;
     }
     try { setRes(await symptomsApi.evaluate(id, answers, s || undefined)); }
-    catch (e) { setRes(null); setErr(e instanceof SymptomRefused ? `${t.sy.failRun} ${e.detail}` : t.sy.failLoad); }
+    catch (e) { setRes(null); setErr(e instanceof SymptomRefused ? refusal(e) : errText(t, e, t.sy.failLoad)); }
+  }
+  // the backend reason is English: only the field it names and the accepted range are reused, the sentence is ours
+  function refusal(e: SymptomRefused) {
+    const label = (t.sy.f as Record<string, string>)[/^(\w+) /.exec(e.detail)?.[1] ?? ""];
+    const r = /is outside (-?[\d.]+) to (-?[\d.]+)$/.exec(e.detail);
+    const why = r ? t.sy.range.replace("{lo}", r[1]!).replace("{hi}", r[2]!) : errText(t, e);
+    return `${t.sy.failRun} ${label ? `${label} — ${why}` : why}`;
   }
   function choose(id: string) { setSel(id); setVals({}); setSession(""); setRes(null); void run(id, {}, ""); }
 

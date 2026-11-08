@@ -4,6 +4,7 @@ import { historyApi, HistoryRefused, type Finding, type HistoryList, type Histor
 import { Button, Chip, Panel, ProvenanceChip, StateBlock } from "../components/ui";
 import { tok, tx } from "../lib/dyn";
 import { usePrefs } from "../lib/prefs";
+import { errText } from "../lib/errors";
 import { ReconPanel } from "./recon";
 
 function SessionFindings({ id }: { id: string }) {
@@ -59,7 +60,7 @@ export function HistoryView() {
       setSel(r.session.id);
       load();
     } catch (e) {
-      setErr(e instanceof HistoryRefused ? ((t.histRefusal as Record<string, string>)[e.code] ?? t.histRefusal.UNKNOWN) : t.histUnavailable);
+      setErr(e instanceof HistoryRefused ? ((t.histRefusal as Record<string, string>)[e.code] ?? t.histRefusal.UNKNOWN) : errText(t, e, t.histUnavailable));
     }
   }
   async function remove(id: string) {

@@ -5,6 +5,7 @@ import { Button, Chip, LedgerBars, Panel, ProvenanceChip, SeverityChip, Stat, St
 import { PageTitle } from "../components/shell";
 import { hhmmss, tms, useIncident, val } from "../lib/data";
 import { usePrefs } from "../lib/prefs";
+import { errText } from "../lib/errors";
 import { tok, tx } from "../lib/dyn";
 import type { RouteName } from "../lib/router";
 import { MiniStrip } from "../viz/HypothesisMap";
@@ -17,7 +18,7 @@ export function Overview({ go }: { go: (n: RouteName, p?: string) => void }) {
   const { t, lang } = usePrefs();
   const inc = useIncident();
   if (inc.status === "loading") return <StateBlock kind="loading" title={t.loading} />;
-  if (inc.status === "error") return <StateBlock kind="error" title={t.error} body={inc.error} action={<Button onClick={inc.reload}>{t.retry}</Button>} />;
+  if (inc.status === "error") return <StateBlock kind="error" title={t.error} body={errText(t, inc.error)} action={<Button onClick={inc.reload}>{t.retry}</Button>} />;
 
   const demo = inc.demo;
   const findings = demo ? inc.findings : [];
@@ -53,9 +54,10 @@ export function Overview({ go }: { go: (n: RouteName, p?: string) => void }) {
                 <p className="mt-1 text-ink2">{tx(lang, dec.entry.summary)}</p>
               </>
             ) : <p className="text-ink2">{t.noIncident}</p>}
+            {/* provenance stays visible in every mode; only identifiers are folded */}
+            {codeObs && <div className="mt-3 flex flex-wrap items-center gap-2" data-testid="incident-provenance"><ProvenanceChip status="USER_REPORTED" /><ProvenanceChip status={codeObs.source_status} /></div>}
             <TechDetails className="mt-3">
               <div className="flex flex-wrap items-center gap-2">
-                {codeObs && <><ProvenanceChip status="USER_REPORTED" /><ProvenanceChip status={codeObs.source_status} /></>}
                 <span className="mono text-xs text-ink2">{code}</span>
                 {paused && <span className="text-xs text-ink3">· {t.pausedAt} {hhmmss(tms(paused))} UTC</span>}
               </div>

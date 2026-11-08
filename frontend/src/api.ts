@@ -62,8 +62,14 @@ export interface ReplayOut {
 // browser cannot drive the local API with a no-cors form or fetch (CSRF guard, see SECURITY.md).
 const hdr = (contentType?: string): Record<string, string> => (contentType ? { "content-type": contentType, "x-u1d": "1" } : { "x-u1d": "1" });
 
+/** A refused request: the message stays "HTTP <status>" (never shown), the screens show the translation of `code`. */
+export class ApiError extends Error { constructor(public status: number, public code: string) { super(`HTTP ${status}`); } }
 async function j<T>(res: Response): Promise<T> {
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  if (!res.ok) {
+    let code: unknown;
+    try { code = ((await res.json()) as { detail?: { code?: unknown } })?.detail?.code; } catch { /* no JSON body */ }
+    throw new ApiError(res.status, typeof code === "string" ? code : res.status === 404 ? "NOT_FOUND" : "UNKNOWN");
+  }
   return (await res.json()) as T;
 }
 

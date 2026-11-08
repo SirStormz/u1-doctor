@@ -103,7 +103,7 @@ function Palette({ open, onClose, go }: { open: boolean; onClose: () => void; go
 const THEMES: Theme[] = ["night", "graphite", "light"];
 
 export function Shell({ route, go, replay, children }: { route: RouteName; go: (n: RouteName, p?: string) => void; replay: boolean; children: ReactNode }) {
-  const { t, lang, setLang, theme, setTheme, mode, setMode, markStep } = usePrefs();
+  const { t, lang, setLang, theme, setTheme, mode, setMode, markStep, onboarded } = usePrefs();
   const expert = mode === "expert";
   const { health, demo, setDemo } = useIncident();
   useEffect(() => { if (demo) markStep("demo"); }, [demo, markStep]);
@@ -120,10 +120,11 @@ export function Shell({ route, go, replay, children }: { route: RouteName; go: (
   }, []);
 
   useEffect(() => {
+    if (!onboarded) return; // the first-run dialog is modal: Ctrl+K stays off until it is closed
     const on = (e: KeyboardEvent) => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setPalette((p) => !p); } };
     window.addEventListener("keydown", on);
     return () => window.removeEventListener("keydown", on);
-  }, []);
+  }, [onboarded]);
   useEffect(() => { main.current?.focus({ preventScroll: true }); main.current?.scrollTo?.(0, 0); }, [route]);
   // the page scrolls inside <main>: give the bars the same right edge as the content by adding the scrollbar's width
   useEffect(() => {

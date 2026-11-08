@@ -7,6 +7,7 @@ import { api } from "../api";
 import { hhmmss, tms, useIncident, val } from "../lib/data";
 import { tx } from "../lib/dyn";
 import { hasWebGL } from "../lib/webgl";
+import { isGoldKey } from "../lib/keys";
 import type { SceneCtl } from "../viz/LandingScene";
 import { MODEL_URL } from "../viz/u1model";
 import { usePrefs } from "../lib/prefs";
@@ -44,7 +45,7 @@ function Rise({ children, delay = 0, className = "" }: { children: ReactNode; de
   );
 }
 
-/** Golden construction overlay (press G): phi grid lines + logarithmic golden spiral. */
+/** Golden construction overlay (Alt+G): phi grid lines + logarithmic golden spiral. */
 export function GoldenOverlay({ on, label }: { on: boolean; label: string }) {
   const d = useMemo(() => {
     const pts: string[] = [];
@@ -189,7 +190,7 @@ export function Landing({ go }: { go: (n: RouteName, p?: string) => void }) {
 
   useEffect(() => {
     const on = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() === "g" && !e.ctrlKey && !e.metaKey && !e.altKey && !(e.target instanceof HTMLInputElement)) setSpiral((s) => !s);
+      if (isGoldKey(e)) { e.preventDefault(); setSpiral((s) => !s); }
     };
     window.addEventListener("keydown", on);
     return () => window.removeEventListener("keydown", on);
@@ -250,7 +251,7 @@ export function Landing({ go }: { go: (n: RouteName, p?: string) => void }) {
         <span className="mx-1 hidden h-5 w-px bg-line sm:block" aria-hidden />
         <span className="hidden gap-2 sm:flex"><Chip tone="demo">{t.modeDemo}</Chip><Chip tone="accent" icon={<Lock size={11} aria-hidden />}>{t.readOnly}</Chip></span>
         <div className="ml-auto flex items-center gap-2">
-          <button type="button" onClick={() => setSpiral((s) => !s)} aria-pressed={spiral} title={L.spiralHint} className="btn btn-ghost !px-2.5 !py-1 max-sm:!hidden" style={{ color: "#c9c9c0" }}><Sparkles size={15} aria-hidden /><span className="sr-only">{L.spiral}</span><Kbd>G</Kbd></button>
+          <button type="button" onClick={() => setSpiral((s) => !s)} aria-pressed={spiral} title={L.spiralHint} className="btn btn-ghost !px-2.5 !py-1 max-sm:!hidden" style={{ color: "#c9c9c0" }}><Sparkles size={15} aria-hidden /><span className="sr-only">{L.spiral}</span><Kbd>Alt G</Kbd></button>
           <div role="group" aria-label={t.language} className="flex overflow-hidden border border-control">
             {(["en", "fr"] as const).map((l) => (
               <button key={l} type="button" aria-pressed={lang === l} onClick={() => setLang(l)} className="px-2.5 py-1 text-xs font-bold" style={{ background: lang === l ? "#ffc400" : "#1e1e1b", color: lang === l ? "#0e0e0e" : "#c9c9c0" }}>{l.toUpperCase()}</button>

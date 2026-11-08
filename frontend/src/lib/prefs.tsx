@@ -5,6 +5,7 @@ export type Theme = "night" | "graphite" | "light";
 export type Density = "comfortable" | "compact";
 export type Mode = "simple" | "expert";
 export type StepId = "demo" | "code" | "timeline" | "evidence" | "report";
+const STEP_IDS: unknown[] = ["demo", "code", "timeline", "evidence", "report"] satisfies StepId[];
 interface Prefs { lang: Lang; theme: Theme; density: Density; mode: Mode; onboarded: boolean; steps: StepId[]; checklistHidden: boolean; finishOnboarding: () => void; markStep: (s: StepId) => void; hideChecklist: () => void; restartOnboarding: () => void; setLang: (l: Lang) => void; setTheme: (t: Theme) => void; setDensity: (d: Density) => void; setMode: (m: Mode) => void; t: Messages }
 
 const read = (k: string, d: string) => { try { return localStorage.getItem(k) ?? d; } catch { return d; } };
@@ -18,7 +19,8 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<Mode>(() => (read("u1d.mode", "simple") === "expert" ? "expert" : "simple"));
   useEffect(() => { write("u1d.mode", mode); }, [mode]);
   const [onboarded, setOnboarded] = useState(() => read("u1d.onboarded", "") === "1");
-  const [steps, setSteps] = useState<StepId[]>(() => { try { const v = JSON.parse(read("u1d.steps", "[]")); return Array.isArray(v) ? v : []; } catch { return []; } });
+  // a corrupted value (not JSON, not a list, unknown ids) resets to an empty list instead of breaking the Overview
+  const [steps, setSteps] = useState<StepId[]>(() => { try { const v: unknown = JSON.parse(read("u1d.steps", "[]")); return Array.isArray(v) ? v.filter((x): x is StepId => STEP_IDS.includes(x)) : []; } catch { return []; } });
   const [checklistHidden, setChecklistHidden] = useState(() => read("u1d.checklistHidden", "") === "1");
   useEffect(() => { write("u1d.onboarded", onboarded ? "1" : ""); }, [onboarded]);
   useEffect(() => { write("u1d.steps", JSON.stringify(steps)); }, [steps]);

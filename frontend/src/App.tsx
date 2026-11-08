@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Shell } from "./components/shell";
 import { IncidentProvider } from "./lib/data";
+import { isGoldKey } from "./lib/keys";
 import { PrefsProvider, usePrefs } from "./lib/prefs";
 import { useLanding, useRoute } from "./lib/router";
 import { GoldenOverlay, Landing } from "./screens/landing";
@@ -16,13 +17,13 @@ function Screens() {
   const [replay, setReplay] = useState(false);
   const landing = useLanding();
   const [gold, setGold] = useState(false);
-  const { t } = usePrefs();
+  const { t, onboarded } = usePrefs();
   useEffect(() => {
-    if (landing) return;
-    const on = (e: KeyboardEvent) => { if (e.key.toLowerCase() === "g" && !e.ctrlKey && !e.metaKey && !e.altKey && !(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement)) setGold((g) => !g); };
+    if (landing || !onboarded) return; // no page shortcut while the first-run dialog is open
+    const on = (e: KeyboardEvent) => { if (isGoldKey(e)) { e.preventDefault(); setGold((g) => !g); } };
     window.addEventListener("keydown", on);
     return () => window.removeEventListener("keydown", on);
-  }, [landing]);
+  }, [landing, onboarded]);
   if (landing) return <Landing go={go} />;
   const screen = (() => {
     switch (route.name) {

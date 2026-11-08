@@ -5,6 +5,7 @@ import { Button, Chip, Kbd, Panel, ProvenanceChip, SeverityChip, Seal, StateBloc
 import { PageTitle } from "../components/shell";
 import { useIncident } from "../lib/data";
 import { usePrefs, type Density, type Mode, type Theme } from "../lib/prefs";
+import { errText } from "../lib/errors";
 import { moduleLabel, scenarioLabel, tok, tx } from "../lib/dyn";
 import { pfLimit, pfView } from "../lib/preflight-text";
 import { buildRequest, supNote, supText, type SupportOut } from "../lib/support-text";
@@ -64,7 +65,7 @@ export function Connect() {
   async function run() {
     setBusy(true); setErr(null); setOut(null);
     try { setOut(await liveApi.capture(host.trim(), secs, save)); }
-    catch (e) { setErr((e instanceof LiveRefused ? t.liveErr[e.code] : undefined) ?? t.liveErr["UNKNOWN"] ?? ""); }
+    catch (e) { setErr((e instanceof LiveRefused ? t.liveErr[e.code] ?? t.apiErr[e.code] : undefined) ?? t.liveErr["UNKNOWN"] ?? ""); }
     finally { setBusy(false); }
   }
   const ready = consent && /^\d{1,3}(\.\d{1,3}){3}$/.test(host.trim()) && !busy;
@@ -133,7 +134,7 @@ export function Explorer({ param }: { param?: string }) {
 
   async function run(c: string) {
     setBusy(true); setErr(null);
-    try { setRes(await api.interpret(c, fw.trim() || undefined)); } catch (e) { setRes(null); setErr(String(e)); } finally { setBusy(false); }
+    try { setRes(await api.interpret(c, fw.trim() || undefined)); } catch (e) { setRes(null); setErr(errText(t, e)); } finally { setBusy(false); }
   }
   useEffect(() => { if (param) { setCode(param); void run(param); } }, [param]);
   const d = res?.decoding;
@@ -307,7 +308,7 @@ function Preflight({ onCode }: { onCode: (code: string) => void }) {
     if (!f) return;
     setBusy(true); setErr(null); setRes(null);
     try { setRes(await preflight(f)); }
-    catch (e) { setErr(e instanceof PreflightRefused ? (t.pfRefusal as Record<string, string>)[e.code] ?? t.pfRefusal.UNKNOWN : String(e)); }
+    catch (e) { setErr(e instanceof PreflightRefused ? (t.pfRefusal as Record<string, string>)[e.code] ?? t.pfRefusal.UNKNOWN : errText(t, e)); }
     finally { setBusy(false); }
   }
   const order = { FAIL: 0, WARN: 1, UNKNOWN: 2, INFO: 3, PASS: 4 } as const;
@@ -362,11 +363,11 @@ export function Replay({ onMode }: { onMode: (r: boolean) => void }) {
   const [sel, setSel] = useState("");
   const [runs, setRuns] = useState<Run[]>([]);
   const [err, setErr] = useState<string | null>(null);
-  useEffect(() => { api.scenarios().then((s) => { setNames(s.scenarios); setSel(s.scenarios.includes("demo_extrusion_blockage") ? "demo_extrusion_blockage" : s.scenarios[0] ?? ""); }).catch((e) => setErr(String(e))); }, []);
+  useEffect(() => { api.scenarios().then((s) => { setNames(s.scenarios); setSel(s.scenarios.includes("demo_extrusion_blockage") ? "demo_extrusion_blockage" : s.scenarios[0] ?? ""); }).catch((e) => setErr(errText(t, e))); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { onMode(false); }, [sel, onMode]);
   async function run() {
     setErr(null);
-    try { const r = await api.replay(sel); setRuns((x) => [{ n: x.length + 1, scenario: sel, hash: r.findings_sha256, ok: r.matches_golden, count: r.findings.length }, ...x].slice(0, 6)); onMode(true); } catch (e) { setErr(String(e)); }
+    try { const r = await api.replay(sel); setRuns((x) => [{ n: x.length + 1, scenario: sel, hash: r.findings_sha256, ok: r.matches_golden, count: r.findings.length }, ...x].slice(0, 6)); onMode(true); } catch (e) { setErr(errText(t, e)); }
   }
   const last = runs[0];
   const prev = runs.find((r, i) => i > 0 && r.scenario === last?.scenario);

@@ -5,7 +5,7 @@ export const DEMO_SCENARIO = "demo_extrusion_blockage";
 
 export interface IncidentData {
   status: "loading" | "ready" | "error";
-  error?: string;
+  error?: unknown;
   obs: Observation[];
   findings: Finding[];
   replay: ReplayOut | null;
@@ -37,7 +37,7 @@ export function IncidentProvider({ children }: { children: ReactNode }) {
         const decoding = code ? await api.interpret(code) : null;
         if (live) setState({ status: "ready", obs: sc.observations, findings: rp.findings, replay: rp, decoding, code, compat, health });
       } catch (e) {
-        if (live) setState({ ...empty, status: "error", error: String(e) });
+        if (live) setState({ ...empty, status: "error", error: e });
       }
     })();
     return () => { live = false; };

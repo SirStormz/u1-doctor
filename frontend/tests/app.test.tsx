@@ -284,7 +284,7 @@ test("onboarding: first run shows the 3-step assistant; choices set the mode and
   expect(await screen.findAllByText("DEMO")).not.toHaveLength(0);
 });
 
-test("onboarding: Escape skips without changing anything, and the checklist ticks itself from real use", async () => {
+test("onboarding: Escape skips (the default Simple level is kept), and the checklist ticks itself from real use", async () => {
   localStorage.removeItem("u1d.onboarded");
   render(<App />);
   const dlg = await screen.findByRole("dialog");
@@ -307,3 +307,133 @@ test("onboarding: Settings can replay it", async () => {
   fireEvent.click(await screen.findByRole("button", { name: /Replay the guided start|Rejouer le démarrage guidé/ }));
   expect(await screen.findByRole("dialog")).toBeInTheDocument();
 });
+
+const firstRun = async () => { localStorage.removeItem("u1d.onboarded"); };
+const flush = () => act(async () => { await new Promise((x) => setTimeout(x, 40)); });
+
+for (const lang of ["en", "fr"]) {
+  test(`a11y (axe, structure/ARIA rules): onboarding dialog, ${lang}`, async () => {
+    await firstRun();
+    localStorage.setItem("u1d.lang", lang);
+    const { container } = render(<App />);
+    const dlg = await screen.findByRole("dialog");
+    await flush();
+    for (let step = 1; step <= 3; step++) {
+      const res = await axe.run(container, { rules: { "color-contrast": { enabled: false }, region: { enabled: false } } });
+      expect(res.violations.map((v) => `step ${step} ${v.id}: ${v.nodes.map((n) => n.html.slice(0, 80)).join(" | ")}`)).toEqual([]);
+      if (step < 3) fireEvent.click(within(dlg).getByRole("button", { name: /^(Next|Suivant)$/ }));
+      await flush();
+    }
+  });
+}
+
+test("onboarding: focus starts on the heading, Tab is trapped, the background is inert, focus comes back on close", async () => {
+  render(<App />);
+  await go("#/settings");
+  const replay = await screen.findByRole("button", { name: /Replay the guided start|Rejouer le démarrage guidé/ });
+  replay.focus();
+  fireEvent.click(replay);
+  const dlg = await screen.findByRole("dialog");
+  await waitFor(() => expect(document.activeElement).toBe(within(dlg).getByRole("heading", { level: 2 })));
+  const overlay = dlg.parentElement!;
+  const others = [...overlay.parentElement!.children].filter((el) => el !== overlay);
+  expect(others.length).toBeGreaterThan(0);
+  for (const el of others) { expect(el).toHaveAttribute("aria-hidden", "true"); expect(el).toHaveAttribute("inert"); }
+  const tabbable = [...dlg.querySelectorAll<HTMLElement>("button")].filter((b) => b.tabIndex >= 0);
+  const first = tabbable[0]!, last = tabbable[tabbable.length - 1]!;
+  last.focus();
+  fireEvent.keyDown(last, { key: "Tab" });
+  expect(document.activeElement).toBe(first);
+  fireEvent.keyDown(first, { key: "Tab", shiftKey: true });
+  expect(document.activeElement).toBe(last);
+  fireEvent.keyDown(last, { key: "Escape" });
+  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  for (const el of others) { expect(el).not.toHaveAttribute("aria-hidden", "true"); expect(el).not.toHaveAttribute("inert"); }
+  expect(document.activeElement).toBe(replay);
+});
+
+test("onboarding: the level radios have one tab stop and follow the arrow keys, Home and End", async () => {
+  await firstRun();
+  render(<App />);
+  const dlg = await screen.findByRole("dialog");
+  const simple = within(dlg).getByRole("radio", { name: /^Simple/ });
+  const expert = within(dlg).getByRole("radio", { name: /^Expert/ });
+  expect([simple.tabIndex, expert.tabIndex]).toEqual([0, -1]);
+  simple.focus();
+  fireEvent.keyDown(simple, { key: "ArrowDown" });
+  expect(expert).toHaveAttribute("aria-checked", "true");
+  expect(document.activeElement).toBe(expert);
+  expect([simple.tabIndex, expert.tabIndex]).toEqual([-1, 0]);
+  fireEvent.keyDown(expert, { key: "ArrowRight" }); // wraps around
+  expect(simple).toHaveAttribute("aria-checked", "true");
+  fireEvent.keyDown(simple, { key: "End" });
+  expect(expert).toHaveAttribute("aria-checked", "true");
+  fireEvent.keyDown(expert, { key: "Home" });
+  expect(simple).toHaveAttribute("aria-checked", "true");
+  fireEvent.keyDown(simple, { key: "ArrowUp" });
+  expect(expert).toHaveAttribute("aria-checked", "true");
+  fireEvent.keyDown(expert, { key: "ArrowLeft" });
+  expect(document.activeElement).toBe(simple);
+});
+
+test("onboarding: Escape and Skip keep the level already chosen", async () => {
+  await firstRun();
+  render(<App />);
+  let dlg = await screen.findByRole("dialog");
+  fireEvent.click(within(dlg).getByRole("radio", { name: /^Expert/ }));
+  fireEvent.keyDown(dlg, { key: "Escape" });
+  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  expect(localStorage.getItem("u1d.mode")).toBe("expert");
+  expect(screen.getByRole("button", { name: /^(expert mode|mode expert)$/i })).toHaveAttribute("aria-pressed", "true");
+  await go("#/settings");
+  fireEvent.click(await screen.findByRole("button", { name: /Replay the guided start|Rejouer le démarrage guidé/ }));
+  dlg = await screen.findByRole("dialog");
+  fireEvent.click(within(dlg).getByRole("radio", { name: /^Simple/ }));
+  fireEvent.click(within(dlg).getByRole("button", { name: /^(Skip|Passer)$/ }));
+  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  expect(localStorage.getItem("u1d.mode")).toBe("simple");
+});
+
+test("onboarding: Ctrl+K and Alt+G are off while the dialog is open, back on after", async () => {
+  await firstRun();
+  render(<App />);
+  const dlg = await screen.findByRole("dialog");
+  // the overlay is a motion element: "on" shows as soon as its opacity starts rising
+  const spiral = () => { const st = (document.querySelector(`svg[aria-label="${messages.en.landing.spiral}"], svg[aria-label="${messages.fr.landing.spiral}"]`) as SVGElement).style; return st.visibility === "visible" || Number(st.opacity || 0) > 0 ? "visible" : "hidden"; };
+  fireEvent.keyDown(window, { key: "k", ctrlKey: true });
+  fireEvent.keyDown(window, { key: "g", code: "KeyG", altKey: true });
+  await flush();
+  expect(screen.getAllByRole("dialog")).toEqual([dlg]);
+  expect(spiral()).toBe("hidden");
+  fireEvent.keyDown(dlg, { key: "Escape" });
+  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  fireEvent.keyDown(window, { key: "g", code: "KeyG" }); // a bare G is not a shortcut (WCAG 2.1.4)
+  await flush();
+  expect(spiral()).toBe("hidden");
+  fireEvent.keyDown(window, { key: "g", code: "KeyG", altKey: true });
+  await flush();
+  expect(spiral()).toBe("visible");
+  fireEvent.keyDown(window, { key: "k", ctrlKey: true });
+  expect(await screen.findByRole("dialog", { name: /search|recherche|palette/i })).toBeInTheDocument();
+});
+
+test("overview: provenance chips of the incident code stay visible in Simple mode (only identifiers fold)", async () => {
+  render(<App />);
+  await demoOn();
+  const prov = await screen.findByTestId("incident-provenance");
+  expect(prov.closest("details")).toBeNull();
+  expect(within(prov).getByText("USER_REPORTED")).toBeInTheDocument(); // not inside a folded <details> (the page fade-in makes toBeVisible moot in jsdom)
+  expect(within(prov).getByText(/SYNTHETIC|SYNTHÉTIQUE/)).toBeInTheDocument();
+  const folded = document.querySelector("details")!;
+  expect(folded.open).toBe(false);
+  expect(within(folded).getByText("0002-0525-0002-0004")).toBeInTheDocument();
+});
+
+for (const [label, raw, expected] of [["not JSON", "{oops", "[]"], ["not a list", JSON.stringify({ demo: true }), "[]"], ["a string", JSON.stringify("demo"), "[]"], ["unknown ids", JSON.stringify([42, null, "demo", "nope"]), JSON.stringify(["demo"])]] as const) {
+  test(`a corrupted u1d.steps (${label}) does not crash and is reset`, async () => {
+    localStorage.setItem("u1d.steps", raw);
+    render(<App />);
+    expect(await screen.findByRole("region", { name: /Getting started|Premiers pas/ })).toBeInTheDocument();
+    await waitFor(() => expect(localStorage.getItem("u1d.steps")).toBe(expected));
+  });
+}

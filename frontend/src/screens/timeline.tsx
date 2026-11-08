@@ -5,6 +5,7 @@ import { PageTitle } from "../components/shell";
 import { NoData } from "../components/nodata";
 import { hhmmss, tms, useIncident, val } from "../lib/data";
 import { usePrefs } from "../lib/prefs";
+import { errText } from "../lib/errors";
 import { entityLabel, eventLabel, stateLabel, tok, tx } from "../lib/dyn";
 import { ReconPanel } from "./recon";
 import { HistoryView } from "./history";
@@ -18,7 +19,7 @@ function DemoTimeline() {
   const [idx, setIdx] = useState<number | null>(null);
   const [table, setTable] = useState(false);
   const series = useMemo(() => deriveSeries(inc.obs), [inc.obs]);
-  if (inc.status !== "ready") return <StateBlock kind={inc.status === "error" ? "error" : "loading"} title={inc.status === "error" ? t.error : t.loading} body={inc.error} />;
+  if (inc.status !== "ready") return <StateBlock kind={inc.status === "error" ? "error" : "loading"} title={inc.status === "error" ? t.error : t.loading} body={inc.status === "error" ? errText(t, inc.error) : undefined} />;
   if (!inc.demo) return <><PageTitle title={t.nav.timeline} sub={t.timelineSub} icon={<Activity size={26} />} /><NoData /></>;
   if (!inc.obs.length) return <StateBlock kind="empty" title={t.empty} />;
 

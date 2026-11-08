@@ -69,3 +69,17 @@ for (const r of ["overview", "timeline", "findings", "evidence", "report"]) {
     expect(hits, `English words on #/${r} (demo on)`).toEqual([]);
   });
 }
+
+test("French first-run assistant has no English text, on all three steps", async () => {
+  localStorage.removeItem("u1d.onboarded");
+  location.hash = "#/overview";
+  render(<App />);
+  const dlg = await screen.findByRole("dialog");
+  for (let step = 1; step <= 3; step++) {
+    const text = (dlg.textContent ?? "").replace(ALLOWED, " ");
+    const hits = [...new Set(text.match(new RegExp(ENGLISH.source, "gi")) ?? [])];
+    expect(hits, `English words on onboarding step ${step}`).toEqual([]);
+    expect(dlg.textContent).toMatch(new RegExp(`Étape ${step} sur 3`));
+    if (step < 3) fireEvent.click(screen.getByRole("button", { name: /^Suivant$/ }));
+  }
+});

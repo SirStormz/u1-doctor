@@ -62,5 +62,5 @@ Décision du propriétaire après comparaison de 3 directions (`docs/design/dire
 - **Fait / hypothèse / trou** : plein, **tirets**, hachures — les tirets ne servent plus qu'aux hypothèses (les panneaux de démo ne sont plus en pointillé).
 - **Landing** (`#/`) : studio clair, U1 3D avec traits d'attache jaune/noir vers les chiffres 01-04, scan, vue éclatée, cartes Fait/Hypothèse/Trou, rejeu, bloc de fin noir à filet jaune.
 - **3D** : seulement là où elle sert (landing, héros de l'Overview). Couleurs de bobines = celles des photos réelles (noir, jaune, blanc, rouge). Lettrage et écran suivent le capot pendant l'éclatement.
-- **φ** et mouvement : inchangés (échelle typographique, espacements, durées, easing, touche G).
+- **φ** et mouvement : inchangés (échelle typographique, espacements, durées, easing, raccourci Alt+G, sans touche unique : WCAG 2.1.4).
 - **Audit** : 10 écrans relus à 1440×810 en thème Manuel (+ Atelier en EN/FR) ; corrigés : titre/icône empilés, viewer écrasé par `container-type:size`, pastilles de thème encore bleues, Accueil avec le key art bleu (supprimé), chiffres fantômes de la landing, lettrage 3D dispersé. Limite : modèle 3MF « nano » communautaire, licence inconnue, git-ignoré.
