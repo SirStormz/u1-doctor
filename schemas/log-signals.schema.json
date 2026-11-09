@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/SirStormz/u1-doctor/main/schemas/log-signals.schema.json",
+  "title": "U1 Doctor log signals",
+  "description": "Machine exceptions seen in real logs whose code is not in the official table. Own wording, English and French, no score or probability field.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "checked_at", "kind", "note", "signals"],
+  "$defs": {
+    "l10n": {"type": "object", "additionalProperties": false, "required": ["en", "fr"], "properties": {"en": {"type": "string", "minLength": 1, "maxLength": 600}, "fr": {"type": "string", "minLength": 1, "maxLength": 700}}}
+  },
+  "properties": {
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "checked_at": {"type": "string", "pattern": "^20[0-9]{2}-[01][0-9]-[0-3][0-9]$"},
+    "kind": {"const": "OBSERVED_IN_LOGS"},
+    "note": {"type": "string", "minLength": 1},
+    "signals": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["code", "message", "seen", "title", "text"],
+        "properties": {
+          "code": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$"},
+          "message": {"type": "string", "minLength": 1, "maxLength": 200},
+          "seen": {"type": "string", "minLength": 1},
+          "title": {"$ref": "#/$defs/l10n"},
+          "text": {"$ref": "#/$defs/l10n"},
+          "article": {"type": "object", "additionalProperties": false, "required": ["title", "url"], "properties": {"title": {"type": "string"}, "url": {"type": "string", "pattern": "^https://wiki\\.snapmaker\\.com/en/snapmaker_u1/"}}}
+        }
+      }
+    }
+  }
+}

@@ -20,7 +20,7 @@ from .engine.canonical import sha256_hex
 MAX_SESSIONS = 200
 MAX_TOTAL_OBSERVATIONS = 1_000_000
 MAX_LABEL = 80
-ORIGINS = ("synthetic", "real_capture", "bundle", "dryrun")
+ORIGINS = ("synthetic", "real_capture", "bundle", "dryrun", "logs")
 _CTRL = re.compile(r"[\x00-\x1f\x7f]")
 
 

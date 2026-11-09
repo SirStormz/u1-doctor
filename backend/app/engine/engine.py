@@ -136,7 +136,8 @@ def ev_state_transition(rule: Rule, obs: list[Obs], rs_hash: str, rs_id: str) ->
 
 
 def ev_mapping_unknown(rule: Rule, obs: list[Obs], rs_hash: str, rs_id: str) -> list[dict[str, Any]]:
-    un = [o for o in obs if o["entity_id"] == "unmapped" or o["mapping_quality"] == "UNKNOWN"]
+    skip = set(rule["params"].get("skip_event_types", []))  # summaries read from log files are not values that belong to a toolhead
+    un = [o for o in obs if (o["entity_id"] == "unmapped" or o["mapping_quality"] == "UNKNOWN") and o["event_type"] not in skip]
     if not un:
         return []
     return [_make(
@@ -641,6 +642,11 @@ EVALUATORS: dict[str, Callable[..., list[dict[str, Any]]]] = {
     "extruder_activity": ev_extruder_activity,
     "bed_mesh_stats": ev_bed_mesh_stats,
 }
+
+
+from .log_rules import LOG_EVALUATORS  # noqa: E402  (log_rules reads helpers from this module at call time)
+
+EVALUATORS.update(LOG_EVALUATORS)
 
 
 def evaluate(observations: list[Obs], ruleset: dict[str, Any]) -> list[dict[str, Any]]:

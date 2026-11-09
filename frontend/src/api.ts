@@ -67,6 +67,8 @@ export interface InterpretOut {
   community?: { kind: "COMMUNITY_REPORT"; checked_at: string; causes: CommunityCause[] };
   input?: { normalized: string | null; suggestions: { code: string; title: string }[] };
   messages?: MessageMatch[];
+  from_exception?: string | null;
+  log_signal?: { title: L10nText; text: L10nText; seen: string; article?: { title: string; url: string } | null } | null;
 }
 export interface ReplayOut {
   matches_golden: boolean;
@@ -204,12 +206,14 @@ export const preflight = async (file: File): Promise<PreflightOut> => {
 };
 
 export interface HistorySession {
-  id: string; label: string; origin: "synthetic" | "real_capture" | "bundle" | "dryrun"; saved_at: string; observation_count: number;
+  id: string; label: string; origin: "synthetic" | "real_capture" | "bundle" | "dryrun" | "logs"; saved_at: string; observation_count: number;
   first_utc: string; last_utc: string; status_mix: string[]; content_sha256: string;
 }
 export interface HistoryList { sessions: HistorySession[]; totals: { sessions: number; observations: number }; limits: { max_sessions: number; max_observations: number } }
 export class HistoryRefused extends Error { constructor(public code: string) { super(code); } }
-type Saved = { session: HistorySession; already_saved: boolean };
+export interface LogFileRead { kind: string; lines: number; from?: string | null; to?: string | null; note?: string; exceptions?: number; service_starts?: number; wifi_deauth?: number }
+export interface LogImportInfo { files: LogFileRead[]; summary: { files: number; recognized: number; observations: number; dropped_observations: number }; notice: string }
+type Saved = { session: HistorySession; already_saved: boolean; import?: LogImportInfo };
 async function saved(r: Response): Promise<Saved> {
   if (r.status === 422 || r.status === 409) { const b = (await r.json()) as { detail?: { code?: string } }; throw new HistoryRefused(b.detail?.code ?? "UNKNOWN"); }
   return j<Saved>(r);
@@ -219,6 +223,7 @@ export const historyApi = {
   saveSource: (source: string, label?: string) => fetch("/api/v1/history/source", { method: "POST", headers: hdr("application/json"), body: JSON.stringify(label ? { source, label } : { source }) }).then(saved),
   saveBundle: (f: File) => fetch(`/api/v1/history/bundle?label=${encodeURIComponent(f.name.slice(0, 80))}`, { method: "POST", headers: hdr("application/zip"), body: f }).then(saved),
   saveDryrun: (f: File) => fetch(`/api/v1/history/dryrun?label=${encodeURIComponent(f.name.slice(0, 80))}`, { method: "POST", headers: hdr("application/json"), body: f }).then(saved),
+  saveLogs: (f: File) => fetch(`/api/v1/history/logs?label=${encodeURIComponent(f.name.slice(0, 80))}&name=${encodeURIComponent(f.name.slice(0, 120))}`, { method: "POST", headers: hdr("application/octet-stream"), body: f }).then(saved),
   observations: (id: string) => fetch(`/api/v1/history/${encodeURIComponent(id)}/observations`).then(j<{ observations: Observation[] }>),
   findings: (id: string) => fetch(`/api/v1/history/${encodeURIComponent(id)}/findings`).then(j<{ findings: Finding[]; ruleset: { id: string; version: string; hash: string } }>),
   remove: (id: string) => fetch(`/api/v1/history/${encodeURIComponent(id)}`, { method: "DELETE", headers: hdr() }).then(j<{ deleted: string }>),

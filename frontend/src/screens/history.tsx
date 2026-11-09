@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { History as HistoryIcon, Trash2 } from "lucide-react";
-import { historyApi, HistoryRefused, type Finding, type HistoryList, type HistorySession } from "../api";
+import { historyApi, HistoryRefused, type Finding, type HistoryList, type HistorySession, type LogImportInfo } from "../api";
 import { Button, Chip, Panel, ProvenanceChip, StateBlock } from "../components/ui";
 import { tok, tx } from "../lib/dyn";
 import { usePrefs } from "../lib/prefs";
@@ -49,20 +49,23 @@ export function HistoryView() {
   const [sel, setSel] = useState<string | null>(null);
   const [armed, setArmed] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [read, setRead] = useState<LogImportInfo | null>(null);
 
   const load = useCallback(() => { historyApi.list().then(setList).catch(() => setErr(t.histUnavailable)); }, [t.histUnavailable]);
   useEffect(() => { load(); }, [load]);
 
-  async function run(job: () => Promise<{ session: HistorySession; already_saved: boolean }>) {
-    setErr(null); setNote(null);
+  async function run(job: () => Promise<{ session: HistorySession; already_saved: boolean; import?: LogImportInfo }>) {
+    setErr(null); setNote(null); setBusy(true); setRead(null);
     try {
       const r = await job();
       setNote(r.already_saved ? t.histAlready : t.histSaved);
       setSel(r.session.id);
+      setRead(r.import ?? null);
       load();
     } catch (e) {
       setErr(e instanceof HistoryRefused ? ((t.histRefusal as Record<string, string>)[e.code] ?? t.histRefusal.UNKNOWN) : errText(t, e, t.histUnavailable));
-    }
+    } finally { setBusy(false); }
   }
   async function remove(id: string) {
     if (armed !== id) { setArmed(id); return; }
@@ -70,7 +73,7 @@ export function HistoryView() {
     try { await historyApi.remove(id); if (sel === id) setSel(null); load(); } catch { setErr(t.histUnavailable); }
   }
   const origin = (o: string) => (t.histOrigin as Record<string, string>)[o] ?? o;
-  const files = (e: React.ChangeEvent<HTMLInputElement>, job: (f: File) => Promise<{ session: HistorySession; already_saved: boolean }>) => {
+  const files = (e: React.ChangeEvent<HTMLInputElement>, job: (f: File) => Promise<{ session: HistorySession; already_saved: boolean; import?: LogImportInfo }>) => {
     const f = e.target.files?.[0]; e.target.value = ""; if (f) void run(() => job(f));
   };
 
@@ -83,10 +86,30 @@ export function HistoryView() {
           <Button onClick={() => void run(() => historyApi.saveSource("synthetic:demo_extrusion_blockage", `${t.histOrigin.synthetic} · demo_extrusion_blockage`))}>{t.histSaveDemo}</Button>
           <Button onClick={() => void run(() => historyApi.saveSource("real:h02_normal_print", `${t.histOrigin.real_capture} · H-02`))}>{t.histSaveReal}</Button>
           <label className="btn btn-secondary cursor-pointer">{t.histImportBundle}<input type="file" accept=".zip,application/zip" className="sr-only" onChange={(e) => files(e, historyApi.saveBundle)} /></label>
+          <label className="btn btn-secondary cursor-pointer" data-testid="hist-import-logs">{t.histImportLogs}<input type="file" accept=".log,.txt,.csv,.gz,.tgz,.zip,.tar,text/plain" className="sr-only" onChange={(e) => files(e, historyApi.saveLogs)} /></label>
           <label className="btn btn-secondary cursor-pointer">{t.histImportDryrun}<input type="file" accept=".json,application/json" className="sr-only" onChange={(e) => files(e, historyApi.saveDryrun)} /></label>
         </div>
+        <p className="mt-2 text-xs text-ink3">{t.histLogsHelp}</p>
         <div aria-live="polite" className="mt-3">
+          {busy && <p className="text-ink3" data-testid="hist-busy">{t.histLogsBusy}</p>}
           {note && <Chip tone="ok">{note}</Chip>}
+          {read && (
+            <div className="mt-2 rounded-lg border border-control p-3 text-sm" data-testid="logs-read">
+              <p className="micro mb-1">{t.histLogsRead} · {read.summary.recognized} / {read.summary.files}</p>
+              <ul className="grid gap-1">
+                {read.files.map((f, i) => (
+                  <li key={i} className="text-ink2">
+                    <strong>{(t.histLogKind as Record<string, string>)[f.kind] ?? f.kind}</strong>
+                    {f.lines > 0 && <> · {f.lines.toLocaleString(lang === "fr" ? "fr-CH" : "en-GB")} {t.histLogLines}</>}
+                    {f.from && f.to && <> · {f.from.slice(0, 10)} → {f.to.slice(0, 10)}</>}
+                    {typeof f.exceptions === "number" && f.exceptions > 0 && <> · {f.exceptions} {t.histLogExceptions}</>}
+                    {f.kind === "encrypted" && <> · {t.histLogEncrypted}</>}
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-2 text-xs text-ink3">{read.summary.dropped_observations > 0 ? `${t.histLogDropped} ` : ""}{t.histLogsPrivacy}</p>
+            </div>
+          )}
           {err && <StateBlock kind="error" title={t.histRefused} body={err} />}
         </div>
         {!list && !err && <p className="mt-4 text-ink3">{t.loading}</p>}

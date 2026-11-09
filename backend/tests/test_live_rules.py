@@ -345,7 +345,7 @@ def test_every_new_finding_has_provenance_and_no_score():
 
 def test_new_rules_are_proposed_and_numbered_in_sequence():
     ids = [r["id"] for r in RS["rules"]]
-    assert ids[-8:] == NEW_RULES and len(ids) == 20
+    assert ids[12:20] == NEW_RULES and len(ids) == 28  # S25-S32 (log import) follow; see test_logimport.py
     assert all(r["status"] == "PROPOSED" for r in RS["rules"])
 
 

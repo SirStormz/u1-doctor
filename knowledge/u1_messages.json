@@ -101,6 +101,142 @@
       "articles": [],
       "sources": [{"url": "https://forum.snapmaker.com/t/43754", "title": "Fixed Filament Anomaly Error, Won't Resume", "posted": "2026-10-24"}],
       "related_codes": ["0002-0523-0000-0039", "0002-0523-0001-0039", "0002-0523-0002-0039", "0002-0523-0003-0039"]
+    },
+    {
+      "id": "MSG-POGOPIN-DISCONNECT",
+      "patterns": [
+        "pogopin disconnection",
+        "detected pogopin",
+        "clean and retry"
+      ],
+      "title": {
+        "en": "Pogopin disconnection during a print",
+        "fr": "Déconnexion des pogopins pendant une impression"
+      },
+      "explanation": {
+        "en": "The firmware reported that the electrical contact between a toolhead and the swapper was lost during a print. It is the message behind the code 0001-0523-0000-0048 (seen in a real log); the official page for the neighbouring toolhead-swapping anomaly says to clean the toolhead and the swapper pogopins with a dust-free cloth and resume.",
+        "fr": "Le firmware a signalé que le contact électrique entre une tête et le changeur a été perdu pendant une impression. C'est le message derrière le code 0001-0523-0000-0048 (vu dans un vrai journal) ; la page officielle de l'anomalie de changement de tête voisine indique de nettoyer la tête et les pogopins du changeur avec un chiffon non pelucheux, puis de reprendre."
+      },
+      "articles": [
+        {
+          "title": "U1 Pogopin contact anomaly",
+          "url": "https://wiki.snapmaker.com/en/snapmaker_u1/troubleshooting/pogopin_contact_anomaly",
+          "relation": "about"
+        }
+      ],
+      "sources": [],
+      "related_codes": [
+      "0002-0523-0000-0045"
+    ]
+    },
+    {
+      "id": "MSG-FEED-MOTOR-LOGIC",
+      "patterns": [
+        "load_feeding",
+        "motor_speed",
+        "raw msg"
+      ],
+      "title": {
+        "en": "Feeder loading error: motor speed, logic error",
+        "fr": "Erreur de chargement du module d'alimentation : vitesse du moteur, erreur de logique"
+      },
+      "explanation": {
+        "en": "A feeder reported a motor-speed fault while loading filament ('extruder[N]: state: load_feeding, error: motor_speed ... logic error'). Seen once in a real Moonraker log, matching the code 0002-0525-0000-0031 (feeder loading anomaly). No official article for this exact message was found; no cause is inferred, follow the official article for that code.",
+        "fr": "Un module d'alimentation a signalé un défaut de vitesse du moteur pendant le chargement du filament (« extruder[N], état load_feeding, défaut motor_speed »). Vu une fois dans un vrai journal Moonraker, il correspond au code 0002-0525-0000-0031 (anomalie de chargement). Aucune cause n'est déduite ; suivez l'article officiel de ce code."
+      },
+      "articles": [],
+      "sources": [],
+      "related_codes": [
+        "0002-0525-0000-0031"
+      ]
+    },
+    {
+      "id": "MSG-EXTRUDER-MAP-NULL",
+      "patterns": [
+        "set_print_extruder_map",
+        "unable to parse null"
+      ],
+      "title": {
+        "en": "G-code error: SET_PRINT_EXTRUDER_MAP with a null value",
+        "fr": "Erreur G-code : SET_PRINT_EXTRUDER_MAP avec une valeur nulle"
+      },
+      "explanation": {
+        "en": "A command that maps a configured extruder to a physical one received 'null' instead of a number ('SET_PRINT_EXTRUDER_MAP ... MAP_EXTRUDER=null: unable to parse null'). Seen four times in one day in a real Moonraker log, matching the code 0003-0529-0000-0001 (G-code error). It points at the command sent to the printer, for example by a slicer or a client; the cause is not inferred. No official article for this exact message was found.",
+        "fr": "Une commande qui associe un extrudeur configuré à un extrudeur physique a reçu « null » au lieu d'un nombre (« SET_PRINT_EXTRUDER_MAP ... MAP_EXTRUDER=null »). Vu quatre fois en une journée dans un vrai journal Moonraker, il correspond au code 0003-0529-0000-0001 (erreur G-code). Cela concerne la commande envoyée à l'imprimante, par exemple par un trancheur ou un client ; la cause n'est pas déduite."
+      },
+      "articles": [],
+      "sources": [],
+      "related_codes": [
+        "0003-0529-0000-0001"
+      ]
+    },
+    {
+      "id": "MSG-SWITCH-RETRY",
+      "patterns": [
+        "failed to switch extruder",
+        "switch extruder"
+      ],
+      "title": {
+        "en": "\"Failed to switch extruder, retrying\"",
+        "fr": "Changement de tête échoué, nouvelle tentative (message de Klipper)"
+      },
+      "explanation": {
+        "en": "Klipper tried to change toolhead and retried. A single retry is normal bookkeeping in the log; repeated retries on the same toolhead are worth cleaning the pogopins for (official maintenance guide). The message alone is not an error code. No official article for this exact message was found.",
+        "fr": "Klipper a tenté de changer de tête et a réessayé. Un seul essai répété est une trace normale du journal ; des essais répétés sur la même tête justifient de nettoyer les pogopins (guide d'entretien officiel). Le message seul n'est pas un code d'erreur."
+      },
+      "articles": [
+        {
+          "title": "U1 Pogopin contact anomaly",
+          "url": "https://wiki.snapmaker.com/en/snapmaker_u1/troubleshooting/pogopin_contact_anomaly",
+          "relation": "about"
+        }
+      ],
+      "sources": [],
+      "related_codes": [
+        "0002-0523-0000-0045"
+      ]
+    },
+    {
+      "id": "MSG-ORCA-NOT-ACTIVATED",
+      "patterns": [
+        "application is not activated",
+        "please activate it first"
+      ],
+      "title": {
+        "en": "\"Application is not activated\" (Snapmaker Orca)",
+        "fr": "Orca : application non activée (message du journal)"
+      },
+      "explanation": {
+        "en": "This text is not a printer error. It comes from Snapmaker Orca's own log and means the slicer's device service refused to run before activation or sign-in. It was recorded tens of thousands of times in one real Orca log. Check the device list and account in Snapmaker Orca; the exact meaning is inferred from the text, not documented. No official article for this exact message was found.",
+        "fr": "Ce texte n'est pas une erreur de l'imprimante. Il vient du journal de Snapmaker Orca et signifie que le service d'appareils du trancheur a refusé de fonctionner avant l'activation ou la connexion. Il a été enregistré des dizaines de milliers de fois dans un vrai journal d'Orca. Vérifiez la liste d'appareils et le compte dans Snapmaker Orca ; le sens exact est déduit du texte, pas documenté."
+      },
+      "articles": [],
+      "sources": [],
+      "related_codes": []
+    },
+    {
+      "id": "MSG-HEARTBEAT-TIMEOUT",
+      "patterns": [
+        "command timed out",
+        "heartbeat"
+      ],
+      "title": {
+        "en": "Heartbeat command timed out",
+        "fr": "Délai dépassé sur la commande de présence"
+      },
+      "explanation": {
+        "en": "The slicer or app asked the printer 'are you there?' (machine.heartbeat) and got no answer in time. It describes the link between the software and the printer, not the printer's health: Wi-Fi, a changed address or a sleeping PC are the usual suspects (official static-IP page).",
+        "fr": "Le trancheur ou l'application a demandé à l'imprimante « es-tu là ? » (machine.heartbeat) sans réponse à temps. Cela décrit la liaison entre le logiciel et l'imprimante, pas la santé de l'imprimante : Wi-Fi, adresse modifiée ou PC en veille sont les suspects habituels (page officielle sur l'IP statique)."
+      },
+      "articles": [
+        {
+          "title": "Set a static IP for the U1",
+          "url": "https://wiki.snapmaker.com/en/snapmaker_u1/set-static-ip-for-u1",
+          "relation": "related"
+        }
+      ],
+      "sources": [],
+      "related_codes": []
     }
   ]
 }

@@ -43,6 +43,23 @@ MIGRATIONS: list[str] = [
         PRIMARY KEY (session_id, seq)
     );
     """,
+    # 3: a new history origin, 'logs' (imported log files). SQLite cannot change a CHECK, so the table is rebuilt; rows are kept.
+    """
+    CREATE TABLE history_sessions_new (
+        id TEXT PRIMARY KEY,
+        label TEXT NOT NULL,
+        origin TEXT NOT NULL CHECK (origin IN ('synthetic','real_capture','bundle','dryrun','logs')),
+        saved_at TEXT NOT NULL,
+        observation_count INTEGER NOT NULL CHECK (observation_count > 0),
+        first_utc TEXT NOT NULL,
+        last_utc TEXT NOT NULL,
+        status_mix TEXT NOT NULL,
+        content_sha256 TEXT NOT NULL UNIQUE
+    );
+    INSERT INTO history_sessions_new SELECT id,label,origin,saved_at,observation_count,first_utc,last_utc,status_mix,content_sha256 FROM history_sessions;
+    DROP TABLE history_sessions;
+    ALTER TABLE history_sessions_new RENAME TO history_sessions;
+    """,
 ]
 
 
@@ -80,5 +97,12 @@ def migrate(conn: sqlite3.Connection) -> int:
     if v > len(MIGRATIONS):
         raise RuntimeError(f"database schema v{v} is newer than this app (v{len(MIGRATIONS)})")
     for i in range(v, len(MIGRATIONS)):
-        conn.executescript("BEGIN;" + MIGRATIONS[i] + f"PRAGMA user_version={i + 1};COMMIT;")
+        rebuild = "DROP TABLE" in MIGRATIONS[i]  # a table rebuild needs foreign keys off (the child rows must survive the drop)
+        if rebuild:
+            conn.execute("PRAGMA foreign_keys=OFF")
+        try:
+            conn.executescript("BEGIN;" + MIGRATIONS[i] + f"PRAGMA user_version={i + 1};COMMIT;")
+        finally:
+            if rebuild:
+                conn.execute("PRAGMA foreign_keys=ON")
     return schema_version(conn)

@@ -149,3 +149,21 @@ test("evidence notice links to the export and can be dismissed", async () => {
   expect(screen.queryByTestId("evidence-notice")).toBeNull();
   expect(localStorage.getItem("u1d.evidenceNotice.dismissed")).toBe("1");
 });
+
+test("a pasted exception is decoded and a code seen only in logs gets our own labelled wording", async () => {
+  const body = {
+    decoding: { status: "STRUCTURE_ONLY", classification: "INCONCLUSIVE", code: "0001-0523-0000-0048", level: "0001", severity: "notice", module_code: "0523", module: "toolhead", index: "0000", number: "0048" },
+    official_reference: "https://wiki.snapmaker.com/en/snapmaker_u1/troubleshooting/u1_error_codes", catalog_verified_at: "2026-11-05", limits: ["x"],
+    from_exception: "0001-0523-0000-0048",
+    log_signal: { title: { en: "Pogopin disconnection during a print", fr: "Déconnexion des pogopins pendant une impression" }, text: { en: "The firmware reported that the contact was lost.", fr: "Le firmware a signalé que le contact a été perdu." }, seen: "3 times" },
+  };
+  vi.stubGlobal("fetch", vi.fn(async () => ({ ok: true, status: 200, json: async () => body })));
+  location.hash = "#/explorer";
+  render(<App />);
+  const input = await screen.findByPlaceholderText("0002-0525-0002-0002");
+  fireEvent.change(input, { target: { value: "{'id': 523, 'index': 0, 'code': 48, 'level': 1}" } });
+  fireEvent.submit(input.closest("form") as HTMLFormElement);
+  expect((await screen.findByTestId("from-exception")).textContent).toContain("0001-0523-0000-0048");
+  expect((await screen.findByTestId("log-signal")).textContent).toBe("Pogopin disconnection during a print");
+  expect(screen.getByText("Seen in a real log (not official)")).toBeTruthy();
+});

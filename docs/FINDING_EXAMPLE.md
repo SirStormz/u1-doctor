@@ -61,7 +61,7 @@ Reproduce it: in the app open the demo scenario `demo_extrusion_blockage` (Findi
 
 - OFFICIAL_WIKI: https://wiki.snapmaker.com/en/snapmaker_u1/troubleshooting/u1_error_codes (checked 2026-11-05)
 
-`replay_hash` sha256:d625a97f83f3249dbee20c8059c1582f53e2dfbb1ed58ecf9bfe99b69a4d1084
+`replay_hash` sha256:ef591d7c71672df7c03a1a4b8563c199ee9381bb8a510b6205932f2a10fa6b23
 
 ### Print state changed: printing -> paused
 
@@ -95,7 +95,7 @@ Reproduce it: in the app open the demo scenario `demo_extrusion_blockage` (Findi
 
 - OFFICIAL_WIKI: https://wiki.snapmaker.com/en/snapmaker_u1/troubleshooting/u1_error_codes (checked 2026-11-05)
 
-`replay_hash` sha256:9e30fc7399a8e81952b31b79ccc0de6d698a664e29bb244ca632382fec47e3d6
+`replay_hash` sha256:9cdd3a81231833043d2c6698d46a837f750c1902b474df60b38389e6e4b4699a
 
 ### Per-toolhead attribution unavailable (mapping unknown)
 
@@ -122,7 +122,7 @@ Reproduce it: in the app open the demo scenario `demo_extrusion_blockage` (Findi
 
 - No action: do not read these values as belonging to a specific toolhead.
 
-`replay_hash` sha256:d34ee34474b56c6ff4a42f3fe90e1d90b56b7649105a3a36695bb358fa239be0
+`replay_hash` sha256:55d2694353ea0c3ca7a140fc57db7d4cb3d8d70e894968e938b6f6483407eb5b
 
 ### Observation incomplete: absence of data is not evidence of absence
 
@@ -149,7 +149,7 @@ Reproduce it: in the app open the demo scenario `demo_extrusion_blockage` (Findi
 
 - Do not infer the machine state from the loss of connection; check the printer itself.
 
-`replay_hash` sha256:f413e6dab1d1ec8604454794afbf1a2f37dc04f2ea1175a614462f0abb6fc273
+`replay_hash` sha256:abb62038ebaa9c521cb08b70ba034f8cb3ed7f6593e14d02b2190c1aeefc4417
 
 ## What to take from it
 

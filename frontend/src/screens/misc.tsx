@@ -171,7 +171,7 @@ export function Explorer({ param }: { param?: string }) {
       <div className="grid gap-d xl:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">
         <Panel title={t.codeLabel} i={0} active>
           <form onSubmit={(e) => { e.preventDefault(); void run(code); }} className="grid gap-3">
-            <input value={code} maxLength={200} onChange={(e) => setCode(e.target.value)} placeholder="0002-0525-0002-0002" aria-label={t.codeLabel} className="mono rounded-lg border border-control bg-surface2 px-3 py-2.5 text-base text-ink" />
+            <input value={code} maxLength={200} onChange={(e) => setCode(e.target.value)} placeholder="0002-0525-0002-0002" aria-label={t.codeLabel} title={t.codePasteHint} className="mono rounded-lg border border-control bg-surface2 px-3 py-2.5 text-base text-ink" />
             <label className="grid gap-1.5"><span className="micro">{t.fwLabel}</span>
               <input value={fw} maxLength={32} onChange={(e) => setFw(e.target.value)} placeholder="2.1.0" aria-label={t.fwLabel} className="mono rounded-lg border border-control bg-surface2 px-3 py-2.5 text-base text-ink" />
               <span className="text-xs text-ink3">{t.fwHint}</span></label>
@@ -221,6 +221,15 @@ export function Explorer({ param }: { param?: string }) {
               <ul className="grid gap-1.5">{res.limits.map((l) => <li key={l} className="flex gap-2"><span className="text-warn" aria-hidden>▲</span>{tx(lang, l)}</li>)}</ul>
               <a href={res.official_reference} target="_blank" rel="noreferrer noopener" className="btn btn-secondary mt-4 w-fit">{t.openOfficial}<ExternalLink size={15} aria-hidden /></a>
               <TechDetails className="mt-2"><p className="text-xs text-ink3" data-testid="catalog-meta">{t.catalogNote.replace("{d}", res.catalog_verified_at)}</p></TechDetails>
+            </Panel>
+          )}
+          {res?.from_exception && <p className="mono text-xs text-ink3" data-testid="from-exception">{t.fromExc.replace("{c}", res.from_exception)}</p>}
+          {res?.log_signal && (
+            <Panel title={t.logSignal} i={2} active>
+              <p data-testid="log-signal"><strong>{res.log_signal.title[lang]}</strong></p>
+              <p className="mt-1.5">{res.log_signal.text[lang]}</p>
+              <p className="mt-2 text-xs text-ink3">{t.logSignalNote}</p>
+              {res.log_signal.article && <a href={res.log_signal.article.url} target="_blank" rel="noreferrer noopener" className="mt-2 inline-flex items-center gap-1 text-xs underline">{res.log_signal.article.title}<ExternalLink size={12} aria-hidden /></a>}
             </Panel>
           )}
           {res?.community && res.community.causes.length > 0 && <CommunityPanel causes={res.community.causes} checkedAt={res.community.checked_at} />}

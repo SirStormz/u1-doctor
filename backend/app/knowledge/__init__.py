@@ -83,6 +83,22 @@ def load_good_to_know(path: Path = GOOD_TO_KNOW_PATH) -> dict[str, Any]:
     return data
 
 
+LOG_SIGNALS_PATH = ROOT / "knowledge" / "u1_log_signals.json"
+
+
+@lru_cache(maxsize=1)
+def load_log_signals(path: Path = LOG_SIGNALS_PATH) -> dict[str, Any]:
+    """Machine exceptions seen in real logs whose code is not in the official table (own wording, EN/FR). Not official."""
+    data: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
+    codes = [x["code"] for x in data["signals"]]
+    assert len(set(codes)) == len(codes), "duplicate log-signal code"
+    return data
+
+
+def log_signal(code: str) -> dict[str, Any] | None:
+    return next((x for x in load_log_signals()["signals"] if x["code"] == code), None)
+
+
 def firmware_issues_for(version: str) -> list[dict[str, Any]]:
     """Issues whose affected range [min, max] contains the stated version (open bounds allowed), in file order."""
     v = parse_firmware(version)
@@ -120,6 +136,25 @@ def normalize_code(raw: object) -> str | None:
     if len(groups) != 4 or any(len(g) > 4 for g in groups):
         return None
     return "-".join(g.zfill(4) for g in groups)
+
+
+_EXC_KEYS = ("level", "id", "index", "code")
+
+
+def exception_code(raw: object) -> str | None:
+    """The on-screen code rebuilt from a pasted exception (`{'id': 523, 'index': 3, 'code': 38, 'level': 2, ...}` from Moonraker or Fluidd).
+
+    The code is level-id-index-code, four digits each (checked on 11 real events against the official table). None when the four fields are not all there.
+    """
+    if not isinstance(raw, str) or len(raw) > 400:
+        return None
+    vals = []
+    for k in _EXC_KEYS:
+        m = re.search(rf"[\"']?\b{k}[\"']?\s*[:=]\s*(\d{{1,4}})\b", raw)
+        if not m:
+            return None
+        vals.append(m[1].zfill(4))
+    return "-".join(vals)
 
 
 def _lev(a: str, b: str) -> int:

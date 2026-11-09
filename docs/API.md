@@ -43,6 +43,7 @@ Only **`POST /api/v1/live/capture`** can open a connection to a printer. It need
 | POST | `/api/v1/preflight/gcode` | raw file bytes, `?name=` | Static pre-flight (20 checks) of a sliced file, read as text; the file name is never echoed back. |
 | POST | `/api/v1/preflight/3mf` | raw 3MF bytes, `?name=` | The same checks on every plate of the G-code embedded in a 3MF. Only `Metadata/*.gcode` and the project settings are read; strict zip limits. |
 | POST | `/api/v1/imports/dryrun` | raw `report.json` | Normalizes a U1 Dry Run report into IMPORTED observations (a prediction, not a machine observation). |
+| POST | `/api/v1/imports/logs` | raw log file, `.gz`, `.zip` or `.tar.gz`, `?name=` | Reads log files (Moonraker, Klipper, unisrv, syslog, Snapmaker Orca; the printer's encrypted system log is recognized, never opened) into IMPORTED observations plus findings (rules S25-S32). Caps: 64 MiB received, 2 GiB unpacked, 64 files. File names, paths, addresses and serial numbers are not kept. |
 
 ### Demo and replay
 
@@ -71,6 +72,7 @@ Only **`POST /api/v1/live/capture`** can open a connection to a printer. It need
 | POST | `/api/v1/history/source` `{source, label?}` | Saves a synthetic scenario, a real capture or an existing session as a history entry. | **writes** |
 | POST | `/api/v1/history/bundle` raw zip, `?label=` | Saves an imported U1-DEB bundle (shown as IMPORTED). | **writes** |
 | POST | `/api/v1/history/dryrun` raw JSON, `?label=` | Saves an imported Dry Run report (IMPORTED). | **writes** |
+| POST | `/api/v1/history/logs` raw file, `?label=&name=` | Saves imported log files as one history entry (IMPORTED). | **writes** |
 | DELETE | `/api/v1/history/{sid}` | Deletes one saved session. | **writes** |
 
 ### Evidence bundles (U1-DEB)

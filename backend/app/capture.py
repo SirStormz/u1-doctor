@@ -8,6 +8,7 @@ attributed to a toolhead (mapping unknown, H-04), so they are tagged `unmapped`.
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Iterable
 from datetime import datetime
 from pathlib import Path
@@ -43,6 +44,20 @@ def _epoch(t: str) -> float:
     return datetime.fromisoformat(t.replace("Z", "+00:00")).timestamp()
 
 
+def _exception_value(ex: Any) -> dict[str, Any] | None:
+    """One entry of `exception_manager.exceptions` as the same value the log importer produces (on-screen code rebuilt as level-id-index-code)."""
+    if not isinstance(ex, dict):
+        return None
+    nums = [ex.get(k) for k in ("level", "id", "index", "code")]
+    if not all(isinstance(n, int) and not isinstance(n, bool) and 0 <= n <= 9999 for n in nums):
+        return None
+    lvl, mid, idx, code = nums
+    msg = ex.get("message")
+    ts = ex.get("timestamp")
+    return {"id": mid, "index": idx, "code": f"{lvl:04d}-{mid:04d}-{idx:04d}-{code:04d}", "raw_code": code, "level": lvl,
+            "message": re.sub(r"\s+", " ", msg)[:200] if isinstance(msg, str) else "", "timestamp": ts if isinstance(ts, (int, float)) else None}
+
+
 def frames_to_observations(lines: Iterable[str]) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     state: str | None = None
@@ -51,6 +66,7 @@ def frames_to_observations(lines: Iterable[str]) -> list[dict[str, Any]]:
     last_temp: dict[str, float] = {}
     last_fan: dict[str, float] = {}
     last_fan_sample: dict[str, float] = {}
+    seen_exc: set[tuple[Any, ...]] = set()
     for line in lines:
         if not line.strip():
             continue
@@ -66,6 +82,15 @@ def frames_to_observations(lines: Iterable[str]) -> list[dict[str, Any]]:
         if isinstance(ms, dict) and isinstance(ms.get("action_code"), int) and ms["action_code"] != code:
             code = ms["action_code"]
             out.append(_obs(len(out) + 1, t, "machine_action_code", {"action_code": code}, entity="printer", mq="VERIFIED", ref="machine_state_manager/action_code"))
+        em = st.get("exception_manager")
+        if isinstance(em, dict) and isinstance(em.get("exceptions"), list):
+            for ex in em["exceptions"]:
+                v = _exception_value(ex)
+                key: tuple[Any, ...] = (v["id"], v["index"], v["raw_code"], v.get("timestamp")) if v else ()
+                if v and key not in seen_exc:
+                    seen_exc.add(key)
+                    v.pop("timestamp", None)
+                    out.append(_obs(len(out) + 1, t, "machine_exception", v, entity="unmapped", mq="UNKNOWN", ref="exception_manager/exceptions"))
         for name, etype in HEATERS.items():
             h = st.get(name)
             if isinstance(h, dict) and isinstance(h.get("temperature"), (int, float)):

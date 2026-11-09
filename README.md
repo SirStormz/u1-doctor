@@ -78,13 +78,13 @@ Press `Ctrl K` anywhere to jump to a screen or paste an error code.
 
 ## Get started in two minutes (Windows)
 
-1. Download `u1-doctor-0.1.8-g1-win64.zip` and its `.sha256.txt` from the [latest release](https://github.com/SirStormz/u1-doctor/releases/latest).
+1. Download `u1-doctor-0.1.9-g1-win64.zip` and its `.sha256.txt` from the [latest release](https://github.com/SirStormz/u1-doctor/releases/latest).
 2. Check the file was not altered (optional, 10 seconds):
    ```powershell
-   Get-FileHash .\u1-doctor-0.1.8-g1-win64.zip -Algorithm SHA256
+   Get-FileHash .\u1-doctor-0.1.9-g1-win64.zip -Algorithm SHA256
    ```
    Compare with the value in the release notes: `265D992EC37D537D861D03183B765148A48F3C5F0671BD67FC64339F554A5E07`.
-   Optional too, for builds from 0.1.8-g1 on: `gh attestation verify .\u1-doctor-0.1.8-g1-win64.zip --repo SirStormz/u1-doctor` confirms the zip was built by this repository's release workflow (see [`docs/INSTALL.md`](docs/INSTALL.md)).
+   Optional too, for builds from 0.1.8-g1 on: `gh attestation verify .\u1-doctor-0.1.9-g1-win64.zip --repo SirStormz/u1-doctor` confirms the zip was built by this repository's release workflow (see [`docs/INSTALL.md`](docs/INSTALL.md)).
 3. Right-click the zip, **Extract all** (not WinRAR or 7-Zip, so Windows keeps the download mark), then double-click `u1-doctor.exe`.
 4. A window opens with the app: no console, no browser. If the Microsoft WebView2 component is missing (some Windows 10 PCs), the app offers to install it once with Microsoft's own installer shipped in the zip (internet and a Windows permission prompt needed).
 
@@ -105,6 +105,8 @@ Press `Ctrl K` anywhere to jump to a screen or paste an error code.
 4. You get what the printer reports (state, versions, temperatures over time) and the findings from the rules, with the capture saved to the History if you wish.
 5. To keep or share it, open the **Report composer**, choose your capture under *Report source*, check the privacy scan and press **Export bundle**. The bundle can be opened and replayed on any other PC.
 
+No printer at hand? In **History → Analyse log files** you can drop the logs you already have (for example `moonraker.log`, `klippy.log` or a Snapmaker Orca log archive): U1 Doctor reads them on your PC, decodes the machine exceptions and shows the findings and the timeline, nothing is sent anywhere. The code decoder also accepts an exception pasted from Fluidd or `moonraker.log`.
+
 ![The Connect screen](docs/media/screens/02-connect.png)
 
 The capture never contains your address or file names. It sends 5 GET requests (one of them, `/server/files/directory?path=logs`, only reads the free space of the log partition; another, `/server/history/totals`, only reads four job totals of the print history for the maintenance reminders) and 1 live subscription message. If the live stream closes early, the app checks with up to 6 more read-only status GET requests whether the printer itself still answers, so a lost connection is not mistaken for a stopped printer: 11 GET at most.
@@ -118,11 +120,12 @@ The capture never contains your address or file names. It sends 5 GET requests (
 | Feature | State |
 |---|---|
 | Offline decoder for 413 official error codes (paraphrased, with link) | tested on synthetic data |
-| Deterministic rules engine: same observations and same rule set always give the same findings and the same hash. 20 rules | tested on synthetic and real-capture data, on Windows, Linux and macOS (identical replay hash in CI) |
+| Deterministic rules engine: same observations and same rule set always give the same findings and the same hash. 28 rules | tested on synthetic and real-capture data, on Windows, Linux and macOS (identical replay hash in CI) |
 | Explainable findings: evidence for, evidence against, what is missing, limits, official references. No score, no percentage | tested |
 | Read-only live capture from the Connect screen, with read-only probes if the stream closes early | tested against a mock and on the owner's U1 (no write ever sent) |
 | Saved-session **history** and import of U1 Dry Run reports | tested |
 | **G-code pre-flight**: 20 offline checks on a sliced `.gcode` or the G-code embedded in a sliced `.3mf` (every plate is checked, one tab per plate; only the embedded G-code and project settings are read) (for example decimal commas, a 0 °C bed, nozzle diameter, `#` in the file name; and, from community reports, M191, a start line at Y1, the probing temperature, tool order and auto-mapping, another printer's profile, prime tower outside the bed, TPU settings, purge used, a final travel at the last layer height) | tested on synthetic files |
+| **Log import** (History → Analyse log files): Moonraker, Klipper, unisrv, system and Snapmaker Orca logs, alone or in a `.zip` / `.tar.gz`, read on your PC only and labelled IMPORTED. Machine exceptions are decoded to the on-screen code (`level-id-index-code`), with link-counter health, Wi-Fi/cloud trouble, failed firmware updates, failed timelapse frames and Snapmaker Orca link problems as findings; the printer's encrypted system log is recognized, never opened. See [`docs/LOGS.md`](docs/LOGS.md) | tested on the owner's real U1 logs and a real Snapmaker Orca log (two rules, S27 and live exceptions, have not met a real fault yet) |
 | Known issues per firmware version: 13 entries (official release notes or labelled community reports, checked 2026-11-08) | tested |
 | "What support will ask" checklist per code, firmware notes, 5 documented known issues | tested |
 | Community-reported causes: 11 entries covering 25 codes (forum topics read 2026-11-08, labelled as community reports), near-match for mistyped codes, matcher for 8 messages without a code | tested |
@@ -179,7 +182,7 @@ timeline + rules engine (pure function, pinned rule set)
 findings --> U1-DEB bundle (export / safe import / replay)
 ```
 
-Every fact carries its source and a time-quality marker. Findings point back to the observations that produced them. Imported bundles are labelled `IMPORTED`, and their findings are always recomputed with your local rule set. **One-page summary of the 20 rules, their sources and limits, the live-read budget and a comparison with community tools: [`docs/HOW-IT-WORKS.md`](docs/HOW-IT-WORKS.md).** Architecture: [`docs/architecture.md`](docs/architecture.md).
+Every fact carries its source and a time-quality marker. Findings point back to the observations that produced them. Imported bundles are labelled `IMPORTED`, and their findings are always recomputed with your local rule set. **One-page summary of the 28 rules, their sources and limits, the live-read budget and a comparison with community tools: [`docs/HOW-IT-WORKS.md`](docs/HOW-IT-WORKS.md).** Architecture: [`docs/architecture.md`](docs/architecture.md).
 
 ## Real incidents wanted
 
@@ -214,6 +217,7 @@ At the time of writing: 1,195 backend tests, 181 frontend tests and 16 browser (
 ## More documentation
 
 - [`docs/HOW-IT-WORKS.md`](docs/HOW-IT-WORKS.md): one page on the rules, provenance, the live-read budget and how U1 Doctor differs from community tools.
+- [`docs/LOGS.md`](docs/LOGS.md): reading log files (what each log gives, what is never kept, what it cannot tell).
 - [`docs/API.md`](docs/API.md): the local API, route by route (which ones read, which write the local history, and the single one that can reach a printer). A test keeps it in step with the code.
 - [`docs/INSTALL.md`](docs/INSTALL.md): install guide (executable, source, Docker) and where your data lives.
 - [`docs/U1-DEB.md`](docs/U1-DEB.md): the evidence bundle format and its validator.

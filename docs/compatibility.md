@@ -15,7 +15,9 @@ Values: SUPPORTED · PARTIAL · NOT_AVAILABLE · UNTESTED · FAILED. Last update
 | `GET /server/info`, `/printer/info`, `/printer/objects/list` | Moonraker docs | UNVERIFIED_ON_HARDWARE |
 | `POST /printer/objects/query` | Moonraker docs | NOT USED: removed from the allowlist (never run on the machine) |
 | WS `printer.objects.subscribe` | Moonraker docs | UNVERIFIED_ON_HARDWARE |
-| Object `exception_manager` (`exceptions[]`) | u1-klipper source | UNVERIFIED_ON_HARDWARE; oneshot codes likely absent from it |
+| Object `exception_manager` (`exceptions[]`) | u1-klipper source; real Moonraker log (2026-11-09: `{'exceptions': []}` and 11 raised exceptions with `id`, `index`, `code`, `level`, `message`) | Shape seen in real logs; live capture with an active exception UNTESTED |
+| Log import: Moonraker, Klipper, unisrv, system logs (S25, S26, S28-S30) | the owner's U1 logs, firmware 2.1.0 and older, read 2026-11-09 | TESTED_REAL (S27: no shutdown line in the logs, UNTESTED) |
+| Log import: Snapmaker Orca logs and the encrypted export (S28, S31, S32) | one real Orca log (30 files, June to October 2026) and one real encrypted export | TESTED_REAL |
 | Live error codes via WS notification | inferred from source | UNVERIFIED_ON_HARDWARE (mechanism of rebroadcast unread) |
 | T1–T4 mapping from Klipper objects | none | UNKNOWN — keep `unmapped` |
 | Official firmware version via API | none | UNKNOWN (keep Klipper/Moonraker version separate) |

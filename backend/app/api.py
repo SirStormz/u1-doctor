@@ -15,6 +15,7 @@ from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+from starlette.concurrency import run_in_threadpool
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from . import db, history, symptoms
@@ -31,6 +32,7 @@ from .gcode_preflight import analyze as preflight_analyze
 from .gcode_preflight import analyze_3mf as preflight_analyze_3mf
 from .knowledge import (
     community_for,
+    exception_code,
     firmware_issues_for,
     interpret,
     load_catalog,
@@ -38,18 +40,22 @@ from .knowledge import (
     load_firmware_issues,
     load_good_to_know,
     load_known_issues,
+    log_signal,
     match_messages,
     normalize_code,
     parse_firmware,
     suggest_codes,
 )
 from .live import LiveError, run_live_capture
+from .logimport import MAX_UPLOAD as LOGS_MAX_BYTES
+from .logimport import LogImportError
+from .logimport import analyse as logs_analyse
 from .paths import ROOT
 from .support import checklist as support_checklist
 from .timeline import build_timeline
 
 API_VERSION = "1"
-APP_VERSION = "0.1.8-g1"
+APP_VERSION = "0.1.9-g1"
 
 FIXTURES = ROOT / "fixtures" / "synthetic"
 REAL = ROOT / "fixtures" / "real"
@@ -202,7 +208,13 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
                 ("Log partition usage read", "TESTED_REAL"), ("Cavity sensor and bed mesh subscription", "TESTED_REAL"),
                 ("Live rules S22-S24", "TESTED_REAL"), ("Live rules S17-S21", "UNTESTED"), ("Connectivity self-check", "TESTED_REAL"),
                 # BACKLOG #65 (2026-11-08, code only): the job-history read and the local reminders never ran on a real U1.
-                ("Job history totals read", "TESTED_REAL"), ("Maintenance reminders", "UNTESTED")]
+                ("Job history totals read", "TESTED_REAL"), ("Maintenance reminders", "UNTESTED"),
+                # BACKLOG #66 (2026-11-09): the owner's own U1 logs (Moonraker, Klipper, unisrv, system; firmware 2.1.0 and older, 11 machine
+                # exceptions) and another owner's real Snapmaker Orca logs and encrypted export were read by the importer. No fault shutdown
+                # was in any Klipper log and no exception was active during a live capture, so S27 and live exceptions stay untested.
+                ("Log import: Moonraker, Klipper, unisrv and system logs", "TESTED_REAL"), ("Log import: Snapmaker Orca logs", "TESTED_REAL"),
+                ("Encrypted system log recognition", "TESTED_REAL"), ("Log rules S25, S26, S28-S32", "TESTED_REAL"),
+                ("Log rule S27 (Klipper shutdown lines)", "UNTESTED"), ("Live machine exceptions", "UNTESTED")]
         return {"verified_on_hardware": True, "firmware_target": "V2.1.0",
                 "capabilities": [{"name": n, "status": s} for n, s in caps],
                 "rows": [{"firmware": fw, "rest_readonly": "TESTED_REAL" if fw == "V2.1.0" else "UNTESTED",
@@ -226,6 +238,9 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
     @app.post("/api/v1/errors/interpret")
     def errors_interpret(body: InterpretIn) -> dict[str, Any]:
         cat = load_catalog()
+        from_exc = exception_code(body.code)
+        if from_exc is not None:
+            body = InterpretIn(code=from_exc, firmware=body.firmware)
         dec = interpret(body.code, body.firmware)
         dec.pop("entry", None) if dec.get("status") != "KNOWN" else None
         exact = dec.get("status") != "MALFORMED"
@@ -233,7 +248,11 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
         suggestions = [] if dec.get("status") == "KNOWN" else [c for c in suggest_codes(body.code) if c != body.code]
         by = cat["_by_code"]
         community = load_community_causes()
+        sig = log_signal(body.code) if dec.get("status") == "STRUCTURE_ONLY" else None
         return {"source": "USER_REPORTED", "decoding": dec, "catalog_version": cat["catalog_version"],
+                "from_exception": from_exc,
+                # a code the official table lacks but a real log shows: our own wording, labelled as not official
+                "log_signal": None if sig is None else {"title": sig["title"], "text": sig["text"], "seen": sig["seen"], "article": sig.get("article")},
                 # forum reports for this exact code: labelled COMMUNITY_REPORT, never official, never an observation, never ranked
                 "community": {"kind": community["kind"], "checked_at": community["checked_at"],
                               "causes": community_for(body.code) if exact else []},
@@ -445,6 +464,34 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
             return dryrun_normalize(data, datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"))
         except DryRunError as e:
             raise HTTPException(422, {"code": e.code, "message": str(e)}) from e
+
+    @app.post("/api/v1/imports/logs")
+    async def import_logs(request: Request, name: str | None = Query(default=None, max_length=200)) -> dict[str, Any]:
+        """Read log files (Moonraker, Klipper, unisrv, syslog, Snapmaker Orca, or a zip / tar.gz of them) into IMPORTED observations and findings.
+
+        Reads only: nothing reaches a printer, no file name or personal data is kept. `name` is used only to read a firmware number from an encrypted export's name.
+        """
+        data = await _body(request, LOGS_MAX_BYTES, "log file")
+        try:
+            out = await run_in_threadpool(logs_analyse, data, name or "", datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"))
+        except LogImportError as e:
+            raise HTTPException(413 if e.code == "TOO_LARGE" else 422, {"code": e.code, "message": str(e)}) from e
+        rs = _ruleset()
+        out["findings"] = evaluate(out["observations"], rs)
+        out["ruleset"] = {"id": rs["ruleset_id"], "version": rs["version"], "hash": ruleset_hash(rs)}
+        return out
+
+    @app.post("/api/v1/history/logs")
+    async def history_save_logs(request: Request, label: str | None = Query(default=None, max_length=200),
+                                name: str | None = Query(default=None, max_length=200)) -> dict[str, Any]:
+        data = await _body(request, LOGS_MAX_BYTES, "log file")
+        try:
+            out = await run_in_threadpool(logs_analyse, data, name or "", datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"))
+        except LogImportError as e:
+            raise HTTPException(413 if e.code == "TOO_LARGE" else 422, {"code": e.code, "message": str(e)}) from e
+        res = _saved(out["observations"], "logs", label, "Imported logs")
+        res["import"] = {"files": out["files"], "summary": out["summary"], "notice": out["notice"]}
+        return res
 
     @app.post("/api/v1/support/checklist")
     def support_list(body: SupportIn) -> dict[str, Any]:

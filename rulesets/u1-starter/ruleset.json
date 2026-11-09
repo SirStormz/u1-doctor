@@ -1,12 +1,12 @@
 {
   "ruleset_id": "u1-starter",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "format": "u1-ruleset/1",
   "note": "Declarative parameters only; evaluators are a fixed built-in enum. No code, no expressions. Status PROPOSED: nothing here is hardware-verified.",
   "rules": [
     {"id": "U1-S01-CODE-DECODE", "version": "1.0.0", "status": "PROPOSED", "evaluator": "catalog_code", "params": {"event_type": "user_reported_error_code"}},
     {"id": "U1-S03-STATE-TRANSITION", "version": "1.0.0", "status": "PROPOSED", "evaluator": "state_transition", "params": {"event_type": "state_transition", "from": "printing", "to": ["paused", "error"], "proximity_s": 120}},
-    {"id": "U1-S09-MAPPING-UNKNOWN", "version": "1.0.0", "status": "PROPOSED", "evaluator": "mapping_unknown", "params": {}},
+    {"id": "U1-S09-MAPPING-UNKNOWN", "version": "1.0.0", "status": "PROPOSED", "evaluator": "mapping_unknown", "params": {"skip_event_types": ["cloud_mqtt_offline", "moonraker_summary", "klippy_link_stats", "klippy_summary", "klippy_shutdown", "unisrv_summary", "syslog_summary", "gui_summary", "mosquitto_summary", "orca_summary", "firmware_upgrade", "encrypted_system_log", "log_file_seen"]}},
     {"id": "U1-S10-OBSERVATION-GAPS", "version": "1.0.0", "status": "PROPOSED", "evaluator": "coverage_gaps", "params": {"event_types": ["capture_gap", "connection_timeout", "connection_lost"]}},
     {"id": "U1-SEC-BLOCKED-CALL", "version": "1.0.0", "status": "PROPOSED", "evaluator": "transport_denied", "params": {"event_type": "transport_denied"}},
     {"id": "U1-S11-BED-WINDOW", "version": "1.0.0", "status": "PROPOSED", "evaluator": "value_window", "params": {"event_types": ["bed_temperature_sample"], "field": "celsius", "min": -10, "max": 110, "label": "Heated bed temperature", "code": "0003-0526-0000-0000", "hypothesis": "The official page gives -10 to 110 degC as the normal bed range and lists wiring and sensor checks when it is left", "reference_url": "https://wiki.snapmaker.com/en/snapmaker_u1/troubleshooting/bed_temperature_exceeds_limit"}},
@@ -23,6 +23,14 @@
     {"id": "U1-S21-CLOCK-RESET", "version": "1.0.0", "status": "PROPOSED", "evaluator": "clock_gap", "params": {"event_type": "clock_check", "coverage_keys": ["estimated_print_time"], "label": "Controller and host clocks", "states": ["printing"], "min_gap_s": 600, "hypothesis": "One forum report on firmware 1.1.0: after Klipper was restarted without a full power cycle, the touchscreen went blank during the next print; a full power cycle cleared it", "reference_url": "https://forum.snapmaker.com/t/41112"}},
     {"id": "U1-S22-LOG-PARTITION", "version": "1.0.0", "status": "PROPOSED", "evaluator": "disk_usage", "params": {"event_type": "disk_usage", "coverage_keys": ["disk_usage"], "label": "Log partition usage", "hypothesis": "One forum report: logs and configuration share a 100 MB partition by default, logs rotate after one or two prints, and support gave no size limit", "reference_url": "https://forum.snapmaker.com/t/41445"}},
     {"id": "U1-S23-TOOLHEAD-ACTIVITY", "version": "1.0.0", "status": "PROPOSED", "evaluator": "extruder_activity", "params": {"event_type": "extruder_activity", "coverage_keys": ["extruder_state"], "label": "Toolhead activity counters"}},
-    {"id": "U1-S24-BED-MESH-STATS", "version": "1.0.0", "status": "PROPOSED", "evaluator": "bed_mesh_stats", "params": {"event_type": "bed_mesh_points", "coverage_keys": ["bed_mesh"], "label": "Bed mesh"}}
+    {"id": "U1-S24-BED-MESH-STATS", "version": "1.0.0", "status": "PROPOSED", "evaluator": "bed_mesh_stats", "params": {"event_type": "bed_mesh_points", "coverage_keys": ["bed_mesh"], "label": "Bed mesh"}},
+    {"id": "U1-S25-MACHINE-EXCEPTIONS", "version": "1.0.0", "status": "PROPOSED", "evaluator": "machine_exceptions", "params": {}},
+    {"id": "U1-S26-LINK-HEALTH", "version": "1.0.0", "status": "PROPOSED", "evaluator": "link_health", "params": {}},
+    {"id": "U1-S27-KLIPPY-SHUTDOWN", "version": "1.0.0", "status": "PROPOSED", "evaluator": "klippy_shutdowns", "params": {}},
+    {"id": "U1-S28-NETWORK-HEALTH", "version": "1.0.0", "status": "PROPOSED", "evaluator": "network_health", "params": {"min_count": 5, "hypothesis": "The official static-IP page says a printer that often disconnects, looks offline or loses pairing may have changed address after a restart", "reference_url": "https://wiki.snapmaker.com/en/snapmaker_u1/set-static-ip-for-u1"}},
+    {"id": "U1-S29-FIRMWARE-UPGRADE", "version": "1.0.0", "status": "PROPOSED", "evaluator": "firmware_upgrade", "params": {}},
+    {"id": "U1-S30-TIMELAPSE-FAILURES", "version": "1.0.0", "status": "PROPOSED", "evaluator": "timelapse_failures", "params": {"min_count": 3}},
+    {"id": "U1-S31-ORCA-LINK", "version": "1.0.0", "status": "PROPOSED", "evaluator": "orca_link", "params": {"min_count": 5, "min_sync": 50}},
+    {"id": "U1-S32-ENCRYPTED-LOG", "version": "1.0.0", "status": "PROPOSED", "evaluator": "encrypted_log", "params": {}}
   ]
 }

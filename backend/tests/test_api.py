@@ -93,12 +93,13 @@ def test_docs_endpoints_disabled(client):
 
 
 def test_compatibility_claims_only_what_the_real_captures_prove(client):
-    # H-01, H-02 (2026-11-05) and the supervised capture of 2026-11-08 (log partition, cavity + mesh, S22-S24, connectivity numbers)
+    # H-01, H-02 (2026-11-05), the supervised capture of 2026-11-08 (log partition, cavity + mesh, S22-S24, connectivity numbers) and the real logs read on 2026-11-09
     j = client.get("/api/v1/compatibility").json()
     real = {c["name"] for c in j["capabilities"] if c["status"] == "TESTED_REAL"}
     assert real == {"Moonraker HTTP :7125", "Objects list", "WebSocket subscribe", "Official firmware version", "Deterministic replay",
                      "Log partition usage read", "Cavity sensor and bed mesh subscription", "Live rules S22-S24", "Connectivity self-check",
-                     "Job history totals read"}
+                     "Job history totals read", "Log import: Moonraker, Klipper, unisrv and system logs", "Log import: Snapmaker Orca logs",
+                     "Encrypted system log recognition", "Log rules S25, S26, S28-S32"}
     # POST /printer/objects/query never ran on the machine (and left the allowlist): it must not be claimed
     never = {c["name"]: c["status"] for c in j["capabilities"] if c["name"] in ("Live error codes", "Toolhead 1-4 mapping", "Objects query")}
     assert len(never) == 3

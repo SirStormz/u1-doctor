@@ -33,6 +33,7 @@ In scope:
 - Any way to make U1 Doctor send a request outside the allowlist, or to a target outside the allowed range.
 - Any way to reach the app from another machine (binding beyond `127.0.0.1`).
 - Unsafe handling of an imported bundle (zip-slip, bombs, symlinks, parser issues).
+- Unsafe handling of an imported log file or archive (zip or gzip bombs, tar paths, parser issues, memory use): `POST /api/v1/imports/logs` caps 64 MiB received, 2 GiB unpacked, 64 files and a 400x ratio, reads archive members as streams and never writes them to disk.
 - Leaks of sensitive data in an export beyond what the privacy report states.
 
 Out of scope:

@@ -4,7 +4,7 @@ U1 Doctor is a local, read-only tool for the Snapmaker U1. It turns facts into *
 
 ```
 observations (REAL / SYNTHETIC / USER_REPORTED / IMPORTED)
-  -> timeline + rules engine (pinned rule set u1-starter 0.4.0, 20 rules)
+  -> timeline + rules engine (pinned rule set u1-starter 0.5.0, 28 rules)
   -> findings (evidence for / against / missing / limits / references)
   -> U1-DEB bundle (export, safe import, replay with your local rules)
 ```
@@ -24,7 +24,7 @@ A live capture runs only after you type a private (RFC1918) IPv4 address and tic
 - If the stream drops early: up to 6 more status GET, so **11 GET and 1 WebSocket message at most**. The stream is never reopened; no keepalive pings are sent.
 - Refused by design: `POST /printer/objects/query`, pause, resume, cancel, restart, emergency stop, `printer.gcode.script`, any other method. The printer address is never stored (only a keyed local fingerprint, to say "the address changed").
 
-## The 20 rules (ruleset `u1-starter` 0.4.0, all status PROPOSED)
+## The 28 rules (ruleset `u1-starter` 0.5.0, all status PROPOSED)
 
 "Wiki" = the official Snapmaker U1 wiki. "Forum" = one or a few public owner reports, labelled as community reports. "U1 Doctor" = a threshold chosen by this project, stated as such in the finding.
 
@@ -50,8 +50,16 @@ A live capture runs only after you type a private (RFC1918) IPv4 address and tic
 | U1-S22-LOG-PARTITION | Total, used and free bytes of the partition holding the logs | Forum 41445 | No fill level is judged normal or not; UNTESTED |
 | U1-S23-TOOLHEAD-ACTIVITY | Changes of the firmware's toolhead counters during the capture | U1 Doctor | Counters are firmware totals; only their change in this window is an event; UNTESTED |
 | U1-S24-BED-MESH-STATS | Number, min and max of the probed bed-mesh points | U1 Doctor | Statistics only, not judged normal or abnormal; no mesh says nothing about the bed; UNTESTED |
+| U1-S25-MACHINE-EXCEPTIONS | Each machine exception raised by the firmware, decoded to the on-screen code (`level-id-index-code`); from a Moonraker log or, live, from the exception manager | Official wiki; real logs | IMPORTED unless live; the index is not proven to be the toolhead number; tested on 11 real events |
+| U1-S26-LINK-HEALTH | Klipper-controller link counters (sync, CRC, invalid, retransmitted bytes) from `Stats` lines | U1 Doctor | No official threshold: a non-zero count is shown as a fact; clean is only a baseline |
+| U1-S27-KLIPPY-SHUTDOWN | Shutdown-type lines in a Klipper log | U1 Doctor | A phrase match, not a diagnosis; UNTESTED (no real fault in the logs read) |
+| U1-S28-NETWORK-HEALTH | Wi-Fi disconnections, name-resolution failures, cloud drops, sign-in failures, slicer heartbeat time-outs | Official static-IP page | Describes the link, not the printer's health |
+| U1-S29-FIRMWARE-UPGRADE | A firmware update attempt that failed (script exit code) | U1 Doctor | The cause is not in the log |
+| U1-S30-TIMELAPSE-FAILURES | Timelapse frames the printer could not write | U1 Doctor | Camera service only; its code is undocumented |
+| U1-S31-ORCA-LINK | Snapmaker Orca "Application is not activated", heartbeat time-outs and time-sync failures | A real Snapmaker Orca log | The meaning of Orca's message is inferred from its text |
+| U1-S32-ENCRYPTED-LOG | The printer's encrypted system log was provided (recognized, never opened) | Official wiki | Only the file name and size are read |
 
-Rules S17-S24 say "not observable in this capture" when the printer does not report the data. Real captures so far are normal prints only (the 2026-11-08 one read every source and fired S22 to S24; S17 to S21 stayed quiet): **no real fault has been captured**. Full list of limits: [`LIMITS.md`](LIMITS.md).
+Rules S25-S32 read [log files](LOGS.md) you provide (IMPORTED) and never contact a printer. Rules S17-S24 say "not observable in this capture" when the printer does not report the data. Real captures so far are normal prints only (the 2026-11-08 one read every source and fired S22 to S24; S17 to S21 stayed quiet): **no real fault has been captured**. Full list of limits: [`LIMITS.md`](LIMITS.md).
 
 ## Around the rules
 

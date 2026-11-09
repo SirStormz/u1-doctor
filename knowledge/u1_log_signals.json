@@ -1,0 +1,29 @@
+{
+  "version": "0.1.0",
+  "checked_at": "2026-11-09",
+  "kind": "OBSERVED_IN_LOGS",
+  "note": "Machine exceptions seen in real U1 logs whose on-screen code is not in the official table of this repository. Each entry gives the code derived from the exception (level-id-index-code), the message the firmware printed, and our own wording. Not official; no cause is inferred beyond what the message says.",
+  "signals": [
+    {
+      "code": "0001-0523-0000-0048",
+      "message": "Detected pogopin disconnection during print. Please clean and retry",
+      "seen": "3 times in the Moonraker log of one U1 on firmware 2.1.0 (2026-10-22 to 2026-10-30)",
+      "title": {"en": "Pogopin disconnection during a print", "fr": "Déconnexion des pogopins pendant une impression"},
+      "text": {
+        "en": "The firmware reported that the electrical contact between a toolhead and the swapper was lost during the print and asked to clean and retry. The official page for the related toolhead-swapping anomaly says to clean the toolhead and the pogopin contacts on the swapper with a dust-free cloth, then resume.",
+        "fr": "Le firmware a signalé que le contact électrique entre une tête et le changeur a été perdu pendant l'impression et demande de nettoyer puis de réessayer. La page officielle de l'anomalie de changement de tête voisine indique de nettoyer la tête et les pogopins du changeur avec un chiffon non pelucheux, puis de reprendre."
+      },
+      "article": {"title": "U1 Pogopin contact anomaly", "url": "https://wiki.snapmaker.com/en/snapmaker_u1/troubleshooting/pogopin_contact_anomaly"}
+    },
+    {
+      "code": "0002-0532-0000-0002",
+      "message": "detected noodle",
+      "seen": "once in the Moonraker log of one U1 on firmware 2.1.0 (2026-11-08)",
+      "title": {"en": "Print-failure (noodle) detection", "fr": "Détection d'échec d'impression (spaghetti)"},
+      "text": {
+        "en": "The firmware printed 'detected noodle', which looks like its print-failure detection. The official table of this repository has no entry for this code, so no cause is inferred here. Look at the print on the printer and stop it if it has failed.",
+        "fr": "Le firmware a affiché « detected noodle », qui ressemble à sa détection d'échec d'impression. La table officielle de ce dépôt n'a pas d'entrée pour ce code : aucune cause n'est déduite ici. Regardez la pièce sur l'imprimante et arrêtez l'impression si elle a échoué."
+      }
+    }
+  ]
+}

@@ -71,3 +71,28 @@ test("a selected session shows its recomputed findings, a Dry Run one as a predi
   expect(screen.getByText(/Dry Run predicts 1 firmware errors/)).toBeTruthy();
   expect(screen.getByText(/not an observation of a machine/)).toBeTruthy();
 });
+
+test("log files can be imported from the history screen and the result says what was read", async () => {
+  const saved = {
+    session: { ...SESSION, id: "h_logs1", label: "logs.zip", origin: "logs", observation_count: 3, status_mix: ["IMPORTED"] },
+    already_saved: false,
+    import: { files: [{ kind: "moonraker", lines: 9438, from: "2026-07-08T12:40:07Z", to: "2026-11-09T06:00:00Z", exceptions: 11 }, { kind: "encrypted", lines: 0 }],
+      summary: { files: 2, recognized: 2, observations: 3, dropped_observations: 0 }, notice: "n" },
+  };
+  const fetchMock = vi.mocked(fetch);
+  const base = fetchMock.getMockImplementation()!;
+  fetchMock.mockImplementation(async (url: RequestInfo | URL, init?: RequestInit) => {
+    if (String(url).startsWith("/api/v1/history/logs")) { calls.push(`${init?.method ?? "GET"} ${String(url)}`); return { ok: true, status: 200, json: async () => saved } as Response; }
+    return base(url, init);
+  });
+  render(<App />);
+  fireEvent.click(await screen.findByRole("button", { name: "History" }));
+  await screen.findByTestId("hist-empty");
+  const input = screen.getByText("Analyse log files").querySelector("input") as HTMLInputElement;
+  fireEvent.change(input, { target: { files: [new File(["x"], "logs.zip")] } });
+  const box = await screen.findByTestId("logs-read");
+  expect(box.textContent).toContain("Moonraker log");
+  expect(box.textContent).toContain("11 machine exceptions");
+  expect(box.textContent).toContain("encrypted for Snapmaker support, not opened");
+  expect(calls.some((c) => c.startsWith("POST /api/v1/history/logs?label=logs.zip"))).toBe(true);
+});

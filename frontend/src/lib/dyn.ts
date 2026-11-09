@@ -7,6 +7,7 @@ import type { Lang } from "./i18n";
 import { txCatalog } from "./dyn-catalog";
 import { txSignals } from "./dyn-signals";
 import { txLive } from "./dyn-live";
+import { txLogs } from "./dyn-logs";
 
 const SEV: Record<string, string> = { warning: "avertissement", error: "erreur", notice: "notice", invalid: "invalide" };
 const MODULE: Record<string, string> = {
@@ -23,6 +24,11 @@ const EVENT: Record<string, string> = {
   heater_window: "fenêtre de chauffe", clock_check: "contrôle des horloges", disk_usage: "occupation du disque", extruder_activity: "activité des extrudeurs",
   bed_mesh_points: "points du maillage du plateau", live_coverage: "couverture de la capture", connectivity_check: "autodiagnostic de la connexion",
   history_totals: "totaux de l'historique des travaux",
+  machine_exception: "exception de la machine", cloud_mqtt_offline: "coupures de la connexion cloud", moonraker_summary: "résumé du journal Moonraker",
+  klippy_link_stats: "compteurs de liaison Klipper", klippy_summary: "résumé du journal Klipper", klippy_shutdown: "arrêt Klipper",
+  unisrv_summary: "résumé du journal unisrv", syslog_summary: "résumé du journal système", gui_summary: "résumé du journal de l'écran",
+  mosquitto_summary: "résumé du journal mosquitto", orca_summary: "résumé du journal Snapmaker Orca", firmware_upgrade: "mise à jour du firmware",
+  encrypted_system_log: "journal système chiffré", log_file_seen: "fichier journal reconnu",
 };
 const ENTITY: Record<string, string> = { printer: "imprimante", toolhead_1: "tête 1", toolhead_2: "tête 2", toolhead_3: "tête 3", toolhead_4: "tête 4", unmapped: "non associé" };
 
@@ -115,7 +121,7 @@ export function tx(lang: Lang, s: string): string {
   if ((m = /^Print state changed: (\w+) -> (\w+)$/.exec(s))) return `L'état de l'impression est passé de « ${st(m[1]!)} » à « ${st(m[2]!)} »`;
   if ((m = /^Observed state '(\w+)'\.$/.exec(s))) return `État observé « ${st(m[1]!)} ».`;
   if ((m = /^(\w+) \/ validity (\w+)$/.exec(s))) return `${EVENT[m[1]!] ?? m[1]} / validité ${tok(lang, "validity", m[2]!).toLowerCase()}`;
-  return txSignals(s) ?? txLive(s) ?? txCatalog(s) ?? s;
+  return txSignals(s) ?? txLive(s) ?? txLogs(s, (x) => tx(lang, x)) ?? txCatalog(s) ?? s;
 }
 
 const TOK: Record<string, Record<string, string>> = {
