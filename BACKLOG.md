@@ -11,7 +11,7 @@ Hard rules: read-only; no U1 contact without the owner's explicit go; nothing in
 **Proven on the real U1 (supervised, read-only, 3 captures, nothing written):** log-partition read, cavity + bed-mesh subscription, S22-S24, connectivity numbers, `/server/history/totals`.
 
 **STILL OPEN, in this order**
-1. **VirusTotal of the 0.1.9-g1 zip** (the owner uploads it, CAPTCHA; SHA-256 above): then update README/INSTALL/IMPLEMENTATION_STATUS/Pages text ("not scanned yet" -> result) and the release notes. (0.1.8-g1 was 0/66.)
+1. ~~VirusTotal of the 0.1.9-g1 zip~~ done 2026-11-09: **0/66** (docs, Pages and release notes updated).
 2. **Forum topic** (owner posts): message 1 still says "12 rules" and v0.1.6-g1; post one consolidated changelog (the staff asked for all entries in one comment, newest to oldest) with the new figures (28 rules, 20 checks, v0.1.9-g1 is out). Draft in `private/drafts/`.
 3. **Film:** `docs/media/film/fr.vtt` (and the voice) say "douze règles"; now 20 rules. Leave or redo.
 4. **Real fault capture or volunteer U1-DEB bundles** (weakest contest point), plus a second capture in the real app to exercise the address-change fingerprint.
