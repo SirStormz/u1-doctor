@@ -1,4 +1,23 @@
-@import "@fontsource-variable/inter";
+/* Fonts are bundled (the app runs offline). Every theme's faces are declared here, but the browser only downloads
+   the faces the active theme renders. Static families: only the weights the UI uses. */
+@import "@fontsource/barlow/400.css";
+@import "@fontsource/barlow/500.css";
+@import "@fontsource/barlow/600.css";
+@import "@fontsource/barlow/700.css";
+@import "@fontsource/barlow/800.css";
+@import "@fontsource/barlow-semi-condensed/600.css";
+@import "@fontsource/barlow-semi-condensed/700.css";
+@import "@fontsource/barlow-semi-condensed/800.css";
+@import "@fontsource-variable/schibsted-grotesk";
+@import "@fontsource-variable/atkinson-hyperlegible-next";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
+@import "@fontsource/ibm-plex-mono/600.css";
+@import "@fontsource/ibm-plex-mono/700.css";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+@import "@fontsource-variable/oxanium";
+@import "@fontsource-variable/saira";
 @import "@fontsource-variable/jetbrains-mono";
 @import "tailwindcss";
 @import "./design/tokens.css";
@@ -34,4 +53,5 @@
 html, body, #root { height: 100%; }
 body { margin: 0; background: var(--bg-0); color: var(--ink); font-family: var(--font-ui); font-size: 14px; line-height: 22px; font-variation-settings: normal; -webkit-font-smoothing: antialiased; }
 h1, h2, h3, h4, h5 { margin: 0; }
+h1, h2, h3, .num-hero { font-family: var(--font-display); }
 button { font: inherit; }

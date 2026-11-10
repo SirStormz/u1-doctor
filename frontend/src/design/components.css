@@ -13,7 +13,7 @@
 .btn:active { transform: translate(1px, 1px); }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-primary { background: var(--yellow); color: #0e0e0e; border-color: #0e0e0e; box-shadow: 3px 3px 0 #0e0e0e; }
-[data-theme="night"] .btn-primary, [data-theme="graphite"] .btn-primary { border-color: #0e0e0e; box-shadow: 3px 3px 0 var(--ink-3); }
+[data-theme="obsidienne"] .btn-primary, [data-theme="visiere"] .btn-primary { border-color: #0e0e0e; box-shadow: 3px 3px 0 var(--ink-3); }
 .btn-primary:hover:not(:disabled) { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 #0e0e0e; }
 .btn-secondary { background: var(--surface-1); color: var(--ink); border-color: var(--line-strong); }
 .btn-secondary:hover:not(:disabled) { background: var(--yellow); color: #0e0e0e; }
@@ -23,7 +23,7 @@
 .kbd { font-family: var(--font-mono); font-size: 11px; padding: 1px 6px; border: 1px solid var(--control-line); border-bottom-width: 2px; border-radius: 2px; color: var(--ink-2); background: var(--surface-2); }
 
 /* top bar (always black) + numbered index strip */
-.topbar { --ink: #f4f4f0; --ink-2: #c9c9c0; --ink-3: #a1a197; --surface-1: #161614; --surface-2: #1e1e1b; --surface-3: #272724; --line: #2f2f2b; --line-strong: #f4f4f0; --control-line: #8d8d84; --accent: #ffc400; --accent-ink: #0e0e0e; --demo: #b39dfa; --replay: #7db4ff; background: #0e0e0e; color: var(--ink); }
+.topbar { --ink: #f4f4f0; --ink-2: #c9c9c0; --ink-3: #a1a197; --surface-1: #161614; --surface-2: #1e1e1b; --surface-3: #272724; --line: #2f2f2b; --line-strong: #f4f4f0; --control-line: #8d8d84; --accent: var(--yellow); --accent-ink: #0e0e0e; --demo: #b39dfa; --replay: #7db4ff; background: #0e0e0e; color: var(--ink); }
 .topbar select { background: #1e1e1b; color: #f4f4f0; }
 .wrap { width: 100%; max-width: 1520px; margin-inline: auto; }
 .indexbar .wrap { container-type: inline-size; }
@@ -42,7 +42,7 @@
 .navitem[aria-current="page"] { background: var(--yellow); color: #0e0e0e; }
 .navitem[aria-current="page"] .nn { color: #0e0e0e; }
 .nav-ind { position: absolute; left: 0; right: 0; bottom: -1px; height: 4px; background: #0e0e0e; }
-[data-theme="night"] .nav-ind, [data-theme="graphite"] .nav-ind { background: #0e0e0e; }
+[data-theme="obsidienne"] .nav-ind, [data-theme="visiere"] .nav-ind { background: #0e0e0e; }
 
 :root { --pad: 16px; --gap: 16px; }
 [data-density="compact"] { --pad: 10px; --gap: 10px; }

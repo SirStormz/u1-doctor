@@ -144,3 +144,21 @@ Outils déjà présents : vitest, Testing Library, Playwright, axe-core. Le banc
 6. **Images dans le dépôt** : les rendus Blender sont dérivés du modèle déjà commité ; les versionner dans `frontend/public/themes/` (nécessaire pour l'app) ou garder la règle « images dans `private/` ».
 7. **Canevas Design** : envoyer les planches corrigées et leurs nouvelles images au canevas (nouvelle version, ou nouveau canevas pour comparer avant / après). Rien n'a été publié pendant la mission.
 8. **Feu vert d'intégration** : rien de ce plan n'est commencé dans `frontend/src`.
+
+### Décisions du propriétaire (2026-11-10)
+
+| # | Décision |
+|---|---|
+| 1 | Obsidienne par défaut au premier lancement |
+| 2 | Migration une fois au démarrage, sans message : `light → notice`, `graphite → pupitre`, `night → obsidienne` |
+| 3 | Le propriétaire fournit une photo de sa U1 en pause, posée en texture sur l'écran ; « PRÊTE · HORS LIGNE » reste en attendant |
+| 4 | Notice garde le cercle ambre et la flèche, sans main dessinée |
+| 5 | Geist pour Obsidienne |
+| 6 | À reprendre : la recommandation donnée reposait sur une erreur (le GLB web est commité, voir § 9.6) |
+| 7 | Planches envoyées au canevas en un seul envoi, après les points 3 et 4 |
+| 8 | Feu vert, étape par étape, arrêt après chaque étape pour essai |
+
+### Avancement
+
+- **Étape 1 faite** (branche `feat/ui-v2-themes`) : `frontend/src/themes/registry.ts` (`ThemeId`, `THEMES`, `DEFAULT_THEME`, `resolveTheme`), migration dans `lib/prefs.tsx`, 4 jeux de jetons dans `design/tokens.css` (vocabulaire actuel conservé, les écrans ne changent pas), sélecteur et Réglages à 4 thèmes, libellés FR/EN, tests `tests/themes.test.tsx` + `tests/contrast.test.ts` sur les 4 thèmes. Écart au plan : pas de CSS de thème chargé à la demande, car il n'y a encore rien à charger (que des jetons, 2 Ko) ; il arrive avec les signatures, étape 4.
+- **Étape 2 faite, polices** : 9 familles Fontsource 5.3.0 épinglées (OFL), Inter retirée ; jetons `--font-display` / `--font-ui` / `--font-mono` par thème, titres sur `--font-display`. Toutes les `@font-face` sont déclarées d'emblée : le navigateur ne télécharge que les fichiers du thème affiché, donc un seul thème en mémoire sans chargement à la demande. Tests : `tests/theme-parity.test.tsx` (même texte visible dans les 4 thèmes, FR et EN), e2e « polices locales et zéro requête externe » par thème (20/20 sous Edge), `THIRD_PARTY_NOTICES.md`. Écarts : Doto, Permanent Marker et Courier Prime arrivent avec les signatures de Pupitre (étape 8) ; `useDiagnosis()` est reporté à l'étape 3, où ses consommateurs (VerdictCard, StepList…) fixent sa forme, plutôt que d'inventer l'objet à vide ; le texte intégral de l'OFL doit être joint à l'exe à la release (étape 10).

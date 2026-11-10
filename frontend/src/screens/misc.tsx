@@ -4,7 +4,8 @@ import { api, firmwareIssues, goodToKnow, knownIssues, liveApi, LiveRefused, pre
 import { Button, Chip, Kbd, Panel, ProvenanceChip, SeverityChip, Seal, StateBlock, TechDetails } from "../components/ui";
 import { PageTitle } from "../components/shell";
 import { useIncident } from "../lib/data";
-import { usePrefs, type Density, type Mode, type Theme } from "../lib/prefs";
+import { usePrefs, type Density, type Mode } from "../lib/prefs";
+import { THEMES } from "../themes/registry";
 import { errText } from "../lib/errors";
 import { moduleLabel, scenarioLabel, tok, tx } from "../lib/dyn";
 import { pfLimit, pfView, type PfCheck } from "../lib/preflight-text";
@@ -668,7 +669,6 @@ export function Replay({ onMode }: { onMode: (r: boolean) => void }) {
 }
 
 /* ---------------- Settings / compatibility ---------------- */
-const SW: Record<Theme, string[]> = { night: ["#10100e", "#161614", "#ffc400"], graphite: ["#191a1d", "#1f2023", "#ffc400"], light: ["#f4f4f0", "#fafaf7", "#ffc400"] };
 /** A plain link the owner clicks: no update check, no network call from the app. */
 const RELEASES_URL = "https://github.com/SirStormz/u1-doctor/releases";
 
@@ -681,9 +681,9 @@ export function SettingsScreen() {
       <div className="grid gap-d xl:grid-cols-2">
         <Panel title={t.appearance} i={0} active>
           <fieldset><legend className="micro mb-2">{t.theme}</legend>
-            <div className="grid grid-cols-3 gap-3">{(Object.keys(SW) as Theme[]).map((k) => (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">{THEMES.map(({ id: k, swatch }) => (
               <button key={k} type="button" aria-pressed={theme === k} onClick={() => setTheme(k)} className="rounded-xl border p-3 text-left" style={{ borderColor: theme === k ? "var(--accent)" : "var(--line)", boxShadow: theme === k ? "var(--glow)" : "none", background: "var(--surface-2)" }}>
-                <span className="mb-2 flex h-8 overflow-hidden rounded-md border border-control" aria-hidden>{SW[k].map((c) => <span key={c} className="flex-1" style={{ background: c }} />)}</span>{t.themes[k]}
+                <span className="mb-2 flex h-8 overflow-hidden rounded-md border border-control" aria-hidden>{swatch.map((c) => <span key={c} className="flex-1" style={{ background: c }} />)}</span>{t.themes[k]}
               </button>))}</div>
           </fieldset>
           <fieldset className="mt-5"><legend className="micro mb-2">{t.density}</legend>

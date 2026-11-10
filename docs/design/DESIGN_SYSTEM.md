@@ -1,6 +1,6 @@
 # DESIGN_SYSTEM (G0.5-B) — source de vérité : `frontend/src/design/`
 
-Fichiers : `tokens.css` (variables + utilitaires + mouvement), `components.css` (puces, boutons, navigation, redaction), `src/index.css` (mapping Tailwind v4 `@theme inline`). Polices **embarquées localement** (`@fontsource-variable/inter`, `jetbrains-mono`) : aucune requête externe.
+Fichiers : `tokens.css` (variables + utilitaires + mouvement), `components.css` (puces, boutons, navigation, redaction), `src/index.css` (mapping Tailwind v4 `@theme inline`). Polices **embarquées localement** (paquets Fontsource, une famille titres / texte / codes par thème UI V2, liste dans `THIRD_PARTY_NOTICES.md`) : aucune requête externe.
 
 ## 1. Tokens de couleur sémantiques (3 thèmes, `data-theme`)
 | Token | Night (défaut) | Graphite | Light | Usage |
@@ -17,7 +17,7 @@ Utilitaires Tailwind : `bg-surface`, `text-ink2`, `border-control`, `text-accent
 **Contrastes mesurés** (`tests/contrast.test.ts`, 16 tests, 3 thèmes) : texte principal ≥ 7:1 (AAA) sur toutes les surfaces ; secondaire/discret ≥ 4,5:1 ; chaque ton de statut en texte sur sa puce teintée ≥ 4,5:1 ; `--control-line` ≥ 3:1. *(Le test a fait corriger 2 défauts réels : bordures de champs à 2,1:1 et vert du thème clair à 4,2:1.)*
 
 ## 2. Typographie
-Inter Variable (UI), JetBrains Mono Variable (heures, hashes, codes ; zéro barré). Échelle : Display 40/44 (accueil) · Chiffre héros 72/72 tabulaire · H1 28/36 · H2 panneau 15/20 semi-gras · Corps 14/22 · Légende 12/18 · Micro 11/16 majuscules +14 % d'interlettrage. Largeur de ligne ≤ 70 caractères pour les paragraphes (`max-w-3xl`).
+Polices par thème (jetons `--font-display`, `--font-ui`, `--font-mono` dans `tokens.css`) : Pupitre = Barlow Semi Condensed / Barlow / JetBrains Mono ; Notice = Schibsted Grotesk / Atkinson Hyperlegible Next / IBM Plex Mono ; Obsidienne = Geist / Geist / Geist Mono ; Visière = Oxanium / Saira / JetBrains Mono. Échelle : Display 40/44 (accueil) · Chiffre héros 72/72 tabulaire · H1 28/36 · H2 panneau 15/20 semi-gras · Corps 14/22 · Légende 12/18 · Micro 11/16 majuscules +14 % d'interlettrage. Largeur de ligne ≤ 70 caractères pour les paragraphes (`max-w-3xl`).
 
 ## 3. Grille, espacement, rayons, ombres
 Base 4 px ; gouttière `--gap` 16 px (10 px en densité compacte) ; padding de carte `--pad` 16/10. Rayons 6/10/14 px. Élévation par **surface + bordure + ombre interne 1 px** (`--shadow-1/2`), halo cyan `--glow` réservé au panneau actif. Texture : grille « blueprint » 32 px à 5 % et grain 4 % (désactivé en clair).

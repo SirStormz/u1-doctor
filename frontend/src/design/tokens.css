@@ -1,35 +1,58 @@
-/* U1 Doctor design tokens — "Service manual" (direction C). Themes: night = Atelier (dark, default token set), graphite, light = Manuel (default theme).
-   accent = ink-coloured accent used for text/icons (>= 4.5:1); yellow = the machine's own yellow, used for fills and marks only. */
+/* U1 Doctor design tokens, UI V2. Four themes (docs/design/ui-v2): pupitre and notice are light, obsidienne
+   (default token set and default theme) and visiere are dark. Values come from the audited mockups; every pair is
+   checked by tests/contrast.test.ts. accent = text/icon accent (>= 4.5:1); yellow = the amber used for fills and marks. */
 :root,
-[data-theme="night"] {
+[data-theme="obsidienne"] {
   color-scheme: dark;
-  --bg-0: #0a0a09; --bg-1: #10100e;
-  --surface-1: #161614; --surface-2: #1e1e1b; --surface-3: #272724;
-  --line: #2f2f2b; --line-strong: #f4f4f0; --control-line: #8d8d84;
-  --ink: #f4f4f0; --ink-2: #c9c9c0; --ink-3: #a1a197;
-  --accent: #ffc400; --accent-ink: #0e0e0e; --yellow: #ffc400;
-  --ok: #4ade80; --warn: #ffa94d; --danger: #ff6b6b; --demo: #b39dfa; --replay: #7db4ff;
+  --bg-0: #0b0d10; --bg-1: #0e1013;
+  --surface-1: #14171c; --surface-2: #191d23; --surface-3: #1c2027;
+  --line: #272a2e; --line-strong: #5b5d60; --control-line: #80858f;
+  --ink: #f2f4f7; --ink-2: #b5b8bc; --ink-3: #9b9ea2;
+  --accent: #ffb547; --accent-ink: #241600; --yellow: #ffb547;
+  --ok: #8fd9a8; --warn: #ff9e5e; --danger: #ff7a85; --demo: #b4a0ff; --replay: #7db4ff;
   --shadow-1: none; --shadow-2: none; --glow: 0 0 0 2px var(--yellow);
+  --font-display: "Geist Variable", system-ui, "Segoe UI", Arial, sans-serif;
+  --font-ui: "Geist Variable", system-ui, "Segoe UI", Arial, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "Cascadia Mono", monospace;
 }
-[data-theme="graphite"] {
+[data-theme="visiere"] {
   color-scheme: dark;
-  --bg-0: #131416; --bg-1: #191a1d;
-  --surface-1: #1f2023; --surface-2: #26272b; --surface-3: #2e2f34;
-  --line: #36383d; --line-strong: #ececee; --control-line: #8e919a;
-  --ink: #ececee; --ink-2: #bcbec5; --ink-3: #9a9da6;
-  --accent: #ffc400; --accent-ink: #0e0e0e; --yellow: #ffc400;
-  --ok: #4ade80; --warn: #ffa94d; --danger: #ff7a85; --demo: #b4a0ff; --replay: #7db4ff;
+  --bg-0: #08070a; --bg-1: #0b090b;
+  --surface-1: #100c0c; --surface-2: #140f0e; --surface-3: #1a1413;
+  --line: #2f261e; --line-strong: #66553f; --control-line: #8f8170;
+  --ink: #f6f1ea; --ink-2: #bbb6b1; --ink-3: #9c9792;
+  --accent: #ffb547; --accent-ink: #1e1100; --yellow: #ffb547;
+  --ok: #9be0b0; --warn: #ffd99a; --danger: #ff7266; --demo: #c3a6ff; --replay: #8cc4ff;
   --shadow-1: none; --shadow-2: none; --glow: 0 0 0 2px var(--yellow);
+  --font-display: "Oxanium Variable", system-ui, "Segoe UI", Arial, sans-serif;
+  --font-ui: "Saira Variable", system-ui, "Segoe UI", Arial, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Mono", monospace;
 }
-[data-theme="light"] {
+[data-theme="notice"] {
   color-scheme: light;
-  --bg-0: #ebebe5; --bg-1: #f4f4f0;
-  --surface-1: #fafaf7; --surface-2: #efefe9; --surface-3: #e4e4dd;
-  --line: #cdcdc4; --line-strong: #0e0e0e; --control-line: #66665e;
-  --ink: #0e0e0e; --ink-2: #34342f; --ink-3: #55554e;
-  --accent: #0e0e0e; --accent-ink: #ffffff; --yellow: #ffc400;
-  --ok: #156a38; --warn: #a24500; --danger: #b3121a; --demo: #6d28d9; --replay: #1d4ed8;
+  --bg-0: #f4f3ef; --bg-1: #ffffff;
+  --surface-1: #ffffff; --surface-2: #f4f3ef; --surface-3: #e4e1da;
+  --line: #d9d5cc; --line-strong: #1d1c1a; --control-line: #6b6861;
+  --ink: #1d1c1a; --ink-2: #47453f; --ink-3: #6b6861;
+  --accent: #8a5000; --accent-ink: #ffffff; --yellow: #ffb547;
+  --ok: #276b3c; --warn: #9a4500; --danger: #b3121a; --demo: #6d28d9; --replay: #1d4ed8;
   --shadow-1: none; --shadow-2: none; --glow: 0 0 0 2px var(--yellow);
+  --font-display: "Schibsted Grotesk Variable", system-ui, "Segoe UI", Arial, sans-serif;
+  --font-ui: "Atkinson Hyperlegible Next Variable", system-ui, "Segoe UI", Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
+}
+[data-theme="pupitre"] {
+  color-scheme: light;
+  --bg-0: #cfcbc3; --bg-1: #dedad1;
+  --surface-1: #f2efe8; --surface-2: #e7e3db; --surface-3: #dedad1;
+  --line: #b9b4aa; --line-strong: #2b2a27; --control-line: #6f6a62;
+  --ink: #1d1c1a; --ink-2: #47443e; --ink-3: #58544c;
+  --accent: #7f4a00; --accent-ink: #ffffff; --yellow: #ffb547;
+  --ok: #1f6636; --warn: #8f4000; --danger: #a3121a; --demo: #6226c4; --replay: #1b48c9;
+  --shadow-1: none; --shadow-2: none; --glow: 0 0 0 2px var(--yellow);
+  --font-display: "Barlow Semi Condensed", system-ui, "Segoe UI", Arial, sans-serif;
+  --font-ui: "Barlow", system-ui, "Segoe UI", Arial, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Mono", monospace;
 }
 :root {
   --radius-s: 0px; --radius-m: 2px; --radius-l: 2px;
@@ -43,8 +66,6 @@
   --t-0: 16px; --t-1: 20.35px; --t-2: 25.89px; --t-3: 32.94px; --t-4: 41.9px; --t-5: 53.3px; --t-6: 67.8px; --t-7: 86.2px; --t-8: 109.7px;
   /* space scale: 8px x phi^n */
   --s-1: 8px; --s-2: 13px; --s-3: 21px; --s-4: 34px; --s-5: 55px; --s-6: 89px; --s-7: 144px;
-  --font-ui: "Inter Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Mono", monospace;
 }
 
 /* ---- utilities ---- */

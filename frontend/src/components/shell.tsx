@@ -4,6 +4,7 @@ import { Activity, Check, Command, Eye, FileSearch, FileText, FlaskConical, Hist
 import { api, type InterpretOut } from "../api";
 import { useIncident } from "../lib/data";
 import { usePrefs, type StepId, type Theme } from "../lib/prefs";
+import { THEME_IDS } from "../themes/registry";
 import { Onboarding } from "./onboarding";
 import { parseHash, ROUTES, visibleRoutes, type RouteName } from "../lib/router";
 import { Chip, Hint, Kbd, Logo, SeverityChip } from "./ui";
@@ -100,7 +101,6 @@ function Palette({ open, onClose, go }: { open: boolean; onClose: () => void; go
 }
 
 /* ---------- shell ---------- */
-const THEMES: Theme[] = ["night", "graphite", "light"];
 
 export function Shell({ route, go, replay, children }: { route: RouteName; go: (n: RouteName, p?: string) => void; replay: boolean; children: ReactNode }) {
   const { t, lang, setLang, theme, setTheme, mode, setMode, markStep, onboarded } = usePrefs();
@@ -152,10 +152,10 @@ export function Shell({ route, go, replay, children }: { route: RouteName; go: (
           {(replay || demo) && <Chip tone={replay ? "replay" : "demo"}>{replay ? t.modeReplay : t.modeDemo}</Chip>}
           <Chip tone="accent" icon={<Lock size={11} aria-hidden />}>{t.readOnly}</Chip></span>
           <div className="ml-auto flex items-center gap-2">
-            <button type="button" aria-pressed={demo} onClick={() => setDemo(!demo)} title={demo ? t.demoToggleOn : t.demoToggleOff} className="btn btn-secondary !py-1.5" style={{ background: demo ? "#ffc400" : "#1e1e1b", color: demo ? "#0e0e0e" : "#f4f4f0", borderColor: demo ? "#ffc400" : "#8d8d84" }}>
+            <button type="button" aria-pressed={demo} onClick={() => setDemo(!demo)} title={demo ? t.demoToggleOn : t.demoToggleOff} className="btn btn-secondary !py-1.5" style={{ background: demo ? "var(--yellow)" : "#1e1e1b", color: demo ? "#0e0e0e" : "#f4f4f0", borderColor: demo ? "var(--yellow)" : "#8d8d84" }}>
               <FlaskConical size={15} aria-hidden /> <span>{t.demoToggle}</span>
             </button>
-            <button type="button" aria-pressed={expert} onClick={() => setMode(expert ? "simple" : "expert")} title={expert ? t.modeToggleOn : t.modeToggleOff} className="btn btn-secondary !py-1.5" style={{ background: expert ? "#ffc400" : "#1e1e1b", color: expert ? "#0e0e0e" : "#f4f4f0", borderColor: expert ? "#ffc400" : "#8d8d84" }}>
+            <button type="button" aria-pressed={expert} onClick={() => setMode(expert ? "simple" : "expert")} title={expert ? t.modeToggleOn : t.modeToggleOff} className="btn btn-secondary !py-1.5" style={{ background: expert ? "var(--yellow)" : "#1e1e1b", color: expert ? "#0e0e0e" : "#f4f4f0", borderColor: expert ? "var(--yellow)" : "#8d8d84" }}>
               <Wrench size={15} aria-hidden /> <span>{t.modeToggle}</span>
             </button>
             <button type="button" onClick={() => setPalette(true)} className="btn btn-secondary !py-1.5" style={{ background: "#1e1e1b", color: "#f4f4f0", borderColor: "#8d8d84" }} aria-label={`${t.palette} — ${t.palettePlaceholder.split("…")[0]}… Ctrl K`}>
@@ -164,12 +164,12 @@ export function Shell({ route, go, replay, children }: { route: RouteName; go: (
             <label className="flex items-center gap-1 text-xs">
               <span className="sr-only">{t.theme}</span>
               <select value={theme} onChange={(e) => setTheme(e.target.value as Theme)} className="border border-control px-2 py-1.5" aria-label={t.theme}>
-                {THEMES.map((x) => <option key={x} value={x}>{t.themes[x]}</option>)}
+                {THEME_IDS.map((x) => <option key={x} value={x}>{t.themes[x]}</option>)}
               </select>
             </label>
             <div role="group" aria-label={t.language} className="flex overflow-hidden border border-control">
               {(["en", "fr"] as const).map((l) => (
-                <button key={l} type="button" aria-pressed={lang === l} onClick={() => setLang(l)} className="px-2.5 py-1.5 text-xs font-bold" style={{ background: lang === l ? "#ffc400" : "#1e1e1b", color: lang === l ? "#0e0e0e" : "#c9c9c0" }}>{l.toUpperCase()}</button>
+                <button key={l} type="button" aria-pressed={lang === l} onClick={() => setLang(l)} className="px-2.5 py-1.5 text-xs font-bold" style={{ background: lang === l ? "var(--yellow)" : "#1e1e1b", color: lang === l ? "#0e0e0e" : "#c9c9c0" }}>{l.toUpperCase()}</button>
               ))}
             </div>
           </div>
