@@ -148,7 +148,7 @@ export function MaintenancePanel({ i }: { i: number }) {
   );
 }
 
-/** Connect screen, after a capture: the reminders that are due with this capture's totals (in-page list only). */
+/** Diagnose screen, after a capture: the reminders that are due with this capture's totals (in-page list only). */
 export function MaintenanceDue({ cur, tasks }: { cur: Current; tasks: Task[] }) {
   const { t, lang } = usePrefs();
   const m = t.mt;
