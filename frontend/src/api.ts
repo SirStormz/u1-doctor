@@ -150,6 +150,21 @@ export const liveApi = {
   },
 };
 
+export interface PackOut {
+  name: string; password: string; bytes: number; sha256: string; created_utc: string;
+  files: { name: string; bytes: number; sha256: string }[]; not_collected: { op: string; why?: string }[];
+  options: { include_serial: boolean; redact_network: boolean; include_job_names: boolean }; mcu_versions: Record<string, string>;
+}
+export class PackRefused extends Error { constructor(public code: string) { super(code); } }
+export const packApi = {
+  build: async (b: { host: string; code?: string; notes?: string; include_serial: boolean; redact_network: boolean; include_job_names: boolean }): Promise<PackOut> => {
+    const r = await fetch("/api/v1/support/pack", { method: "POST", headers: hdr("application/json"), body: JSON.stringify({ ...b, consent: true }) });
+    if (r.status >= 400 && r.status !== 500) { const e = (await r.json().catch(() => ({}))) as { detail?: { code?: string } }; throw new PackRefused(e.detail?.code ?? "UNKNOWN"); }
+    return j<PackOut>(r);
+  },
+  download: async (name: string): Promise<Blob> => { const r = await fetch(`/api/v1/support/pack/${encodeURIComponent(name)}`); if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.blob(); },
+};
+
 export interface BundleFile { name: string; sha256: string; bytes: number }
 export interface BundlePreview { manifest: { files: BundleFile[]; source_mix: string[] }; privacy: Record<string, unknown> }
 export interface BundleImport {

@@ -56,12 +56,14 @@ class ReadOnlyMoonrakerTransport:
         consent: Consent,
         http_transport: httpx.BaseTransport | None = None,
         timeout_s: float = 5.0,
+        support: bool = False,
     ) -> None:
         self._host = validate_target_host(host, DEFAULT_PORT)
         if http_transport is None and not (
             consent.approved_by_owner and consent.target_host == self._host
         ):
             raise PolicyViolation("real network access requires owner Consent for this host")
+        self._support = support  # support-pack scope: more GET, never used by the live capture (ADR-0002, 2026-11-10 b)
         self.audit: list[AuditEntry] = []
         self._client = httpx.Client(
             base_url=f"http://{self._host}:{DEFAULT_PORT}",
@@ -73,7 +75,7 @@ class ReadOnlyMoonrakerTransport:
             headers={"User-Agent": "U1-Doctor/0 (read-only)"},
         )
 
-    # --- the only five operations (all GET) ---------------------------
+    # --- the only seven operations (all GET) --------------------------
     def get_server_info(self) -> dict[str, Any]:
         return self._send("GET", "/server/info")
 
@@ -91,10 +93,43 @@ class ReadOnlyMoonrakerTransport:
         """GET /server/history/totals (no query). Only four job totals of the reply are meant to be kept (BACKLOG #65)."""
         return self._send("GET", "/server/history/totals")
 
+    def get_history_jobs(self) -> dict[str, Any]:
+        """GET /server/history/list?limit=20&order=desc. Only per-job status and numbers are meant to be kept (app.live._jobs)."""
+        return self._send("GET", "/server/history/list", query={"limit": "20", "order": "desc"})
+
+    def get_gcode_store(self) -> dict[str, Any]:
+        """GET /server/gcode_store?count=100. Only scrubbed error-like console lines are meant to be kept (app.live._console)."""
+        return self._send("GET", "/server/gcode_store", query={"count": "100"})
+
+    # --- support-pack scope only (support=True); each is one allowlisted GET ------
+    def get_system_info(self) -> dict[str, Any]:
+        return self._send("GET", "/machine/system_info")
+
+    def get_proc_stats(self) -> dict[str, Any]:
+        return self._send("GET", "/machine/proc_stats")
+
+    def get_usb_devices(self) -> dict[str, Any]:
+        return self._send("GET", "/machine/peripherals/usb")
+
+    def get_temperature_store(self) -> dict[str, Any]:
+        return self._send("GET", "/server/temperature_store")
+
+    def list_files(self, root: str) -> dict[str, Any]:
+        """GET /server/files/list?root=logs|config. Names and sizes only."""
+        return self._send("GET", "/server/files/list", query={"root": root})
+
+    def query_objects(self, names: list[str]) -> dict[str, Any]:
+        """GET /printer/objects/query with allowlisted object names (state only, no subscription)."""
+        return self._send("GET", "/printer/objects/query", query={n: "" for n in names})
+
+    def download_file(self, root: str, name: str, max_bytes: int) -> bytes:
+        """GET /server/files/<root>/<name> for one allowlisted log or config file. Refused above `max_bytes`."""
+        return self._send_bytes("GET", f"/server/files/{root}/{name}", max_bytes)
+
     # --- internals ----------------------------------------------------
     def _send(self, method: str, path: str, body: bytes | None = None, query: dict[str, str] | None = None) -> dict[str, Any]:
         try:
-            tag = check_http_request(method, path, body, query)
+            tag = check_http_request(method, path, body, query, support=self._support)
         except PolicyViolation:
             self.audit.append(AuditEntry(method, path, None, False, query=query))
             raise
@@ -104,6 +139,29 @@ class ReadOnlyMoonrakerTransport:
         t0 = time.monotonic()
         try:
             return self._read(entry, method, path, body, headers, query)
+        finally:
+            entry.ms = round((time.monotonic() - t0) * 1000, 1)
+
+    def _send_bytes(self, method: str, path: str, max_bytes: int) -> bytes:
+        try:
+            tag = check_http_request(method, path, None, None, support=self._support)
+        except PolicyViolation:
+            self.audit.append(AuditEntry(method, path, None, False))
+            raise
+        entry = AuditEntry(method, path, tag, True)
+        self.audit.append(entry)
+        t0 = time.monotonic()
+        try:
+            data = bytearray()
+            with self._client.stream(method, path) as resp:
+                entry.status = resp.status_code
+                if resp.status_code != 200:
+                    raise TransportError(f"unexpected status {resp.status_code}")
+                for chunk in resp.iter_bytes():
+                    data += chunk
+                    if len(data) > max_bytes:
+                        raise TransportError("file too large")
+            return bytes(data)
         finally:
             entry.ms = round((time.monotonic() - t0) * 1000, 1)
 

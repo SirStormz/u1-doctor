@@ -24,6 +24,14 @@ def handler(req: httpx.Request) -> httpx.Response:
         "/server/history/totals": httpx.Response(200, json={"result": {"job_totals": {"total_jobs": 3, "total_time": 11748.08, "total_print_time": 11348.79,
                                                                                 "total_filament_used": 11615.72, "longest_job": 11665.19},
                                                                  "auxiliary_totals": [{"provider": "secret_sensor", "field": "x", "maximum": 1, "total": 1}]}}),
+        "/server/history/list": httpx.Response(200, json={"result": {"count": 1, "jobs": [{
+            "job_id": "000016", "user": "secret_user", "filename": "secret_cube.gcode", "status": "cancelled", "start_time": 1794161724.2,
+            "end_time": 1794188784.6, "print_duration": 26915.3, "total_duration": 27060.2, "filament_used": 63870.9,
+            "metadata": {"uuid": "secret-uuid", "slicer": "SnapmakerOrca", "slicer_version": "2.4.1", "layer_count": 741,
+                         "filament_type": "PLA;PLA", "thumbnails": [{"relative_path": ".thumbs/secret_cube-96x96.png"}]}}]}}),
+        "/server/gcode_store": httpx.Response(200, json={"result": {"gcode_store": [
+            {"message": "// auto switching bed PID", "time": 1.0, "type": "response"},
+            {"message": "!! Timer too close on /home/lava/secret/x.cfg from 192.168.9.9", "time": 2.0, "type": "response"}]}}),
     }[req.url.path]
 
 
@@ -77,8 +85,8 @@ def test_capture_is_read_only_and_hides_address_and_names(client):
     r = post(client)
     assert r.status_code == 200, r.text
     j = r.json()
-    assert j["audit"]["non_read_operations"] == 0 and j["audit"]["read_operations"] == 6
-    assert [a["method"] for a in j["audit"]["http"]] == ["GET"] * 5
+    assert j["audit"]["non_read_operations"] == 0 and j["audit"]["read_operations"] == 8
+    assert [a["method"] for a in j["audit"]["http"]] == ["GET"] * 7
     assert len(client.conn.sent) == 1 and json.loads(client.conn.sent[0])["method"] == "printer.objects.subscribe"
     assert j["printer"]["klippy_state"] == "ready" and j["printer"]["object_count"] == 2
     assert j["source_status"] == "REAL" and {o["source_status"] for o in j["observations"]} == {"REAL"}
@@ -137,7 +145,7 @@ def _drop_client(monkeypatch, handler_fn):
 def test_dropped_stream_is_probed_read_only_and_feeds_s04(monkeypatch):
     j = _drop_client(monkeypatch, handler).post("/api/v1/live/capture", json={"host": HOST, "consent": True, "seconds": 3}).json()
     assert j["stream_dropped"] is True and j["audit"]["non_read_operations"] == 0
-    assert all(a["method"] == "GET" for a in j["audit"]["http"]) and len(j["audit"]["http"]) == 5 + 3 * 2 == live.MAX_GET
+    assert all(a["method"] == "GET" for a in j["audit"]["http"]) and len(j["audit"]["http"]) == live.BASE_GET + 3 * 2 == live.MAX_GET
     types = [o["event_type"] for o in j["observations"]]
     assert "connection_lost" in types and types.count("link_probe") == 3
     assert [f["rule_id"] for f in j["findings"] if f["rule_id"] == "U1-S04-DROP-PROBE"] == ["U1-S04-DROP-PROBE"]
@@ -236,3 +244,24 @@ def test_history_totals_accept_the_float_shape_of_the_real_u1():
     for bad in (21.5, -1.0, float("nan"), True, "21"):
         d = {"result": {"job_totals": {**doc["result"]["job_totals"], "total_jobs": bad}}}
         assert _totals(d, "t") is None
+
+
+def test_job_history_and_console_keep_only_safe_facts():
+    from app.live import _console, _jobs
+    j = _jobs({"result": {"jobs": [{"user": "secret_user", "filename": "secret_cube.gcode", "status": "cancelled", "start_time": 1794161724.2,
+                                    "end_time": 1794188784.6, "print_duration": 26915.34, "filament_used": 63870.9,
+                                    "metadata": {"uuid": "secret-uuid", "layer_count": 741, "slicer": "SnapmakerOrca", "thumbnails": [{"relative_path": "x"}]}},
+                                   {"status": "Bad Status!"}, "junk", {"status": "completed", "print_duration": -5}]}}, "T")
+    assert j["by_status"] == {"cancelled": 1, "completed": 1} and len(j["jobs"]) == 2
+    first = j["jobs"][0]
+    assert first == {"status": "cancelled", "start": "2026-11-08T18:15:24Z", "end": "2026-11-09T01:46:24Z", "print_s": 26915.3, "filament_mm": 63870.9,
+                     "layers": 741, "slicer": "SnapmakerOrca"}
+    assert "secret" not in json.dumps(j) and j["jobs"][1] == {"status": "completed"}
+    assert _jobs({"result": {}}, "T") is None and _jobs({"result": {"jobs": "x"}}, "T") is None
+    c = _console({"result": {"gcode_store": [{"message": "// ok"}, {"message": "!! Timer too close on /home/lava/secret/x.cfg from 192.168.9.9 mac 40:fd:f3:d9:3f:d6"},
+                                             {"message": "Lost communication with MCU 'e0'"}, {"no": "message"}]}}, "T")
+    assert c["read"] == 3 and len(c["lines"]) == 2
+    assert "secret" not in json.dumps(c) and "192.168" not in json.dumps(c) and "40:fd" not in json.dumps(c)
+    assert _console({"result": {}}, "T") is None
+    many = _console({"result": {"gcode_store": [{"message": f"!! error {i}"} for i in range(50)]}}, "T")
+    assert len(many["lines"]) == 20 and many["lines"][-1] == "!! error 49"

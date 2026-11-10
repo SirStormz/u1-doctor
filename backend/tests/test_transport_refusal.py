@@ -256,4 +256,5 @@ def test_env_proxy_ignored(monkeypatch):
 
 def test_no_public_generic_request_surface():
     public = {n for n in dir(ReadOnlyMoonrakerTransport) if not n.startswith("_")}
-    assert public == {"get_server_info", "get_printer_info", "list_objects", "get_logs_disk_usage", "get_history_totals", "close"}
+    assert public == {"get_server_info", "get_printer_info", "list_objects", "get_logs_disk_usage", "get_history_totals", "get_history_jobs", "get_gcode_store", "get_system_info", "get_proc_stats", "get_usb_devices",
+                      "get_temperature_store", "list_files", "query_objects", "download_file", "close"}

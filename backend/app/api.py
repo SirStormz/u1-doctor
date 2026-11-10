@@ -52,6 +52,7 @@ from .logimport import LogImportError
 from .logimport import analyse as logs_analyse
 from .paths import ROOT
 from .support import checklist as support_checklist
+from .supportpack import PackError, build_support_pack
 from .timeline import build_timeline
 
 API_VERSION = "1"
@@ -81,6 +82,16 @@ class LiveIn(BaseModel):
     label: str | None = Field(default=None, max_length=200)
     # distinct nozzle diameters of a G-code analysed in this app (pre-flight), compared by rule S20; never a file name
     gcode_nozzle_mm: list[float] | None = Field(default=None, max_length=16)
+
+
+class PackIn(BaseModel):
+    host: str = Field(max_length=15)  # private IPv4 literal; validated by the transport policy, never echoed back
+    consent: bool = False
+    code: str | None = Field(default=None, max_length=40)
+    notes: str | None = Field(default=None, max_length=1000)
+    include_serial: bool = True
+    redact_network: bool = True
+    include_job_names: bool = False
 
 
 def _local_origins(request: Request) -> set[str]:
@@ -522,7 +533,7 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
     def live_capture(body: LiveIn) -> dict[str, Any]:
         """Owner-triggered read-only capture from one private address. Needs `consent: true`.
 
-        5 GET + 1 WebSocket subscribe message; if the stream drops early, up to 6 more read-only status GET: 11 GET and
+        7 GET + 1 WebSocket subscribe message; if the stream drops early, up to 6 more read-only status GET: 13 GET and
         1 WebSocket message at most (see app.live). `maintenance_inputs` carries the job-history totals and switch counters
         the app's local maintenance reminders use (None = not observable). A foreign `Origin` or a missing app header is refused by the
         `same_app_only` middleware before this runs. The address is compared with the previous capture through a keyed
@@ -555,6 +566,35 @@ def create_app(db_path: str = ":memory:") -> FastAPI:
             saved = _saved(out["observations"], "real_capture", body.label, "Live capture")
             out["session"], out["already_saved"] = saved["session"], saved["already_saved"]
         return out
+
+    @app.post("/api/v1/support/pack")
+    def support_pack(body: PackIn) -> dict[str, Any]:
+        """Build ONE AES-256 encrypted zip for Snapmaker support from read-only GET to one private address (needs `consent: true`).
+
+        The zip is kept in memory (the latest one only) and fetched with `GET /api/v1/support/pack/{name}`; the password is
+        returned here once and never stored. Not anonymous by design: see app.supportpack.
+        """
+        if body.consent is not True:
+            raise HTTPException(403, {"code": "CONSENT_REQUIRED", "message": "explicit owner consent is required"})
+        if not live_busy.acquire(blocking=False):
+            raise HTTPException(409, {"code": "LIVE_BUSY", "message": "a capture is already running"})
+        try:
+            out = build_support_pack(body.host, code=body.code, notes=body.notes, include_serial=body.include_serial,
+                                     redact_network=body.redact_network, include_job_names=body.include_job_names,
+                                     **getattr(app.state, "pack_hooks", {}))
+        except PackError as e:
+            raise HTTPException(422 if e.code.startswith("REFUSED") else 502, {"code": e.code, "message": str(e)}) from e
+        finally:
+            live_busy.release()
+        app.state.pack = {"name": out["name"], "zip": out.pop("zip")}
+        return out
+
+    @app.get("/api/v1/support/pack/{name}")
+    def support_pack_download(name: str) -> Response:
+        pack = getattr(app.state, "pack", None)
+        if not pack or pack["name"] != name:
+            raise HTTPException(404, "unknown support pack (build it again)")
+        return Response(pack["zip"], media_type="application/zip", headers={"Content-Disposition": f'attachment; filename="{name}"'})
 
     if (DIST / "index.html").exists():
         app.mount("/assets", StaticFiles(directory=DIST / "assets"), name="assets")

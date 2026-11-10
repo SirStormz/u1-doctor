@@ -36,5 +36,5 @@ def test_documented_routes_exist():
 
 
 def test_only_the_live_route_is_described_as_reaching_a_printer():
-    assert DOC.count("Only **`POST /api/v1/live/capture`** can open a connection to a printer") == 1
-    assert "5 GET and 1 WebSocket message (11 GET if the live stream drops)" in DOC
+    assert DOC.count("Only **`POST /api/v1/live/capture`** and that route can open a connection to a printer") == 1
+    assert "7 GET and 1 WebSocket message (13 GET if the live stream drops)" in DOC

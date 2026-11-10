@@ -63,6 +63,12 @@ def test_logs_disk_usage_get_is_allowed_only_with_the_exact_query():
     # job history (BACKLOG #65): only the totals path, with no query
     ("GET", "/server/history/totals", {"path": "logs"}),
     ("GET", "/server/history/list", None),
+    ("GET", "/server/history/list", {"limit": "21", "order": "desc"}),
+    ("GET", "/server/history/list", {"limit": "20"}),
+    ("GET", "/server/gcode_store", None),
+    ("GET", "/server/gcode_store", {"count": "1000"}),
+    ("POST", "/server/gcode_store", {"count": "100"}),
+    ("DELETE", "/server/history/list", {"limit": "20", "order": "desc"}),
     ("GET", "/server/history/job", None),
     ("POST", "/server/history/totals", None),
     ("POST", "/server/history/reset_totals", None),
@@ -142,7 +148,7 @@ def _i18n(key):
 
 
 def test_consent_text_counts_match_the_code_budget_in_en_and_fr():
-    assert live.MAX_GET == live.BASE_GET + live.PROBES * 2 == 11 and live.MAX_WS_SENT == 1
+    assert live.MAX_GET == live.BASE_GET + live.PROBES * 2 == 13 and live.MAX_WS_SENT == 1
     en, fr = _i18n("liveConsent")
     m = re.search(r"(\d+) GET .*?(\d+) live subscription.*?up to (\d+) more read-only status GET: (\d+) GET at most", en)
     assert m, en
@@ -161,8 +167,8 @@ def test_docs_state_the_same_maximum(doc):
 
 def test_the_api_docstring_and_module_docstring_agree():
     import app.api as api
-    assert "11 GET" in (api.create_app.__doc__ or "") or "11 GET" in (live.__doc__ or "")
-    assert "MAX_GET = 11" in (live.__doc__ or "")
+    assert "13 GET" in (api.create_app.__doc__ or "") or "13 GET" in (live.__doc__ or "")
+    assert "MAX_GET = 13" in (live.__doc__ or "")
 
 
 # ---- live_facts: what is kept from frames --------------------------------------------------------------------------
@@ -382,6 +388,13 @@ def handler(disk_status=200, totals_status=200, totals=None):
         if req.url.path == "/server/files/directory":
             assert req.url.query == b"path=logs"
             return httpx.Response(disk_status, json={"result": {"files": [{"filename": "secret.log"}], "disk_usage": {"total": 104857600, "used": 99614720, "free": 5242880}}})
+        if req.url.path == "/server/history/list":
+            assert req.url.query == b"limit=20&order=desc"
+            return httpx.Response(200, json={"result": {"jobs": [{"filename": "secret.gcode", "user": "secret_user", "status": "interrupted",
+                                                                  "print_duration": 120.0, "metadata": {"uuid": "secret-uuid"}}]}})
+        if req.url.path == "/server/gcode_store":
+            assert req.url.query == b"count=100"
+            return httpx.Response(200, json={"result": {"gcode_store": [{"message": "!! Lost communication with MCU 'e0'"}, {"message": "// secret ok"}]}})
         return {"/server/info": httpx.Response(200, json={"result": {"klippy_state": "ready", "hostname": "secret-host"}}),
                 "/printer/info": httpx.Response(200, json={"result": {"state": "ready"}}),
                 "/printer/objects/list": httpx.Response(200, json={"result": {"objects": ["toolhead"]}})}[req.url.path]
@@ -413,14 +426,14 @@ def test_capture_runs_the_new_rules_and_stays_within_the_budget():
     r = _post(c)
     assert r.status_code == 200, r.text
     j = r.json()
-    assert [a["tag"] for a in j["audit"]["http"]] == ["server.info", "printer.info", "printer.objects.list", "server.files.directory", "server.history.totals"]
-    assert j["audit"]["read_operations"] == 6 and j["audit"]["non_read_operations"] == 0 and j["budget"] == {"max_get": 11, "max_ws_sent": 1}
+    assert [a["tag"] for a in j["audit"]["http"]] == ["server.info", "printer.info", "printer.objects.list", "server.files.directory", "server.history.totals", "server.history.list", "server.gcode_store"]
+    assert j["audit"]["read_operations"] == 8 and j["audit"]["non_read_operations"] == 0 and j["budget"] == {"max_get": 13, "max_ws_sent": 1}
     (sent,) = c.conns[0].sent
     assert set(json.loads(sent)["params"]["objects"]) == set(ALLOWED_SUBSCRIBE_OBJECTS)
     rules = {f["rule_id"] for f in j["findings"]}
     assert {"U1-S17-OFFSET-Y-SPREAD", "U1-S18-SENSOR-IMPLAUSIBLE", "U1-S21-CLOCK-RESET", "U1-S22-LOG-PARTITION", "U1-S24-BED-MESH-STATS"} <= rules
     conn = j["connectivity"]
-    assert conn["ws_drops"] == 0 and conn["ws_reconnects"] == 0 and conn["ip_changed"] is None and len(conn["requests"]) == 5
+    assert conn["ws_drops"] == 0 and conn["ws_reconnects"] == 0 and conn["ip_changed"] is None and len(conn["requests"]) == live.BASE_GET
     assert all(isinstance(x["ms"], float) for x in conn["requests"]) and conn["max_ms"] >= conn["median_ms"]
     assert "connectivity_check" in [o["event_type"] for o in j["observations"]]
     assert HOST not in r.text and "secret" not in r.text
@@ -530,7 +543,7 @@ def test_history_totals_failure_keeps_the_capture_and_says_not_observable(status
     j = r.json()
     assert j["maintenance_inputs"]["history_totals"] is None and j["maintenance_inputs"]["history_status"] == status
     assert "history_totals" not in [o["event_type"] for o in j["observations"]]
-    assert [a["tag"] for a in j["audit"]["http"]][-1] == "server.history.totals" and len(j["audit"]["http"]) == live.BASE_GET
+    assert "server.history.totals" in [a["tag"] for a in j["audit"]["http"]] and len(j["audit"]["http"]) == live.BASE_GET
 
 
 def test_switch_count_is_absent_when_the_firmware_reports_none():
@@ -543,3 +556,14 @@ def test_live_facts_emits_history_totals_before_the_coverage_record():
     types = [o["event_type"] for o in live_facts(_frames(), start=1, totals=tot)]
     assert types[-2:] == ["history_totals", "live_coverage"]
     assert [o["event_type"] for o in live_facts([], start=1, totals=tot)] == ["history_totals"]
+
+
+def test_live_capture_emits_job_history_and_console_errors_without_names():
+    j = _post(_client()).json()
+    (jh,) = [o for o in j["observations"] if o["event_type"] == "job_history"]
+    (ce,) = [o for o in j["observations"] if o["event_type"] == "console_errors"]
+    assert jh["value"]["by_status"] == {"interrupted": 1} and jh["source_ref"] == "server.history.list"
+    assert ce["value"] == {"read": 2, "lines": ["!! Lost communication with MCU 'e0'"]}
+    assert "secret" not in json.dumps(j["observations"])
+    assert [a["tag"] for a in j["audit"]["http"]][-2:] == ["server.history.list", "server.gcode_store"] and len(j["audit"]["http"]) == live.BASE_GET
+    assert all(not v for v in [validate_observation(o) for o in (jh, ce)])

@@ -1,9 +1,10 @@
 """Owner-triggered live capture from the UI (BACKLOG #3, #8, #57, #59, #65). Read-only, bounded, on explicit consent.
 
-Sends 5 GET requests (/server/info, /printer/info, /printer/objects/list, /server/files/directory?path=logs,
-/server/history/totals) and one WebSocket `printer.objects.subscribe` message to one RFC1918 address on port 7125,
+Sends 7 GET requests (/server/info, /printer/info, /printer/objects/list, /server/files/directory?path=logs,
+/server/history/totals, /server/history/list?limit=20&order=desc, /server/gcode_store?count=100) and one WebSocket
+`printer.objects.subscribe` message to one RFC1918 address on port 7125,
 then listens for a few seconds. If the stream drops early, it probes with up to PROBES x 2 = 6 more read-only status
-GET (/server/info, /printer/info): MAX_GET = 11 GET and MAX_WS_SENT = 1 WebSocket message at most, never more (the consent text in the
+GET (/server/info, /printer/info): MAX_GET = 13 GET and MAX_WS_SENT = 1 WebSocket message at most, never more (the consent text in the
 UI states these numbers and a test keeps them equal). Nothing else can be sent: the only senders are the allowlisted
 methods of `app.transport`. The stream is never reopened (0 reconnects by design). The WebSocket client sends no
 keepalive pings; it only answers the peer at protocol level (pong to a ping, the closing handshake). The result keeps
@@ -15,6 +16,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 import time
 from collections.abc import Callable
 from datetime import UTC, datetime
@@ -31,8 +33,8 @@ MAX_SECONDS = 60
 MAX_FRAMES = 5000
 PROBES = 3
 PROBE_GAP_S = 3.0
-BASE_GET = 5  # server.info, printer.info, printer.objects.list, server.files.directory (logs disk usage), server.history.totals
-MAX_GET = BASE_GET + PROBES * 2  # 11: the consent text must state this maximum (tests/test_live_rules.py)
+BASE_GET = 7  # server.info, printer.info, printer.objects.list, server.files.directory (logs disk usage), server.history.totals, server.history.list, server.gcode_store
+MAX_GET = BASE_GET + PROBES * 2  # 13: the consent text must state this maximum (tests/test_live_rules.py)
 # The only job-history fields kept (BACKLOG #65); everything else in the reply (longest_job, auxiliary_totals...) is dropped unread.
 TOTALS_FIELDS = ("total_jobs", "total_print_time", "total_filament_used", "total_time")
 MAX_WS_SENT = 1
@@ -85,6 +87,60 @@ def _totals(doc: dict[str, Any], t: str) -> dict[str, Any] | None:
     return {**vals, "t": t}
 
 
+_JOB_STATUS = re.compile(r"^[a-z_]{1,32}$")
+_ERRORISH = re.compile(r"^!!|\b(?:error|shutdown|lost communication|timeout|timer too close|mcu|overheat|runaway|stall|fault)\b", re.I)
+
+
+def _num_ok(v: Any) -> bool:
+    return isinstance(v, int | float) and not isinstance(v, bool) and math.isfinite(v) and v >= 0
+
+
+def _jobs(doc: dict[str, Any], t: str) -> dict[str, Any] | None:
+    """Keep, per recent job, only its status and numbers. File name, user, uuid, thumbnails and slicer settings are
+    dropped unread. A status other than `completed` is the useful signal (cancelled, interrupted, error, klippy_shutdown).
+    None when the reply has no job list at all."""
+    jobs = _result(doc).get("jobs")
+    if not isinstance(jobs, list):
+        return None
+    kept: list[dict[str, Any]] = []
+    for j in jobs[:20]:
+        if not isinstance(j, dict) or not isinstance(j.get("status"), str) or not _JOB_STATUS.match(j["status"]):
+            continue
+        meta = j.get("metadata") if isinstance(j.get("metadata"), dict) else {}
+        row: dict[str, Any] = {"status": j["status"]}
+        for k, src in (("start", "start_time"), ("end", "end_time")):
+            v = j.get(src)
+            if _num_ok(v):
+                row[k] = datetime.fromtimestamp(v, UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+        for k, src in (("print_s", "print_duration"), ("total_s", "total_duration"), ("filament_mm", "filament_used")):
+            v = j.get(src)
+            if _num_ok(v):
+                row[k] = round(float(v), 1)
+        if _num_ok(meta.get("layer_count")):
+            row["layers"] = int(meta["layer_count"])
+        for k in ("slicer", "slicer_version", "filament_type"):
+            v = meta.get(k)
+            if isinstance(v, str) and re.fullmatch(r"[A-Za-z0-9 ._;+-]{1,64}", v):
+                row[k] = v
+        kept.append(row)
+    by_status: dict[str, int] = {}
+    for r in kept:
+        by_status[r["status"]] = by_status.get(r["status"], 0) + 1
+    return {"jobs": kept, "by_status": dict(sorted(by_status.items())), "t": t}
+
+
+def _console(doc: dict[str, Any], t: str) -> dict[str, Any] | None:
+    """Keep only error-like console lines (at most 20), scrubbed of paths, addresses and MACs and cut to 200 characters,
+    plus the number of lines read. Ordinary `//` responses are counted, never kept. None when the reply has no store."""
+    from .logimport import scrub  # same scrubber as the log import: paths, IPv4, MAC
+    store = _result(doc).get("gcode_store")
+    if not isinstance(store, list):
+        return None
+    lines = [m.get("message") for m in store if isinstance(m, dict) and isinstance(m.get("message"), str)]
+    kept = [scrub(s.strip()) for s in lines if _ERRORISH.search(s)][-20:]
+    return {"read": len(lines), "lines": kept, "t": t}
+
+
 def _switch_counts(observations: list[dict[str, Any]]) -> dict[str, Any] | None:
     """Last `switch_count` per extruder object, as the firmware reports it (read by the same subscribe as rule S23).
     What the firmware counts there is not documented officially; the numbers are passed on as they are, with their sum."""
@@ -134,6 +190,14 @@ def run_live_capture(host: str, *, seconds: int, http_transport: httpx.BaseTrans
             totals = _totals(tr.get_history_totals(), _now())
         except (TransportError, httpx.HTTPError, OSError):
             totals = None
+        try:  # optional: recent jobs and their end status; any failure only leaves them out
+            jobs = _jobs(tr.get_history_jobs(), _now())
+        except (TransportError, httpx.HTTPError, OSError):
+            jobs = None
+        try:  # optional: recent console errors; any failure only leaves them out
+            console = _console(tr.get_gcode_store(), _now())
+        except (TransportError, httpx.HTTPError, OSError):
+            console = None
         http_audit = _audit_rows(tr)
     finally:
         tr.close()
@@ -166,7 +230,7 @@ def run_live_capture(host: str, *, seconds: int, http_transport: httpx.BaseTrans
         ws.close()
 
     observations = frames_to_observations(lines)
-    observations += live_facts(lines, start=len(observations) + 1, disk=disk, totals=totals)
+    observations += live_facts(lines, start=len(observations) + 1, disk=disk, totals=totals, jobs=jobs, console=console)
     if gcode_nozzle_mm:
         at = observations[-1]["capture_utc"] if observations else disk_t
         observations.append(_obs(len(observations) + 1, at, "gcode_nozzle_diameter", {"mm": sorted({round(float(x), 3) for x in gcode_nozzle_mm})},

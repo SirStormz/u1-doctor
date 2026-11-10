@@ -26,6 +26,11 @@ ALLOWED_HTTP = MappingProxyType(
         # Job-history totals for the maintenance reminders (BACKLOG #65, ADR-0002 amendment 2026-11-08 b). Fixed path, no
         # query; only total_print_time, total_jobs, total_filament_used and total_time are kept (app.live._totals).
         ("GET", "/server/history/totals"): "server.history.totals",
+        # Recent jobs and recent console errors (ADR-0002 amendment 2026-11-10). Both take one exact query below. File names,
+        # user names and thumbnails of the job list are dropped unread (app.live._jobs); the console store is filtered
+        # to error-like lines and scrubbed (app.live._console).
+        ("GET", "/server/history/list"): "server.history.list",
+        ("GET", "/server/gcode_store"): "server.gcode_store",
     }
 )
 
@@ -35,6 +40,8 @@ ALLOWED_HTTP = MappingProxyType(
 ALLOWED_HTTP_QUERY = MappingProxyType(
     {
         ("GET", "/server/files/directory"): MappingProxyType({"path": frozenset({"logs"})}),
+        ("GET", "/server/history/list"): MappingProxyType({"limit": frozenset({"20"}), "order": frozenset({"desc"})}),
+        ("GET", "/server/gcode_store"): MappingProxyType({"count": frozenset({"100"})}),
     }
 )
 
@@ -47,7 +54,7 @@ ALLOWED_SUBSCRIBE_OBJECTS = frozenset({
     "heater_fan e0_nozzle_fan", "heater_fan e1_nozzle_fan", "heater_fan e2_nozzle_fan", "heater_fan e3_nozzle_fan",
     "temperature_sensor cavity", "bed_mesh",
 })
-_QUERY_TEXT = re.compile(r"^[a-z_]{1,32}$")
+_QUERY_TEXT = re.compile(r"^[a-z0-9_]{1,32}$")
 
 # JSON-RPC methods allowed on /websocket. server.info / printer.info over WS
 # are "option after audit" -> NOT allowed in G0.
@@ -61,7 +68,56 @@ class PolicyViolation(Exception):
     """Raised BEFORE any I/O when a request is outside the allowlist."""
 
 
-def check_http_request(method: str, target: str, body: bytes | None = None, query: dict[str, str] | None = None) -> str:
+# ---- Support-pack scope (ADR-0002 amendment 2026-11-10 b) -----------------------------------------------------------
+# Only a transport built with support=True may use these. The live capture never does, so its budget is unchanged.
+# Every one is a GET. Downloads are limited to named log and config files (no config that can hold a token).
+SUPPORT_HTTP = MappingProxyType(
+    {
+        ("GET", "/machine/system_info"): "machine.system_info",
+        ("GET", "/machine/proc_stats"): "machine.proc_stats",
+        ("GET", "/machine/peripherals/usb"): "machine.peripherals.usb",
+        ("GET", "/server/temperature_store"): "server.temperature_store",
+        ("GET", "/server/files/list"): "server.files.list",
+        ("GET", "/printer/objects/query"): "printer.objects.query",
+    }
+)
+SUPPORT_QUERY = MappingProxyType({("GET", "/server/files/list"): MappingProxyType({"root": frozenset({"logs", "config"})})})
+# Objects the support pack may query once (state only). `configfile` (whole config) and G-code macros stay out.
+SUPPORT_OBJECTS = frozenset({
+    "mcu", "mcu e0", "mcu e1", "mcu e2", "mcu e3", "system_stats", "exception_manager", "machine_state_manager", "print_stats",
+    "filament_detect", "filament_feed left", "filament_feed right", "defect_detection", "purifier", "power_loss_check",
+    "extruder_offset_calibration", "timelapse", "webhooks", "print_task_config", "resonance_tester", "motion_report", "idle_timeout",
+})
+# Downloadable files: exact relative names or a fixed numeric rotation suffix, nothing else.
+_DOWNLOAD_RE = re.compile(r"^/server/files/(logs|config)/([A-Za-z0-9_./-]{1,96})$")
+_LOG_FILE = re.compile(
+    r"^(?:klippylogs/klippy\.log(?:\.\d{1,2})?|moonraker\.log|unisrv(?:\.\d)?\.log|syslog(?:\.\d)?|gui\.log(?:\.\d)?|mosquitto\.log|flow_calculator\.log)$")
+_CONFIG_FILE = re.compile(
+    r"^(?:printer\.cfg|xyz_offset_calibration\.cfg"
+    r"|snapmaker/(?:input_shaper|bed_mesh_default|flow_calibrator|defect_detection|extruder_base_position|filament_parameters|print_stats"
+    r"|left_filament_feed|right_filament_feed)\.json"
+    r"|persistent/(?:extruder[0-3]?_nozzle_config|extruder_switch_recorder)\.json)$")
+MAX_SUPPORT_OBJECTS = len(SUPPORT_OBJECTS)
+
+
+def is_support_download(target: str) -> bool:
+    """True for a GET path that names one allowed log or config file (see the regexes above)."""
+    m = _DOWNLOAD_RE.match(target)
+    if not m or ".." in target:
+        return False
+    root, name = m.groups()
+    return bool((_LOG_FILE if root == "logs" else _CONFIG_FILE).match(name))
+
+
+def _check_support_query_objects(query: dict[str, str] | None) -> None:
+    if not isinstance(query, dict) or not query or len(query) > MAX_SUPPORT_OBJECTS:
+        raise PolicyViolation("objects query must name allowed objects")
+    for k, v in query.items():
+        if v != "" or k not in SUPPORT_OBJECTS:
+            raise PolicyViolation(f"object {k!r} not in the support allowlist")
+
+
+def check_http_request(method: str, target: str, body: bytes | None = None, query: dict[str, str] | None = None, *, support: bool = False) -> str:
     """Return the audit tag if (method, target, body, query) is allowed, else raise.
 
     `target` must be the bare path: no scheme, host, query, fragment, dot
@@ -74,17 +130,29 @@ def check_http_request(method: str, target: str, body: bytes | None = None, quer
         raise PolicyViolation("path contains control/space/non-ASCII characters")
     if any(c in target for c in ("?", "#", "%", "\\", ";", "@")) or "//" in target:
         raise PolicyViolation("path contains forbidden delimiter")
+    if body:  # every allowed request is a GET
+        raise PolicyViolation("GET must not carry a body")
+    if support and method == "GET":
+        if is_support_download(target):
+            if query:
+                raise PolicyViolation("a file download takes no query")
+            return "server.files.download"
+        if target == "/printer/objects/query":
+            _check_support_query_objects(query)
+            return SUPPORT_HTTP[(method, target)]
+        stag = SUPPORT_HTTP.get((method, target))
+        if stag is not None:
+            _check_query(method, target, query, SUPPORT_QUERY)
+            return stag
     tag = ALLOWED_HTTP.get((method, target))
     if tag is None:
         raise PolicyViolation(f"{method} {target!r} not in allowlist")
-    if body:  # every allowed request is a GET
-        raise PolicyViolation("GET must not carry a body")
     _check_query(method, target, query)
     return tag
 
 
-def _check_query(method: str, target: str, query: dict[str, str] | None) -> None:
-    spec = ALLOWED_HTTP_QUERY.get((method, target))
+def _check_query(method: str, target: str, query: dict[str, str] | None, table: Any = None) -> None:
+    spec = (table if table is not None else ALLOWED_HTTP_QUERY).get((method, target))
     if spec is None:
         if query:
             raise PolicyViolation(f"{method} {target!r} takes no query")

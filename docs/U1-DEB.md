@@ -37,6 +37,8 @@ Canonical JSON everywhere (sorted keys, no spaces, UTF-8). `generated_at` is met
 | `bed_mesh_points` | `{rows, cols, points, min_mm, max_mm, range_mm, mean_mm, stdev_mm}` or `{points: 0}` | S24 |
 | `live_coverage` | `{absent: [source keys not reported in this capture]}`: makes S17-S24 say "not observable" instead of staying silent | S17-S24 |
 | `history_totals` | `{total_jobs, total_print_time (s), total_filament_used (mm), total_time (s)}` as Moonraker's job history reports them (`source_ref` `server.history.totals`); absent when the history component does not answer | none (maintenance reminders, computed locally in the app) |
+| `job_history` | `{jobs: [{status, start, end, print_s, total_s, filament_mm, layers, slicer, slicer_version, filament_type}], by_status}`, last 20 jobs, newest first (`source_ref` `server.history.list`); file name, user, uuid, thumbnails dropped; absent when the history component does not answer | none yet (BACKLOG #70) |
+| `console_errors` | `{read, lines}`: number of console lines read and at most 20 error-like lines, scrubbed of paths, IPv4 and MAC and cut to 200 characters (`source_ref` `server.gcode_store`) | none yet (BACKLOG #70) |
 | `connectivity_check` | `{requests: [{op, ms, status}], ws_drops, ws_reconnects (always 0), ws_frames_received, ip_changed (true, false or null), max_ms, median_ms}` | none (shown in Connect, exported as is) |
 
 Older bundles have none of these: the new rules then produce nothing.

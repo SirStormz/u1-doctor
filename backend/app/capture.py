@@ -156,7 +156,8 @@ def _secs(a: str, b: str) -> float:
 
 
 def live_facts(lines: Iterable[str], *, start: int, disk: dict[str, Any] | None = None,
-               totals: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+               totals: dict[str, Any] | None = None, jobs: dict[str, Any] | None = None,
+               console: dict[str, Any] | None = None) -> list[dict[str, Any]]:
     """Window summaries for the live rules S17-S24. Pure and deterministic: same frames in, same facts out.
 
     One observation per fact, entity `printer`, values keyed by the Klipper object name (never a toolhead number: the
@@ -268,6 +269,10 @@ def live_facts(lines: Iterable[str], *, start: int, disk: dict[str, Any] | None 
     if totals:
         emit(t_end or totals["t"], "history_totals", {k: totals[k] for k in ("total_jobs", "total_print_time", "total_filament_used", "total_time")},
              "server.history.totals")
+    if jobs:  # no rule reads these yet: they are evidence for the owner and for support (BACKLOG #70)
+        emit(t_end or jobs["t"], "job_history", {"jobs": jobs["jobs"], "by_status": jobs["by_status"]}, "server.history.list")
+    if console:
+        emit(t_end or console["t"], "console_errors", {"read": console["read"], "lines": console["lines"]}, "server.gcode_store")
     if t_end is not None:
         emit(t_end, "live_coverage", {"absent": sorted(k for k in COVERAGE_KEYS if k not in present)}, "transport/coverage")
     return out

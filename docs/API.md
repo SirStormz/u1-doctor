@@ -4,9 +4,9 @@ U1 Doctor's window and browser tab talk to a small local HTTP API. It is **not**
 
 Version of this page: 0.3.0-g1. Interactive docs (`/docs`, `/redoc`, `/openapi.json`) are switched off on purpose.
 
-## The one route that can reach a printer
+## The two routes that can reach a printer
 
-Only **`POST /api/v1/live/capture`** can open a connection to a printer. It needs `consent: true` in the body, takes one private IPv4 address, and sends at most **5 GET and 1 WebSocket message (11 GET if the live stream drops)**, all read-only and on a fixed allowlist (see [`SECURITY.md`](../SECURITY.md) and [`adr/0002-moonraker-readonly.md`](adr/0002-moonraker-readonly.md)). Every other route works on files, data you send it, the bundled knowledge files or the local history database.
+**`POST /api/v1/support/pack`** builds the support pack (see below). Only **`POST /api/v1/live/capture`** and that route can open a connection to a printer. It needs `consent: true` in the body, takes one private IPv4 address, and sends at most **7 GET and 1 WebSocket message (13 GET if the live stream drops)**, all read-only and on a fixed allowlist (see [`SECURITY.md`](../SECURITY.md) and [`adr/0002-moonraker-readonly.md`](adr/0002-moonraker-readonly.md)). Every other route works on files, data you send it, the bundled knowledge files or the local history database.
 
 ## Rules every request must follow
 
@@ -39,6 +39,8 @@ Only **`POST /api/v1/live/capture`** can open a connection to a printer. It need
 |---|---|---|---|
 | POST | `/api/v1/errors/interpret` | `{code, firmware?}` | Decodes an error code (or a message without a code), adds the community-reported causes, near-match suggestions for a mistyped code and firmware notes. |
 | POST | `/api/v1/support/checklist` | `{code, firmware?}` | The "what support will ask" checklist for a code (`422 MALFORMED_CODE` if the code is malformed). |
+| POST | `/api/v1/support/pack` | `{host, consent: true, code?, notes?, include_serial?, redact_network?, include_job_names?}` | Builds ONE AES-256 encrypted zip for Snapmaker support from read-only GET (state, versions, recent jobs, temperatures, plain logs, calibration files, checklist). Returns the summary and the one-time `password` (never stored); the zip is kept in memory, latest only. Not anonymous: it can hold the serial number and raw logs (IP and MAC addresses are removed unless `redact_network` is false). One capture or pack at a time (`409 LIVE_BUSY`). |
+| GET | `/api/v1/support/pack/{name}` | - | Downloads the latest support pack zip (`404` if none or another name). |
 | POST | `/api/v1/symptoms/evaluate` | `{symptom, answers, session?}` | Evaluates a print-quality symptom from your answers; `session` optionally compares temperatures of one saved history session. |
 | POST | `/api/v1/preflight/gcode` | raw file bytes, `?name=` | Static pre-flight (20 checks) of a sliced file, read as text; the file name is never echoed back. |
 | POST | `/api/v1/preflight/3mf` | raw 3MF bytes, `?name=` | The same checks on every plate of the G-code embedded in a 3MF. Only `Metadata/*.gcode` and the project settings are read; strict zip limits. |

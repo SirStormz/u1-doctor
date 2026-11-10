@@ -3,7 +3,7 @@ name = "u1-doctor-backend"
 version = "0.3.0"
 description = "U1 Doctor - read-only diagnostic forensics engine (G0 skeleton)"
 requires-python = ">=3.12"
-dependencies = ["fastapi>=0.115,<1", "uvicorn>=0.32,<1", "httpx>=0.28,<1", "pydantic>=2.9,<3", "websockets>=15,<16"]
+dependencies = ["fastapi>=0.115,<1", "uvicorn>=0.32,<1", "httpx>=0.28,<1", "pydantic>=2.9,<3", "websockets>=15,<16", "pyzipper>=0.3.6,<0.4"]
 
 [project.scripts]
 u1deb-validate = "app.deb_cli:main"

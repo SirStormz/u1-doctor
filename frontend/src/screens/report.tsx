@@ -12,6 +12,7 @@ import { errText } from "../lib/errors";
 import { tok, tx } from "../lib/dyn";
 import { ImportPanel } from "./deb";
 import { declaredCode, TicketPanel } from "./ticket";
+import { SupportPackPanel } from "../components/support-pack";
 
 interface FileRow { name: string; sha?: string; bytes?: number }
 
@@ -74,7 +75,7 @@ export function Report() {
 
   if (inc.status !== "ready") return <StateBlock kind={inc.status === "error" ? "error" : "loading"} title={inc.status === "error" ? t.error : t.loading} body={inc.status === "error" ? errText(t, inc.error) : undefined} />;
   const appVersion = inc.health?.app_version ?? null;
-  if (!sel) return <><PageTitle title={t.nav.report} sub={t.reportSub} icon={<FileText size={26} />} /><NoData /><div className="mt-4"><TicketPanel appVersion={appVersion} source={{ kind: "none" }} obs={[]} findings={[]} initialCode="" /></div><div className="mt-4"><ImportPanel /></div></>;
+  if (!sel) return <><PageTitle title={t.nav.report} sub={t.reportSub} icon={<FileText size={26} />} /><NoData /><div className="mt-4"><TicketPanel appVersion={appVersion} source={{ kind: "none" }} obs={[]} findings={[]} initialCode="" /></div><div className="mt-4"><SupportPackPanel /></div><div className="mt-4"><ImportPanel /></div></>;
   const clean = built ? built.scan.every(([, n]) => n === 0) : false;
   const title = inc.decoding?.decoding.entry?.title ? tx(lang, inc.decoding.decoding.entry.title) : t.nav.report;
 
@@ -173,6 +174,7 @@ export function Report() {
         <TicketPanel appVersion={appVersion} obs={shown?.obs ?? []} findings={shown?.findings ?? []} initialCode={sel === "demo" ? (inc.code ?? "") : declaredCode(shown?.obs ?? [])}
           source={sel === "demo" ? { kind: "demo" } : { kind: "saved", label: session?.label ?? sel, statusMix: session?.status_mix ?? [] }} />
       </div>
+      <div className="mt-4"><SupportPackPanel initialCode={sel === "demo" ? (inc.code ?? "") : declaredCode(shown?.obs ?? [])} /></div>
       <div className="mt-4"><ImportPanel /></div>
     </>
   );
