@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>V · Verdict, tête 3</title>
+<title>Visière · Verdict, tête 3</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -12,7 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400..700&amp;family=Saira:wdth,wght@75..125,300..700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:#08070A}
-.app{--bg:#08070A;--panel:#100C0C;--line:rgba(255,214,154,.13);--line2:rgba(255,214,154,.28);--ink:#F6F1EA;--ink2:rgba(246,241,234,.74);--ink3:rgba(246,241,234,.56);--gold:#FFB547;--gold2:#FFD99A;--red:#FF3B2F;--redt:#FF7266;position:relative;min-height:1100px;background:var(--bg);color:var(--ink);font:400 16px/1.5 'Saira',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+.app{--bg:#08070A;--panel:#100C0C;--line:rgba(255,214,154,.13);--line2:rgba(255,214,154,.28);--ink:#F6F1EA;--ink2:rgba(246,241,234,.74);--ink3:rgba(246,241,234,.56);--gold:#FFB547;--gold2:#FFD99A;--red:#FF3B2F;--redt:#FF7266;position:relative;min-height:1100px;background:var(--bg);color:var(--ink);font:400 16px/1.5 'Saira',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:clip}
 .app *{box-sizing:border-box}
 .app a{color:inherit}
 .h{font-family:'Oxanium','Saira',sans-serif;font-weight:600;letter-spacing:-.01em}
@@ -44,7 +44,7 @@ body{margin:0;background:#08070A}
 /* boutons à coins coupés */
 .btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:48px;padding:0 24px;border:0;clip-path:polygon(11px 0,100% 0,100% calc(100% - 11px),calc(100% - 11px) 100%,0 100%,0 11px);font:600 14.5px/1 'Oxanium',sans-serif;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;white-space:nowrap;cursor:pointer;transition:transform .2s cubic-bezier(.34,1.45,.64,1),filter .2s,background .2s}
 .btn:active{transform:translateY(1px) scale(.98)}
-.btn-a{background:linear-gradient(180deg,#FFC874,#FFAB30);color:#1E1100}
+.btn-a,.app a.btn-a{background:linear-gradient(180deg,#FFC874,#FFAB30);color:#1E1100}
 .btn-a:hover{filter:brightness(1.07)}
 .btn-g{background:rgba(255,214,154,.12);color:var(--gold2)}
 .btn-g:hover{background:rgba(255,214,154,.2)}
@@ -97,12 +97,22 @@ body{margin:0;background:#08070A}
 @media (prefers-reduced-transparency:reduce){.gl,.lq{background:#140F0E;-webkit-backdrop-filter:none;backdrop-filter:none}}
 .nav .seg:has(>:nth-child(1):hover) .thumb{left:3px!important}
 .nav .seg:has(>:nth-child(2):hover) .thumb{left:50%!important}
+/* infobulles : hors du flux tant qu'elles sont fermées (sinon elles élargissent la page à droite) */
+.tip::after{display:none}
+.tip:hover::after,.tip:focus-visible::after,.tip.show::after{display:block;animation:tipin .16s ease-out}
+@keyframes tipin{from{opacity:0}}
+.tip.tl::after{left:auto;right:0;transform:none}
+/* héros composés à 1440 px : réduits par paliers sous cette largeur (fenêtre de bureau plus étroite) */
+@media (max-width:1439px){.h1440{zoom:.93}}
+@media (max-width:1339px){.h1440{zoom:.86}}
+@media (max-width:1239px){.h1440{zoom:.78}}
+@media (max-width:1129px){.h1440{zoom:.7}}
 </style>
 
 <style>
 .bg{position:absolute;inset:0;background-repeat:no-repeat;transition:background-size .9s cubic-bezier(.65,0,.35,1),background-position .9s cubic-bezier(.65,0,.35,1),opacity .6s ease}
-.bg-t{background-image:url('/_blob/dba15c43f5cdec9baadc08c3517ed9f3')}
-.bg-e{background-image:url('/_blob/beed230dcb1bfaeb94c09ec39ad41847');background-size:2000px 1333px;background-position:-28px -162px}
+.bg-t{background-image:url('/_blob/local-vis-tetes2')}
+.bg-e{background-image:url('/_blob/local-vis-ecran2');background-size:1520px 1013px;background-position:-1px -61px}
 .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,7,10,.86) 0%,rgba(8,7,10,.4) 42%,rgba(8,7,10,0) 62%),linear-gradient(0deg,#08070A 0%,rgba(8,7,10,0) 22%)}
 .scan{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .scan::before{content:"";position:absolute;left:0;right:0;top:0;height:120px;background:linear-gradient(180deg,rgba(255,181,71,0),rgba(255,181,71,.10) 85%,rgba(255,217,154,.85) 100%);transform:translateY(-130px);animation:var(--swn) 1.1s cubic-bezier(.65,0,.35,1) both}
@@ -134,7 +144,7 @@ body{margin:0;background:#08070A}
 <button type="button" class="ibtn" aria-label="Réglages"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"></path><circle cx="15" cy="6" r="2"></circle><circle cx="9" cy="12" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg></button>
 </header>
 
-<section style="position:relative;height:900px">
+<section class="h1440" style="position:relative;height:900px;max-width:1440px;margin:0 auto">
 <div class="bg bg-t" role="img" aria-label="{{alt}}" style="background-size:{{tSize}};background-position:{{tPos}};opacity:{{tOp}}"></div>
 <div class="bg bg-e" aria-hidden="true" style="opacity:{{eOp}}"></div>
 <div class="shade" aria-hidden="true"></div>
@@ -203,9 +213,9 @@ var self = this;
 var s = this.state;
 var i = s.step;
 var defs = [
-{ title: "Repérez la tête 3", text: "C'est la troisième en partant de la gauche, à l'arrière de la machine. Le réticule la montre sur la photo.", tSize: "1440px 960px", tPos: "0px -60px", px: 702, py: 690, k: 0.6, caption: "Tête 3, vue de l'avant", alt: "Les quatre têtes à l'arrière de la U1, la troisième dans le réticule" },
-{ title: "Vérifiez l'engrenage", text: "Regardez l'engrenage qui pousse le filament dans la tête 3 et retirez les débris ou le filament cassé.", tSize: "2600px 1733px", tPos: "-210px -860px", px: 1016, py: 470, k: 1.3, caption: "Gros plan, tête 3", alt: "Gros plan sur la tête 3" },
-{ title: "Relancez l'impression", text: "Sur l'écran tactile de la U1, reprenez l'impression mise en pause.", tSize: "2600px 1733px", tPos: "-210px -860px", px: 900, py: 360, k: 1.15, caption: "Écran tactile", alt: "L'écran tactile de la U1, dans le réticule" }
+{ title: "Repérez la tête 3", text: "C'est la troisième en partant de la gauche, à l'arrière de la machine. Le réticule la montre sur la photo.", tSize: "1700px 1133px", tPos: "-27px -38px", px: 950, py: 450, k: 0.6, caption: "Tête 3, vue de l'avant", alt: "Les quatre têtes à l'arrière de la U1, la troisième dans le réticule" },
+{ title: "Nettoyez l'engrenage", text: "Regardez l'engrenage qui pousse le filament dans la tête 3 et retirez les débris ou le filament cassé.", tSize: "2600px 1733px", tPos: "-518px 0px", px: 985, py: 252, k: 1.3, caption: "Gros plan, tête 3", alt: "Gros plan sur la tête 3" },
+{ title: "Relancez l'impression", text: "Sur l'écran tactile de la U1, reprenez l'impression mise en pause.", tSize: "2600px 1733px", tPos: "-518px 0px", px: 1150, py: 450, k: 1.15, caption: "Écran tactile", alt: "L'écran tactile de la U1, dans le réticule" }
 ];
 var d = defs[i];
 var on = s.done[i];

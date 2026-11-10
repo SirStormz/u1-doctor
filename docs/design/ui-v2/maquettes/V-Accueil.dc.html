@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>V · Accueil, mode Simple</title>
+<title>Visière · Accueil, mode Simple</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -12,7 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400..700&amp;family=Saira:wdth,wght@75..125,300..700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:#08070A}
-.app{--bg:#08070A;--panel:#100C0C;--line:rgba(255,214,154,.13);--line2:rgba(255,214,154,.28);--ink:#F6F1EA;--ink2:rgba(246,241,234,.74);--ink3:rgba(246,241,234,.56);--gold:#FFB547;--gold2:#FFD99A;--red:#FF3B2F;--redt:#FF7266;position:relative;min-height:1100px;background:var(--bg);color:var(--ink);font:400 16px/1.5 'Saira',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+.app{--bg:#08070A;--panel:#100C0C;--line:rgba(255,214,154,.13);--line2:rgba(255,214,154,.28);--ink:#F6F1EA;--ink2:rgba(246,241,234,.74);--ink3:rgba(246,241,234,.56);--gold:#FFB547;--gold2:#FFD99A;--red:#FF3B2F;--redt:#FF7266;position:relative;min-height:1100px;background:var(--bg);color:var(--ink);font:400 16px/1.5 'Saira',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:clip}
 .app *{box-sizing:border-box}
 .app a{color:inherit}
 .h{font-family:'Oxanium','Saira',sans-serif;font-weight:600;letter-spacing:-.01em}
@@ -44,7 +44,7 @@ body{margin:0;background:#08070A}
 /* boutons à coins coupés */
 .btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:48px;padding:0 24px;border:0;clip-path:polygon(11px 0,100% 0,100% calc(100% - 11px),calc(100% - 11px) 100%,0 100%,0 11px);font:600 14.5px/1 'Oxanium',sans-serif;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;white-space:nowrap;cursor:pointer;transition:transform .2s cubic-bezier(.34,1.45,.64,1),filter .2s,background .2s}
 .btn:active{transform:translateY(1px) scale(.98)}
-.btn-a{background:linear-gradient(180deg,#FFC874,#FFAB30);color:#1E1100}
+.btn-a,.app a.btn-a{background:linear-gradient(180deg,#FFC874,#FFAB30);color:#1E1100}
 .btn-a:hover{filter:brightness(1.07)}
 .btn-g{background:rgba(255,214,154,.12);color:var(--gold2)}
 .btn-g:hover{background:rgba(255,214,154,.2)}
@@ -97,18 +97,28 @@ body{margin:0;background:#08070A}
 @media (prefers-reduced-transparency:reduce){.gl,.lq{background:#140F0E;-webkit-backdrop-filter:none;backdrop-filter:none}}
 .nav .seg:has(>:nth-child(1):hover) .thumb{left:3px!important}
 .nav .seg:has(>:nth-child(2):hover) .thumb{left:50%!important}
+/* infobulles : hors du flux tant qu'elles sont fermées (sinon elles élargissent la page à droite) */
+.tip::after{display:none}
+.tip:hover::after,.tip:focus-visible::after,.tip.show::after{display:block;animation:tipin .16s ease-out}
+@keyframes tipin{from{opacity:0}}
+.tip.tl::after{left:auto;right:0;transform:none}
+/* héros composés à 1440 px : réduits par paliers sous cette largeur (fenêtre de bureau plus étroite) */
+@media (max-width:1439px){.h1440{zoom:.93}}
+@media (max-width:1339px){.h1440{zoom:.86}}
+@media (max-width:1239px){.h1440{zoom:.78}}
+@media (max-width:1129px){.h1440{zoom:.7}}
 </style>
 
 <style>
 .layer{position:absolute;inset:0;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
 .scr{pointer-events:none}.scr>*{pointer-events:auto}
-.u1{position:absolute;left:636px;top:70px;width:724px;height:860px;overflow:hidden;-webkit-mask-image:radial-gradient(ellipse 64% 60% at 54% 52%,#000 62%,transparent 100%);mask-image:radial-gradient(ellipse 64% 60% at 54% 52%,#000 62%,transparent 100%)}
+.u1{position:absolute;left:636px;top:70px;width:724px;height:860px;overflow:hidden;-webkit-mask-image:linear-gradient(to bottom,#000 82%,transparent 99%),linear-gradient(to right,transparent 0,#000 7%,#000 88%,transparent 99%);-webkit-mask-composite:source-in;mask-image:linear-gradient(to bottom,#000 82%,transparent 99%),linear-gradient(to right,transparent 0,#000 7%,#000 88%,transparent 99%);mask-composite:intersect}
 .u1 img{position:absolute;inset:0;width:100%;height:100%;display:block}
-.holo{position:absolute;inset:0;background-image:url('/_blob/0ebb1648c2bf975cdb7fd1abb760b0d9');background-size:100% 100%;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 38%,#000 62%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 38%,#000 62%,transparent 100%);-webkit-mask-size:100% 230px;mask-size:100% 230px;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:0 -230px;mask-position:0 -230px;animation:band 7s cubic-bezier(.65,0,.35,1) 1.4s infinite alternate both}
+.holo{position:absolute;inset:0;background-image:url('/_blob/local-holo-hero'),linear-gradient(rgba(10,8,7,.62),rgba(10,8,7,.62));background-size:100% 100%;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 38%,#000 62%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 38%,#000 62%,transparent 100%);-webkit-mask-size:100% 230px;mask-size:100% 230px;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:0 -230px;mask-position:0 -230px;animation:band 7s cubic-bezier(.65,0,.35,1) 1.4s infinite alternate both}
 @keyframes band{from{-webkit-mask-position:0 -230px;mask-position:0 -230px}to{-webkit-mask-position:0 860px;mask-position:0 860px}}
 .beam{position:absolute;left:0;right:0;top:0;height:1.5px;background:linear-gradient(90deg,transparent,rgba(255,217,154,.95) 25%,rgba(255,217,154,.95) 75%,transparent);box-shadow:0 0 6px rgba(255,181,71,.7);transform:translateY(-115px);animation:beam 7s cubic-bezier(.65,0,.35,1) 1.4s infinite alternate both}
 @keyframes beam{from{transform:translateY(-115px)}to{transform:translateY(975px)}}
-.vp{position:absolute;z-index:6;left:1150px;top:115px;width:230px;height:230px;border-radius:50%;overflow:hidden;background-color:#0E0B0A;background-image:url('/_blob/dba15c43f5cdec9baadc08c3517ed9f3');background-size:841px 561px;background-position:-269px -312px;box-shadow:inset 0 0 0 1px rgba(255,214,154,.55),0 30px 60px -20px #000}
+.vp{position:absolute;z-index:6;left:1150px;top:115px;width:230px;height:230px;border-radius:50%;overflow:hidden;background-color:#0E0B0A;background-image:url('/_blob/local-vis-tetes2');background-size:460px 307px;background-position:-149px -17px;box-shadow:inset 0 0 0 1px rgba(255,214,154,.55),0 30px 60px -20px #000}
 .vp::after{content:"";position:absolute;inset:0;border-radius:50%;background:repeating-linear-gradient(0deg,rgba(8,7,10,.22) 0 1px,transparent 1px 3px),radial-gradient(circle,transparent 58%,rgba(8,7,10,.55) 100%)}
 .vpx{position:absolute;z-index:7;left:1150px;top:115px;width:230px;height:230px;pointer-events:none}
 .ring{position:absolute;z-index:5;left:1125px;top:90px;width:280px;height:280px;pointer-events:none}
@@ -126,9 +136,9 @@ body{margin:0;background:#08070A}
 .stepc.done{box-shadow:inset 0 0 0 1px rgba(246,241,234,.45)}
 .pic{position:relative;height:220px;background-color:#0E0B0A;background-repeat:no-repeat;overflow:hidden}
 .pic::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(8,7,10,.18) 0 1px,transparent 1px 3px),linear-gradient(0deg,rgba(16,12,12,.9),transparent 45%)}
-.im1{background-image:url('/_blob/dba15c43f5cdec9baadc08c3517ed9f3');background-size:690px 460px;background-position:-109px -235px}
-.im2{background-image:url('/_blob/dba15c43f5cdec9baadc08c3517ed9f3');background-size:1150px 767px;background-position:-320px -420px}
-.im3{background-image:url('/_blob/beed230dcb1bfaeb94c09ec39ad41847');background-size:690px 460px;background-position:-113px -65px}
+.im1{background-image:url('/_blob/local-vis-tetes2');background-size:690px 460px;background-position:-191px -88px}
+.im2{background-image:url('/_blob/local-vis-tetes2');background-size:1150px 767px;background-position:-457px -110px}
+.im3{background-image:url('/_blob/local-vis-ecran2');background-size:560px 373px;background-position:-75px -78px}
 .num{position:absolute;z-index:2;left:16px;bottom:10px;font:600 46px/1 'Oxanium',sans-serif;color:transparent;-webkit-text-stroke:1.2px var(--gold);filter:drop-shadow(0 0 3px rgba(255,181,71,.6))}
 .stamp{position:absolute;z-index:2;right:14px;top:14px;display:flex;align-items:center;gap:6px;height:26px;padding:0 10px;background:var(--ink);color:#120D0C;font:700 12px/1 'Oxanium',sans-serif;letter-spacing:.1em;text-transform:uppercase;clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px)}
 .mini{position:absolute;z-index:2;width:74px;height:74px;margin:-37px 0 0 -37px;pointer-events:none}
@@ -157,7 +167,7 @@ body{margin:0;background:#08070A}
 <button type="button" class="ibtn" aria-label="Réglages"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"></path><circle cx="15" cy="6" r="2"></circle><circle cx="9" cy="12" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg></button>
 </header>
 
-<section style="position:relative;height:1010px" onMouseMove="{{move}}" onMouseLeave="{{leave}}">
+<section class="h1440" style="position:relative;height:1010px;max-width:1440px;margin:0 auto" onMouseMove="{{move}}" onMouseLeave="{{leave}}">
 <span class="corner pwr" aria-hidden="true" style="left:24px;top:96px;border-left-width:1.5px;border-top-width:1.5px;animation-delay:.1s"></span>
 <span class="corner pwr" aria-hidden="true" style="right:24px;top:96px;border-right-width:1.5px;border-top-width:1.5px;animation-delay:.15s"></span>
 <span class="corner pwr" aria-hidden="true" style="left:24px;bottom:18px;border-left-width:1.5px;border-bottom-width:1.5px;animation-delay:.2s"></span>
@@ -165,17 +175,17 @@ body{margin:0;background:#08070A}
 
 <div class="layer" style="transform:{{world}}">
 <div class="u1">
-<img src="/_blob/bba1de9d130c2706bd3d310e199185ed" alt="Photo de la U1 dans l'obscurité, éclairée en or et en rouge, vue de trois quarts">
+<img src="/_blob/local-vis-hero2" alt="La U1 dans l'obscurité, éclairée en or avec un liseré rouge, vue de trois quarts : inscription snapmaker, écran allumé, quatre têtes">
 <div class="holo" aria-hidden="true"></div>
 <div class="beam" aria-hidden="true"></div>
 </div>
-<svg class="ret" width="150" height="150" viewBox="0 0 150 150" aria-hidden="true" style="left:1019px;top:332px"><g class="glow" fill="none" stroke="#FFB547"><circle class="ra" cx="75.0" cy="75.0" r="69.0" stroke-opacity=".55" stroke-width="1.2" stroke-dasharray="2 7"></circle><path d="M144.0 75.0L151.0 75.0 M75.0 144.0L75.0 151.0 M6.0 75.0L-1.0 75.0 M75.0 6.0L75.0 -1.0" stroke-width="1.5" stroke-opacity=".8"></path><circle class="rb" cx="75.0" cy="75.0" r="54.0" stroke-width="1.5" stroke-dasharray="61.1 23.8"></circle><path class="lk" d="M52.5 37.5H37.5V52.5 M97.5 37.5H112.5V52.5 M97.5 112.5H112.5V97.5 M52.5 112.5H37.5V97.5" stroke-width="2.2" stroke-linecap="square"></path><path d="M68.0 75.0H72.5M77.5 75.0H82.0M75.0 68.0V72.5M75.0 77.5V82.0" stroke-width="1.5"></path></g></svg>
-<span class="lead pwr" aria-hidden="true" style="left:1146px;top:353px;width:57px;transform:rotate(-46deg);animation-delay:1.3s"></span>
-<span class="node pwr" aria-hidden="true" style="left:1185px;top:313px;animation-delay:1.35s"></span>
+<svg class="ret" width="150" height="150" viewBox="0 0 150 150" aria-hidden="true" style="left:1029px;top:355px"><g class="glow" fill="none" stroke="#FFB547"><circle class="ra" cx="75.0" cy="75.0" r="69.0" stroke-opacity=".55" stroke-width="1.2" stroke-dasharray="2 7"></circle><path d="M144.0 75.0L151.0 75.0 M75.0 144.0L75.0 151.0 M6.0 75.0L-1.0 75.0 M75.0 6.0L75.0 -1.0" stroke-width="1.5" stroke-opacity=".8"></path><circle class="rb" cx="75.0" cy="75.0" r="54.0" stroke-width="1.5" stroke-dasharray="61.1 23.8"></circle><path class="lk" d="M52.5 37.5H37.5V52.5 M97.5 37.5H112.5V52.5 M97.5 112.5H112.5V97.5 M52.5 112.5H37.5V97.5" stroke-width="2.2" stroke-linecap="square"></path><path d="M68.0 75.0H72.5M77.5 75.0H82.0M75.0 68.0V72.5M75.0 77.5V82.0" stroke-width="1.5"></path></g></svg>
+<span class="lead pwr" aria-hidden="true" style="left:1151px;top:372px;width:44px;transform:rotate(-51deg);animation-delay:1.3s"></span>
+<span class="node pwr" aria-hidden="true" style="left:1179px;top:337px;animation-delay:1.35s"></span>
 <svg class="ring pwr" viewBox="0 0 280 280" aria-hidden="true" style="animation-delay:1.4s"><g class="glow" fill="none" stroke="#FFB547"><circle class="ra" cx="140" cy="140" r="128" stroke-opacity=".7" stroke-width="5" stroke-dasharray="1 6.02"></circle><circle cx="140" cy="140" r="133" stroke-opacity=".9" stroke-width="1.2" stroke-dasharray="40 30 4 30"></circle></g></svg>
 <div class="vp pwr" role="img" aria-label="Gros plan sur la tête 3 : les quatre têtes, la troisième au centre" style="animation-delay:1.45s"></div>
 <svg class="vpx" viewBox="0 0 230 230" aria-hidden="true"><g class="glow" fill="none" stroke="#FFB547" stroke-width="1.4"><path d="M115 92V104M115 126V138M92 115H104M126 115H138"></path><path class="lk" d="M88 100V88H100M130 88H142V100M142 130V142H130M100 142H88V130" stroke-width="2"></path></g></svg>
-<a href="V-Verdict.dc.html" class="tag gl br pwr" style="left:1176px;top:358px;animation-delay:1.6s"><span class="dia" style="background:var(--gold);box-shadow:0 0 5px rgba(255,181,71,.8)"></span>Tête 3 · à vérifier</a>
+<a href="V-Verdict.dc.html" class="tag gl br pwr" style="left:1182px;top:446px;animation-delay:1.6s"><span class="dia" style="background:var(--gold);box-shadow:0 0 5px rgba(255,181,71,.8)"></span>Tête 3 · à vérifier</a>
 </div>
 
 <div class="layer scr" style="transform:{{scr}}">
@@ -330,9 +340,9 @@ var self = this;
 var s = this.state;
 var done = s.done;
 var defs = [
-{ n: "1", title: "Repérez la tête 3", text: "La troisième en partant de la gauche, à l'arrière de la machine.", pic: "pic im1", mx: "216px", my: "118px", alt: "Les quatre têtes à l'arrière, la troisième marquée par un réticule" },
-{ n: "2", title: "Nettoyez l'engrenage", text: "Retirez les débris ou le filament cassé coincés dans l'engrenage qui pousse le filament.", pic: "pic im2", mx: "222px", my: "160px", alt: "Gros plan sur la tête 3" },
-{ n: "3", title: "Relancez l'impression", text: "Sur l'écran tactile de la U1, reprenez l'impression mise en pause.", pic: "pic im3", mx: "207px", my: "115px", alt: "L'écran tactile de la U1, marqué par un réticule" }
+{ n: "1", title: "Repérez la tête 3", text: "La troisième en partant de la gauche, à l'arrière de la machine.", pic: "pic im1", mx: "205px", my: "110px", alt: "Les têtes garées à l'arrière, la tête 3 marquée par un réticule" },
+{ n: "2", title: "Nettoyez l'engrenage", text: "Retirez les débris ou le filament cassé coincés dans l'engrenage qui pousse le filament.", pic: "pic im2", mx: "207px", my: "52px", alt: "Gros plan sur le haut de la tête 3, là où le filament entre" },
+{ n: "3", title: "Relancez l'impression", text: "Sur l'écran tactile de la U1, reprenez l'impression mise en pause.", pic: "pic im3", mx: "349px", my: "110px", alt: "La façade de la U1 : inscription snapmaker et écran tactile marqué par un réticule" }
 ];
 var count = done.filter(function (d) { return d; }).length;
 var p = Math.min(1, s.dec / 22);

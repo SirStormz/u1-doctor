@@ -1,0 +1,111 @@
+{
+ "_doc": "Images des planches : nom logique -> adresse d'asset du canevas (blob) et fichier local (private/, non versionné). bench.py s'en sert pour servir les planches en local ; les scripts build*.py remplacent @@A:nom@@ par l'adresse blob. Les entrées « /_blob/local-… » ne sont pas encore envoyées au canevas : bench.py les sert en local ; à l'envoi, remplacer par l'adresse rendue.",
+ "notice-1": {
+  "blob": "/_blob/593dda732e2257747c7dc86bfbdf6644",
+  "file": "private/ui-v2/notice/notice-1.png"
+ },
+ "notice-2": {
+  "blob": "/_blob/23950175a9ff7d8e664bde2a6e6c745c",
+  "file": "private/ui-v2/notice/notice-2.png"
+ },
+ "notice-3": {
+  "blob": "/_blob/8faf0c1ed54e7a213208ca69f9c0f2fb",
+  "file": "private/ui-v2/notice/notice-3.png"
+ },
+ "notice-4b": {
+  "blob": "/_blob/3cf673db02c995f5b050c54f2cd6708e",
+  "file": "private/ui-v2/notice/notice-4b.png"
+ },
+ "obs-hero": {
+  "blob": "/_blob/5cb5b30eb2566c6b576c72da5194a86b",
+  "file": "private/ui-v2/obsidienne/obs-hero.png"
+ },
+ "obs-tetes": {
+  "blob": "/_blob/3cd39a2e266f4c5f3db791eeaaa1eff8",
+  "file": "private/ui-v2/obsidienne/obs-tetes.png"
+ },
+ "obs-ecran": {
+  "blob": "/_blob/bcb3698311013692549901476c69ea00",
+  "file": "private/ui-v2/obsidienne/obs-ecran.png"
+ },
+ "matiere": {
+  "blob": "/_blob/fb7958df8bc2671a9325a021e85c7871",
+  "file": "private/ui-v2/pupitre2/matiere.jpg"
+ },
+ "bouton": {
+  "blob": "/_blob/60fa9b111425ee337fb533286fdceff1",
+  "file": "private/ui-v2/pupitre2/bouton.jpg"
+ },
+ "cadran": {
+  "blob": "/_blob/751cd1888ff84641392f3db298853324",
+  "file": "private/ui-v2/pupitre2/cadran.jpg"
+ },
+ "vis-hero": {
+  "blob": "/_blob/bba1de9d130c2706bd3d310e199185ed",
+  "file": "private/ui-v2/visiere/vis-hero.jpg"
+ },
+ "vis-holo-d": {
+  "blob": "/_blob/0ebb1648c2bf975cdb7fd1abb760b0d9",
+  "file": "private/ui-v2/visiere/vis-holo-d.jpg"
+ },
+ "vis-tetes": {
+  "blob": "/_blob/dba15c43f5cdec9baadc08c3517ed9f3",
+  "file": "private/ui-v2/visiere/vis-tetes.jpg"
+ },
+ "vis-ecran": {
+  "blob": "/_blob/beed230dcb1bfaeb94c09ec39ad41847",
+  "file": "private/ui-v2/visiere/vis-ecran.jpg"
+ },
+ "obs-hero2": {
+  "blob": "/_blob/local-obs-hero2",
+  "file": "docs/design/ui-v2/lab/r/u1-obs-hero.jpg"
+ },
+ "obs-tetes2": {
+  "blob": "/_blob/local-obs-tetes2",
+  "file": "docs/design/ui-v2/lab/r/u1-obs-tetes.jpg"
+ },
+ "obs-ecran2": {
+  "blob": "/_blob/local-obs-ecran2",
+  "file": "docs/design/ui-v2/lab/r/u1-obs-ecran.jpg"
+ },
+ "vis-hero2": {
+  "blob": "/_blob/local-vis-hero2",
+  "file": "docs/design/ui-v2/lab/r/u1-vis-hero.jpg"
+ },
+ "vis-tetes2": {
+  "blob": "/_blob/local-vis-tetes2",
+  "file": "docs/design/ui-v2/lab/r/u1-vis-tetes.jpg"
+ },
+ "vis-ecran2": {
+  "blob": "/_blob/local-vis-ecran2",
+  "file": "docs/design/ui-v2/lab/r/u1-vis-ecran.jpg"
+ },
+ "line-hero": {
+  "blob": "/_blob/local-line-hero",
+  "file": "docs/design/ui-v2/lab/r/u1-line-hero.jpg"
+ },
+ "line-tetes": {
+  "blob": "/_blob/local-line-tetes",
+  "file": "docs/design/ui-v2/lab/r/u1-line-tetes.jpg"
+ },
+ "line-ecran": {
+  "blob": "/_blob/local-line-ecran",
+  "file": "docs/design/ui-v2/lab/r/u1-line-ecran.jpg"
+ },
+ "holo-hero": {
+  "blob": "/_blob/local-holo-hero",
+  "file": "docs/design/ui-v2/lab/r/u1-holo-hero.png"
+ },
+ "holo-tetes": {
+  "blob": "/_blob/local-holo-tetes",
+  "file": "docs/design/ui-v2/lab/r/u1-holo-tetes.png"
+ },
+ "u1stage": {
+  "blob": "/_blob/local-u1stage",
+  "file": "docs/design/ui-v2/lab/dist/u1stage.bundle.js"
+ },
+ "glb": {
+  "blob": "/_blob/local-glb",
+  "file": "frontend/public/models/u1-jay.glb"
+ }
+}

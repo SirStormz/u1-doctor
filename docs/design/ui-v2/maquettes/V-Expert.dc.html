@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>V · Accueil, mode Expert</title>
+<title>Visière · Accueil, mode Expert</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -12,7 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400..700&amp;family=Saira:wdth,wght@75..125,300..700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:#08070A}
-.app{--bg:#08070A;--panel:#100C0C;--line:rgba(255,214,154,.13);--line2:rgba(255,214,154,.28);--ink:#F6F1EA;--ink2:rgba(246,241,234,.74);--ink3:rgba(246,241,234,.56);--gold:#FFB547;--gold2:#FFD99A;--red:#FF3B2F;--redt:#FF7266;position:relative;min-height:1100px;background:var(--bg);color:var(--ink);font:400 16px/1.5 'Saira',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+.app{--bg:#08070A;--panel:#100C0C;--line:rgba(255,214,154,.13);--line2:rgba(255,214,154,.28);--ink:#F6F1EA;--ink2:rgba(246,241,234,.74);--ink3:rgba(246,241,234,.56);--gold:#FFB547;--gold2:#FFD99A;--red:#FF3B2F;--redt:#FF7266;position:relative;min-height:1100px;background:var(--bg);color:var(--ink);font:400 16px/1.5 'Saira',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:clip}
 .app *{box-sizing:border-box}
 .app a{color:inherit}
 .h{font-family:'Oxanium','Saira',sans-serif;font-weight:600;letter-spacing:-.01em}
@@ -44,7 +44,7 @@ body{margin:0;background:#08070A}
 /* boutons à coins coupés */
 .btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:48px;padding:0 24px;border:0;clip-path:polygon(11px 0,100% 0,100% calc(100% - 11px),calc(100% - 11px) 100%,0 100%,0 11px);font:600 14.5px/1 'Oxanium',sans-serif;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;white-space:nowrap;cursor:pointer;transition:transform .2s cubic-bezier(.34,1.45,.64,1),filter .2s,background .2s}
 .btn:active{transform:translateY(1px) scale(.98)}
-.btn-a{background:linear-gradient(180deg,#FFC874,#FFAB30);color:#1E1100}
+.btn-a,.app a.btn-a{background:linear-gradient(180deg,#FFC874,#FFAB30);color:#1E1100}
 .btn-a:hover{filter:brightness(1.07)}
 .btn-g{background:rgba(255,214,154,.12);color:var(--gold2)}
 .btn-g:hover{background:rgba(255,214,154,.2)}
@@ -97,12 +97,24 @@ body{margin:0;background:#08070A}
 @media (prefers-reduced-transparency:reduce){.gl,.lq{background:#140F0E;-webkit-backdrop-filter:none;backdrop-filter:none}}
 .nav .seg:has(>:nth-child(1):hover) .thumb{left:3px!important}
 .nav .seg:has(>:nth-child(2):hover) .thumb{left:50%!important}
+/* infobulles : hors du flux tant qu'elles sont fermées (sinon elles élargissent la page à droite) */
+.tip::after{display:none}
+.tip:hover::after,.tip:focus-visible::after,.tip.show::after{display:block;animation:tipin .16s ease-out}
+@keyframes tipin{from{opacity:0}}
+.tip.tl::after{left:auto;right:0;transform:none}
+/* héros composés à 1440 px : réduits par paliers sous cette largeur (fenêtre de bureau plus étroite) */
+@media (max-width:1439px){.h1440{zoom:.93}}
+@media (max-width:1339px){.h1440{zoom:.86}}
+@media (max-width:1239px){.h1440{zoom:.78}}
+@media (max-width:1129px){.h1440{zoom:.7}}
 </style>
 
 <style>
-.u1{position:absolute;left:636px;top:70px;width:724px;height:860px;overflow:hidden;-webkit-mask-image:radial-gradient(ellipse 64% 60% at 54% 52%,#000 62%,transparent 100%);mask-image:radial-gradient(ellipse 64% 60% at 54% 52%,#000 62%,transparent 100%)}
+.u1{position:absolute;left:636px;top:70px;width:724px;height:860px;overflow:hidden;-webkit-mask-image:linear-gradient(to bottom,#000 82%,transparent 99%),linear-gradient(to right,transparent 0,#000 7%,#000 88%,transparent 99%);-webkit-mask-composite:source-in;mask-image:linear-gradient(to bottom,#000 82%,transparent 99%),linear-gradient(to right,transparent 0,#000 7%,#000 88%,transparent 99%);mask-composite:intersect}
 .u1 img{position:absolute;inset:0;width:100%;height:100%;display:block}
-.holo2{position:absolute;inset:0;background-image:url('/_blob/0ebb1648c2bf975cdb7fd1abb760b0d9');background-size:100% 100%}
+.holo2{position:absolute;inset:0;background-image:url('/_blob/local-holo-hero'),linear-gradient(#0A0807,#0A0807);background-size:100% 100%}
+.u1c{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .8s cubic-bezier(.2,.8,.2,1)}
+.u1.live .u1c{opacity:1}.u1.live img,.u1.live .holo2{opacity:0;transition:opacity .8s}
 .split{position:absolute;top:0;bottom:0;width:1.5px;margin-left:-.75px;background:var(--gold2);box-shadow:0 0 6px rgba(255,181,71,.8)}
 .over{position:absolute;z-index:5;margin:0;opacity:0;cursor:ew-resize;-webkit-appearance:none;appearance:none}
 .knob{position:absolute;z-index:4;top:800px;width:156px;height:38px;margin-left:-78px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 12px;white-space:nowrap;font:600 11.5px/1 'Oxanium',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--gold2);pointer-events:none}
@@ -141,31 +153,32 @@ body{margin:0;background:#08070A}
 <button type="button" class="ibtn" aria-label="Réglages"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"></path><circle cx="15" cy="6" r="2"></circle><circle cx="9" cy="12" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg></button>
 </header>
 
-<section style="position:relative;height:960px">
-<div class="u1">
-<img src="/_blob/bba1de9d130c2706bd3d310e199185ed" alt="Photo de la U1 dans l'obscurité, avec la vue hologramme à gauche du curseur">
+<section class="h1440" style="position:relative;height:960px;max-width:1440px;margin:0 auto">
+<div class="{{u1cls}}">
+<img src="/_blob/local-vis-hero2" alt="La U1 dans l'obscurité, avec la vue hologramme à gauche du curseur">
 <div class="holo2" aria-hidden="true" style="clip-path:inset(0 {{clipR}} 0 0)"></div>
+<canvas class="u1c" ref="{{view}}" aria-hidden="true"></canvas>
 <span class="split" aria-hidden="true" style="left:{{splitL}}"></span>
 </div>
 <input class="over" type="range" min="4" max="96" value="{{split}}" onChange="{{setSplit}}" aria-label="Vue hologramme : glissez pour comparer l'hologramme et la photo" style="left:636px;top:70px;width:724px;height:860px">
 <span class="knob gl br" aria-hidden="true" style="left:calc(636px + {{splitPx}})"><span>‹ Holo</span><span>Photo ›</span></span>
 
-<svg class="ret" width="110" height="110" viewBox="0 0 110 110" aria-hidden="true" style="left:1039px;top:352px"><g class="glow" fill="none" stroke="#FFB547"><circle class="ra" cx="55.0" cy="55.0" r="50.6" stroke-opacity=".55" stroke-width="1.2" stroke-dasharray="2 7"></circle><path d="M105.6 55.0L112.6 55.0 M55.0 105.6L55.0 112.6 M4.4 55.0L-2.6 55.0 M55.0 4.4L55.0 -2.6" stroke-width="1.5" stroke-opacity=".8"></path><circle class="rb" cx="55.0" cy="55.0" r="39.6" stroke-width="1.5" stroke-dasharray="44.8 17.4"></circle><path class="lk" d="M38.5 27.5H27.5V38.5 M71.5 27.5H82.5V38.5 M71.5 82.5H82.5V71.5 M38.5 82.5H27.5V71.5" stroke-width="2.2" stroke-linecap="square"></path><path d="M48.0 55.0H52.5M57.5 55.0H62.0M55.0 48.0V52.5M55.0 57.5V62.0" stroke-width="1.5"></path></g></svg>
-<span class="pin pwr" style="left:1094px;top:407px;animation-delay:.9s"></span>
-<span class="lead pwr" aria-hidden="true" style="left:1132px;top:380px;width:24px;transform:rotate(-30deg);animation-delay:1s"></span>
+<div ref="{{retw}}" style="position:absolute;z-index:6;left:1098px;top:394px;width:0;height:0"><svg class="ret" width="110" height="110" viewBox="0 0 110 110" aria-hidden="true" style="left:-55px;top:-55px"><g class="glow" fill="none" stroke="#FFB547"><circle class="ra" cx="55.0" cy="55.0" r="50.6" stroke-opacity=".55" stroke-width="1.2" stroke-dasharray="2 7"></circle><path d="M105.6 55.0L112.6 55.0 M55.0 105.6L55.0 112.6 M4.4 55.0L-2.6 55.0 M55.0 4.4L55.0 -2.6" stroke-width="1.5" stroke-opacity=".8"></path><circle class="rb" cx="55.0" cy="55.0" r="39.6" stroke-width="1.5" stroke-dasharray="44.8 17.4"></circle><path class="lk" d="M38.5 27.5H27.5V38.5 M71.5 27.5H82.5V38.5 M71.5 82.5H82.5V71.5 M38.5 82.5H27.5V71.5" stroke-width="2.2" stroke-linecap="square"></path><path d="M48.0 55.0H52.5M57.5 55.0H62.0M55.0 48.0V52.5M55.0 57.5V62.0" stroke-width="1.5"></path></g></svg></div>
+<span class="pin pwr" ref="{{p0}}" style="left:1098px;top:394px;animation-delay:.9s"></span>
+<span class="lead pwr" ref="{{l0}}" aria-hidden="true" style="left:1150px;top:350px;width:68px;transform:rotate(139.8deg);animation-delay:1s"></span>
 <div class="ar gl br pwr" style="left:1150px;top:290px;width:240px;animation-delay:1.05s">
 <svg width="50" height="50" viewBox="0 0 50 50" aria-hidden="true"><g fill="none" stroke-width="3.5"><path d="M10.9 39.1A20 20 0 1 1 39.1 39.1" stroke="rgba(246,241,234,.14)"></path><path class="glow" d="M10.9 39.1A20 20 0 1 1 42 14.4" stroke="#FFB547"></path></g></svg>
 <div><div class="k">Buse tête 3</div><div class="v neon">214,7 °C</div><span class="tg tip" tabindex="0" data-tip="Déduit (INFERRED) : l'objet extruder2 correspond à la tête 3 d'après son suffixe, pas d'après une lecture directe.">extruder2 · déduit</span></div>
 </div>
 
-<span class="pin pwr" style="left:925px;top:504px;background:var(--red);box-shadow:0 0 0 3px rgba(8,7,10,.85),0 0 6px rgba(255,59,47,.9);animation-delay:1.15s"></span>
-<span class="lead pwr" aria-hidden="true" style="left:862px;top:494px;width:58px;transform:rotate(10deg);animation-delay:1.2s"></span>
-<div class="ar gl br pwr" style="left:646px;top:452px;width:216px;animation-delay:1.25s">
+<span class="pin pwr" ref="{{p1}}" style="left:961px;top:527px;background:var(--red);box-shadow:0 0 0 3px rgba(8,7,10,.85),0 0 6px rgba(255,59,47,.9);animation-delay:1.15s"></span>
+<span class="lead pwr" ref="{{l1}}" aria-hidden="true" style="left:780px;top:418px;width:211px;transform:rotate(31deg);animation-delay:1.2s"></span>
+<div class="ar gl br pwr" style="left:564px;top:372px;width:216px;animation-delay:1.25s">
 <div><div class="k">État · écran</div><div class="v neon-r">En pause</div><span class="tg">print_stats · vérifié</span></div>
 </div>
 
-<span class="pin pwr" style="left:862px;top:674px;background:var(--ink);box-shadow:0 0 0 3px rgba(8,7,10,.85);animation-delay:1.35s"></span>
-<span class="lead pwr" aria-hidden="true" style="left:830px;top:684px;width:32px;transform:rotate(-12deg);animation-delay:1.4s"></span>
+<span class="pin pwr" ref="{{p2}}" style="left:933px;top:690px;background:var(--ink);box-shadow:0 0 0 3px rgba(8,7,10,.85);animation-delay:1.35s"></span>
+<span class="lead pwr" ref="{{l2}}" aria-hidden="true" style="left:830px;top:684px;width:103px;transform:rotate(3.3deg);animation-delay:1.4s"></span>
 <div class="ar gl br pwr" style="left:592px;top:654px;width:238px;animation-delay:1.45s">
 <svg width="50" height="50" viewBox="0 0 50 50" aria-hidden="true"><g fill="none" stroke-width="3.5"><path d="M10.9 39.1A20 20 0 1 1 39.1 39.1" stroke="rgba(246,241,234,.14)"></path><path d="M10.9 39.1A20 20 0 0 1 25 5" stroke="#F6F1EA"></path></g></svg>
 <div><div class="k">Plateau</div><div class="v">59,9 °C</div><span class="tg">heater_bed · vérifié</span></div>
@@ -276,10 +289,10 @@ body{margin:0;background:#08070A}
 </div>
 
 <nav class="dock gl lq br" aria-label="Navigation principale">
-<a href="V-Accueil.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path><path d="M10 21v-6h4v6"></path></svg>Accueil</a>
+<a href="V-Accueil.dc.html" class="on" aria-current="page"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path><path d="M10 21v-6h4v6"></path></svg>Accueil</a>
 <a href="V-Diagnostiquer.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>Diagnostiquer</a>
 <a href="V-Diagnostiquer.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>J'ai un problème</a>
-<a href="V-Expert.dc.html" class="on" aria-current="page"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Historique</a>
+<a href="V-Expert.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Historique</a>
 <a href="V-Expert.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"></path><path d="M16 6l-4-4-4 4"></path><path d="M12 2v13"></path></svg>Partager</a>
 </nav>
 <div style="height:30px"></div>
@@ -289,9 +302,37 @@ body{margin:0;background:#08070A}
 class Component extends DCLogic {
 constructor(props) {
 super(props);
-this.state = { split: 46, sec: 201, playing: false };
+this.state = { split: 46, sec: 201, playing: false, live: false };
+this.view = React.createRef();
+this.retw = React.createRef();
+this.p0 = React.createRef(); this.p1 = React.createRef(); this.p2 = React.createRef();
+this.l0 = React.createRef(); this.l1 = React.createRef(); this.l2 = React.createRef();
 }
-componentWillUnmount() { clearInterval(this.iv); }
+componentDidMount() {
+var self = this;
+/* la vraie géométrie : moitié hologramme (contours + Fresnel or) / moitié rendu, séparées par un plan de coupe */
+import("/_blob/local-u1stage").then(function (m) {
+return m.mount(self.view.current, { theme: "visiere", model: "/_blob/local-glb", view: "hero", drift: true, split: self.state.split / 100 });
+}).then(function (st) {
+if (!st) return;
+if (self.gone) { st.dispose(); return; }
+self.stage = st;
+self.setState({ live: true });
+var from = [[1150, 350], [780, 418], [830, 684]], names = ["head3top", "screen", "bed"];
+st.onFrame(function (p) {
+for (var k = 0; k < 3; k++) {
+var a = p(names[k]), pin = self["p" + k].current, ld = self["l" + k].current;
+if (!a || !pin || !ld) continue;
+var x = 636 + a.x, y = 70 + a.y, dx = x - from[k][0], dy = y - from[k][1];
+pin.style.left = x + "px"; pin.style.top = y + "px";
+ld.style.width = Math.sqrt(dx * dx + dy * dy) + "px";
+ld.style.transform = "rotate(" + Math.atan2(dy, dx) + "rad)";
+if (k === 0 && self.retw.current) { self.retw.current.style.left = x + "px"; self.retw.current.style.top = y + "px"; }
+}
+});
+}).catch(function () {});
+}
+componentWillUnmount() { clearInterval(this.iv); this.gone = true; if (this.stage) this.stage.dispose(); }
 two(n) { return (n < 10 ? "0" : "") + n; }
 renderVals() {
 var self = this;
@@ -308,13 +349,15 @@ split: s.split,
 clipR: (100 - s.split) + "%",
 splitL: s.split + "%",
 splitPx: (s.split * 7.24).toFixed(1) + "px",
-setSplit: function (e) { self.setState({ split: Number(e.target.value) }); },
+setSplit: function (e) { var v = Number(e.target.value); self.setState({ split: v }); if (self.stage) self.stage.setSplit(v / 100); },
+view: this.view, retw: this.retw, p0: this.p0, p1: this.p1, p2: this.p2, l0: this.l0, l1: this.l1, l2: this.l2,
+u1cls: s.live ? "u1 live" : "u1",
 sec: sec,
 ang: sec,
 pct: ((sec - 12) / 308 * 100).toFixed(1) + "%",
 cx: (18 + sec * 3.2778).toFixed(1),
 clock: "14:" + self.two(9 + Math.floor(sec / 60)) + ":" + self.two(sec % 60),
-b0: sec >= 12 ? "1" : ".3", bg: sec >= 210 ? "1" : ".35", b1: sec >= 312 ? "1" : ".3", b2: sec >= 320 ? "1" : ".3",
+b0: sec >= 12 ? "1" : ".75", bg: sec >= 210 ? "1" : ".75", b1: sec >= 312 ? "1" : ".75", b2: sec >= 320 ? "1" : ".75",
 nowCls: now.c, nowState: now.st, nowText: now.t,
 playing: s.playing, paused: !s.playing,
 playLabel: s.playing ? "Pause du rejeu" : "Lancer le rejeu",

@@ -2,7 +2,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Doto:ROND,wght@0..100,100..900&amp;family=Barlow:wght@400;500;600;700&amp;family=Barlow+Semi+Condensed:wght@500;600;700&amp;family=Permanent+Marker&amp;family=Courier+Prime:wght@400;700&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:#CFCBC3}
-.app{--ink:#1D1C1A;--ink2:#4F4C46;--ink3:#7C786F;--lcd:#FFB547;--lcd-ink:#2A1B03;position:relative;min-height:1100px;color:var(--ink);font:400 16px/1.5 Barlow,system-ui,sans-serif;-webkit-font-smoothing:antialiased;background-color:#CFCBC3;background-image:linear-gradient(180deg,rgba(255,255,255,.10),rgba(0,0,0,.06)),url('/_blob/fb7958df8bc2671a9325a021e85c7871');background-size:100% 100%,384px 384px}
+.app{--ink:#1D1C1A;--ink2:#4F4C46;--ink3:#58544C;--lcd:#FFB547;--lcd-ink:#2A1B03;position:relative;min-height:1100px;color:var(--ink);font:400 16px/1.5 Barlow,system-ui,sans-serif;-webkit-font-smoothing:antialiased;background-color:#CFCBC3;background-image:linear-gradient(180deg,rgba(255,255,255,.10),rgba(0,0,0,.06)),url('/_blob/fb7958df8bc2671a9325a021e85c7871');background-size:100% 100%,384px 384px}
 .app *{box-sizing:border-box}
 .app a{color:inherit}
 .wrap{max-width:1360px;margin:0 auto;padding:0 40px}
@@ -38,7 +38,7 @@ body{margin:0;background:#CFCBC3}
 .key:active{transform:translateY(3px);box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(0,0,0,.22),0 1px 0 #A6A196,0 2px 3px rgba(0,0,0,.15)}
 .key-a{background:linear-gradient(180deg,#FFCA74,#FFAA2C);color:#2A1B03;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 0 0 1px rgba(110,60,0,.45),0 4px 0 #BD7A10,0 6px 8px rgba(0,0,0,.18)}
 .key-a:active{box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 0 0 1px rgba(110,60,0,.45),0 1px 0 #BD7A10}
-.key-k{background:linear-gradient(180deg,#3B3935,#1E1D1B);color:#F2EFE8;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 0 1px #000,0 4px 0 #000,0 6px 8px rgba(0,0,0,.25)}
+.key-k,.app a.key-k{background:linear-gradient(180deg,#3B3935,#1E1D1B);color:#F2EFE8;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 0 1px #000,0 4px 0 #000,0 6px 8px rgba(0,0,0,.25)}
 .key-k:active{box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 0 1px #000,0 1px 0 #000}
 .key.txt{text-transform:none;letter-spacing:0;font:600 15px/1.2 Barlow,sans-serif;justify-content:flex-start;text-align:left;padding:0 16px}
 .key[disabled]{opacity:.45;cursor:not-allowed;transform:none}
@@ -96,4 +96,22 @@ body{margin:0;background:#CFCBC3}
 .app :focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 @media (max-width:960px){.g2,.g3,.g4{grid-template-columns:minmax(0,1fr)!important}.span2{grid-row:auto!important}.dock a{min-width:58px}.hide-sm{display:none!important}.wrap{padding:0 16px}}
 @media (prefers-reduced-motion:reduce){.app *{animation:none!important;transition:none!important}.ty{clip-path:none}.needle{transform:rotate(var(--a))}}
+.u1p,.u1c{position:absolute;display:block}
+.u1p{transition:opacity .7s cubic-bezier(.2,.8,.2,1);-webkit-mask-image:radial-gradient(ellipse 70% 66% at 52% 50%,#000 64%,transparent 100%);mask-image:radial-gradient(ellipse 70% 66% at 52% 50%,#000 64%,transparent 100%)}
+.u1c{inset:0;width:100%;height:100%;opacity:0;transition:opacity .7s cubic-bezier(.2,.8,.2,1)}
+.live .u1c{opacity:1}.live .u1p{opacity:0}
+.app{font-variant-numeric:tabular-nums}
+/* infobulles : hors du flux tant qu'elles sont fermées (sinon elles élargissent la page à droite) */
+.tip::after{display:none}
+.tip:hover::after,.tip:focus-visible::after,.tip.show::after{display:block;animation:tipin .16s ease-out}
+@keyframes tipin{from{opacity:0}}
+.tip.tl::after{left:auto;right:0;transform:none}
+/* signature de mouvement Pupitre 2 : mise sous tension. Les modules se posent (vissés), les écrans chauffent par crans */
+.wrap>.mod,.g2>.mod,.g2>div>.mod{animation:mount .55s cubic-bezier(.3,1.35,.5,1) both}
+.g2>.mod:nth-child(2){animation-delay:.08s}.g2>.mod:nth-child(3){animation-delay:.16s}
+@keyframes mount{from{opacity:0;transform:translateY(-8px)}}
+.lcd{animation:lcdon .9s steps(5,end) .15s both}
+@keyframes lcdon{from{filter:brightness(.42) saturate(.6)}}
+/* rangées à deux colonnes : la dernière carte d'une colonne empilée s'étire pour aligner les bas */
+.g2>div[style*="flex-direction:column"]>:last-child{flex-grow:1}
 </style>

@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>V · Diagnostiquer</title>
+<title>Visière · Diagnostiquer</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -12,7 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400..700&amp;family=Saira:wdth,wght@75..125,300..700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:#08070A}
-.app{--bg:#08070A;--panel:#100C0C;--line:rgba(255,214,154,.13);--line2:rgba(255,214,154,.28);--ink:#F6F1EA;--ink2:rgba(246,241,234,.74);--ink3:rgba(246,241,234,.56);--gold:#FFB547;--gold2:#FFD99A;--red:#FF3B2F;--redt:#FF7266;position:relative;min-height:1100px;background:var(--bg);color:var(--ink);font:400 16px/1.5 'Saira',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+.app{--bg:#08070A;--panel:#100C0C;--line:rgba(255,214,154,.13);--line2:rgba(255,214,154,.28);--ink:#F6F1EA;--ink2:rgba(246,241,234,.74);--ink3:rgba(246,241,234,.56);--gold:#FFB547;--gold2:#FFD99A;--red:#FF3B2F;--redt:#FF7266;position:relative;min-height:1100px;background:var(--bg);color:var(--ink);font:400 16px/1.5 'Saira',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:clip}
 .app *{box-sizing:border-box}
 .app a{color:inherit}
 .h{font-family:'Oxanium','Saira',sans-serif;font-weight:600;letter-spacing:-.01em}
@@ -44,7 +44,7 @@ body{margin:0;background:#08070A}
 /* boutons à coins coupés */
 .btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:48px;padding:0 24px;border:0;clip-path:polygon(11px 0,100% 0,100% calc(100% - 11px),calc(100% - 11px) 100%,0 100%,0 11px);font:600 14.5px/1 'Oxanium',sans-serif;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;white-space:nowrap;cursor:pointer;transition:transform .2s cubic-bezier(.34,1.45,.64,1),filter .2s,background .2s}
 .btn:active{transform:translateY(1px) scale(.98)}
-.btn-a{background:linear-gradient(180deg,#FFC874,#FFAB30);color:#1E1100}
+.btn-a,.app a.btn-a{background:linear-gradient(180deg,#FFC874,#FFAB30);color:#1E1100}
 .btn-a:hover{filter:brightness(1.07)}
 .btn-g{background:rgba(255,214,154,.12);color:var(--gold2)}
 .btn-g:hover{background:rgba(255,214,154,.2)}
@@ -97,10 +97,20 @@ body{margin:0;background:#08070A}
 @media (prefers-reduced-transparency:reduce){.gl,.lq{background:#140F0E;-webkit-backdrop-filter:none;backdrop-filter:none}}
 .nav .seg:has(>:nth-child(1):hover) .thumb{left:3px!important}
 .nav .seg:has(>:nth-child(2):hover) .thumb{left:50%!important}
+/* infobulles : hors du flux tant qu'elles sont fermées (sinon elles élargissent la page à droite) */
+.tip::after{display:none}
+.tip:hover::after,.tip:focus-visible::after,.tip.show::after{display:block;animation:tipin .16s ease-out}
+@keyframes tipin{from{opacity:0}}
+.tip.tl::after{left:auto;right:0;transform:none}
+/* héros composés à 1440 px : réduits par paliers sous cette largeur (fenêtre de bureau plus étroite) */
+@media (max-width:1439px){.h1440{zoom:.93}}
+@media (max-width:1339px){.h1440{zoom:.86}}
+@media (max-width:1239px){.h1440{zoom:.78}}
+@media (max-width:1129px){.h1440{zoom:.7}}
 </style>
 
 <style>
-.bgholo{position:absolute;right:-70px;top:40px;width:640px;height:760px;background-image:url('/_blob/0ebb1648c2bf975cdb7fd1abb760b0d9');background-size:100% 100%;opacity:.42;-webkit-mask-image:radial-gradient(ellipse 60% 58% at 55% 50%,#000 50%,transparent 100%);mask-image:radial-gradient(ellipse 60% 58% at 55% 50%,#000 50%,transparent 100%)}
+.bgholo{position:absolute;right:-70px;top:40px;width:640px;height:760px;background-image:url('/_blob/local-holo-hero');background-size:100% 100%;opacity:.552;-webkit-mask-image:radial-gradient(ellipse 60% 58% at 55% 50%,#000 50%,transparent 100%);mask-image:radial-gradient(ellipse 60% 58% at 55% 50%,#000 50%,transparent 100%)}
 .modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:34px}
 .mode{position:relative;display:flex;align-items:center;gap:16px;min-height:112px;padding:20px 22px;border:0;border-radius:3px;background:#120E0D;box-shadow:inset 0 0 0 1px var(--line);color:var(--ink2);text-align:left;font:inherit;cursor:pointer;transition:background .3s,color .3s,box-shadow .3s}
 .mode:hover{background:#1A1412;color:var(--ink)}
@@ -157,17 +167,17 @@ body{margin:0;background:#08070A}
 
 <div class="modes" role="radiogroup" aria-label="Façon de diagnostiquer">
 <button type="button" role="radio" aria-checked="{{c1.checked}}" class="{{c1.cls}}" disabled="{{busy}}" onClick="{{pickConnect}}">
-<sc-if value="{{c1.on}}" hint-placeholder-val="{{ true }}"><svg class="lockb" preserveAspectRatio="none" viewBox="0 0 100 100" aria-hidden="true"><path class="glow" d="M0 14V0H14M86 0H100V14M100 86V100H86M14 100H0V86" fill="none" stroke="#FFB547" stroke-width="2" vector-effect="non-scaling-stroke"></path></svg><span class="sel">Verrouillé</span></sc-if>
+<sc-if value="{{c1.on}}" hint-placeholder-val="{{ true }}"><svg class="lockb" preserveAspectRatio="none" viewBox="0 0 100 100" aria-hidden="true"><path class="glow" d="M0 14V0H14M86 0H100V14M100 86V100H86M14 100H0V86" fill="none" stroke="#FFB547" stroke-width="2" vector-effect="non-scaling-stroke"></path></svg><span class="sel">Choisi</span></sc-if>
 <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9a15 15 0 0 1 20 0"></path><path d="M5 12.5a10 10 0 0 1 14 0"></path><path d="M8.5 16a5 5 0 0 1 7 0"></path><path d="M12 19.5h.01"></path></svg></span>
 <span><span class="t">Connecter ma U1</span><span class="d">le plus précis</span></span>
 </button>
 <button type="button" role="radio" aria-checked="{{c2.checked}}" class="{{c2.cls}}" disabled="{{busy}}" onClick="{{pickFiles}}">
-<sc-if value="{{c2.on}}" hint-placeholder-val="{{ false }}"><svg class="lockb" preserveAspectRatio="none" viewBox="0 0 100 100" aria-hidden="true"><path class="glow" d="M0 14V0H14M86 0H100V14M100 86V100H86M14 100H0V86" fill="none" stroke="#FFB547" stroke-width="2" vector-effect="non-scaling-stroke"></path></svg><span class="sel">Verrouillé</span></sc-if>
+<sc-if value="{{c2.on}}" hint-placeholder-val="{{ false }}"><svg class="lockb" preserveAspectRatio="none" viewBox="0 0 100 100" aria-hidden="true"><path class="glow" d="M0 14V0H14M86 0H100V14M100 86V100H86M14 100H0V86" fill="none" stroke="#FFB547" stroke-width="2" vector-effect="non-scaling-stroke"></path></svg><span class="sel">Choisi</span></sc-if>
 <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6"></path><path d="M12 18v-6M9 15l3-3 3 3"></path></svg></span>
 <span><span class="t">Glisser des fichiers</span><span class="d">sans connexion</span></span>
 </button>
 <button type="button" role="radio" aria-checked="{{c3.checked}}" class="{{c3.cls}}" disabled="{{busy}}" onClick="{{pickDescribe}}">
-<sc-if value="{{c3.on}}" hint-placeholder-val="{{ false }}"><svg class="lockb" preserveAspectRatio="none" viewBox="0 0 100 100" aria-hidden="true"><path class="glow" d="M0 14V0H14M86 0H100V14M100 86V100H86M14 100H0V86" fill="none" stroke="#FFB547" stroke-width="2" vector-effect="non-scaling-stroke"></path></svg><span class="sel">Verrouillé</span></sc-if>
+<sc-if value="{{c3.on}}" hint-placeholder-val="{{ false }}"><svg class="lockb" preserveAspectRatio="none" viewBox="0 0 100 100" aria-hidden="true"><path class="glow" d="M0 14V0H14M86 0H100V14M100 86V100H86M14 100H0V86" fill="none" stroke="#FFB547" stroke-width="2" vector-effect="non-scaling-stroke"></path></svg><span class="sel">Choisi</span></sc-if>
 <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
 <span><span class="t">Décrire ce que je vois</span><span class="d">le plus rapide</span></span>
 </button>
