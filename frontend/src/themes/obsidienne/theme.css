@@ -28,13 +28,13 @@
 [data-theme="obsidienne"] .langsw button { background: transparent; color: var(--ink-2); border-radius: 999px; }
 [data-theme="obsidienne"] .langsw button[aria-pressed="true"] { background: linear-gradient(180deg, rgba(255, 255, 255, 0.30), rgba(255, 255, 255, 0.14)); color: var(--ink); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55); }
 
-/* index strip: a glass rail, the current page is a lit glass thumb */
-[data-theme="obsidienne"] .indexbar { background: rgba(14, 16, 19, 0.55); border-bottom: 0; box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.07); -webkit-backdrop-filter: blur(22px) saturate(180%); backdrop-filter: blur(22px) saturate(180%); }
-[data-theme="obsidienne"] .navitem { border-right: 0; border-radius: 999px; margin: 9px 2px; color: var(--ink-2); font-weight: 600; transition: background 200ms, color 200ms; }
-[data-theme="obsidienne"] .navitem:hover { background: rgba(255, 255, 255, 0.07); color: var(--ink); }
-[data-theme="obsidienne"] .navitem[aria-current="page"] { background: linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.10)); color: var(--ink); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 2px 8px rgba(0, 0, 0, 0.35); }
-[data-theme="obsidienne"] .navitem[aria-current="page"] .nn { color: var(--yellow); }
-[data-theme="obsidienne"] .nav-ind { left: 30%; right: 30%; bottom: 3px; height: 2px; border-radius: 2px; background: var(--yellow); }
+/* dock: a floating glass pill, the current place is a lit glass thumb */
+[data-theme="obsidienne"] .dock { background: linear-gradient(180deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.045)); border: 0; border-radius: 30px;
+  -webkit-backdrop-filter: blur(22px) saturate(180%); backdrop-filter: blur(22px) saturate(180%); box-shadow: var(--glass-edge), 0 24px 48px -24px rgba(0, 0, 0, 0.8); }
+[data-theme="obsidienne"] .dock-item { border-radius: 24px; color: var(--ink-2); }
+[data-theme="obsidienne"] .dock-item:hover { background: rgba(255, 255, 255, 0.07); color: var(--ink); }
+[data-theme="obsidienne"] .dock-item[aria-current="page"] { background: linear-gradient(180deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.10)); color: var(--ink); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5); }
+[data-theme="obsidienne"] .dock-item[aria-current="page"] .dock-ic { color: var(--yellow); }
 
 /* page title */
 [data-theme="obsidienne"] h1 { font-weight: 600; letter-spacing: -0.035em; }
@@ -86,10 +86,8 @@
 
 /* no glass: opaque plates */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  [data-theme="obsidienne"] .panel, [data-theme="obsidienne"] .topbar, [data-theme="obsidienne"] .indexbar { background: var(--surface-1); }
 }
 @media (prefers-reduced-transparency: reduce) {
-  [data-theme="obsidienne"] .panel, [data-theme="obsidienne"] .topbar, [data-theme="obsidienne"] .indexbar { background: var(--surface-1); -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
 
 /* 3D hotspots: small glass pills */

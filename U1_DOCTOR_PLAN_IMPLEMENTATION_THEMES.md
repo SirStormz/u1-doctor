@@ -165,3 +165,29 @@ Outils déjà présents : vitest, Testing Library, Playwright, axe-core. Le banc
 - **Étapes 3 à 9 faites, sous une forme différente du plan** : au lieu de nouveaux écrans calqués sur les planches, les écrans existants reçoivent la peau de chaque thème (`themes/<id>/theme.css` : barre, onglets, panneaux, boutons, puces, champs, titres, mouvement d'entrée), la barre du haut n'a plus de couleurs codées en dur, la 3D suit le thème (`viz/looks.ts` : Notice au trait, Visière chaude avec liseré rouge), les Réglages montrent de vraies captures et la bascule se fait en fondu (View Transitions, coupé sous réduction des mouvements). Signatures portées sur les écrans existants : titres et chiffres LCD (Pupitre), titre qui se décode (Visière), repères des têtes par thème. Tests e2e par thème : axe sans violation grave ni critique et aucun défilement horizontal à 1024 et 1440 px sur 7 écrans. Deux défauts d'accessibilité anciens corrigés (nom de l'onglet actif, blocs `<pre>` non focalisables).
 - **Pas fait** : la structure d'écrans des planches (dock à 5 entrées, Accueil en tuiles, Verdict guidé, Diagnostiquer) et leurs pièces interactives (galvanomètre, ticket, clavier, bouton rotatif, capot, radar, appui long, loupe liquide, vols de caméra) ; critère « captures conformes aux planches à ±4 px » sans objet tant que ces écrans n'existent pas ; images/s en fenêtre visible non mesurées.
 - **Étape 10 (docs)** : README (captures régénérées en Obsidienne par `frontend/scripts/capture-screens.mjs`, planche des 4 thèmes `docs/media/themes.jpg`), état d'implémentation, fiche UI V2. Release non faite : attend l'accord du propriétaire.
+
+## 10. Refonte des écrans des planches (feu vert du propriétaire, 2026-11-10)
+
+Les 4 thèmes habillent aujourd'hui les 11 écrans historiques. Cette phase donne à l'app la structure des planches, dans les 4 thèmes, sans rien inventer : chaque texte affiché vient des données (démo étiquetée, capture réelle, import) ou du dictionnaire, jamais des maquettes.
+
+Navigation (décision du 2026-11-09) : un dock en bas à 5 entrées remplace la bande 01-11, dans les deux modes.
+
+| Dock | Écran d'arrivée | Actif aussi sur |
+|---|---|---|
+| Accueil | `overview` | `findings`, `evidence`, `replay` |
+| Diagnostiquer | `connect` | `welcome` |
+| J'ai un problème | `symptoms` | `explorer` |
+| Historique | `timeline` | |
+| Partager | `report` | |
+
+Réglages, Simple/Expert, démo, langue et thème restent en haut. Toutes les routes existantes restent valides (liens, palette Ctrl K, URL directes).
+
+| Phase | Contenu | Critère |
+|---|---|---|
+| R1 | Dock (composant partagé, une peau par thème), bouton Réglages en haut, bande 01-11 retirée | e2e : chaque écran joignable, axe et débordement verts par thème |
+| R2 | Accueil Simple des planches : verdict en mots courants, « ce qu'il faut faire » (gestes tirés des conclusions), frise « ce qui s'est passé », « comment on le sait », raccourcis code / pièce | même texte dans les 4 thèmes, aucune donnée inventée |
+| R3 | Verdict guidé pas à pas, la caméra 3D va de pièce en pièce (port de `focus` de `lab/u1stage.js`) | repli sans WebGL, réduction des mouvements |
+| R4 | Accueil Expert : couches dépliées (courbe, preuves, rejeu, partage) | |
+| R5 | Diagnostiquer : choix du mode (capture, import, journaux, démo) avec la commande propre au thème | |
+| R6 | Pièces de signature restantes (galvanomètre, ticket, clavier, bouton rotatif, capot, radar, appui long, loupe liquide) | |
+| R7 | Tests, captures, docs, release | |

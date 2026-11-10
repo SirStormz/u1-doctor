@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeAll, beforeEach, expect, test, vi } from "vitest";
 import { App } from "../src/App";
 
@@ -31,7 +31,7 @@ afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 test("history lists saved sessions, saves, and deletes only after a second click", async () => {
   render(<App />);
-  fireEvent.click(await screen.findByRole("button", { name: "History" }));
+  fireEvent.click(await within(screen.getByRole("main")).findByRole("button", { name: "History" })); // the dock has its own "History"
   await waitFor(() => expect(screen.getByTestId("hist-empty")).toBeTruthy());
   fireEvent.click(screen.getByText("Save the real capture (H-02)"));
   await waitFor(() => expect(screen.getByText("H-02 capture")).toBeTruthy());
@@ -47,7 +47,7 @@ test("history lists saved sessions, saves, and deletes only after a second click
 
 test("a refused file shows a plain reason, not a raw error", async () => {
   render(<App />);
-  fireEvent.click(await screen.findByRole("button", { name: "History" }));
+  fireEvent.click(await within(screen.getByRole("main")).findByRole("button", { name: "History" })); // the dock has its own "History"
   await screen.findByTestId("hist-empty");
   const input = screen.getByText("Import a U1-DEB bundle").querySelector("input") as HTMLInputElement;
   fireEvent.change(input, { target: { files: [new File(["x"], "bad.zip", { type: "application/zip" })] } });
@@ -64,7 +64,7 @@ test("a selected session shows its recomputed findings, a Dry Run one as a predi
     return base(url, init);
   }) as typeof fetch);
   render(<App />);
-  fireEvent.click(await screen.findByRole("button", { name: "History" }));
+  fireEvent.click(await within(screen.getByRole("main")).findByRole("button", { name: "History" })); // the dock has its own "History"
   await waitFor(() => expect(screen.getByTestId("hist-empty")).toBeTruthy());
   fireEvent.click(screen.getByText("Save the real capture (H-02)"));
   await waitFor(() => expect(screen.getByTestId("hist-findings")).toBeTruthy());
@@ -86,7 +86,7 @@ test("log files can be imported from the history screen and the result says what
     return base(url, init);
   });
   render(<App />);
-  fireEvent.click(await screen.findByRole("button", { name: "History" }));
+  fireEvent.click(await within(screen.getByRole("main")).findByRole("button", { name: "History" })); // the dock has its own "History"
   await screen.findByTestId("hist-empty");
   const input = screen.getByText("Analyse log files").querySelector("input") as HTMLInputElement;
   fireEvent.change(input, { target: { files: [new File(["x"], "logs.zip")] } });
