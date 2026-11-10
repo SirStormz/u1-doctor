@@ -145,3 +145,37 @@
 [data-theme="visiere"] .home-mark { animation: vis-lock 800ms cubic-bezier(0.2, 0.8, 0.2, 1) 300ms both; }
 @media (prefers-reduced-motion: reduce) { [data-theme="visiere"] .home-mark { animation: none; } }
 [data-theme="visiere"] .home-step[aria-current="step"] { background: rgba(255, 181, 71, 0.08); box-shadow: inset 0 0 0 1px var(--gold), 0 0 8px rgba(255, 181, 71, 0.25); }
+
+/* ---- Expert home: HUD labels with gold corner brackets, gold curve, alerts in red (pause, declared code) ---- */
+[data-theme="visiere"] .ex-img { -webkit-mask-image: radial-gradient(closest-side, #000 76%, transparent 100%); mask-image: radial-gradient(closest-side, #000 76%, transparent 100%); }
+[data-theme="visiere"] .ex-callout { border: 1px solid rgba(255, 181, 71, 0.28); border-radius: 2px; background:
+  linear-gradient(var(--yellow), var(--yellow)) 0 0 / 12px 1.5px no-repeat, linear-gradient(var(--yellow), var(--yellow)) 0 0 / 1.5px 12px no-repeat,
+  linear-gradient(var(--yellow), var(--yellow)) 100% 100% / 12px 1.5px no-repeat, linear-gradient(var(--yellow), var(--yellow)) 100% 100% / 1.5px 12px no-repeat, rgba(16, 12, 12, 0.74);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); animation: vis-lock 520ms cubic-bezier(0.2, 0.8, 0.2, 1) 300ms both; }
+@keyframes vis-lock { from { opacity: 0; clip-path: inset(0 50% 0 50%); } to { opacity: 1; clip-path: inset(0 0 0 0); } }
+[data-theme="visiere"] .ex-callout-k { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.12em; font-size: 10.5px; color: var(--ink-2); }
+[data-theme="visiere"] .ex-callout-v { font-family: var(--font-display); font-weight: 600; color: var(--warn); text-shadow: 0 0 6px rgba(255, 181, 71, 0.25); }
+[data-theme="visiere"] .ex-callout[data-alert="true"] .ex-callout-v { color: var(--danger); text-shadow: 0 0 6px rgba(255, 59, 47, 0.3); }
+[data-theme="visiere"] .ex-callout-t { border-radius: 0; background: rgba(255, 181, 71, 0.08); }
+[data-theme="visiere"] .ex-leaders line { stroke: var(--yellow); stroke-width: 1; }
+[data-theme="visiere"] .ex-pin { width: 11px; height: 11px; border-radius: 0; transform: translate(-50%, -50%) rotate(45deg); background: var(--yellow); box-shadow: 0 0 0 2px #08070a; filter: drop-shadow(0 0 3px rgba(255, 181, 71, 0.6)); }
+[data-theme="visiere"] .ex-code { border: 1px solid rgba(255, 181, 71, 0.55); border-radius: 0; background: rgba(255, 181, 71, 0.06); color: var(--warn); }
+[data-theme="visiere"] .ex-status { border-radius: 0; border: 0; background: rgba(255, 255, 255, 0.05); font-family: var(--font-display); }
+[data-theme="visiere"] .ex-status::before { width: 8px; height: 8px; border-radius: 0; transform: rotate(45deg); }
+[data-theme="visiere"] .ex-status[data-cls="OBSERVED"] { --tone: var(--ink); }
+[data-theme="visiere"] .ex-table th { font-family: var(--font-display); letter-spacing: 0.14em; }
+[data-theme="visiere"] .ex-table td:first-child { color: var(--yellow); }
+[data-theme="visiere"] .hc { --hc-line: var(--yellow); --hc-fill: var(--yellow); }
+[data-theme="visiere"] .hc-line { filter: drop-shadow(0 0 3px rgba(255, 181, 71, 0.5)); }
+[data-theme="visiere"] .hc-code line { stroke: var(--danger); stroke-width: 1.5; }
+[data-theme="visiere"] .hc-code rect { fill: rgba(255, 59, 47, 0.12); stroke: var(--danger); stroke-width: 1; }
+[data-theme="visiere"] .hc-code text { fill: var(--danger); font-family: var(--font-display); }
+[data-theme="visiere"] .hc-cursor { stroke: var(--warn); }
+[data-theme="visiere"] .ex-range { --ex-fill: var(--yellow); }
+[data-theme="visiere"] .ex-range::-webkit-slider-runnable-track { height: 4px; border-radius: 0; background: linear-gradient(90deg, var(--yellow) var(--p, 0%), rgba(255, 181, 71, 0.16) var(--p, 0%)); }
+[data-theme="visiere"] .ex-range::-webkit-slider-thumb { width: 16px; height: 22px; margin-top: -9px; border: 0; border-radius: 0; background: var(--yellow); clip-path: polygon(0 0, 100% 0, 100% 70%, 70% 100%, 0 100%); }
+[data-theme="visiere"] .ex-play { border-radius: 0; clip-path: polygon(0 0, 100% 0, 100% 72%, 72% 100%, 0 100%); }
+[data-theme="visiere"] .ex-event { border-radius: 0; }
+[data-theme="visiere"] .ex-event[aria-current="true"] { border-color: rgba(255, 181, 71, 0.6); background: rgba(255, 181, 71, 0.08); }
+[data-theme="visiere"] .ex-event[data-kind="user_reported_error_code"] > span:last-child { color: var(--danger); }
+@media (prefers-reduced-motion: reduce) { [data-theme="visiere"] .ex-callout { animation: none; } }

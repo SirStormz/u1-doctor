@@ -12,6 +12,7 @@ import { moduleLabel, scenarioLabel, tok, tx } from "../lib/dyn";
 import { pfLimit, pfView, type PfCheck } from "../lib/preflight-text";
 import { buildRequest, supNote, supText, type SupportOut } from "../lib/support-text";
 import type { RouteName } from "../lib/router";
+import { ALLOW, DENY } from "../lib/allowlist";
 import { EvidenceNotice } from "../components/evidence-notice";
 import { LiveNet } from "../components/live-net";
 import { CaptureAlert, useCaptureAlert } from "../components/capture-alert";
@@ -58,8 +59,6 @@ export function Welcome({ go }: { go: Go }) {
 }
 
 /* ---------------- Connect (read-only live capture, owner-approved) ---------------- */
-const ALLOW = [["GET", "/server/info"], ["GET", "/printer/info"], ["GET", "/printer/objects/list"], ["GET", "/server/files/directory?path=logs"], ["GET", "/server/history/totals"], ["WS", "printer.objects.subscribe"]];
-const DENY = ["printer.gcode.script", "printer.print.*", "printer.restart", "machine.*", "server.files.upload", "server.files.delete", "/printer/objects/query"];
 export function Connect() {
   const { t, lang } = usePrefs();
   const [host, setHost] = useState("");
