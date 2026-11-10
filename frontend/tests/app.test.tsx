@@ -90,26 +90,31 @@ test("live capture needs the approval box, then posts consent and shows 0 writes
   expect(document.body.textContent).not.toContain("192.168.50.20");
 });
 
-test("navigation has the 10 mandatory screens plus the print-quality assistant (Expert mode), and marks the current one", async () => {
-  localStorage.setItem("u1d.mode", "expert");
+test("the dock has the five places of UI V2 and marks the current one, also on the screens reached from it", async () => {
   render(<App />);
   const nav = await screen.findByRole("navigation", { name: /main navigation|navigation principale/i });
   const items = within(nav).getAllByRole("button");
-  expect(items).toHaveLength(11);
-  expect(items.map((b) => b.textContent)).toEqual(expect.arrayContaining([expect.stringMatching(/Print quality|Qualité d'impression/)]));
-  expect(items.filter((b) => b.getAttribute("aria-current") === "page")).toHaveLength(1);
+  expect(items.map((b) => b.textContent)).toEqual(["Home", "Diagnose", "I have a problem", "History", "Share"]);
+  expect(items.filter((b) => b.getAttribute("aria-current") === "page").map((b) => b.textContent)).toEqual(["Home"]);
+  fireEvent.click(within(nav).getByRole("button", { name: "I have a problem" }));
+  await waitFor(() => expect(location.hash).toBe("#/symptoms"));
+  expect(within(nav).getByRole("button", { name: "I have a problem" })).toHaveAttribute("aria-current", "page");
+  location.hash = "#/findings"; // reached from Home: Home stays lit
+  await waitFor(() => expect(within(nav).getByRole("button", { name: "Home" })).toHaveAttribute("aria-current", "page"));
+  fireEvent.click(screen.getByRole("button", { name: /^(settings|réglages)$/i }));
+  await waitFor(() => expect(location.hash).toBe("#/settings"));
+  expect(within(nav).queryAllByRole("button").filter((b) => b.getAttribute("aria-current") === "page")).toHaveLength(0);
 });
 
-test("Simple mode (default) hides Evidence detail and Replay lab from the menu; Expert mode brings them back", async () => {
+test("the dock is the same in Simple and Expert mode; the Expert switch still toggles and is remembered", async () => {
   render(<App />);
   const nav = await screen.findByRole("navigation", { name: /main navigation|navigation principale/i });
-  expect(within(nav).getAllByRole("button")).toHaveLength(9);
-  expect(within(nav).queryByRole("button", { name: /Evidence detail|Détail des preuves|Replay lab|Laboratoire de rejeu/ })).toBeNull();
+  expect(within(nav).getAllByRole("button")).toHaveLength(5);
   const toggle = screen.getByRole("button", { name: /^(expert mode|mode expert)$/i });
   expect(toggle).toHaveAttribute("aria-pressed", "false");
   fireEvent.click(toggle);
   expect(toggle).toHaveAttribute("aria-pressed", "true");
-  expect(within(nav).getAllByRole("button")).toHaveLength(11);
+  expect(within(nav).getAllByRole("button")).toHaveLength(5);
   expect(localStorage.getItem("u1d.mode")).toBe("expert");
 });
 

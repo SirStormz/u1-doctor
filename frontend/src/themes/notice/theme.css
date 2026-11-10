@@ -18,13 +18,11 @@
 [data-theme="notice"] .langsw button + button { border-left: 2px solid var(--ink); }
 [data-theme="notice"] .langsw button[aria-pressed="true"] { background: var(--yellow); color: var(--ink); }
 
-/* index strip: pills, the current page is an amber tab with an ink underline */
-[data-theme="notice"] .indexbar { background: #ffffff; border-bottom: 2px solid var(--ink); }
-[data-theme="notice"] .navitem { border-right: 0; border-radius: 999px; margin: 8px 2px; color: var(--ink-2); font-weight: 700; }
-[data-theme="notice"] .navitem:hover { background: #f4f3ef; color: var(--ink); }
-[data-theme="notice"] .navitem[aria-current="page"] { background: var(--yellow); color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink); }
-[data-theme="notice"] .navitem[aria-current="page"] .nn { color: var(--ink); }
-[data-theme="notice"] .nav-ind { display: none; }
+/* dock: an outlined tab bar with a hard shadow */
+[data-theme="notice"] .dock { background: #ffffff; border: 2px solid var(--ink); border-radius: 20px; box-shadow: 4px 4px 0 var(--ink); padding: 7px; }
+[data-theme="notice"] .dock-item { border-radius: 13px; color: var(--ink-2); font-weight: 700; }
+[data-theme="notice"] .dock-item:hover { background: #f4f3ef; color: var(--ink); }
+[data-theme="notice"] .dock-item[aria-current="page"] { background: var(--yellow); color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink); }
 
 /* page title */
 [data-theme="notice"] h1 { font-weight: 800; letter-spacing: -0.02em; }

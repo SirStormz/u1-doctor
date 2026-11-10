@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { Activity, Check, Command, Eye, FileSearch, FileText, FlaskConical, History, LayoutDashboard, ListChecks, Lock, Plug, Search, Settings, ShieldCheck, Wrench } from "lucide-react";
+import { Activity, Check, CircleQuestionMark, Clock, Command, Eye, FileSearch, FileText, FlaskConical, History, House, LayoutDashboard, ListChecks, Lock, Plug, Search, Settings, Share, ShieldCheck, Wrench } from "lucide-react";
 import { api, type InterpretOut } from "../api";
 import { useIncident } from "../lib/data";
 import { usePrefs, type StepId, type Theme } from "../lib/prefs";
@@ -16,6 +16,31 @@ const ICONS: Record<RouteName, ReactNode> = {
   welcome: <ShieldCheck size={18} />, connect: <Plug size={18} />, overview: <LayoutDashboard size={18} />, explorer: <Search size={18} />, symptoms: <Eye size={18} />, timeline: <Activity size={18} />,
   findings: <ListChecks size={18} />, evidence: <FileSearch size={18} />, replay: <History size={18} />, report: <FileText size={18} />, settings: <Settings size={18} />,
 };
+
+/** Bottom dock (UI V2): five places; each lights up on its own screen and on the screens reached from it. */
+type DockId = "home" | "diagnose" | "problem" | "history" | "share";
+const DOCK: { id: DockId; to: RouteName; also: readonly RouteName[]; icon: ReactNode }[] = [
+  { id: "home", to: "overview", also: ["findings", "evidence", "replay"], icon: <House size={21} /> },
+  { id: "diagnose", to: "connect", also: ["welcome"], icon: <Activity size={21} /> },
+  { id: "problem", to: "symptoms", also: ["explorer"], icon: <CircleQuestionMark size={21} /> },
+  { id: "history", to: "timeline", also: [], icon: <Clock size={21} /> },
+  { id: "share", to: "report", also: [], icon: <Share size={21} /> },
+];
+function Dock({ route, go }: { route: RouteName; go: (n: RouteName) => void }) {
+  const { t } = usePrefs();
+  return (
+    <nav aria-label={t.navLabel} className="dock">
+      {DOCK.map((d) => {
+        const on = route === d.to || d.also.includes(route);
+        return (
+          <button key={d.id} type="button" className="dock-item" aria-current={on ? "page" : undefined} onClick={() => go(d.to)}>
+            <span aria-hidden className="dock-ic">{d.icon}</span><span>{t.dock[d.id]}</span>
+          </button>
+        );
+      })}
+    </nav>
+  );
+}
 
 /** Screens that tick a "Getting started" step when they are opened. */
 const ROUTE_STEP: Partial<Record<RouteName, StepId>> = { explorer: "code", timeline: "timeline", evidence: "evidence", report: "report" };
@@ -146,7 +171,7 @@ export function Shell({ route, go, replay, children }: { route: RouteName; go: (
   return (
     <ToastCtx.Provider value={push}>
       <a href="#main" onClick={(e) => { e.preventDefault(); main.current?.focus(); }} className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-accent focus:px-3 focus:py-1 focus:text-accentink">{t.skip}</a>
-      <div className="stage grid h-full grid-rows-[auto_auto_auto_1fr_auto]">
+      <div className="stage grid h-full grid-rows-[auto_auto_1fr_auto]">
         <header className="topbar topbar-h px-[max(21px,3vw)]">
           <div className="wrap flex flex-wrap items-center gap-3 py-1.5">
           <a href="#/" className="brand flex items-center gap-3 no-underline" aria-label={t.appName}><Logo /><span className="text-[17px] font-extrabold uppercase tracking-[0.04em]">{t.appName}</span></a>
@@ -162,6 +187,9 @@ export function Shell({ route, go, replay, children }: { route: RouteName; go: (
             </button>
             <button type="button" onClick={() => setPalette(true)} className="btn tbtn" aria-label={`${t.palette} — ${t.palettePlaceholder.split("…")[0]}… Ctrl K`}>
               <Search size={15} aria-hidden /> <span className="hidden min-[1500px]:inline">{t.palettePlaceholder.split("…")[0]}…</span> <span className="max-sm:hidden"><Kbd>Ctrl K</Kbd></span>
+            </button>
+            <button type="button" onClick={() => go("settings")} aria-pressed={route === "settings"} className="btn tbtn" aria-label={t.nav.settings} title={t.nav.settings}>
+              <Settings size={15} aria-hidden />
             </button>
             <label className="flex items-center gap-1 text-xs">
               <span className="sr-only">{t.theme}</span>
@@ -181,19 +209,10 @@ export function Shell({ route, go, replay, children }: { route: RouteName; go: (
         <div role="status" className={`strip-h flex items-center justify-center gap-2 px-4 text-xs font-bold ${replay || !demo ? "" : "hatch-demo"}`} style={stripStyle}>
           {replay ? t.replayStrip : demo ? t.demoStrip : t.idleStrip}
         </div>
-        <nav aria-label={t.navLabel} className="indexbar">
-          <div className="wrap flex">
-          {visibleRoutes(mode).map((r, k) => (
-            <button key={r} type="button" className="navitem" aria-current={route === r ? "page" : undefined} onClick={() => go(r)} title={t.nav[r]} aria-label={`${String(k + 1).padStart(2, "0")} ${t.nav[r]}`}>
-              {route === r && <motion.span layoutId="nav-ind" className="nav-ind" transition={{ duration: 0.324, ease: [0.618, 0, 0.382, 1] }} aria-hidden />}
-              <span className="nn" aria-hidden>{String(k + 1).padStart(2, "0")}</span>{" "}<span className="nl" aria-hidden>{t.nav[r]}</span>
-            </button>
-          ))}
-          </div>
-        </nav>
-        <main id="main" ref={main} tabIndex={-1} className="min-w-0 overflow-auto px-[max(21px,3vw)] py-[21px] outline-none">
+        <main id="main" ref={main} tabIndex={-1} className="min-w-0 overflow-auto px-[max(21px,3vw)] pb-[118px] pt-[21px] outline-none">
           <motion.div key={route} className="mx-auto max-w-[1520px]" initial={reduce ? false : { opacity: 0, y: 13 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.324, ease: [0.618, 0, 0.382, 1] }}>{children}</motion.div>
         </main>
+        <Dock route={route} go={go} />
         <footer className="topbar px-[max(21px,3vw)] py-1.5 text-xs">
           <div className="wrap flex items-center gap-2">
           <Lock size={13} className="text-accent" aria-hidden />
