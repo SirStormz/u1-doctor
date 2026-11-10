@@ -42,6 +42,11 @@ const en = {
     happens: "What happens", logsSaved: "The reading is saved in the history.", openHistory: "Open the history",
     demoBody: "Demo scenario: {s}. Synthetic data, never from a printer.", demoOn: "Demo mode is on", openHome: "Open the home",
   },
+  sig: {
+    meterNozzle: "Nozzle · toolhead {n} · °C", meterBed: "Bed · °C", radarTurn: "1 turn = 6 min",
+    cover: "Lift the cover", coverClose: "Close the cover", coverHint: "Lift the amber cover, then flip the lever to approve.",
+    keypad: "Keypad", erase: "Erase a digit", clear: "Clear the code",
+  },
   actions: {
     check_path_obstruction: "Check that nothing blocks or tangles the filament path.", clean: "Clean what the code names.", resume_from_screen: "Resume from the printer screen.",
     retry: "Try again.", unload_filament: "Unload the filament (remove what is left).", load_filament: "Load the filament again.", check_cable: "Check the cable and its connector.",
@@ -324,6 +329,11 @@ const fr: Dict = {
     knob: "Tournez le bouton ou choisissez un mode", hold: "Maintenez 1,2 seconde pour autoriser, ou appuyez sur Espace au clavier.", holding: "Maintenez encore…",
     happens: "Ce qui va se passer", logsSaved: "La lecture est enregistrée dans l'historique.", openHistory: "Ouvrir l'historique",
     demoBody: "Scénario de démo : {s}. Données synthétiques, jamais issues d'une imprimante.", demoOn: "Le mode démo est activé", openHome: "Ouvrir l'accueil",
+  },
+  sig: {
+    meterNozzle: "Buse · tête {n} · °C", meterBed: "Plateau · °C", radarTurn: "1 tour = 6 min",
+    cover: "Soulever le capot", coverClose: "Rabattre le capot", coverHint: "Soulevez le capot ambre, puis basculez le levier pour autoriser.",
+    keypad: "Clavier", erase: "Effacer un chiffre", clear: "Effacer le code",
   },
   actions: {
     check_path_obstruction: "Vérifiez que rien ne bloque ni n'emmêle le chemin du filament.", clean: "Nettoyez ce que le code indique.", resume_from_screen: "Reprenez depuis l'écran de l'imprimante.",

@@ -205,3 +205,22 @@
 [data-theme="visiere"] .dg-hold-hint { display: block; margin-top: 6px; font-size: 12.5px; color: var(--warn); }
 [data-theme="visiere"] .dg-consent input[type="checkbox"] { -webkit-appearance: none; appearance: none; position: relative; flex: none; width: 18px; height: 18px; margin: 4px 4px 0; border: 1.5px solid var(--yellow); transform: rotate(45deg); background: transparent; cursor: pointer; }
 [data-theme="visiere"] .dg-consent input[type="checkbox"]:checked { background: var(--yellow); box-shadow: 0 0 6px rgba(255, 181, 71, 0.55); }
+
+/* ---- signature piece: the session radar, one turn = 6 min, drives the replay with the curve cursor ---- */
+[data-theme="visiere"] .ex-replay-body { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 22px; align-items: center; }
+@media (max-width: 640px) { [data-theme="visiere"] .ex-replay-body { grid-template-columns: minmax(0, 1fr); } }
+[data-theme="visiere"] .radar { display: block; width: 100%; max-width: 240px; height: auto; margin-inline: auto; }
+[data-theme="visiere"] .radar-ring { fill: none; stroke: rgba(255, 181, 71, 0.22); }
+[data-theme="visiere"] .radar-tick { stroke: rgba(255, 181, 71, 0.35); }
+[data-theme="visiere"] .radar-tick-major { stroke: var(--yellow); stroke-width: 1.5; }
+[data-theme="visiere"] .radar-hatch { stroke: rgba(255, 181, 71, 0.45); stroke-width: 1; }
+[data-theme="visiere"] .radar-gap { stroke: rgba(255, 181, 71, 0.35); stroke-width: 0.8; }
+[data-theme="visiere"] .radar-trail { fill: rgba(255, 181, 71, 0.13); }
+[data-theme="visiere"] .radar-sweep { stroke: var(--yellow); stroke-width: 2; filter: drop-shadow(0 0 3px rgba(255, 181, 71, 0.6)); }
+[data-theme="visiere"] .radar-ev { fill: #08070a; stroke: var(--ink-2); stroke-width: 1.5; }
+[data-theme="visiere"] .radar-ev[data-past="true"] { fill: var(--ink); stroke: var(--ink); }
+[data-theme="visiere"] .radar-ev-alert { stroke: var(--danger); }
+[data-theme="visiere"] .radar-ev-alert[data-past="true"] { fill: var(--danger); stroke: var(--danger); filter: drop-shadow(0 0 3px rgba(255, 59, 47, 0.6)); }
+[data-theme="visiere"] .radar-core { fill: #100c0c; stroke: rgba(255, 181, 71, 0.5); }
+[data-theme="visiere"] .radar-time { fill: var(--warn); font: 600 15px var(--font-display); }
+[data-theme="visiere"] .radar-note { fill: var(--ink-3); font: 600 8.5px var(--font-display); letter-spacing: 0.12em; text-transform: uppercase; }
