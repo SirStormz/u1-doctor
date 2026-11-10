@@ -56,7 +56,7 @@ from .supportpack import PackError, build_support_pack
 from .timeline import build_timeline
 
 API_VERSION = "1"
-APP_VERSION = "0.3.0-g1"
+APP_VERSION = "0.4.0-g1"
 
 FIXTURES = ROOT / "fixtures" / "synthetic"
 REAL = ROOT / "fixtures" / "real"
