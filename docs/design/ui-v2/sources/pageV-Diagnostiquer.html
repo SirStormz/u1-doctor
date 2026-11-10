@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>V · Diagnostiquer</title>
+<title>Visière · Diagnostiquer</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -10,7 +10,7 @@
 <helmet>
 @@HEAD@@
 <style>
-.bgholo{position:absolute;right:-70px;top:40px;width:640px;height:760px;background-image:url('/_blob/0ebb1648c2bf975cdb7fd1abb760b0d9');background-size:100% 100%;opacity:.42;-webkit-mask-image:radial-gradient(ellipse 60% 58% at 55% 50%,#000 50%,transparent 100%);mask-image:radial-gradient(ellipse 60% 58% at 55% 50%,#000 50%,transparent 100%)}
+.bgholo{position:absolute;right:-70px;top:40px;width:640px;height:760px;background-image:url('@@A:holo-hero@@');background-size:100% 100%;opacity:.552;-webkit-mask-image:radial-gradient(ellipse 60% 58% at 55% 50%,#000 50%,transparent 100%);mask-image:radial-gradient(ellipse 60% 58% at 55% 50%,#000 50%,transparent 100%)}
 .modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:34px}
 .mode{position:relative;display:flex;align-items:center;gap:16px;min-height:112px;padding:20px 22px;border:0;border-radius:3px;background:#120E0D;box-shadow:inset 0 0 0 1px var(--line);color:var(--ink2);text-align:left;font:inherit;cursor:pointer;transition:background .3s,color .3s,box-shadow .3s}
 .mode:hover{background:#1A1412;color:var(--ink)}
@@ -59,17 +59,17 @@
 
 <div class="modes" role="radiogroup" aria-label="Façon de diagnostiquer">
 <button type="button" role="radio" aria-checked="{{c1.checked}}" class="{{c1.cls}}" disabled="{{busy}}" onClick="{{pickConnect}}">
-<sc-if value="{{c1.on}}" hint-placeholder-val="{{ true }}"><svg class="lockb" preserveAspectRatio="none" viewBox="0 0 100 100" aria-hidden="true"><path class="glow" d="M0 14V0H14M86 0H100V14M100 86V100H86M14 100H0V86" fill="none" stroke="#FFB547" stroke-width="2" vector-effect="non-scaling-stroke"></path></svg><span class="sel">Verrouillé</span></sc-if>
+<sc-if value="{{c1.on}}" hint-placeholder-val="{{ true }}"><svg class="lockb" preserveAspectRatio="none" viewBox="0 0 100 100" aria-hidden="true"><path class="glow" d="M0 14V0H14M86 0H100V14M100 86V100H86M14 100H0V86" fill="none" stroke="#FFB547" stroke-width="2" vector-effect="non-scaling-stroke"></path></svg><span class="sel">Choisi</span></sc-if>
 <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9a15 15 0 0 1 20 0"></path><path d="M5 12.5a10 10 0 0 1 14 0"></path><path d="M8.5 16a5 5 0 0 1 7 0"></path><path d="M12 19.5h.01"></path></svg></span>
 <span><span class="t">Connecter ma U1</span><span class="d">le plus précis</span></span>
 </button>
 <button type="button" role="radio" aria-checked="{{c2.checked}}" class="{{c2.cls}}" disabled="{{busy}}" onClick="{{pickFiles}}">
-<sc-if value="{{c2.on}}" hint-placeholder-val="{{ false }}"><svg class="lockb" preserveAspectRatio="none" viewBox="0 0 100 100" aria-hidden="true"><path class="glow" d="M0 14V0H14M86 0H100V14M100 86V100H86M14 100H0V86" fill="none" stroke="#FFB547" stroke-width="2" vector-effect="non-scaling-stroke"></path></svg><span class="sel">Verrouillé</span></sc-if>
+<sc-if value="{{c2.on}}" hint-placeholder-val="{{ false }}"><svg class="lockb" preserveAspectRatio="none" viewBox="0 0 100 100" aria-hidden="true"><path class="glow" d="M0 14V0H14M86 0H100V14M100 86V100H86M14 100H0V86" fill="none" stroke="#FFB547" stroke-width="2" vector-effect="non-scaling-stroke"></path></svg><span class="sel">Choisi</span></sc-if>
 <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6"></path><path d="M12 18v-6M9 15l3-3 3 3"></path></svg></span>
 <span><span class="t">Glisser des fichiers</span><span class="d">sans connexion</span></span>
 </button>
 <button type="button" role="radio" aria-checked="{{c3.checked}}" class="{{c3.cls}}" disabled="{{busy}}" onClick="{{pickDescribe}}">
-<sc-if value="{{c3.on}}" hint-placeholder-val="{{ false }}"><svg class="lockb" preserveAspectRatio="none" viewBox="0 0 100 100" aria-hidden="true"><path class="glow" d="M0 14V0H14M86 0H100V14M100 86V100H86M14 100H0V86" fill="none" stroke="#FFB547" stroke-width="2" vector-effect="non-scaling-stroke"></path></svg><span class="sel">Verrouillé</span></sc-if>
+<sc-if value="{{c3.on}}" hint-placeholder-val="{{ false }}"><svg class="lockb" preserveAspectRatio="none" viewBox="0 0 100 100" aria-hidden="true"><path class="glow" d="M0 14V0H14M86 0H100V14M100 86V100H86M14 100H0V86" fill="none" stroke="#FFB547" stroke-width="2" vector-effect="non-scaling-stroke"></path></svg><span class="sel">Choisi</span></sc-if>
 <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
 <span><span class="t">Décrire ce que je vois</span><span class="d">le plus rapide</span></span>
 </button>

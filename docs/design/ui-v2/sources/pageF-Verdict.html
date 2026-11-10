@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>F · Verdict — tête 3</title>
+<title>Obsidienne · Verdict, tête 3</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -12,24 +12,27 @@
 <style>
 .bg{position:absolute;inset:0;background-repeat:no-repeat;transition:background-size .9s cubic-bezier(.65,0,.35,1),background-position .9s cubic-bezier(.65,0,.35,1),opacity .6s ease}
 .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(11,13,16,.82) 0%,rgba(11,13,16,.35) 42%,rgba(11,13,16,0) 62%),linear-gradient(0deg,#0B0D10 0%,rgba(11,13,16,0) 22%)}
+.cam{position:absolute;inset:0;width:100%;height:100%;display:block;transition:opacity .8s cubic-bezier(.2,.8,.2,1)}
+.live .pinm,.live .ring{transition:opacity .4s,width .9s,height .9s,margin .9s}
 .pinm{position:absolute;z-index:3;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 4px rgba(11,13,16,.8),0 0 0 6px rgba(255,255,255,.65);transition:left .9s cubic-bezier(.65,0,.35,1),top .9s cubic-bezier(.65,0,.35,1),opacity .4s}
 .ring{position:absolute;z-index:3;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.55);transition:left .9s cubic-bezier(.65,0,.35,1),top .9s cubic-bezier(.65,0,.35,1),opacity .4s,width .9s,height .9s,margin .9s}
 .ev{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);font-size:15px}
-.donebtn{display:flex;align-items:center;gap:12px;padding:10px 14px 10px 10px;border:0;border-radius:999px;background:rgba(255,255,255,.07);color:var(--ink);font:600 15px/1 'Albert Sans',sans-serif;cursor:pointer}
+.donebtn{display:flex;align-items:center;gap:12px;padding:10px 14px 10px 10px;border:0;border-radius:999px;background:rgba(255,255,255,.07);color:var(--ink);font:600 15px/1 'Geist',sans-serif;cursor:pointer}
 </style>
 </helmet>
 <div class="app">
 @@DEFS@@
 @@NAV:simple:back@@
 
-<section style="position:relative;height:900px">
-<div class="bg" role="img" aria-label="{{alt}}" style="background-image:url('/_blob/3cd39a2e266f4c5f3db791eeaaa1eff8');background-size:{{tSize}};background-position:{{tPos}};opacity:{{tOp}}"></div>
-<div class="bg" aria-hidden="true" style="background-image:url('/_blob/bcb3698311013692549901476c69ea00');background-size:1440px 960px;background-position:0 -30px;opacity:{{eOp}}"></div>
+<section class="{{secCls}} h1440" style="position:relative;height:900px;max-width:1440px;margin:0 auto">
+<div class="bg" role="img" aria-label="{{alt}}" style="background-image:url('@@A:obs-tetes2@@');background-size:{{tSize}};background-position:{{tPos}};opacity:{{tOp}}"></div>
+<div class="bg" aria-hidden="true" style="background-image:url('@@A:obs-ecran2@@');background-size:1520px 1013px;background-position:-1px -61px;opacity:{{eOp}}"></div>
+<canvas class="cam" ref="{{view}}" aria-hidden="true" style="opacity:{{liveOp}}"></canvas>
 <div class="shade" aria-hidden="true"></div>
-<span class="ring" aria-hidden="true" style="left:{{px}};top:{{py}};opacity:{{pinOp}};width:{{rs}};height:{{rs}};margin:{{rm}}"></span>
-<span class="pinm" aria-hidden="true" style="left:{{px}};top:{{py}};opacity:{{pinOp}}"></span>
+<span class="ring" ref="{{ring}}" aria-hidden="true" style="left:{{px}};top:{{py}};opacity:{{pinOp}};width:{{rs}};height:{{rs}};margin:{{rm}}"></span>
+<span class="pinm" ref="{{pinm}}" aria-hidden="true" style="left:{{px}};top:{{py}};opacity:{{pinOp}}"></span>
 
-<div class="glass lq rise" style="position:absolute;z-index:5;left:80px;top:150px;width:540px;padding:30px;border-radius:34px;animation-delay:.15s">
+<div class="glass settle glint" style="position:absolute;z-index:5;left:80px;top:150px;width:540px;padding:30px;border-radius:34px;animation-delay:.15s">
 <span class="st s-w tip" tabindex="0" data-tip="À vérifier : l'imprimante l'a signalé, il faut le confirmer à l'œil. Ce n'est pas une certitude."><i></i>À vérifier · tête 3</span>
 <h1 class="h" style="margin:16px 0 0;font-size:40px;line-height:1.04">La tête 3 n'arrive plus à pousser le filament</h1>
 <div class="seg" role="tablist" aria-label="Étapes" style="display:grid;margin-top:24px;width:100%">
@@ -39,7 +42,7 @@
 <span class="thumb" style="left:{{thumbL}};width:calc((100% - 6px) / 3)"></span>
 </div>
 <div class="h" style="margin-top:22px;font-size:26px;letter-spacing:-.02em">{{cur.title}}</div>
-<p style="margin:10px 0 0;font-size:16.5px;color:var(--ink2);min-height:76px">{{cur.text}}</p>
+<p class="{{swapCls}}" style="margin:10px 0 0;font-size:16.5px;color:var(--ink2);min-height:76px">{{cur.text}}</p>
 <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:14px">
 <button type="button" class="donebtn" aria-pressed="{{pressed}}" onClick="{{toggle}}"><span class="{{swCls}}"></span>{{doneLabel}}</button>
 <span style="margin-left:auto;font-size:13.5px;color:var(--ink3)">{{count}} sur 3 faits</span>
@@ -72,24 +75,63 @@
 class Component extends DCLogic {
 constructor(props) {
 super(props);
-this.state = { step: 0, done: [false, false, false] };
+this.state = { step: 0, done: [false, false, false], live: false };
+this.view = React.createRef();
+this.pinm = React.createRef();
+this.ring = React.createRef();
+}
+componentDidMount() {
+var self = this;
+/* la caméra 3D vole d'étape en étape ; les images restent en secours (sans WebGL) */
+import("@@A:u1stage@@").then(function (m) {
+return m.mount(self.view.current, { theme: "obsidienne", model: "@@A:glb@@", view: self.views()[self.state.step], drift: true });
+}).then(function (st) {
+if (!st) return;
+if (self.gone) { st.dispose(); return; }
+self.stage = st;
+self.shown = self.state.step;
+self.setState({ live: true });
+st.onFrame(function (p) {
+var a = p(["head3top", "gear3", "screen"][self.state.step]);
+if (!a || !self.pinm.current) return;
+self.pinm.current.style.left = self.ring.current.style.left = a.x + "px";
+self.pinm.current.style.top = self.ring.current.style.top = a.y + "px";
+});
+}).catch(function () {});
+}
+componentDidUpdate() {
+/* DCLogic ne transmet pas l'état précédent : on garde la dernière étape montrée */
+if (this.stage && this.shown !== this.state.step) { this.shown = this.state.step; this.stage.focus(this.views()[this.state.step], 1300); }
+}
+componentWillUnmount() {
+this.gone = true;
+if (this.stage) this.stage.dispose();
+}
+views() {
+return [
+{ target: [0.03, 0.41, -0.13], dir: [0.22, 0.42, 0.88], scale: 0.48, shift: 0.17 },
+{ target: [0.0325, 0.445, -0.198], dir: [0.26, 0.74, 0.62], scale: 0.17, shift: 0.17 },
+{ target: [0.018, 0.4, 0.246], dir: [0.2, 0.18, 0.96], scale: 0.63, shift: 0.23 }
+];
 }
 renderVals() {
 var self = this;
 var s = this.state;
 var i = s.step;
 var defs = [
-{ title: "Repérez la tête 3", text: "C'est la troisième en partant de la gauche, à l'arrière de la machine. Le point ambre la montre sur la photo.", tSize: "1440px 960px", tPos: "0px -60px", px: "658px", py: "665px", rs: "150px", rm: "-75px 0 0 -75px", caption: "Les 4 têtes, vues de l'avant", alt: "Les quatre têtes à l'arrière de la U1" },
-{ title: "Vérifiez l'engrenage", text: "Regardez l'engrenage qui pousse le filament dans la tête 3 et retirez les débris ou le filament cassé.", tSize: "2600px 1733px", tPos: "-210px -860px", px: "978px", py: "455px", rs: "300px", rm: "-150px 0 0 -150px", caption: "Gros plan · tête 3", alt: "Gros plan sur la tête 3" },
-{ title: "Relancez l'impression", text: "Sur l'écran tactile de la U1, reprenez l'impression mise en pause.", tSize: "2600px 1733px", tPos: "-210px -860px", px: "666px", py: "345px", rs: "220px", rm: "-110px 0 0 -110px", caption: "Écran tactile de la U1", alt: "L'écran tactile de la U1" }
+{ title: "Repérez la tête 3", text: "C'est la troisième en partant de la gauche, à l'arrière de la machine. Le point ambre la montre.", tSize: "1700px 1133px", tPos: "-27px -38px", px: "950px", py: "450px", rs: "150px", rm: "-75px 0 0 -75px", caption: "Les têtes garées, vues de l'avant", alt: "Les têtes garées à l'arrière de la U1, la tête 3 au centre" },
+{ title: "Nettoyez l'engrenage", text: "Regardez l'engrenage qui pousse le filament dans la tête 3 et retirez les débris ou le filament cassé.", tSize: "2600px 1733px", tPos: "-518px 0px", px: "985px", py: "252px", rs: "300px", rm: "-150px 0 0 -150px", caption: "Gros plan sur la tête 3", alt: "Gros plan sur le haut de la tête 3, là où le filament entre" },
+{ title: "Relancez l'impression", text: "Sur l'écran tactile de la U1, reprenez l'impression mise en pause.", tSize: "1600px 1067px", tPos: "31px -10px", px: "1150px", py: "450px", rs: "220px", rm: "-110px 0 0 -110px", caption: "L'écran tactile de la U1", alt: "La façade de la U1 : inscription snapmaker et écran tactile" }
 ];
 var d = defs[i];
 var on = s.done[i];
 function tab(k) { return { cls: k === i ? "on" : "", sel: k === i ? "true" : "false" }; }
 return {
 cur: d, alt: d.alt, caption: d.caption,
-tSize: d.tSize, tPos: d.tPos, tOp: i === 2 ? "0" : "1", eOp: i === 2 ? "1" : "0",
-px: d.px, py: d.py, rs: d.rs, rm: d.rm, pinOp: i === 2 ? "0" : "1",
+i: i, view: this.view, pinm: this.pinm, ring: this.ring,
+liveOp: s.live ? "1" : "0", secCls: s.live ? "live" : "", swapCls: "swp" + i,
+tSize: d.tSize, tPos: d.tPos, tOp: s.live ? "0" : (i === 2 ? "0" : "1"), eOp: s.live ? "0" : (i === 2 ? "1" : "0"),
+px: d.px, py: d.py, rs: d.rs, rm: d.rm, pinOp: s.live || i < 2 ? "1" : "0",
 s0: tab(0), s1: tab(1), s2: tab(2),
 thumbL: "calc(3px + " + i + " * (100% - 6px) / 3)",
 go0: function () { self.setState({ step: 0 }); },

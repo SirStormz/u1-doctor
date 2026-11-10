@@ -11,7 +11,7 @@ Canevas de maquette (privé, claude.ai) : https://claude.ai/artifact/9WfUYAyLC6K
 | Idée | L'app est un instrument matériel de la U1 | Un vrai mode d'emploi illustré | Liquid Glass sombre sur la vraie U1 | HUD de casque néon posé sur la vraie U1 |
 | Fond | Plastique gris chaud microbillé (texture photo) | Blanc `#FFFFFF` | Graphite `#0B0D10` | Quasi noir `#08070A` |
 | Accent | Écran LCD ambre `#FFB547`, texte `#2A1B03` | Ambre `#FFB547` sur la seule pièce à toucher | Ambre pour les états, verre blanc translucide | Or `#FFB547` / `#FFD99A`, rouge `#FF3B2F` pour les alertes |
-| Polices | Doto (LCD), Barlow, Barlow Semi Condensed (sérigraphie), Permanent Marker (ruban), Courier Prime (ticket) | Schibsted Grotesk, Atkinson Hyperlegible Next, IBM Plex Mono | Albert Sans, IBM Plex Mono | Oxanium, Saira, JetBrains Mono |
+| Polices | Doto (LCD), Barlow, Barlow Semi Condensed (sérigraphie), Permanent Marker (ruban), Courier Prime (ticket) | Schibsted Grotesk, Atkinson Hyperlegible Next, IBM Plex Mono | Geist, Geist Mono (Albert Sans abandonnée le 2026-11-10 : son « 1 » se lisait « l ») | Oxanium, Saira, JetBrains Mono |
 | Signature | Galvanomètre à aiguille, imprimante à tickets, clavier qui tape dans l'écran, molette de lecture, capot de sécurité, leviers | Illustrations au trait des 3 gestes, vue d'ensemble à renvois numérotés, boutons à ombre dure qui s'enfoncent | Verre réel posé sur la photo, loupe liquide sur la tête 3, curseurs de verre qui glissent, fond qui zoome d'étape en étape, étiquettes de verre sur les pièces | Réticule qui verrouille la tête 3, scan qui révèle l'hologramme, radar de session, appui long pour autoriser |
 | Navigation | Rangée de touches (dock) | Dock à contour | Dock et barre en verre (filtre SVG de déplacement, Chromium) | Dock et barre en verre sombre à équerres d'angle |
 
@@ -33,6 +33,22 @@ Ajouté et validé le 2026-11-10 à la demande du propriétaire (HUD cyberpunk s
 
 Images (dans `private/ui-v2/visiere/`, non versionnées) : `vis-hero` (retouche Codex de `obs-hero`, éclairage or et liseré rouge), `vis-tetes` (retouche de `obs-tetes`), `vis-ecran` (retouche de `obs-ecran`), `vis-holo-d` (hologramme **calculé à partir des pixels de `vis-hero`** : contours Sobel + rampe or + lignes de balayage, donc géométrie identique ; l'hologramme généré par Codex a été écarté car il ajoutait des montants internes et n'était pas aligné). Il se refait avec `py -3 sources/holoV.py private/ui-v2/visiere/vis-hero.png private/ui-v2/visiere/vis-holo-d.png apercu.jpg`.
 
+## Audit du 2026-11-10 (branche `design/ui-v2-audit`)
+
+Rapport complet : `U1_DOCTOR_AUDIT_4_THEMES.md` ; plan d'intégration : `U1_DOCTOR_PLAN_IMPLEMENTATION_THEMES.md` (racine du dépôt). Point de restauration : tag `ui-v2-pre-audit`.
+
+- **Images de la U1 refaites depuis la scène du propriétaire** (`sources/render_u1.py`, Blender 5.2) : l'inscription « snapmaker » (façade et tête) et l'écran viennent du modèle, rien n'est superposé. Les retouches Codex (`obs-*`, `vis-*`, `notice-*`) les avaient effacées : elles ne sont plus utilisées par les planches (gardées dans `private/ui-v2/`). `sources/render_all.sh` refait les 12 images (`obs`, `vis`, `line`, `holo` × `hero`, `tetes`, `ecran`) et leurs repères projetés (`.json`) ; `sources/export_web.py` en fait les copies web dans `lab/r/` (non versionné).
+- **Scène 3D partagée** `lab/u1stage.js` (assemblage : `npx --prefix frontend vite build --config docs/design/ui-v2/lab/vite.lab.config.mjs` → `lab/dist/`, non versionné). Même caméra que les rendus : l'affiche et la 3D se superposent au pixel. Utilisée par P-Accueil (fenêtre à tourner), E-Expert (vue au trait, renvois qui suivent), F-Accueil (3D au survol), F-Verdict (vol de caméra), V-Expert (hologramme / rendu par plan de coupe).
+- **Banc local** : `py -3 sources/bench.py` (port 8790 ; le 8765 est celui de l'app) sert les planches comme le canevas (runtime copié dans `private/ui-v2/bench/support.js`, images selon `sources/assets.json`). Les entrées `/_blob/local-…` ne sont pas encore envoyées au canevas. `lab/perf.mjs` et `stage.bench()` mesurent les performances.
+- Corrigés : curseurs `.thumb` de P/E/F (`.seg>.thumb`), infobulles fermées qui élargissaient la page, 404 des `<img src="{{…}}">`, dégradé invisible de la frise Obsidienne, contrastes Notice et Obsidienne (axe : 0 violation grave sur les 16 planches), touche illisible et titre LCD coupé de Pupitre 2, `notice-3` (engrenage inventé) remplacée.
+
+| Asset (local) | Fichier | Thèmes |
+|---|---|---|
+| `obs-hero2`, `obs-tetes2`, `obs-ecran2` | `lab/r/u1-obs-{hero,tetes,ecran}.jpg` | Obsidienne, Pupitre 2 |
+| `vis-hero2`, `vis-tetes2`, `vis-ecran2`, `holo-hero` | `lab/r/u1-vis-*.jpg`, `lab/r/u1-holo-hero.png` | Visière |
+| `line-hero`, `line-tetes`, `line-ecran` | `lab/r/u1-line-*.jpg` | Notice |
+| `u1stage`, `glb` | `lab/dist/u1stage.bundle.js`, `frontend/public/models/u1-jay.glb` | P, E, F, V |
+
 ## Fichiers
 
 - `maquettes/` : les 16 planches `.dc.html` publiées sur le canevas + `canvas.json`.
@@ -48,12 +64,12 @@ Images (dans `private/ui-v2/visiere/`, non versionnées) : `vis-hero` (retouche 
 
 ## Règles à garder pour l'implémentation
 
-- **Fidélité U1** : toute image de la U1 part des rendus de `U1_Jay_Pack_Complet/U1_Jay/` (retouche Codex « géométrie identique », jamais de génération libre). Dans l'app, la U1 reste le modèle 3D `U1_Jay_WEB.glb`.
-- Notice : l'illustration `notice-3` (engrenage interne) est un schéma générique, à refaire ou à remplacer.
+- **Fidélité U1** : toute image de la U1 se rend depuis `U1_Jay_Master.blend` avec `sources/render_u1.py` (aucune retouche ni génération IA : elles effacent l'inscription). Dans l'app, la U1 reste le modèle 3D `u1-jay.glb`.
+- Notice : les dessins sont des rendus au trait calculés sur le modèle (`render_u1.py line`) ; `notice-3` (engrenage générique) n'est plus utilisée.
 - Obsidienne : `backdrop-filter: url(#lq)` ne marche que sous Chromium ; prévoir le flou simple ailleurs (pywebview sous Windows = WebView2, donc Chromium).
 - La numérotation « tête 3 = troisième en partant de la gauche, vue de face » est une convention de maquette ; la correspondance réelle reste à confirmer.
 - Visière : si la U1 de l'app reste le modèle 3D, l'hologramme et le scan se font sur le modèle (contours du GLB) plutôt qu'avec une image ; jamais d'hologramme généré par IA. Le rouge reste réservé aux alertes.
-- Maquettes P, E et F : le curseur `.thumb` des sélecteurs Simple/Expert et FR/EN est peut-être mal placé (la règle `.seg>span` écrase `position:absolute`, corrigé dans Visière par `.seg>.thumb`). À ne pas reproduire dans le code.
+- Curseur `.thumb` des sélecteurs : la règle `.seg>span` écrasait `position:absolute` ; corrigé partout par `.seg>.thumb` (audit du 2026-11-10). À ne pas reproduire dans le code.
 
 ## Prochaines étapes
 

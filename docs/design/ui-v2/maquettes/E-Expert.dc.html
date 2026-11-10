@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>E · Accueil — mode Expert</title>
+<title>Notice · Accueil, mode Expert</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -12,7 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500..900&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:#FFFFFF}
-.app{--paper:#FFFFFF;--wash:#F4F3EF;--grey:#E4E1DA;--ink:#1D1C1A;--ink2:#55534E;--ink3:#85827B;--amber:#FFB547;--amber-soft:#FFF0D6;--ok:#2F7D47;--okfill:#DDF0E1;position:relative;min-height:1100px;background:var(--paper);color:var(--ink);font:400 16px/1.55 'Atkinson Hyperlegible Next',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.app{--paper:#FFFFFF;--wash:#F4F3EF;--grey:#E4E1DA;--ink:#1D1C1A;--ink2:#47453F;--ink3:#6B6861;--amber:#FFB547;--amber-soft:#FFF0D6;--ok:#276B3C;--okfill:#DDF0E1;position:relative;min-height:1100px;background:var(--paper);color:var(--ink);font:400 16px/1.55 'Atkinson Hyperlegible Next',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 .app *{box-sizing:border-box}
 .app a{color:inherit}
 .t{font-family:'Schibsted Grotesk',sans-serif;font-weight:800;letter-spacing:-.02em}
@@ -68,7 +68,28 @@ body{margin:0;background:#FFFFFF}
 @keyframes pop{to{opacity:1;transform:none}}
 .app :focus-visible{outline:3px solid var(--amber);outline-offset:3px}
 @media (max-width:960px){.g2,.g3{grid-template-columns:minmax(0,1fr)!important}.dock a{min-width:62px}.hide-sm{display:none!important}.top{padding:0 16px}.wrap{padding:0 16px}}
-@media (prefers-reduced-motion:reduce){.app *{animation:none!important;transition:none!important}.pop{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.app *{animation:none!important;transition:none!important}.pop{opacity:1;transform:none}.mk circle,.draw{stroke-dashoffset:0!important}}
+/* signature de mouvement Notice : le trait se dessine, la page se tourne, le bouton s'enfonce */
+.mk{position:absolute;width:96px;height:96px;margin:-48px 0 0 -48px;pointer-events:none;overflow:visible}
+.mkl{width:150px;height:150px;margin:-75px 0 0 -75px}
+.mk circle{stroke-dashoffset:200;animation:mkdraw 1s cubic-bezier(.65,0,.35,1) .35s forwards}
+@keyframes mkdraw{to{stroke-dashoffset:0}}
+.draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw .9s cubic-bezier(.65,0,.35,1) .6s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.pg0{animation:pg0 .5s cubic-bezier(.2,.8,.2,1)}.pg1{animation:pg1 .5s cubic-bezier(.2,.8,.2,1)}.pg2{animation:pg2 .5s cubic-bezier(.2,.8,.2,1)}
+@keyframes pg0{from{opacity:0;transform:translateX(14px)}}@keyframes pg1{from{opacity:0;transform:translateX(14px)}}@keyframes pg2{from{opacity:0;transform:translateX(14px)}}
+.app{font-variant-numeric:tabular-nums}
+.u1p,.u1c{position:absolute;display:block}
+.u1p{transition:opacity .6s cubic-bezier(.2,.8,.2,1)}
+.u1c{inset:0;width:100%;height:100%;opacity:0;transition:opacity .6s cubic-bezier(.2,.8,.2,1)}
+.live .u1c{opacity:1}.live .u1p{opacity:0}
+/* infobulles : hors du flux tant qu'elles sont fermées (sinon elles élargissent la page à droite) */
+.tip::after{display:none}
+.tip:hover::after,.tip:focus-visible::after,.tip.show::after{display:block;animation:tipin .16s ease-out}
+@keyframes tipin{from{opacity:0}}
+.tip.tl::after{left:auto;right:0;transform:none}
+/* rangées à deux colonnes : la dernière carte d'une colonne empilée s'étire pour aligner les bas */
+.g2>div[style*="flex-direction:column"]>:last-child{flex-grow:1}
 </style>
 
 <style>
@@ -106,16 +127,17 @@ body{margin:0;background:#FFFFFF}
 <span style="font-size:15px;color:var(--ink2)">4 constats : 2 constatés · 2 pas assez d'infos · 6 preuves pour, 0 contre, 4 manquantes</span>
 </div>
 </div>
-<div style="display:flex;gap:12px"><a href="E-Accueil.dc.html" class="btn">Rejouer la session</a><a href="E-Accueil.dc.html" class="btn btn-a">Exporter le rapport</a></div>
+<div style="display:flex;gap:12px"><a href="#rejeu" class="btn">Rejouer la session</a><a href="E-Accueil.dc.html" class="btn btn-a">Exporter le rapport</a></div>
 </div>
 
-<div class="g2" style="display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:21px;margin-top:26px;align-items:start">
+<div class="g2" style="display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:21px;margin-top:26px;align-items:stretch">
 <section class="box" style="overflow:hidden">
-<div style="position:relative;height:519px">
-<img src="/_blob/593dda732e2257747c7dc86bfbdf6644" alt="Dessin de la U1 avec trois renvois numérotés : tête 3, plateau, écran" style="position:absolute;left:0;top:0;width:779px;height:519px;display:block">
-<svg aria-hidden="true" width="779" height="519" style="position:absolute;left:0;top:0">
-<g stroke="#1D1C1A" stroke-width="2" fill="none"><path d="M314 150 H420 L589 199"></path><path d="M314 280 H400 L482 296"></path><path d="M314 410 H380 L436 410"></path></g>
-<g fill="#1D1C1A"><circle cx="591" cy="200" r="4"></circle><circle cx="484" cy="297" r="4"></circle><circle cx="438" cy="410" r="4"></circle></g>
+<div class="{{ovCls}}" style="position:relative;height:519px">
+<img class="u1p" src="/_blob/local-line-hero" alt="Dessin de la U1 tracé sur le modèle 3D, avec trois renvois numérotés : tête 3, écran, plateau" style="left:300px;top:0;width:437px;height:519px">
+<canvas class="u1c" ref="{{view}}" role="img" aria-label="Vue d'ensemble en 3D au trait. Glissez ou utilisez les flèches pour tourner ; les renvois suivent les pièces."></canvas>
+<svg aria-hidden="true" width="779" height="519" style="position:absolute;left:0;top:0;pointer-events:none">
+<g stroke="#1D1C1A" stroke-width="2" fill="none"><path ref="{{c0}}" d="M314 150 H420 L574 196"></path><path ref="{{c1}}" d="M314 280 H380 L494 276"></path><path ref="{{c2}}" d="M314 410 H380 L476 374"></path></g>
+<g fill="#1D1C1A"><circle ref="{{d0}}" cx="574" cy="196" r="4"></circle><circle ref="{{d1}}" cx="494" cy="276" r="4"></circle><circle ref="{{d2}}" cx="476" cy="374" r="4"></circle></g>
 </svg>
 <span class="cn a" style="position:absolute;left:284px;top:135px">1</span>
 <span class="cn" style="position:absolute;left:284px;top:265px">2</span>
@@ -152,7 +174,7 @@ body{margin:0;background:#FFFFFF}
 </div>
 
 <section class="box" style="margin-top:21px;padding:24px 26px">
-<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px"><h3 class="t" style="margin:0;font-size:22px">Température buse tête 3</h3><span class="mono" style="font-size:13px;color:var(--ink2)">214 – 221 °C</span></div>
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px"><h3 class="t" style="margin:0;font-size:22px">Température buse tête 3</h3><span class="mono" style="font-size:13px;color:var(--ink2)">214 à 221 °C</span></div>
 <div style="position:relative">
 <svg viewBox="0 0 1180 190" width="100%" role="img" aria-label="Courbe de température de 14:09 à 14:15, trou de données de 14:12:30 à 14:14:00, pause à 14:14:12, code à 14:14:20">
 <defs><pattern id="he" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="9" stroke="#1D1C1A" stroke-width="1.5" opacity=".35"></line></pattern></defs>
@@ -167,9 +189,9 @@ body{margin:0;background:#FFFFFF}
 <line x1="1048.7" y1="10" x2="1048.7" y2="150" stroke="#FFB547" stroke-width="5"></line>
 <rect x="1058" y="12" width="112" height="30" rx="15" fill="#FFB547" stroke="#1D1C1A" stroke-width="2"></rect>
 <text x="1114" y="32" text-anchor="middle" font-family="Atkinson Hyperlegible Next, sans-serif" font-size="13" font-weight="700" fill="#1D1C1A">Code 14:14:20</text>
-<g font-family="Atkinson Hyperlegible Next, sans-serif" font-size="13" font-weight="700" fill="#55534E" text-anchor="middle"><text x="18" y="176">14:09</text><text x="196.7" y="176">14:10</text><text x="393.3" y="176">14:11</text><text x="590" y="176">14:12</text><text x="786.7" y="176">14:13</text><text x="983.3" y="176">14:14</text></g>
+<g font-family="Atkinson Hyperlegible Next, sans-serif" font-size="13" font-weight="700" fill="#47453F" text-anchor="middle"><text x="18" y="176">14:09</text><text x="196.7" y="176">14:10</text><text x="393.3" y="176">14:11</text><text x="590" y="176">14:12</text><text x="786.7" y="176">14:13</text><text x="983.3" y="176">14:14</text></g>
 </svg>
-<span class="tip show" tabindex="0" data-tip="Trou de données : rien reçu pendant 1 min 30. L'absence de données n'est pas une preuve qu'il ne s'est rien passé." style="position:absolute;left:58.4%;top:5%;width:25%;height:74%"></span>
+<span class="tip" tabindex="0" data-tip="Trou de données : rien reçu pendant 1 min 30. L'absence de données n'est pas une preuve qu'il ne s'est rien passé." style="position:absolute;left:58.4%;top:5%;width:25%;height:74%"></span>
 </div>
 </section>
 
@@ -186,7 +208,7 @@ body{margin:0;background:#FFFFFF}
 </section>
 
 <div class="g2" style="display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:21px;margin-top:21px">
-<section class="box" style="padding:22px 26px">
+<section id="rejeu" class="box" style="padding:22px 26px">
 <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px"><h3 class="t" style="margin:0;font-size:20px">Rejouer la session</h3><span style="font-size:14px;color:var(--ink3)">sans se reconnecter</span></div>
 <div style="display:flex;align-items:center;gap:14px">
 <button type="button" class="btn btn-a" aria-label="Lecture" style="width:52px;padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"></path></svg></button>
@@ -203,10 +225,10 @@ body{margin:0;background:#FFFFFF}
 </div>
 
 <nav class="dock" aria-label="Navigation principale">
-<a href="E-Accueil.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path><path d="M10 21v-6h4v6"></path></svg>Accueil</a>
+<a href="E-Accueil.dc.html" class="on" aria-current="page"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path><path d="M10 21v-6h4v6"></path></svg>Accueil</a>
 <a href="E-Diagnostiquer.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>Diagnostiquer</a>
 <a href="E-Diagnostiquer.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>J'ai un problème</a>
-<a href="E-Expert.dc.html" class="on" aria-current="page"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Historique</a>
+<a href="E-Expert.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Historique</a>
 <a href="E-Expert.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"></path><path d="M16 6l-4-4-4 4"></path><path d="M12 2v13"></path></svg>Partager</a>
 </nav>
 <div style="height:30px"></div>
@@ -214,8 +236,35 @@ body{margin:0;background:#FFFFFF}
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1900}}'>
 class Component extends DCLogic {
+componentDidMount() {
+var self = this;
+this.view = this.view || React.createRef();
+/* la vue d'ensemble est le même dessin, calculé en direct sur le modèle 3D : on peut la tourner, les renvois suivent */
+import("/_blob/local-u1stage").then(function (m) {
+return m.mount(self.view.current, { theme: "notice", model: "/_blob/local-glb", view: { base: "hero", scale: 1.681, shift: 0.1656 }, interactive: true, drift: false });
+}).then(function (st) {
+if (!st) return;
+if (self.gone) { st.dispose(); return; }
+self.stage = st;
+self.setState({ live: true });
+var ys = [150, 280, 410], names = ["head3top", "screen", "bed"];
+st.onFrame(function (p) {
+for (var k = 0; k < 3; k++) {
+var a = p(names[k]), c = self.cr[k].current, d = self.dr[k].current;
+if (!a || !c || !d) continue;
+c.setAttribute("d", "M314 " + ys[k] + " H" + (k ? 380 : 420) + " L" + a.x.toFixed(1) + " " + a.y.toFixed(1));
+d.setAttribute("cx", a.x.toFixed(1)); d.setAttribute("cy", a.y.toFixed(1));
+}
+});
+}).catch(function () {});
+}
+componentWillUnmount() {
+this.gone = true;
+if (this.stage) this.stage.dispose();
+}
 renderVals() {
-return {};
+if (!this.view) { this.view = React.createRef(); this.cr = [React.createRef(), React.createRef(), React.createRef()]; this.dr = [React.createRef(), React.createRef(), React.createRef()]; }
+return { view: this.view, c0: this.cr[0], c1: this.cr[1], c2: this.cr[2], d0: this.dr[0], d1: this.dr[1], d2: this.dr[2], ovCls: this.state && this.state.live ? "live" : "" };
 }
 }
 </script>

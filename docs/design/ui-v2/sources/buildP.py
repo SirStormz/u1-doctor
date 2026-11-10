@@ -1,5 +1,6 @@
 """Planches Pupitre 2 (préfixe P-)."""
 import pathlib, re
+from common import assets, check
 B = pathlib.Path(__file__).parent
 OUT = B.parent / "maquettes"
 HEAD = (B / "headP.html").read_text(encoding="utf-8")
@@ -81,6 +82,7 @@ for src in sorted(B.glob("pageP-*.html")):
     t = re.sub(r"@@TOP:(simple|expert)(:back)?@@", lambda m: top(m.group(1) == "expert", bool(m.group(2))), t)
     t = re.sub(r"@@DOCK:([^@]+)@@", lambda m: dock(m.group(1)), t)
     t = re.sub(r"@@METER:([^@]+)@@", lambda m: meter(*[(float(x) if i in (0,1,2,4,5) else x) for i, x in enumerate(m.group(1).split("|"))]), t)
-    assert "@@" not in t, name
-    (OUT / name).write_text(t, encoding="utf-8")
+    t = assets(t)
+    check(t, name)
+    (OUT / name).write_text(t, encoding="utf-8", newline="\n")
     print("ok", name, len(t))

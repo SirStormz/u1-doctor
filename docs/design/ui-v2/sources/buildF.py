@@ -1,5 +1,6 @@
 """Planches F « Obsidienne » : head + nav en verre + dock + filtres SVG."""
 import pathlib, re
+from common import assets, check
 
 B = pathlib.Path(__file__).parent
 OUT = B.parent / "maquettes"
@@ -66,6 +67,7 @@ for src in sorted(B.glob("pageF-*.html")):
     t = src.read_text(encoding="utf-8").replace("@@HEAD@@", HEAD).replace("@@DEFS@@", DEFS)
     t = re.sub(r"@@NAV:(simple|expert)(:back)?@@", lambda m: nav(m.group(1) == "expert", bool(m.group(2))), t)
     t = re.sub(r"@@DOCK:([^@]+)@@", lambda m: dock(m.group(1)), t)
-    assert "@@" not in t, name
-    (OUT / name).write_text(t, encoding="utf-8")
+    t = assets(t)
+    check(t, name)
+    (OUT / name).write_text(t, encoding="utf-8", newline="\n")
     print("ok", name, len(t))

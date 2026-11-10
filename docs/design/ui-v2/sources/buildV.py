@@ -1,5 +1,6 @@
 """Planches V « Visière » : head + nav + dock + filtres SVG + réticule (@@RET:x|y|taille@@)."""
 import math, pathlib, re
+from common import assets, check
 
 B = pathlib.Path(__file__).parent
 OUT = B.parent / "maquettes"
@@ -96,7 +97,7 @@ for src in sorted(B.glob("pageV-*.html")):
     t = re.sub(r"@@DOCK:([^@]+)@@", lambda m: dock(m.group(1)), t)
     t = t.replace("@@RTICKS@@", rticks())
     t = re.sub(r"@@RET:([\d.]+)\|([\d.]+)\|([\d.]+)@@", lambda m: ret(float(m.group(1)), float(m.group(2)), float(m.group(3))), t)
-    assert "@@" not in t, name
-    assert "—" not in t and "–" not in t, name + " : tiret long interdit"
+    t = assets(t)
+    check(t, name)
     (OUT / name).write_text(t, encoding="utf-8", newline="\n")
     print("ok", name, len(t))

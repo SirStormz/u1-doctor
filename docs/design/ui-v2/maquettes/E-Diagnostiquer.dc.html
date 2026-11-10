@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>E · Diagnostiquer</title>
+<title>Notice · Diagnostiquer</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -12,7 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500..900&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:#FFFFFF}
-.app{--paper:#FFFFFF;--wash:#F4F3EF;--grey:#E4E1DA;--ink:#1D1C1A;--ink2:#55534E;--ink3:#85827B;--amber:#FFB547;--amber-soft:#FFF0D6;--ok:#2F7D47;--okfill:#DDF0E1;position:relative;min-height:1100px;background:var(--paper);color:var(--ink);font:400 16px/1.55 'Atkinson Hyperlegible Next',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.app{--paper:#FFFFFF;--wash:#F4F3EF;--grey:#E4E1DA;--ink:#1D1C1A;--ink2:#47453F;--ink3:#6B6861;--amber:#FFB547;--amber-soft:#FFF0D6;--ok:#276B3C;--okfill:#DDF0E1;position:relative;min-height:1100px;background:var(--paper);color:var(--ink);font:400 16px/1.55 'Atkinson Hyperlegible Next',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 .app *{box-sizing:border-box}
 .app a{color:inherit}
 .t{font-family:'Schibsted Grotesk',sans-serif;font-weight:800;letter-spacing:-.02em}
@@ -68,7 +68,28 @@ body{margin:0;background:#FFFFFF}
 @keyframes pop{to{opacity:1;transform:none}}
 .app :focus-visible{outline:3px solid var(--amber);outline-offset:3px}
 @media (max-width:960px){.g2,.g3{grid-template-columns:minmax(0,1fr)!important}.dock a{min-width:62px}.hide-sm{display:none!important}.top{padding:0 16px}.wrap{padding:0 16px}}
-@media (prefers-reduced-motion:reduce){.app *{animation:none!important;transition:none!important}.pop{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.app *{animation:none!important;transition:none!important}.pop{opacity:1;transform:none}.mk circle,.draw{stroke-dashoffset:0!important}}
+/* signature de mouvement Notice : le trait se dessine, la page se tourne, le bouton s'enfonce */
+.mk{position:absolute;width:96px;height:96px;margin:-48px 0 0 -48px;pointer-events:none;overflow:visible}
+.mkl{width:150px;height:150px;margin:-75px 0 0 -75px}
+.mk circle{stroke-dashoffset:200;animation:mkdraw 1s cubic-bezier(.65,0,.35,1) .35s forwards}
+@keyframes mkdraw{to{stroke-dashoffset:0}}
+.draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw .9s cubic-bezier(.65,0,.35,1) .6s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.pg0{animation:pg0 .5s cubic-bezier(.2,.8,.2,1)}.pg1{animation:pg1 .5s cubic-bezier(.2,.8,.2,1)}.pg2{animation:pg2 .5s cubic-bezier(.2,.8,.2,1)}
+@keyframes pg0{from{opacity:0;transform:translateX(14px)}}@keyframes pg1{from{opacity:0;transform:translateX(14px)}}@keyframes pg2{from{opacity:0;transform:translateX(14px)}}
+.app{font-variant-numeric:tabular-nums}
+.u1p,.u1c{position:absolute;display:block}
+.u1p{transition:opacity .6s cubic-bezier(.2,.8,.2,1)}
+.u1c{inset:0;width:100%;height:100%;opacity:0;transition:opacity .6s cubic-bezier(.2,.8,.2,1)}
+.live .u1c{opacity:1}.live .u1p{opacity:0}
+/* infobulles : hors du flux tant qu'elles sont fermées (sinon elles élargissent la page à droite) */
+.tip::after{display:none}
+.tip:hover::after,.tip:focus-visible::after,.tip.show::after{display:block;animation:tipin .16s ease-out}
+@keyframes tipin{from{opacity:0}}
+.tip.tl::after{left:auto;right:0;transform:none}
+/* rangées à deux colonnes : la dernière carte d'une colonne empilée s'étire pour aligner les bas */
+.g2>div[style*="flex-direction:column"]>:last-child{flex-grow:1}
 </style>
 
 <style>
@@ -132,7 +153,7 @@ body{margin:0;background:#FFFFFF}
 <sc-if value="{{idle}}" hint-placeholder-val="{{ true }}">
 
 <sc-if value="{{isConnect}}" hint-placeholder-val="{{ true }}">
-<div class="g2" style="display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:30px;align-items:start">
+<div class="g2" style="display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:30px;align-items:stretch">
 <div style="display:flex;flex-direction:column;gap:16px">
 <label for="ip" class="t" style="font-size:20px">Adresse de votre U1 <span class="tip" tabindex="0" data-tip="Elle s'affiche dans les réglages réseau de l'écran tactile de la U1. Elle ressemble à 192.168.1.42." style="display:inline-flex;width:24px;height:24px;margin-left:4px;align-items:center;justify-content:center;border:2px solid var(--ink);border-radius:50%;font-size:13px;vertical-align:3px">?</span></label>
 <input id="ip" class="field" type="text" inputmode="decimal" placeholder="192.168.1.xx">

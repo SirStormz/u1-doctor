@@ -2,7 +2,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400..700&amp;family=Saira:wdth,wght@75..125,300..700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:#08070A}
-.app{--bg:#08070A;--panel:#100C0C;--line:rgba(255,214,154,.13);--line2:rgba(255,214,154,.28);--ink:#F6F1EA;--ink2:rgba(246,241,234,.74);--ink3:rgba(246,241,234,.56);--gold:#FFB547;--gold2:#FFD99A;--red:#FF3B2F;--redt:#FF7266;position:relative;min-height:1100px;background:var(--bg);color:var(--ink);font:400 16px/1.5 'Saira',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+.app{--bg:#08070A;--panel:#100C0C;--line:rgba(255,214,154,.13);--line2:rgba(255,214,154,.28);--ink:#F6F1EA;--ink2:rgba(246,241,234,.74);--ink3:rgba(246,241,234,.56);--gold:#FFB547;--gold2:#FFD99A;--red:#FF3B2F;--redt:#FF7266;position:relative;min-height:1100px;background:var(--bg);color:var(--ink);font:400 16px/1.5 'Saira',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:clip}
 .app *{box-sizing:border-box}
 .app a{color:inherit}
 .h{font-family:'Oxanium','Saira',sans-serif;font-weight:600;letter-spacing:-.01em}
@@ -34,7 +34,7 @@ body{margin:0;background:#08070A}
 /* boutons à coins coupés */
 .btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:48px;padding:0 24px;border:0;clip-path:polygon(11px 0,100% 0,100% calc(100% - 11px),calc(100% - 11px) 100%,0 100%,0 11px);font:600 14.5px/1 'Oxanium',sans-serif;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;white-space:nowrap;cursor:pointer;transition:transform .2s cubic-bezier(.34,1.45,.64,1),filter .2s,background .2s}
 .btn:active{transform:translateY(1px) scale(.98)}
-.btn-a{background:linear-gradient(180deg,#FFC874,#FFAB30);color:#1E1100}
+.btn-a,.app a.btn-a{background:linear-gradient(180deg,#FFC874,#FFAB30);color:#1E1100}
 .btn-a:hover{filter:brightness(1.07)}
 .btn-g{background:rgba(255,214,154,.12);color:var(--gold2)}
 .btn-g:hover{background:rgba(255,214,154,.2)}
@@ -87,4 +87,14 @@ body{margin:0;background:#08070A}
 @media (prefers-reduced-transparency:reduce){.gl,.lq{background:#140F0E;-webkit-backdrop-filter:none;backdrop-filter:none}}
 .nav .seg:has(>:nth-child(1):hover) .thumb{left:3px!important}
 .nav .seg:has(>:nth-child(2):hover) .thumb{left:50%!important}
+/* infobulles : hors du flux tant qu'elles sont fermées (sinon elles élargissent la page à droite) */
+.tip::after{display:none}
+.tip:hover::after,.tip:focus-visible::after,.tip.show::after{display:block;animation:tipin .16s ease-out}
+@keyframes tipin{from{opacity:0}}
+.tip.tl::after{left:auto;right:0;transform:none}
+/* héros composés à 1440 px : réduits par paliers sous cette largeur (fenêtre de bureau plus étroite) */
+@media (max-width:1439px){.h1440{zoom:.93}}
+@media (max-width:1339px){.h1440{zoom:.86}}
+@media (max-width:1239px){.h1440{zoom:.78}}
+@media (max-width:1129px){.h1440{zoom:.7}}
 </style>

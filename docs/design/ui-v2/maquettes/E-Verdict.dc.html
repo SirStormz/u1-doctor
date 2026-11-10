@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>E · Verdict — tête 3</title>
+<title>Notice · Verdict, tête 3</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -12,7 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500..900&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:#FFFFFF}
-.app{--paper:#FFFFFF;--wash:#F4F3EF;--grey:#E4E1DA;--ink:#1D1C1A;--ink2:#55534E;--ink3:#85827B;--amber:#FFB547;--amber-soft:#FFF0D6;--ok:#2F7D47;--okfill:#DDF0E1;position:relative;min-height:1100px;background:var(--paper);color:var(--ink);font:400 16px/1.55 'Atkinson Hyperlegible Next',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.app{--paper:#FFFFFF;--wash:#F4F3EF;--grey:#E4E1DA;--ink:#1D1C1A;--ink2:#47453F;--ink3:#6B6861;--amber:#FFB547;--amber-soft:#FFF0D6;--ok:#276B3C;--okfill:#DDF0E1;position:relative;min-height:1100px;background:var(--paper);color:var(--ink);font:400 16px/1.55 'Atkinson Hyperlegible Next',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 .app *{box-sizing:border-box}
 .app a{color:inherit}
 .t{font-family:'Schibsted Grotesk',sans-serif;font-weight:800;letter-spacing:-.02em}
@@ -68,17 +68,38 @@ body{margin:0;background:#FFFFFF}
 @keyframes pop{to{opacity:1;transform:none}}
 .app :focus-visible{outline:3px solid var(--amber);outline-offset:3px}
 @media (max-width:960px){.g2,.g3{grid-template-columns:minmax(0,1fr)!important}.dock a{min-width:62px}.hide-sm{display:none!important}.top{padding:0 16px}.wrap{padding:0 16px}}
-@media (prefers-reduced-motion:reduce){.app *{animation:none!important;transition:none!important}.pop{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.app *{animation:none!important;transition:none!important}.pop{opacity:1;transform:none}.mk circle,.draw{stroke-dashoffset:0!important}}
+/* signature de mouvement Notice : le trait se dessine, la page se tourne, le bouton s'enfonce */
+.mk{position:absolute;width:96px;height:96px;margin:-48px 0 0 -48px;pointer-events:none;overflow:visible}
+.mkl{width:150px;height:150px;margin:-75px 0 0 -75px}
+.mk circle{stroke-dashoffset:200;animation:mkdraw 1s cubic-bezier(.65,0,.35,1) .35s forwards}
+@keyframes mkdraw{to{stroke-dashoffset:0}}
+.draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw .9s cubic-bezier(.65,0,.35,1) .6s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.pg0{animation:pg0 .5s cubic-bezier(.2,.8,.2,1)}.pg1{animation:pg1 .5s cubic-bezier(.2,.8,.2,1)}.pg2{animation:pg2 .5s cubic-bezier(.2,.8,.2,1)}
+@keyframes pg0{from{opacity:0;transform:translateX(14px)}}@keyframes pg1{from{opacity:0;transform:translateX(14px)}}@keyframes pg2{from{opacity:0;transform:translateX(14px)}}
+.app{font-variant-numeric:tabular-nums}
+.u1p,.u1c{position:absolute;display:block}
+.u1p{transition:opacity .6s cubic-bezier(.2,.8,.2,1)}
+.u1c{inset:0;width:100%;height:100%;opacity:0;transition:opacity .6s cubic-bezier(.2,.8,.2,1)}
+.live .u1c{opacity:1}.live .u1p{opacity:0}
+/* infobulles : hors du flux tant qu'elles sont fermées (sinon elles élargissent la page à droite) */
+.tip::after{display:none}
+.tip:hover::after,.tip:focus-visible::after,.tip.show::after{display:block;animation:tipin .16s ease-out}
+@keyframes tipin{from{opacity:0}}
+.tip.tl::after{left:auto;right:0;transform:none}
+/* rangées à deux colonnes : la dernière carte d'une colonne empilée s'étire pour aligner les bas */
+.g2>div[style*="flex-direction:column"]>:last-child{flex-grow:1}
 </style>
 
 <style>
 .big{position:relative;height:560px;border:2px solid var(--ink);border-radius:18px;overflow:hidden;background:#fff}
-.big img{width:100%;height:100%;object-fit:cover;display:block}
+.big .ill{position:absolute;inset:0;background-repeat:no-repeat}
 .thumb{position:relative;display:flex;align-items:center;gap:12px;width:100%;padding:8px;border:2px solid var(--ink);border-radius:14px;background:#fff;cursor:pointer;text-align:left;font:700 14.5px/1.3 'Atkinson Hyperlegible Next',sans-serif;color:var(--ink);transition:background .15s}
 .thumb:hover{background:var(--wash)}
 .thumb.cur{background:var(--amber-soft);box-shadow:3px 3px 0 var(--ink)}
 .thumb .mini{width:96px;height:64px;flex-shrink:0;border:2px solid var(--ink);border-radius:9px;overflow:hidden}
-.thumb .mini img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb .mini{background-repeat:no-repeat;background-color:#fff}
 .thumb .ok{margin-left:auto;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border:2px solid var(--ink);border-radius:6px;font-size:14px}
 .thumb.done .ok{background:var(--amber)}
 .ev{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:2px solid var(--grey);font-size:15px}
@@ -108,7 +129,7 @@ body{margin:0;background:#FFFFFF}
 
 <div class="g2" style="display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:26px;margin-top:26px;align-items:start">
 <div class="big">
-<img src="{{cur.img}}" alt="{{cur.alt}}" style="object-position:{{cur.pos}}">
+<div class="{{pg}}" role="img" aria-label="{{cur.alt}}" style="background-image:url('{{cur.img}}');background-size:{{cur.bs}};background-position:{{cur.pos}}"></div><svg class="mk mkl" viewBox="0 0 96 96" aria-hidden="true" style="left:{{cur.mx}};top:{{cur.my}}"><circle cx="48" cy="48" r="27" fill="none" stroke="#FFB547" stroke-width="4" stroke-dasharray="9 6"></circle><path d="M92 92 L70 70" stroke="#1D1C1A" stroke-width="3" stroke-linecap="round"></path><path d="M68 80 L68 68 L80 68" fill="none" stroke="#1D1C1A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 <span class="num on" style="position:absolute;left:18px;top:18px;width:64px;height:64px;font-size:30px">{{cur.n}}</span>
 </div>
 
@@ -125,7 +146,7 @@ body{margin:0;background:#FFFFFF}
 </div>
 </section>
 <sc-for list="{{thumbs}}" as="t" hint-placeholder-count="3">
-<button type="button" class="{{t.cls}}" onClick="{{t.go}}"><span class="mini"><img src="{{t.img}}" alt="" style="object-position:{{t.pos}}"></span><span>{{t.n}} · {{t.title}}</span><span class="ok" aria-hidden="true">{{t.mark}}</span></button>
+<button type="button" class="{{t.cls}}" onClick="{{t.go}}"><span class="mini" style="background-image:url('{{t.img}}');background-size:{{t.bs}};background-position:{{t.pos}}"></span><span>{{t.n}} · {{t.title}}</span><span class="ok" aria-hidden="true">{{t.mark}}</span></button>
 </sc-for>
 <p style="margin:0;font-size:13.5px;color:var(--ink3)">Consigne officielle Snapmaker pour ce code : vérifier, nettoyer, relancer.</p>
 </div>
@@ -161,14 +182,15 @@ renderVals() {
 var self = this;
 var s = this.state;
 var defs = [
-{ n: "1", title: "Repérez la tête 3", text: "C'est la troisième en partant de la gauche, à l'arrière de la machine. Elle est entourée en ambre sur le dessin.", img: "/_blob/23950175a9ff7d8e664bde2a6e6c745c", pos: "55% 50%", alt: "Une main montre la troisième tête, entourée en ambre" },
-{ n: "2", title: "Nettoyez l'engrenage", text: "Regardez l'engrenage qui pousse le filament dans la tête 3 et retirez les débris ou le filament cassé avec une pince fine.", img: "/_blob/8faf0c1ed54e7a213208ca69f9c0f2fb", pos: "50% 50%", alt: "Une pince retire un débris de l'engrenage, en ambre" },
-{ n: "3", title: "Relancez l'impression", text: "Sur l'écran tactile de la U1, reprenez l'impression mise en pause.", img: "/_blob/3cf673db02c995f5b050c54f2cd6708e", pos: "55% 50%", alt: "Un doigt touche l'écran tactile de la U1" }
+{ n: "1", title: "Repérez la tête 3", text: "C'est la troisième en partant de la gauche, à l'arrière de la machine. Elle est en ambre sur le dessin.", img: "/_blob/local-line-tetes", bs: "cover", pos: "57.4% 43%", mx: "57.4%", my: "43%", alt: "Dessin des têtes garées ; la tête 3, en ambre, est entourée" },
+{ n: "2", title: "Nettoyez l'engrenage", text: "Regardez l'engrenage qui pousse le filament dans la tête 3 et retirez les débris ou le filament cassé avec une pince fine.", img: "/_blob/local-line-tetes", bs: "220%", pos: "57.6% 22%", mx: "57.6%", my: "22%", alt: "Gros plan dessiné sur le haut de la tête 3, là où le filament entre vers l'engrenage" },
+{ n: "3", title: "Relancez l'impression", text: "Sur l'écran tactile de la U1, reprenez l'impression mise en pause.", img: "/_blob/local-line-ecran", bs: "cover", pos: "50% 50%", mx: "75.7%", my: "50.5%", alt: "Dessin de la façade : inscription snapmaker et écran tactile entouré" }
 ];
 var i = s.step;
 var on = s.done[i];
 var count = s.done.filter(function (d) { return d; }).length;
 return {
+pg: "ill pg" + i,
 cur: defs[i],
 stepLabel: "Étape " + (i + 1) + " sur 3",
 doneLabel: count + " sur 3 faits",
@@ -182,7 +204,7 @@ next: function () { var n = s.done.slice(); n[i] = true; self.setState({ step: M
 prev: function () { self.setState({ step: Math.max(0, i - 1) }); },
 thumbs: defs.map(function (d, k) {
 var cls = "thumb" + (k === i ? " cur" : "") + (s.done[k] ? " done" : "");
-return { n: d.n, title: d.title, img: d.img, pos: d.pos, cls: cls, mark: s.done[k] ? "✓" : "", go: function () { self.setState({ step: k }); } };
+return { n: d.n, title: d.title, img: d.img, pos: d.pos, bs: d.bs, cls: cls, mark: s.done[k] ? "✓" : "", go: function () { self.setState({ step: k }); } };
 })
 };
 }

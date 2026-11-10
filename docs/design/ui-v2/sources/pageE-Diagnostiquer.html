@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>E · Diagnostiquer</title>
+<title>Notice · Diagnostiquer</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -61,7 +61,7 @@
 <sc-if value="{{idle}}" hint-placeholder-val="{{ true }}">
 
 <sc-if value="{{isConnect}}" hint-placeholder-val="{{ true }}">
-<div class="g2" style="display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:30px;align-items:start">
+<div class="g2" style="display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:30px;align-items:stretch">
 <div style="display:flex;flex-direction:column;gap:16px">
 <label for="ip" class="t" style="font-size:20px">Adresse de votre U1 <span class="tip" tabindex="0" data-tip="Elle s'affiche dans les réglages réseau de l'écran tactile de la U1. Elle ressemble à 192.168.1.42." style="display:inline-flex;width:24px;height:24px;margin-left:4px;align-items:center;justify-content:center;border:2px solid var(--ink);border-radius:50%;font-size:13px;vertical-align:3px">?</span></label>
 <input id="ip" class="field" type="text" inputmode="decimal" placeholder="192.168.1.xx">

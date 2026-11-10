@@ -42,7 +42,7 @@
 <div class="lcd" style="padding:22px 28px"><div class="dot" style="font-size:48px;line-height:1.05;white-space:nowrap"><span class="ty" style="animation-duration:1.3s;animation-timing-function:steps(35,end);animation-delay:.4s">Comment voulez-vous diagnostiquer ?</span><span class="cur" aria-hidden="true"></span></div></div>
 </section>
 
-<div class="g2" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.618fr);gap:21px;margin-top:21px;align-items:start">
+<div class="g2" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.618fr);gap:21px;margin-top:21px;align-items:stretch">
 <section class="mod">
 <div class="mhead"><span class="silk">Sélecteur · tournez le bouton</span></div>
 <div class="dial" role="radiogroup" aria-label="Façon de diagnostiquer">
@@ -72,7 +72,7 @@
 <span class="{{led}}" aria-hidden="true"></span>
 <div><div style="font-size:15.5px;line-height:1.45">J'autorise U1 Doctor à <strong>lire</strong> l'état de mon imprimante pendant 30 secondes. Aucune commande n'est envoyée.</div><div class="silk" style="margin-top:6px;color:var(--ink3)">{{safeHint}}</div></div>
 </div>
-<div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center"><button type="button" class="key key-a" disabled="{{notAgreed}}" onClick="{{start}}">Lancer l'analyse</button><span style="font-size:14px;color:var(--ink3)">L'analyse dure environ 30 secondes.</span></div>
+<div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center"><button type="button" class="key key-a" disabled="{{notAgreed}}" onClick="{{start}}">Lancer l'analyse</button><span style="font-size:14px;color:var(--ink3)">{{startHint}}</span></div>
 <hr class="groove" style="margin:4px 0">
 <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;font-size:14.5px;color:var(--ink2)">
 <div><span class="dot" style="color:var(--ink);font-size:16px">01</span> On vérifie que la U1 répond.</div>
@@ -166,6 +166,7 @@ agreedStr: s.agreed ? "true" : "false",
 coverAria: s.cover ? "Refermer le capot de sécurité" : "Soulever le capot de sécurité",
 safeHint: s.agreed ? "Autorisation donnée" : (s.cover ? "Basculez le levier vers le haut" : "Soulevez le capot ambre, puis basculez le levier"),
 notAgreed: !s.agreed,
+startHint: s.agreed ? "L'analyse dure environ 30 secondes." : "Soulevez le capot puis basculez le levier pour autoriser la lecture.",
 toggleCover: function () { self.setState({ cover: !s.cover, agreed: s.cover ? false : s.agreed }); },
 toggleAgree: function () { if (s.cover) { self.setState({ agreed: !s.agreed }); } },
 pickConnect: function () { self.setState({ mode: "connect" }); },

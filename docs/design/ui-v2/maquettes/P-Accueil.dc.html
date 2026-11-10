@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>Pupitre 2 · Accueil — mode Simple</title>
+<title>Pupitre 2 · Accueil, mode Simple</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -12,7 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Doto:ROND,wght@0..100,100..900&amp;family=Barlow:wght@400;500;600;700&amp;family=Barlow+Semi+Condensed:wght@500;600;700&amp;family=Permanent+Marker&amp;family=Courier+Prime:wght@400;700&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:#CFCBC3}
-.app{--ink:#1D1C1A;--ink2:#4F4C46;--ink3:#7C786F;--lcd:#FFB547;--lcd-ink:#2A1B03;position:relative;min-height:1100px;color:var(--ink);font:400 16px/1.5 Barlow,system-ui,sans-serif;-webkit-font-smoothing:antialiased;background-color:#CFCBC3;background-image:linear-gradient(180deg,rgba(255,255,255,.10),rgba(0,0,0,.06)),url('/_blob/fb7958df8bc2671a9325a021e85c7871');background-size:100% 100%,384px 384px}
+.app{--ink:#1D1C1A;--ink2:#4F4C46;--ink3:#58544C;--lcd:#FFB547;--lcd-ink:#2A1B03;position:relative;min-height:1100px;color:var(--ink);font:400 16px/1.5 Barlow,system-ui,sans-serif;-webkit-font-smoothing:antialiased;background-color:#CFCBC3;background-image:linear-gradient(180deg,rgba(255,255,255,.10),rgba(0,0,0,.06)),url('/_blob/fb7958df8bc2671a9325a021e85c7871');background-size:100% 100%,384px 384px}
 .app *{box-sizing:border-box}
 .app a{color:inherit}
 .wrap{max-width:1360px;margin:0 auto;padding:0 40px}
@@ -48,7 +48,7 @@ body{margin:0;background:#CFCBC3}
 .key:active{transform:translateY(3px);box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(0,0,0,.22),0 1px 0 #A6A196,0 2px 3px rgba(0,0,0,.15)}
 .key-a{background:linear-gradient(180deg,#FFCA74,#FFAA2C);color:#2A1B03;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 0 0 1px rgba(110,60,0,.45),0 4px 0 #BD7A10,0 6px 8px rgba(0,0,0,.18)}
 .key-a:active{box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 0 0 1px rgba(110,60,0,.45),0 1px 0 #BD7A10}
-.key-k{background:linear-gradient(180deg,#3B3935,#1E1D1B);color:#F2EFE8;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 0 1px #000,0 4px 0 #000,0 6px 8px rgba(0,0,0,.25)}
+.key-k,.app a.key-k{background:linear-gradient(180deg,#3B3935,#1E1D1B);color:#F2EFE8;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 0 1px #000,0 4px 0 #000,0 6px 8px rgba(0,0,0,.25)}
 .key-k:active{box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 0 1px #000,0 1px 0 #000}
 .key.txt{text-transform:none;letter-spacing:0;font:600 15px/1.2 Barlow,sans-serif;justify-content:flex-start;text-align:left;padding:0 16px}
 .key[disabled]{opacity:.45;cursor:not-allowed;transform:none}
@@ -106,6 +106,24 @@ body{margin:0;background:#CFCBC3}
 .app :focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 @media (max-width:960px){.g2,.g3,.g4{grid-template-columns:minmax(0,1fr)!important}.span2{grid-row:auto!important}.dock a{min-width:58px}.hide-sm{display:none!important}.wrap{padding:0 16px}}
 @media (prefers-reduced-motion:reduce){.app *{animation:none!important;transition:none!important}.ty{clip-path:none}.needle{transform:rotate(var(--a))}}
+.u1p,.u1c{position:absolute;display:block}
+.u1p{transition:opacity .7s cubic-bezier(.2,.8,.2,1);-webkit-mask-image:radial-gradient(ellipse 70% 66% at 52% 50%,#000 64%,transparent 100%);mask-image:radial-gradient(ellipse 70% 66% at 52% 50%,#000 64%,transparent 100%)}
+.u1c{inset:0;width:100%;height:100%;opacity:0;transition:opacity .7s cubic-bezier(.2,.8,.2,1)}
+.live .u1c{opacity:1}.live .u1p{opacity:0}
+.app{font-variant-numeric:tabular-nums}
+/* infobulles : hors du flux tant qu'elles sont fermées (sinon elles élargissent la page à droite) */
+.tip::after{display:none}
+.tip:hover::after,.tip:focus-visible::after,.tip.show::after{display:block;animation:tipin .16s ease-out}
+@keyframes tipin{from{opacity:0}}
+.tip.tl::after{left:auto;right:0;transform:none}
+/* signature de mouvement Pupitre 2 : mise sous tension. Les modules se posent (vissés), les écrans chauffent par crans */
+.wrap>.mod,.g2>.mod,.g2>div>.mod{animation:mount .55s cubic-bezier(.3,1.35,.5,1) both}
+.g2>.mod:nth-child(2){animation-delay:.08s}.g2>.mod:nth-child(3){animation-delay:.16s}
+@keyframes mount{from{opacity:0;transform:translateY(-8px)}}
+.lcd{animation:lcdon .9s steps(5,end) .15s both}
+@keyframes lcdon{from{filter:brightness(.42) saturate(.6)}}
+/* rangées à deux colonnes : la dernière carte d'une colonne empilée s'étire pour aligner les bas */
+.g2>div[style*="flex-direction:column"]>:last-child{flex-grow:1}
 </style>
 
 <style>
@@ -134,7 +152,7 @@ body{margin:0;background:#CFCBC3}
 <section class="mod">
 <div class="mhead"><span class="silk">Écran principal</span><span class="silk" style="color:var(--ink3)">Dernière lecture · il y a 2 min</span></div>
 <div class="lcd" style="padding:24px 30px 20px">
-<div class="dot" style="font-size:58px;line-height:1.02;white-space:nowrap"><span class="ty" style="animation-duration:1.4s;animation-timing-function:steps(34,end);animation-delay:.5s">Votre U1 a besoin d'un coup d'œil.</span><span class="cur" aria-hidden="true"></span></div>
+<div class="dot" style="font-size:min(52px,3.8vw);line-height:1.02;white-space:nowrap"><span class="ty" style="animation-duration:1.4s;animation-timing-function:steps(34,end);animation-delay:.5s">Votre U1 a besoin d'un coup d'œil.</span><span class="cur" aria-hidden="true"></span></div>
 <div class="dot" style="margin-top:10px;font-size:22px;opacity:.85;white-space:nowrap"><span class="ty" style="animation-duration:1s;animation-timing-function:steps(46,end);animation-delay:2s">Tête 3 à vérifier · trois gestes · environ 5 min</span></div>
 </div>
 </section>
@@ -142,10 +160,11 @@ body{margin:0;background:#CFCBC3}
 <div class="g2" style="display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:21px;margin-top:21px">
 <section class="mod span2" style="grid-row:span 2;display:flex;flex-direction:column">
 <div class="mhead"><span class="silk">Votre U1 · fenêtre</span><span class="tip" tabindex="0" data-tip="L'imprimante a mis l'impression en pause d'elle-même. Elle attend votre intervention." style="display:inline-flex;align-items:center;gap:9px"><span class="led"></span><span class="silk">Impression en pause</span></span></div>
-<div class="win" style="height:540px">
-<img src="/_blob/5cb5b30eb2566c6b576c72da5194a86b" alt="Photo de la U1 vue de trois quarts ; la tête 3 est cadrée" style="position:absolute;left:156px;top:20px;width:421px;height:500px;display:block">
-<span class="vf" aria-hidden="true" style="left:423px;top:216px"></span>
-<a href="P-Verdict.dc.html" class="wtag" style="left:452px;top:166px;text-decoration:none">T3 · à vérifier</a>
+<div class="win {{winCls}}" style="height:540px">
+<img class="u1p" src="/_blob/local-obs-hero2" alt="La U1 vue de trois quarts : inscription snapmaker, écran, quatre têtes ; la tête 3 est cadrée" style="left:96px;top:-78px;width:586px;height:697px">
+<canvas class="u1c" ref="{{view}}" role="img" aria-label="La U1 en 3D. Glissez ou utilisez les flèches pour tourner, molette ou plus et moins pour zoomer, double-clic ou zéro pour revenir."></canvas>
+<span class="vf" ref="{{vf}}" aria-hidden="true" style="left:440px;top:189px"></span>
+<a href="P-Verdict.dc.html" class="wtag" ref="{{wtag}}" style="left:471px;top:137px;text-decoration:none">T3 · à vérifier</a>
 <span class="silk" style="position:absolute;left:16px;bottom:14px;color:#8B877F">Glissez pour tourner · molette pour zoomer</span>
 </div>
 <div class="g4" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:18px">
@@ -156,21 +175,21 @@ body{margin:0;background:#CFCBC3}
 </div>
 </section>
 
-<section class="mod">
-<div class="mhead"><span class="silk">Buse · tête 3</span><span class="silk tip" tabindex="0" data-tip="Le lien entre extruder2 et la tête 3 est déduit de son nom (INFERRED), pas lu directement." style="color:var(--ink3)">extruder2 · déduit</span></div>
-<div class="meter"><img src="/_blob/751cd1888ff84641392f3db298853324" alt=""><svg viewBox="0 0 1200 800" role="img" aria-label="BUSE · TÊTE 3 · °C : 214,7"><path d="M288.6 347.9 A400 400 0 0 1 901.4 347.9" fill="none" stroke="#2B2A27" stroke-width="3"></path><line x1="325.4" y1="378.7" x2="288.6" y2="347.9" stroke="#2B2A27" stroke-width="5"></line><text x="356.0" y="418.5" text-anchor="middle" font-family="Barlow Semi Condensed, sans-serif" font-weight="600" font-size="40" fill="#2B2A27">0</text><line x1="345.0" y1="324.1" x2="329.1" y2="306.2" stroke="#2B2A27" stroke-width="2.5"></line><line x1="388.4" y1="290.9" x2="375.2" y2="270.8" stroke="#2B2A27" stroke-width="2.5"></line><line x1="436.1" y1="264.2" x2="426.0" y2="242.5" stroke="#2B2A27" stroke-width="2.5"></line><line x1="494.0" y1="267.8" x2="480.3" y2="221.8" stroke="#2B2A27" stroke-width="5"></line><text x="505.5" y="320.1" text-anchor="middle" font-family="Barlow Semi Condensed, sans-serif" font-weight="600" font-size="40" fill="#2B2A27">100</text><line x1="540.5" y1="233.0" x2="537.0" y2="209.2" stroke="#2B2A27" stroke-width="2.5"></line><line x1="595.0" y1="229.0" x2="595.0" y2="205.0" stroke="#2B2A27" stroke-width="2.5"></line><line x1="649.5" y1="233.0" x2="653.0" y2="209.2" stroke="#2B2A27" stroke-width="2.5"></line><line x1="696.0" y1="267.8" x2="709.7" y2="221.8" stroke="#2B2A27" stroke-width="5"></line><text x="684.5" y="320.1" text-anchor="middle" font-family="Barlow Semi Condensed, sans-serif" font-weight="600" font-size="40" fill="#2B2A27">200</text><line x1="753.9" y1="264.2" x2="764.0" y2="242.5" stroke="#2B2A27" stroke-width="2.5"></line><line x1="801.6" y1="290.9" x2="814.8" y2="270.8" stroke="#2B2A27" stroke-width="2.5"></line><line x1="845.0" y1="324.1" x2="860.9" y2="306.2" stroke="#2B2A27" stroke-width="2.5"></line><line x1="864.6" y1="378.7" x2="901.4" y2="347.9" stroke="#2B2A27" stroke-width="5"></line><text x="834.0" y="418.5" text-anchor="middle" font-family="Barlow Semi Condensed, sans-serif" font-weight="600" font-size="40" fill="#2B2A27">300</text><text x="595" y="500" text-anchor="middle" font-family="Barlow Semi Condensed, sans-serif" font-weight="600" font-size="30" letter-spacing="5" fill="#5A564F">BUSE · TÊTE 3 · °C</text><g class="needle" style="--a:21.57deg;animation-delay:0.6s"><line x1="595" y1="640" x2="595" y2="175" stroke="#1D1C1A" stroke-width="5" stroke-linecap="round"></line><rect x="580" y="630" width="30" height="34" rx="6" fill="#1D1C1A"></rect></g></svg></div>
-<div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px"><span class="lcd dot" style="padding:7px 12px;font-size:22px">214,7 °C</span><span class="silk" style="color:var(--ink3)">dernière valeur 14:14:12</span></div>
-</section>
-
 <section class="mod" style="display:flex;flex-direction:column;gap:12px">
-<div class="mhead" style="margin:0"><span class="silk">Ce qu'il faut faire</span><span class="tip" tabindex="0" data-tip="À vérifier : l'imprimante a signalé quelque chose, mais il faut le confirmer à l'œil. Ce n'est pas une certitude." style="display:inline-flex;align-items:center;gap:9px"><span class="led a"></span><span class="silk" style="color:var(--ink)">À vérifier</span></span></div>
+<div class="mhead" style="margin:0"><span class="silk">Ce qu'il faut faire</span><span class="tip tl" tabindex="0" data-tip="À vérifier : l'imprimante a signalé quelque chose, mais il faut le confirmer à l'œil. Ce n'est pas une certitude." style="display:inline-flex;align-items:center;gap:9px"><span class="led a"></span><span class="silk" style="color:var(--ink)">À vérifier</span></span></div>
 <p style="margin:0;font-size:20px;line-height:1.3;font-weight:700">La tête 3 n'arrive plus à pousser le filament</p>
 <p style="margin:0;color:var(--ink2)">L'imprimante a signalé un blocage à l'engrenage qui entraîne le filament, puis elle a mis l'impression en pause.</p>
 <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:6px"><a href="P-Verdict.dc.html" class="key key-a">Voir quoi faire</a><a href="P-Verdict.dc.html" class="key">Comment on le sait ?</a></div>
 </section>
+
+<section class="mod">
+<div class="mhead"><span class="silk">Buse · tête 3</span><span class="silk tip tl" tabindex="0" data-tip="Le lien entre extruder2 et la tête 3 est déduit de son nom (INFERRED), pas lu directement." style="color:var(--ink3)">extruder2 · déduit</span></div>
+<div class="meter"><img src="/_blob/751cd1888ff84641392f3db298853324" alt=""><svg viewBox="0 0 1200 800" role="img" aria-label="BUSE · TÊTE 3 · °C : 214,7"><path d="M288.6 347.9 A400 400 0 0 1 901.4 347.9" fill="none" stroke="#2B2A27" stroke-width="3"></path><line x1="325.4" y1="378.7" x2="288.6" y2="347.9" stroke="#2B2A27" stroke-width="5"></line><text x="356.0" y="418.5" text-anchor="middle" font-family="Barlow Semi Condensed, sans-serif" font-weight="600" font-size="40" fill="#2B2A27">0</text><line x1="345.0" y1="324.1" x2="329.1" y2="306.2" stroke="#2B2A27" stroke-width="2.5"></line><line x1="388.4" y1="290.9" x2="375.2" y2="270.8" stroke="#2B2A27" stroke-width="2.5"></line><line x1="436.1" y1="264.2" x2="426.0" y2="242.5" stroke="#2B2A27" stroke-width="2.5"></line><line x1="494.0" y1="267.8" x2="480.3" y2="221.8" stroke="#2B2A27" stroke-width="5"></line><text x="505.5" y="320.1" text-anchor="middle" font-family="Barlow Semi Condensed, sans-serif" font-weight="600" font-size="40" fill="#2B2A27">100</text><line x1="540.5" y1="233.0" x2="537.0" y2="209.2" stroke="#2B2A27" stroke-width="2.5"></line><line x1="595.0" y1="229.0" x2="595.0" y2="205.0" stroke="#2B2A27" stroke-width="2.5"></line><line x1="649.5" y1="233.0" x2="653.0" y2="209.2" stroke="#2B2A27" stroke-width="2.5"></line><line x1="696.0" y1="267.8" x2="709.7" y2="221.8" stroke="#2B2A27" stroke-width="5"></line><text x="684.5" y="320.1" text-anchor="middle" font-family="Barlow Semi Condensed, sans-serif" font-weight="600" font-size="40" fill="#2B2A27">200</text><line x1="753.9" y1="264.2" x2="764.0" y2="242.5" stroke="#2B2A27" stroke-width="2.5"></line><line x1="801.6" y1="290.9" x2="814.8" y2="270.8" stroke="#2B2A27" stroke-width="2.5"></line><line x1="845.0" y1="324.1" x2="860.9" y2="306.2" stroke="#2B2A27" stroke-width="2.5"></line><line x1="864.6" y1="378.7" x2="901.4" y2="347.9" stroke="#2B2A27" stroke-width="5"></line><text x="834.0" y="418.5" text-anchor="middle" font-family="Barlow Semi Condensed, sans-serif" font-weight="600" font-size="40" fill="#2B2A27">300</text><text x="595" y="500" text-anchor="middle" font-family="Barlow Semi Condensed, sans-serif" font-weight="600" font-size="30" letter-spacing="5" fill="#5A564F">BUSE · TÊTE 3 · °C</text><g class="needle" style="--a:21.57deg;animation-delay:0.6s"><line x1="595" y1="640" x2="595" y2="175" stroke="#1D1C1A" stroke-width="5" stroke-linecap="round"></line><rect x="580" y="630" width="30" height="34" rx="6" fill="#1D1C1A"></rect></g></svg></div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px"><span class="lcd dot" style="padding:7px 12px;font-size:22px">214,7 °C</span><span class="silk" style="color:var(--ink3)">dernière valeur 14:14:12</span></div>
+</section>
 </div>
 
-<div class="g2" style="display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:21px;margin-top:21px;align-items:start">
+<div class="g2" style="display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:21px;margin-top:21px;align-items:stretch">
 <section class="mod">
 <div class="mhead"><span class="silk">Procédure · basculez chaque levier quand c'est fait</span><span class="lcd dot" style="padding:5px 10px;font-size:18px">{{count}}/3</span></div>
 <sc-for list="{{steps}}" as="s" hint-placeholder-count="3">
@@ -203,7 +222,7 @@ body{margin:0;background:#CFCBC3}
 </section>
 </div>
 
-<div class="g2" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.618fr);gap:21px;margin-top:21px;align-items:start">
+<div class="g2" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.618fr);gap:21px;margin-top:21px;align-items:stretch">
 <section class="mod">
 <div class="mhead"><span class="silk">Un code à l'écran ?</span><button type="button" class="key" style="min-height:32px;padding:0 12px;font-size:11.5px" onClick="{{fillDemo}}">Exemple</button></div>
 <div class="lcd" style="padding:14px 16px">
@@ -248,12 +267,37 @@ body{margin:0;background:#CFCBC3}
 class Component extends DCLogic {
 constructor(props) {
 super(props);
-this.state = { done: [false, false, false], printed: false, digits: "", result: "En attente d'un code" };
+this.state = { done: [false, false, false], printed: false, digits: "", result: "En attente d'un code", live: false };
+this.view = React.createRef();
+this.vf = React.createRef();
+this.wtag = React.createRef();
+}
+componentDidMount() {
+var self = this;
+/* la fenêtre tient sa promesse : la U1 du modèle 3D se tourne et se zoome (alignée sur la photo au repos) */
+import("/_blob/local-u1stage").then(function (m) {
+return m.mount(self.view.current, { theme: "pupitre", model: "/_blob/local-glb", view: { base: "hero", scale: 1.25, shift: 0 }, interactive: true, zoom: true, drift: false });
+}).then(function (st) {
+if (!st) return;
+if (self.gone) { st.dispose(); return; }
+self.stage = st;
+self.setState({ live: true });
+st.onFrame(function (p) {
+var a = p("head3top");
+if (!a || !self.vf.current) return;
+self.vf.current.style.left = a.x + "px"; self.vf.current.style.top = a.y + "px";
+self.wtag.current.style.left = (a.x + 31) + "px"; self.wtag.current.style.top = (a.y - 52) + "px";
+});
+}).catch(function () {});
+}
+componentWillUnmount() {
+this.gone = true;
+if (this.stage) this.stage.dispose();
 }
 renderVals() {
 var self = this;
 var s = this.state;
-var texts = ["Repérez la tête 3 : la troisième en partant de la gauche, à l'arrière.", "Vérifiez l'engrenage qui pousse le filament et retirez les débris.", "Relancez l'impression depuis l'écran de la U1."];
+var texts = ["Repérez la tête 3 : la troisième en partant de la gauche, à l'arrière.", "Nettoyez l'engrenage qui pousse le filament : retirez les débris.", "Relancez l'impression depuis l'écran de la U1."];
 var shorts = ["Repérer la tête 3", "Nettoyer l'engrenage", "Relancer l'impression"];
 var count = s.done.filter(function (d) { return d; }).length;
 var d = s.digits;
@@ -261,6 +305,7 @@ var padded = (d + "················").slice(0, 16);
 var shown = padded.slice(0, 4) + "-" + padded.slice(4, 8) + "-" + padded.slice(8, 12) + "-" + padded.slice(12, 16);
 var labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "C", "0", "⌫"];
 return {
+view: this.view, vf: this.vf, wtag: this.wtag, winCls: this.state.live ? "live" : "",
 count: count,
 steps: texts.map(function (t, i) {
 var on = s.done[i];
@@ -270,7 +315,7 @@ cls: on ? "prow on" : "prow", led: on ? "led g" : "led", pressed: on ? "true" : 
 toggle: function () { var n = s.done.slice(); n[i] = !n[i]; self.setState({ done: n }); }
 };
 }),
-paperH: s.printed ? "410px" : "0px",
+paperH: s.printed ? "410px" : "96px",
 paperLed: s.printed ? "led g" : "led",
 printLabel: s.printed ? "Ranger le ticket" : "Imprimer le diagnostic",
 printToggle: function () { self.setState({ printed: !s.printed }); },

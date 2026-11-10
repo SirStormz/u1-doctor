@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>E · Accueil — mode Expert</title>
+<title>Notice · Accueil, mode Expert</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -35,16 +35,17 @@
 <span style="font-size:15px;color:var(--ink2)">4 constats : 2 constatés · 2 pas assez d'infos · 6 preuves pour, 0 contre, 4 manquantes</span>
 </div>
 </div>
-<div style="display:flex;gap:12px"><a href="E-Accueil.dc.html" class="btn">Rejouer la session</a><a href="E-Accueil.dc.html" class="btn btn-a">Exporter le rapport</a></div>
+<div style="display:flex;gap:12px"><a href="#rejeu" class="btn">Rejouer la session</a><a href="E-Accueil.dc.html" class="btn btn-a">Exporter le rapport</a></div>
 </div>
 
-<div class="g2" style="display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:21px;margin-top:26px;align-items:start">
+<div class="g2" style="display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:21px;margin-top:26px;align-items:stretch">
 <section class="box" style="overflow:hidden">
-<div style="position:relative;height:519px">
-<img src="/_blob/593dda732e2257747c7dc86bfbdf6644" alt="Dessin de la U1 avec trois renvois numérotés : tête 3, plateau, écran" style="position:absolute;left:0;top:0;width:779px;height:519px;display:block">
-<svg aria-hidden="true" width="779" height="519" style="position:absolute;left:0;top:0">
-<g stroke="#1D1C1A" stroke-width="2" fill="none"><path d="M314 150 H420 L589 199"></path><path d="M314 280 H400 L482 296"></path><path d="M314 410 H380 L436 410"></path></g>
-<g fill="#1D1C1A"><circle cx="591" cy="200" r="4"></circle><circle cx="484" cy="297" r="4"></circle><circle cx="438" cy="410" r="4"></circle></g>
+<div class="{{ovCls}}" style="position:relative;height:519px">
+<img class="u1p" src="@@A:line-hero@@" alt="Dessin de la U1 tracé sur le modèle 3D, avec trois renvois numérotés : tête 3, écran, plateau" style="left:300px;top:0;width:437px;height:519px">
+<canvas class="u1c" ref="{{view}}" role="img" aria-label="Vue d'ensemble en 3D au trait. Glissez ou utilisez les flèches pour tourner ; les renvois suivent les pièces."></canvas>
+<svg aria-hidden="true" width="779" height="519" style="position:absolute;left:0;top:0;pointer-events:none">
+<g stroke="#1D1C1A" stroke-width="2" fill="none"><path ref="{{c0}}" d="M314 150 H420 L574 196"></path><path ref="{{c1}}" d="M314 280 H380 L494 276"></path><path ref="{{c2}}" d="M314 410 H380 L476 374"></path></g>
+<g fill="#1D1C1A"><circle ref="{{d0}}" cx="574" cy="196" r="4"></circle><circle ref="{{d1}}" cx="494" cy="276" r="4"></circle><circle ref="{{d2}}" cx="476" cy="374" r="4"></circle></g>
 </svg>
 <span class="cn a" style="position:absolute;left:284px;top:135px">1</span>
 <span class="cn" style="position:absolute;left:284px;top:265px">2</span>
@@ -81,7 +82,7 @@
 </div>
 
 <section class="box" style="margin-top:21px;padding:24px 26px">
-<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px"><h3 class="t" style="margin:0;font-size:22px">Température buse tête 3</h3><span class="mono" style="font-size:13px;color:var(--ink2)">214 – 221 °C</span></div>
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px"><h3 class="t" style="margin:0;font-size:22px">Température buse tête 3</h3><span class="mono" style="font-size:13px;color:var(--ink2)">214 à 221 °C</span></div>
 <div style="position:relative">
 <svg viewBox="0 0 1180 190" width="100%" role="img" aria-label="Courbe de température de 14:09 à 14:15, trou de données de 14:12:30 à 14:14:00, pause à 14:14:12, code à 14:14:20">
 <defs><pattern id="he" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="9" stroke="#1D1C1A" stroke-width="1.5" opacity=".35"></line></pattern></defs>
@@ -96,9 +97,9 @@
 <line x1="1048.7" y1="10" x2="1048.7" y2="150" stroke="#FFB547" stroke-width="5"></line>
 <rect x="1058" y="12" width="112" height="30" rx="15" fill="#FFB547" stroke="#1D1C1A" stroke-width="2"></rect>
 <text x="1114" y="32" text-anchor="middle" font-family="Atkinson Hyperlegible Next, sans-serif" font-size="13" font-weight="700" fill="#1D1C1A">Code 14:14:20</text>
-<g font-family="Atkinson Hyperlegible Next, sans-serif" font-size="13" font-weight="700" fill="#55534E" text-anchor="middle"><text x="18" y="176">14:09</text><text x="196.7" y="176">14:10</text><text x="393.3" y="176">14:11</text><text x="590" y="176">14:12</text><text x="786.7" y="176">14:13</text><text x="983.3" y="176">14:14</text></g>
+<g font-family="Atkinson Hyperlegible Next, sans-serif" font-size="13" font-weight="700" fill="#47453F" text-anchor="middle"><text x="18" y="176">14:09</text><text x="196.7" y="176">14:10</text><text x="393.3" y="176">14:11</text><text x="590" y="176">14:12</text><text x="786.7" y="176">14:13</text><text x="983.3" y="176">14:14</text></g>
 </svg>
-<span class="tip show" tabindex="0" data-tip="Trou de données : rien reçu pendant 1 min 30. L'absence de données n'est pas une preuve qu'il ne s'est rien passé." style="position:absolute;left:58.4%;top:5%;width:25%;height:74%"></span>
+<span class="tip" tabindex="0" data-tip="Trou de données : rien reçu pendant 1 min 30. L'absence de données n'est pas une preuve qu'il ne s'est rien passé." style="position:absolute;left:58.4%;top:5%;width:25%;height:74%"></span>
 </div>
 </section>
 
@@ -115,7 +116,7 @@
 </section>
 
 <div class="g2" style="display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:21px;margin-top:21px">
-<section class="box" style="padding:22px 26px">
+<section id="rejeu" class="box" style="padding:22px 26px">
 <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px"><h3 class="t" style="margin:0;font-size:20px">Rejouer la session</h3><span style="font-size:14px;color:var(--ink3)">sans se reconnecter</span></div>
 <div style="display:flex;align-items:center;gap:14px">
 <button type="button" class="btn btn-a" aria-label="Lecture" style="width:52px;padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"></path></svg></button>
@@ -131,14 +132,41 @@
 </div>
 </div>
 
-@@DOCK:Historique@@
+@@DOCK:Accueil@@
 <div style="height:30px"></div>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1900}}'>
 class Component extends DCLogic {
+componentDidMount() {
+var self = this;
+this.view = this.view || React.createRef();
+/* la vue d'ensemble est le même dessin, calculé en direct sur le modèle 3D : on peut la tourner, les renvois suivent */
+import("@@A:u1stage@@").then(function (m) {
+return m.mount(self.view.current, { theme: "notice", model: "@@A:glb@@", view: { base: "hero", scale: 1.681, shift: 0.1656 }, interactive: true, drift: false });
+}).then(function (st) {
+if (!st) return;
+if (self.gone) { st.dispose(); return; }
+self.stage = st;
+self.setState({ live: true });
+var ys = [150, 280, 410], names = ["head3top", "screen", "bed"];
+st.onFrame(function (p) {
+for (var k = 0; k < 3; k++) {
+var a = p(names[k]), c = self.cr[k].current, d = self.dr[k].current;
+if (!a || !c || !d) continue;
+c.setAttribute("d", "M314 " + ys[k] + " H" + (k ? 380 : 420) + " L" + a.x.toFixed(1) + " " + a.y.toFixed(1));
+d.setAttribute("cx", a.x.toFixed(1)); d.setAttribute("cy", a.y.toFixed(1));
+}
+});
+}).catch(function () {});
+}
+componentWillUnmount() {
+this.gone = true;
+if (this.stage) this.stage.dispose();
+}
 renderVals() {
-return {};
+if (!this.view) { this.view = React.createRef(); this.cr = [React.createRef(), React.createRef(), React.createRef()]; this.dr = [React.createRef(), React.createRef(), React.createRef()]; }
+return { view: this.view, c0: this.cr[0], c1: this.cr[1], c2: this.cr[2], d0: this.dr[0], d1: this.dr[1], d2: this.dr[2], ovCls: this.state && this.state.live ? "live" : "" };
 }
 }
 </script>

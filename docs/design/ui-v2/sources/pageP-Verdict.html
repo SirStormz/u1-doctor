@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>Pupitre 2 · Verdict — tête 3</title>
+<title>Pupitre 2 · Verdict, tête 3</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -20,15 +20,15 @@
 <div class="app">
 @@TOP:simple:back@@
 
-<div class="wrap g2" style="display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:21px;align-items:start">
+<div class="wrap g2" style="display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:21px;align-items:stretch">
 <div style="display:flex;flex-direction:column;gap:21px">
 <section class="mod">
-<div class="mhead"><span class="silk">Où regarder · gros plan</span><span class="silk" style="color:var(--ink3)">photo du modèle U1_Jay</span></div>
+<div class="mhead"><span class="silk">Où regarder · gros plan</span><span class="silk" style="color:var(--ink3)">rendu du modèle 3D</span></div>
 <div class="win" style="height:500px">
-<img src="/_blob/3cd39a2e266f4c5f3db791eeaaa1eff8" alt="Gros plan des quatre têtes à l'arrière ; la troisième est cadrée" style="position:absolute;left:-9px;top:-207px;width:960px;height:640px;display:block">
+<img src="@@A:obs-tetes2@@" alt="Gros plan des têtes garées à l'arrière ; la tête 3 est cadrée" style="position:absolute;left:-121px;top:-14px;width:960px;height:640px;display:block">
 <span class="vf" aria-hidden="true" style="left:430px;top:262px"></span>
 <span class="wtag" style="left:462px;top:212px">T3</span>
-<span class="silk" style="position:absolute;left:16px;bottom:14px;color:#8B877F">Tête 3 : la troisième en partant de la gauche</span>
+<span class="silk" style="position:absolute;left:16px;bottom:14px;padding:5px 9px;border-radius:4px;background:rgba(15,16,18,.78);color:#E8E4DC">Tête 3 : la troisième en partant de la gauche</span>
 </div>
 </section>
 <section class="mod">
@@ -43,7 +43,7 @@
 
 <div style="display:flex;flex-direction:column;gap:21px">
 <section class="mod">
-<div class="mhead"><span class="silk">Verdict · tête 3 · ~5 min</span><span class="tip" tabindex="0" data-tip="À vérifier : l'imprimante l'a signalé, il faut le confirmer à l'œil. Ce n'est pas une certitude." style="display:inline-flex;align-items:center;gap:9px"><span class="led a"></span><span class="silk" style="color:var(--ink)">À vérifier</span></span></div>
+<div class="mhead"><span class="silk">Verdict · tête 3 · ~5 min</span><span class="tip tl" tabindex="0" data-tip="À vérifier : l'imprimante l'a signalé, il faut le confirmer à l'œil. Ce n'est pas une certitude." style="display:inline-flex;align-items:center;gap:9px"><span class="led a"></span><span class="silk" style="color:var(--ink)">À vérifier</span></span></div>
 <h1 style="margin:0;font:700 38px/1.05 'Barlow Semi Condensed',sans-serif">La tête 3 n'arrive plus à pousser le filament</h1>
 <p style="margin:12px 0 0;font-size:16px;color:var(--ink2)">L'imprimante a signalé un blocage à l'engrenage qui entraîne le filament, puis elle a mis l'impression en pause.</p>
 </section>
@@ -89,7 +89,7 @@ this.state = { done: [true, false, false], printed: false };
 renderVals() {
 var self = this;
 var s = this.state;
-var texts = ["Repérez la tête 3 : la troisième en partant de la gauche, à l'arrière.", "Vérifiez l'engrenage qui pousse le filament et retirez les débris.", "Relancez l'impression depuis l'écran de la U1."];
+var texts = ["Repérez la tête 3 : la troisième en partant de la gauche, à l'arrière.", "Nettoyez l'engrenage qui pousse le filament : retirez les débris.", "Relancez l'impression depuis l'écran de la U1."];
 var shorts = ["Repérer la tête 3", "Nettoyer l'engrenage", "Relancer l'impression"];
 return {
 count: s.done.filter(function (d) { return d; }).length,
@@ -98,7 +98,7 @@ var on = s.done[i];
 return { text: t, short: shorts[i], box: on ? "[x]" : "[ ]", cls: on ? "prow on" : "prow", led: on ? "led g" : "led", pressed: on ? "true" : "false",
 toggle: function () { var n = s.done.slice(); n[i] = !n[i]; self.setState({ done: n }); } };
 }),
-paperH: s.printed ? "410px" : "0px",
+paperH: s.printed ? "410px" : "96px",
 paperLed: s.printed ? "led g" : "led",
 printLabel: s.printed ? "Ranger le ticket" : "Imprimer le diagnostic",
 printToggle: function () { self.setState({ printed: !s.printed }); }
