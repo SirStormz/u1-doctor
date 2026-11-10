@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Pupitre 2 · Diagnostiquer</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Doto:ROND,wght@0..100,100..900&amp;family=Barlow:wght@400;500;600;700&amp;family=Barlow+Semi+Condensed:wght@500;600;700&amp;family=Permanent+Marker&amp;family=Courier+Prime:wght@400;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#CFCBC3}
+.app{--ink:#1D1C1A;--ink2:#4F4C46;--ink3:#7C786F;--lcd:#FFB547;--lcd-ink:#2A1B03;position:relative;min-height:1100px;color:var(--ink);font:400 16px/1.5 Barlow,system-ui,sans-serif;-webkit-font-smoothing:antialiased;background-color:#CFCBC3;background-image:linear-gradient(180deg,rgba(255,255,255,.10),rgba(0,0,0,.06)),url('/_blob/fb7958df8bc2671a9325a021e85c7871');background-size:100% 100%,384px 384px}
+.app *{box-sizing:border-box}
+.app a{color:inherit}
+.wrap{max-width:1360px;margin:0 auto;padding:0 40px}
+.silk{font:600 11.5px/1.2 'Barlow Semi Condensed',sans-serif;letter-spacing:.15em;text-transform:uppercase;color:var(--ink2)}
+.dot{font-family:Doto,monospace;font-weight:800;font-variation-settings:"ROND" 100;letter-spacing:.02em}
+.hand{font-family:'Permanent Marker',cursive;letter-spacing:.01em}
+/* modules usinés */
+.mod{position:relative;padding:24px;border-radius:12px;background-image:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.08)),url('/_blob/fb7958df8bc2671a9325a021e85c7871');background-size:100% 100%,384px 384px;box-shadow:inset 0 1px 0 rgba(255,255,255,.75),inset 0 -1px 0 rgba(0,0,0,.10),0 0 0 1px rgba(0,0,0,.14),0 1px 0 1px rgba(255,255,255,.35),0 3px 0 rgba(0,0,0,.06),0 10px 22px -14px rgba(0,0,0,.35)}
+.mod::before{content:"";position:absolute;inset:9px;pointer-events:none;background:radial-gradient(circle,#8E897F 0 1.4px,transparent 1.6px) center/4px 1px no-repeat,radial-gradient(circle at 45% 40%,#E7E3DB 0 2.2px,#A9A399 3.6px,rgba(0,0,0,.25) 4.1px,transparent 4.6px) left top/10px 10px no-repeat,radial-gradient(circle at 45% 40%,#E7E3DB 0 2.2px,#A9A399 3.6px,rgba(0,0,0,.25) 4.1px,transparent 4.6px) right top/10px 10px no-repeat,radial-gradient(circle at 45% 40%,#E7E3DB 0 2.2px,#A9A399 3.6px,rgba(0,0,0,.25) 4.1px,transparent 4.6px) left bottom/10px 10px no-repeat,radial-gradient(circle at 45% 40%,#E7E3DB 0 2.2px,#A9A399 3.6px,rgba(0,0,0,.25) 4.1px,transparent 4.6px) right bottom/10px 10px no-repeat}
+.mhead{display:flex;align-items:center;justify-content:space-between;gap:13px;margin-bottom:16px}
+.groove{height:2px;background:linear-gradient(180deg,rgba(0,0,0,.16),rgba(255,255,255,.55));border:0;margin:16px 0}
+/* plaque signalétique alu brossé */
+.plate{display:inline-flex;align-items:center;gap:10px;height:40px;padding:0 16px 0 12px;border-radius:7px;background:repeating-linear-gradient(90deg,rgba(255,255,255,0) 0 2px,rgba(255,255,255,.18) 2px 3px),linear-gradient(180deg,#E9E7E2,#BDB9B1);box-shadow:inset 0 1px 0 #fff,inset 0 -1px 0 rgba(0,0,0,.2),0 0 0 1px rgba(0,0,0,.25),0 2px 3px rgba(0,0,0,.18);text-decoration:none}
+.plate b{font:700 15px/1 'Barlow Semi Condensed',sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#2B2A27;text-shadow:0 1px 0 rgba(255,255,255,.7)}
+/* LCD ambre */
+.lcd{position:relative;padding:16px 20px;border-radius:7px;background:linear-gradient(180deg,#FFBE5C,#FFAF3E);color:var(--lcd-ink);box-shadow:inset 0 2px 8px rgba(90,45,0,.5),inset 0 0 0 1px rgba(70,35,0,.35),0 0 0 5px #1E1D1B,0 0 0 6px rgba(255,255,255,.45),0 1px 0 7px rgba(0,0,0,.08)}
+.lcd::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background-image:radial-gradient(rgba(42,27,3,.085) .9px,transparent 1.1px),linear-gradient(115deg,rgba(255,255,255,.22) 0 18%,rgba(255,255,255,0) 18.5%);background-size:4px 4px,100% 100%}
+.lcd input{width:100%;border:0;outline:none;background:none;color:var(--lcd-ink);font:800 22px/1 Doto,monospace;font-variation-settings:"ROND" 100;letter-spacing:.05em}
+.lcd input::placeholder{color:rgba(42,27,3,.3)}
+.ty{display:inline-block;clip-path:inset(0 100% 0 0);animation:ty 1s steps(18,end) forwards}
+@keyframes ty{to{clip-path:inset(0 0 0 0)}}
+.cur{display:inline-block;width:.55em;height:.85em;margin-left:.1em;vertical-align:-.04em;background:var(--lcd-ink);animation:bl .55s steps(1) 2.4s 5 both}
+@keyframes bl{50%{opacity:0}}
+/* voyants */
+.led{display:inline-block;width:13px;height:13px;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 35% 30%,#B9B4AA,#7E7970 70%);box-shadow:inset 0 1px 2px rgba(0,0,0,.45),0 0 0 2px #2A2926,0 0 0 3px rgba(255,255,255,.5)}
+.led.g{background:radial-gradient(circle at 35% 30%,#E4FFE9,#3FD06F 45%,#178A3C)}
+.led.a{background:radial-gradient(circle at 35% 30%,#FFF1CF,#FFAD1F 45%,#B06800)}
+.led.big{width:20px;height:20px}
+.led.post{animation:post 1ms linear both}
+@keyframes post{from,to{background:radial-gradient(circle at 35% 30%,#B9B4AA,#7E7970 70%)}}
+/* touches à course */
+.key{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border:0;border-radius:9px;background:linear-gradient(180deg,#F8F6F1,#DEDAD1);color:var(--ink);font:700 13.5px/1 'Barlow Semi Condensed',sans-serif;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;cursor:pointer;box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(0,0,0,.22),0 4px 0 #A6A196,0 6px 8px rgba(0,0,0,.18);transition:transform .05s,box-shadow .05s}
+.key:active{transform:translateY(3px);box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(0,0,0,.22),0 1px 0 #A6A196,0 2px 3px rgba(0,0,0,.15)}
+.key-a{background:linear-gradient(180deg,#FFCA74,#FFAA2C);color:#2A1B03;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 0 0 1px rgba(110,60,0,.45),0 4px 0 #BD7A10,0 6px 8px rgba(0,0,0,.18)}
+.key-a:active{box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 0 0 1px rgba(110,60,0,.45),0 1px 0 #BD7A10}
+.key-k{background:linear-gradient(180deg,#3B3935,#1E1D1B);color:#F2EFE8;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 0 1px #000,0 4px 0 #000,0 6px 8px rgba(0,0,0,.25)}
+.key-k:active{box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 0 1px #000,0 1px 0 #000}
+.key.txt{text-transform:none;letter-spacing:0;font:600 15px/1.2 Barlow,sans-serif;justify-content:flex-start;text-align:left;padding:0 16px}
+.key[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+/* interrupteur à glissière */
+.slide{display:inline-flex;align-items:center;gap:10px;text-decoration:none}
+.slide .tr{position:relative;width:64px;height:30px;border-radius:7px;background:#262522;box-shadow:inset 0 2px 5px rgba(0,0,0,.75),0 1px 0 rgba(255,255,255,.55)}
+.slide .kn{position:absolute;top:3px;left:3px;width:29px;height:24px;border-radius:5px;background:repeating-linear-gradient(90deg,transparent 0 5px,rgba(0,0,0,.14) 5px 6px),linear-gradient(180deg,#F8F6F1,#CFCAC0);box-shadow:inset 0 1px 0 #fff,0 2px 4px rgba(0,0,0,.5);transition:left .2s cubic-bezier(.3,.7,.2,1)}
+.slide.r .kn{left:32px}
+.slide:hover .kn{left:17px}
+.slide .on{color:var(--ink)}.slide .off{color:var(--ink3)}
+/* ruban adhésif */
+.tape{display:inline-flex;align-items:center;justify-content:center;padding:5px 14px;background:linear-gradient(180deg,rgba(242,232,203,.96),rgba(232,220,186,.96));color:#2C2A26;box-shadow:0 1px 2px rgba(0,0,0,.2);clip-path:polygon(1.5% 6%,98% 0,100% 48%,98.5% 100%,0 95%,1% 50%)}
+/* fenêtre noire */
+.win{position:relative;border-radius:9px;background:#0F1012;overflow:hidden;box-shadow:inset 0 4px 14px rgba(0,0,0,.85),0 0 0 2px #1C1B19,0 0 0 4px rgba(0,0,0,.25),0 1px 0 5px rgba(255,255,255,.45)}
+.win::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(118deg,rgba(255,255,255,0) 0 52%,rgba(255,255,255,.07) 52.5% 60%,rgba(255,255,255,0) 60.5%)}
+.vf{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;background:linear-gradient(#FFB547,#FFB547) left top/12px 2px no-repeat,linear-gradient(#FFB547,#FFB547) left top/2px 12px no-repeat,linear-gradient(#FFB547,#FFB547) right top/12px 2px no-repeat,linear-gradient(#FFB547,#FFB547) right top/2px 12px no-repeat,linear-gradient(#FFB547,#FFB547) left bottom/12px 2px no-repeat,linear-gradient(#FFB547,#FFB547) left bottom/2px 12px no-repeat,linear-gradient(#FFB547,#FFB547) right bottom/12px 2px no-repeat,linear-gradient(#FFB547,#FFB547) right bottom/2px 12px no-repeat}
+.wtag{position:absolute;padding:5px 8px;border-radius:3px;background:#FFB547;color:#2A1B03;font:800 13px/1 Doto,monospace;font-variation-settings:"ROND" 100}
+/* galvanomètre */
+.meter{position:relative}
+.meter img{display:block;width:100%;height:auto}
+.meter svg{position:absolute;inset:0;width:100%;height:100%}
+.needle{transform-box:view-box;transform-origin:595px 605px;animation:swing 1.8s cubic-bezier(.2,.9,.3,1) .6s both}
+@keyframes swing{0%{transform:rotate(-50deg)}55%{transform:rotate(calc(var(--a) + 6deg))}75%{transform:rotate(calc(var(--a) - 2.5deg))}90%{transform:rotate(calc(var(--a) + 1deg))}100%{transform:rotate(var(--a))}}
+/* bouton photo */
+.knob{position:relative;border-radius:50%;overflow:hidden;box-shadow:0 0 0 1px rgba(0,0,0,.25),0 8px 14px -6px rgba(0,0,0,.45)}
+.knob img{position:absolute;width:120%;height:120%;left:-10%;top:-10%;transition:transform .5s cubic-bezier(.34,1.3,.64,1)}
+/* levier */
+.tg{position:relative;width:44px;height:58px;flex-shrink:0}
+.tg .pl{position:absolute;left:4px;top:4px;width:36px;height:50px;border-radius:6px;background:linear-gradient(#DCD8D0,#C6C2B9);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 0 0 1px rgba(0,0,0,.18)}
+.tg .nut{position:absolute;left:12px;top:19px;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#FAF8F4,#9C978D);box-shadow:0 0 0 1px rgba(0,0,0,.35),0 2px 3px rgba(0,0,0,.3)}
+.tg .lev{position:absolute;left:18px;top:5px;width:8px;height:24px;border-radius:4px;background:linear-gradient(90deg,#8C877D,#FAF8F4 45%,#ABA69C);box-shadow:0 1px 2px rgba(0,0,0,.45);transform-origin:50% 100%;transform:rotate(180deg);transition:transform .14s cubic-bezier(.3,.7,.2,1)}
+.tg .lev::before{content:"";position:absolute;left:-2px;top:-4px;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#FFFFFF,#B4AFA5);box-shadow:0 1px 2px rgba(0,0,0,.4)}
+.on .tg .lev{transform:rotate(0deg)}
+/* ticket */
+.slot{height:16px;border-radius:8px;background:#141312;box-shadow:inset 0 3px 6px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.6)}
+.paperwrap{position:relative;margin:-8px 14px 0;padding-bottom:12px;overflow:hidden;filter:drop-shadow(0 6px 6px rgba(0,0,0,.22));transition:height 2.2s steps(22,end)}
+.paper{position:relative;padding:18px 18px 22px;background:#FBFAF5;color:#2B2A27;font:400 13.5px/1.55 'Courier Prime',monospace}
+.paper::after{content:"";position:absolute;left:0;right:0;bottom:0;height:10px;background:linear-gradient(135deg,#FBFAF5 50%,transparent 50%) 0 0/12px 10px repeat-x,linear-gradient(225deg,#FBFAF5 50%,transparent 50%) 0 0/12px 10px repeat-x;transform:translateY(100%)}
+.hr{border-top:1px dashed #9B978E;margin:8px 0}
+/* dock = rangée de touches */
+.dock{position:sticky;bottom:18px;z-index:10;display:flex;gap:14px;width:max-content;max-width:calc(100% - 32px);margin:42px auto 0;padding:13px 18px 10px;border-radius:14px;background-image:linear-gradient(180deg,rgba(255,255,255,.2),rgba(0,0,0,.03)),url('/_blob/fb7958df8bc2671a9325a021e85c7871');background-size:100% 100%,384px 384px;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 0 0 1px rgba(0,0,0,.18),0 12px 24px -10px rgba(0,0,0,.4)}
+.dock a{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:96px;text-decoration:none;color:var(--ink2)}
+.dock .cap{position:relative;width:58px;height:46px;display:flex;align-items:center;justify-content:center;border-radius:9px;background:linear-gradient(180deg,#F8F6F1,#DEDAD1);color:var(--ink);box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(0,0,0,.22),0 4px 0 #A6A196;transition:transform .05s,box-shadow .05s}
+.dock a.on .cap{transform:translateY(3px);box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(0,0,0,.22),0 1px 0 #A6A196;background:linear-gradient(180deg,#E8E4DC,#D3CFC6)}
+.dock a.on .cap::before{content:"";position:absolute;top:-11px;width:7px;height:7px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFF1CF,#FFAD1F 45%,#B06800);box-shadow:0 0 0 1.5px #2A2926}
+.dock a.on{color:var(--ink)}
+.dock .silk{color:inherit;font-size:10.5px}
+.tip{position:relative;cursor:help}
+.tip::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%);width:max-content;max-width:280px;padding:10px 12px;border-radius:7px;background:#1D1C1A;color:#F2EFE8;font:400 13.5px/1.5 Barlow,sans-serif;letter-spacing:0;text-transform:none;text-align:left;white-space:normal;opacity:0;pointer-events:none;transition:opacity .15s;z-index:40}
+.tip.dn::after{bottom:auto;top:calc(100% + 10px)}
+.tip:hover::after,.tip:focus-visible::after,.tip.show::after{opacity:1}
+.dotted{border-bottom:1px dotted var(--ink3)}
+.kv{display:grid;grid-template-columns:136px minmax(0,1fr);gap:9px 13px;margin:0;font-size:15px}
+.kv dt{color:var(--ink3)}.kv dd{margin:0}
+.app :focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+@media (max-width:960px){.g2,.g3,.g4{grid-template-columns:minmax(0,1fr)!important}.span2{grid-row:auto!important}.dock a{min-width:58px}.hide-sm{display:none!important}.wrap{padding:0 16px}}
+@media (prefers-reduced-motion:reduce){.app *{animation:none!important;transition:none!important}.ty{clip-path:none}.needle{transform:rotate(var(--a))}}
+</style>
+
+<style>
+.dial{position:relative;width:340px;height:330px;margin:0 auto}
+.dial svg{position:absolute;inset:0}
+.pos{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:8px;padding:6px 8px;border:0;border-radius:7px;background:none;cursor:pointer;color:var(--ink3)}
+.pos:hover{color:var(--ink);background:rgba(0,0,0,.05)}
+.pos.on{color:var(--ink)}
+.pos[disabled]{pointer-events:none;opacity:.5}
+.safe{display:flex;align-items:center;gap:16px;padding:14px 16px;border-radius:10px;background:rgba(0,0,0,.05);box-shadow:inset 0 1px 2px rgba(0,0,0,.12)}
+.sw{position:relative;width:52px;height:64px;flex-shrink:0}
+.sw .base{position:absolute;inset:4px;border-radius:7px;background:linear-gradient(#DCD8D0,#C2BEB5);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 0 0 1px rgba(0,0,0,.2)}
+.sw .nut{position:absolute;left:16px;top:22px;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#FAF8F4,#9C978D);box-shadow:0 0 0 1px rgba(0,0,0,.35)}
+.sw .lev{position:absolute;left:22px;top:8px;width:8px;height:24px;border-radius:4px;background:linear-gradient(90deg,#8C877D,#FAF8F4 45%,#ABA69C);transform-origin:50% 100%;transform:rotate(180deg);transition:transform .14s;cursor:pointer;border:0;padding:0}
+.sw .lev::before{content:"";position:absolute;left:-2px;top:-4px;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fff,#B4AFA5)}
+.sw.on .lev{transform:rotate(0)}
+.cover{position:absolute;inset:0;border:0;border-radius:8px;cursor:pointer;background:linear-gradient(180deg,rgba(255,190,90,.78),rgba(255,160,40,.62));box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 0 0 1px rgba(120,60,0,.45),0 3px 6px rgba(0,0,0,.25);transform-origin:50% 0;transform:perspective(260px) rotateX(0);transition:transform .45s cubic-bezier(.3,1.3,.5,1)}
+.cover::after{content:"";position:absolute;left:8px;right:8px;top:8px;height:3px;border-radius:2px;background:rgba(255,255,255,.55)}
+.open .cover{transform:perspective(260px) rotateX(-128deg)}
+.slot2{width:80%;height:20px;margin:0 auto;border-radius:10px;background:#141312;box-shadow:inset 0 3px 6px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.6)}
+.tag{display:inline-flex;align-items:center;height:24px;padding:0 8px;border-radius:3px;background:rgba(0,0,0,.08);font:600 12px/1 'Barlow Semi Condensed',sans-serif;letter-spacing:.06em;color:var(--ink2)}
+.srow{display:flex;align-items:center;gap:14px;padding:11px 0;font-size:16px}
+.srow+.srow{box-shadow:inset 0 1px 0 rgba(0,0,0,.1),inset 0 2px 0 rgba(255,255,255,.45)}
+.blk{height:14px;background:rgba(42,27,3,.14)}.blk.on{background:#2A1B03}
+</style>
+</helmet>
+<div class="app">
+<header style="display:flex;align-items:center;gap:20px;height:84px;padding:0 40px">
+<a class="plate" href="P-Accueil.dc.html"><svg width="22" height="22" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M5 5v13a8 8 0 0 0 16 0v-3h2.5l2-5 3 10 2-5" stroke="#2B2A27" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="30" cy="20" r="1.7" fill="#2B2A27"></circle></svg><b>U1 Doctor</b></a>
+<a href="P-Accueil.dc.html" class="key hide-sm" style="min-height:36px;padding:0 14px">← Accueil</a>
+<span class="tip dn hide-sm" tabindex="0" data-tip="U1 Doctor lit l’état de l’imprimante, il n’envoie jamais de commande." style="display:inline-flex;align-items:center;gap:9px"><span class="led g"></span><span class="silk">Lecture seule</span></span>
+<span class="tape hand tip dn hide-sm" tabindex="0" data-tip="Ces données sont un exemple fictif pour découvrir l’application. Rien ne vient de votre imprimante." style="transform:rotate(-2.5deg);font-size:14px">exemple de démo</span>
+<div style="flex-grow:1"></div>
+<a href="P-Expert.dc.html" class="slide tip dn" data-tip="Affiche le détail technique : codes bruts, horaires précis, sources et preuves. Chaque terme a son explication au survol." aria-label="Passer en mode Expert"><span class="silk on">Simple</span><span class="tr"><span class="kn"></span></span><span class="silk off">Expert</span></a>
+<span class="slide hide-sm" aria-label="Langue : français"><span class="silk on">FR</span><span class="tr" style="width:48px"><span class="kn" style="width:21px"></span></span><span class="silk off">EN</span></span>
+<button type="button" class="key" aria-label="Réglages" style="min-height:40px;width:44px;padding:0"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"></path><circle cx="15" cy="6" r="2"></circle><circle cx="9" cy="12" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg></button>
+</header>
+
+<div class="wrap">
+<section class="mod">
+<div class="mhead"><span class="silk">Écran principal</span><span class="silk" style="color:var(--ink3)">Lecture seule · rien n'est jamais envoyé à l'imprimante</span></div>
+<div class="lcd" style="padding:22px 28px"><div class="dot" style="font-size:48px;line-height:1.05;white-space:nowrap"><span class="ty" style="animation-duration:1.3s;animation-timing-function:steps(35,end);animation-delay:.4s">Comment voulez-vous diagnostiquer ?</span><span class="cur" aria-hidden="true"></span></div></div>
+</section>
+
+<div class="g2" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.618fr);gap:21px;margin-top:21px;align-items:start">
+<section class="mod">
+<div class="mhead"><span class="silk">Sélecteur · tournez le bouton</span></div>
+<div class="dial" role="radiogroup" aria-label="Façon de diagnostiquer">
+<svg viewBox="0 0 340 330" aria-hidden="true"><g stroke="#2B2A27" stroke-width="2.5" stroke-linecap="round"><line x1="170" y1="180" x2="170" y2="180" transform="rotate(-60 170 180) translate(0 -118)"></line></g>
+<g stroke="#2B2A27" stroke-linecap="round"><path d="M170 62 v14" stroke-width="3" transform="rotate(-60 170 180)"></path><path d="M170 62 v14" stroke-width="3"></path><path d="M170 62 v14" stroke-width="3" transform="rotate(60 170 180)"></path>
+<path d="M170 66 v8" stroke-width="1.5" transform="rotate(-30 170 180)"></path><path d="M170 66 v8" stroke-width="1.5" transform="rotate(30 170 180)"></path></g></svg>
+<button type="button" role="radio" aria-checked="{{c1.checked}}" class="{{c1.cls}}" disabled="{{busy}}" onClick="{{pickConnect}}" style="left:58px;top:92px"><span class="silk" style="color:inherit">Connecter</span></button>
+<button type="button" role="radio" aria-checked="{{c2.checked}}" class="{{c2.cls}}" disabled="{{busy}}" onClick="{{pickFiles}}" style="left:170px;top:36px"><span class="silk" style="color:inherit">Fichiers</span></button>
+<button type="button" role="radio" aria-checked="{{c3.checked}}" class="{{c3.cls}}" disabled="{{busy}}" onClick="{{pickDescribe}}" style="left:282px;top:92px"><span class="silk" style="color:inherit">Décrire</span></button>
+<div class="knob" aria-hidden="true" style="position:absolute;left:70px;top:80px;width:200px;height:200px"><img src="/_blob/60fa9b111425ee337fb533286fdceff1" alt="" style="transform:rotate({{angle}})"></div>
+</div>
+<hr class="groove">
+<div style="font:700 22px/1.2 'Barlow Semi Condensed',sans-serif">{{modeTitle}}</div>
+<p style="margin:6px 0 0;font-size:15px;color:var(--ink2)">{{modeText}}</p>
+<span class="tape hand" style="display:inline-flex;margin-top:12px;transform:rotate(-2deg);font-size:15px">{{modeNote}}</span>
+</section>
+
+<section class="mod">
+<sc-if value="{{idle}}" hint-placeholder-val="{{ true }}">
+
+<sc-if value="{{isConnect}}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:18px">
+<span class="silk">Adresse de votre U1 <span class="tip" tabindex="0" data-tip="Elle s'affiche dans les réglages réseau de l'écran tactile de la U1. Elle ressemble à 192.168.1.42." style="display:inline-flex;width:18px;height:18px;margin-left:4px;align-items:center;justify-content:center;border-radius:50%;background:rgba(0,0,0,.1);letter-spacing:0">?</span></span>
+<label class="lcd" style="display:block;padding:14px 16px"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Adresse IP</span><input type="text" inputmode="decimal" placeholder="192.168.1.xx"></label>
+<div class="safe">
+<div class="{{swCls}}"><span class="base"></span><button type="button" class="lev" aria-label="Basculer l'autorisation de lecture" aria-pressed="{{agreedStr}}" onClick="{{toggleAgree}}"></button><span class="nut"></span><button type="button" class="cover" aria-label="{{coverAria}}" onClick="{{toggleCover}}"></button></div>
+<span class="{{led}}" aria-hidden="true"></span>
+<div><div style="font-size:15.5px;line-height:1.45">J'autorise U1 Doctor à <strong>lire</strong> l'état de mon imprimante pendant 30 secondes. Aucune commande n'est envoyée.</div><div class="silk" style="margin-top:6px;color:var(--ink3)">{{safeHint}}</div></div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center"><button type="button" class="key key-a" disabled="{{notAgreed}}" onClick="{{start}}">Lancer l'analyse</button><span style="font-size:14px;color:var(--ink3)">L'analyse dure environ 30 secondes.</span></div>
+<hr class="groove" style="margin:4px 0">
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;font-size:14.5px;color:var(--ink2)">
+<div><span class="dot" style="color:var(--ink);font-size:16px">01</span> On vérifie que la U1 répond.</div>
+<div><span class="dot" style="color:var(--ink);font-size:16px">02</span> On lit températures, têtes et codes.</div>
+<div><span class="dot" style="color:var(--ink);font-size:16px">03</span> On compare et on vous explique.</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isFiles}}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;align-items:center;gap:16px;padding:20px 0;text-align:center">
+<span class="slot2" aria-hidden="true"></span>
+<div style="font:700 28px/1.2 'Barlow Semi Condensed',sans-serif">Glissez vos fichiers dans la fente</div>
+<button type="button" class="key" onClick="{{start}}">Choisir des fichiers</button>
+<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px">
+<span class="tag tip" tabindex="0" data-tip="Journal principal de Klipper, le logiciel qui pilote les moteurs et les températures.">klippy.log</span>
+<span class="tag tip" tabindex="0" data-tip="Journal de Moonraker, le service qui fait le lien entre l'écran, le réseau et Klipper.">moonraker.log</span>
+<span class="tag">.zip de journaux</span>
+<span class="tag tip" tabindex="0" data-tip="Le fichier d'impression : on vérifie qu'il convient à la U1 avant de lancer.">.3mf · .gcode</span>
+</div>
+<div style="font-size:13.5px;color:var(--ink3)">Le fichier chiffré de l'écran tactile est reconnu, mais jamais ouvert.</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isDescribe}}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:16px">
+<span class="silk">Qu'est-ce que vous voyez sur la pièce ?</span>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px">
+<a href="P-Verdict.dc.html" class="key txt">La 1re couche n'accroche pas</a>
+<a href="P-Verdict.dc.html" class="key txt">Des trous dans la 1re couche</a>
+<a href="P-Verdict.dc.html" class="key txt">Des fils entre les pièces</a>
+<a href="P-Verdict.dc.html" class="key txt">Pas assez de matière</a>
+<a href="P-Verdict.dc.html" class="key txt">Les coins se soulèvent</a>
+<a href="P-Verdict.dc.html" class="key txt">Couleurs décalées</a>
+<a href="P-Verdict.dc.html" class="key txt">Les couches se fendent</a>
+<a href="P-Verdict.dc.html" class="key txt">Le dessous des ponts pend</a>
+<a href="P-Verdict.dc.html" class="key txt key-k">Voir les 8 autres</a>
+</div>
+<div style="font-size:13.5px;color:var(--ink3)">Les causes viennent du wiki officiel Snapmaker, dans son ordre. Aucune n'est classée comme « la bonne ».</div>
+</div>
+</sc-if>
+
+</sc-if>
+
+<sc-if value="{{analyzing}}" hint-placeholder-val="{{ false }}">
+<div class="mhead"><span class="silk">Analyse en cours</span><span class="silk" style="color:var(--ink3)">Lecture seule · 0 commande envoyée</span></div>
+<div class="lcd" style="padding:18px 22px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px"><span class="dot" style="font-size:28px">On écoute votre U1…</span><span class="dot" style="font-size:44px;line-height:1">18 s</span></div>
+<div aria-hidden="true" style="display:grid;grid-template-columns:repeat(20,1fr);gap:4px;margin-top:14px"><span class="blk on"></span><span class="blk on"></span><span class="blk on"></span><span class="blk on"></span><span class="blk on"></span><span class="blk on"></span><span class="blk on"></span><span class="blk on"></span><span class="blk on"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span></div>
+</div>
+<div style="margin-top:14px">
+<div class="srow"><span class="led g"></span><span style="flex-grow:1">La U1 répond</span><span class="silk">12 ms</span></div>
+<div class="srow"><span class="led a"></span><span style="flex-grow:1;font-weight:600">Lecture de l'état de l'imprimante</span><span class="silk" style="color:var(--ink)">3 lectures sur 5</span></div>
+<div class="srow" style="color:var(--ink3)"><span class="led"></span><span style="flex-grow:1">Recherche des codes d'erreur</span></div>
+<div class="srow" style="color:var(--ink3)"><span class="led"></span><span style="flex-grow:1">Comparaison avec les problèmes connus</span></div>
+</div>
+<div style="display:flex;gap:12px;justify-content:flex-end;margin-top:16px"><button type="button" class="key" onClick="{{cancel}}">Annuler</button><a href="P-Verdict.dc.html" class="key key-a">Voir le résultat</a></div>
+</sc-if>
+</section>
+</div>
+</div>
+
+<nav class="dock" aria-label="Navigation principale">
+<a href="P-Accueil.dc.html"><span class="cap"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path><path d="M10 21v-6h4v6"></path></svg></span><span class="silk">Accueil</span></a>
+<a href="P-Diagnostiquer.dc.html" class="on" aria-current="page"><span class="cap"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg></span><span class="silk">Diagnostiquer</span></a>
+<a href="P-Diagnostiquer.dc.html"><span class="cap"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg></span><span class="silk">J'ai un problème</span></a>
+<a href="P-Expert.dc.html"><span class="cap"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span><span class="silk">Historique</span></a>
+<a href="P-Expert.dc.html"><span class="cap"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"></path><path d="M16 6l-4-4-4 4"></path><path d="M12 2v13"></path></svg></span><span class="silk">Partager</span></a>
+</nav>
+<div style="height:30px"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1250}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { mode: "connect", cover: false, agreed: false, analyzing: false };
+}
+renderVals() {
+var s = this.state;
+var self = this;
+var info = {
+connect: { a: "-60deg", t: "Connecter ma U1", x: "Sur le même Wi-Fi. On lit son état pendant quelques secondes.", n: "le plus précis" },
+files: { a: "0deg", t: "Glisser des fichiers", x: "Les journaux de la U1, un fichier d'impression 3MF ou G-code.", n: "sans connexion" },
+describe: { a: "60deg", t: "Décrire ce que je vois", x: "Choisissez le défaut visible sur la pièce, on liste les causes connues.", n: "le plus rapide" }
+};
+var cur = info[s.mode];
+function choice(m) { var on = s.mode === m; return { cls: on ? "pos on" : "pos", checked: on ? "true" : "false" }; }
+return {
+idle: !s.analyzing, analyzing: s.analyzing, busy: s.analyzing,
+isConnect: s.mode === "connect", isFiles: s.mode === "files", isDescribe: s.mode === "describe",
+c1: choice("connect"), c2: choice("files"), c3: choice("describe"),
+angle: cur.a, modeTitle: cur.t, modeText: cur.x, modeNote: cur.n,
+swCls: "sw" + (s.cover ? " open" : "") + (s.agreed ? " on" : ""),
+led: s.agreed ? "led g" : "led",
+agreedStr: s.agreed ? "true" : "false",
+coverAria: s.cover ? "Refermer le capot de sécurité" : "Soulever le capot de sécurité",
+safeHint: s.agreed ? "Autorisation donnée" : (s.cover ? "Basculez le levier vers le haut" : "Soulevez le capot ambre, puis basculez le levier"),
+notAgreed: !s.agreed,
+toggleCover: function () { self.setState({ cover: !s.cover, agreed: s.cover ? false : s.agreed }); },
+toggleAgree: function () { if (s.cover) { self.setState({ agreed: !s.agreed }); } },
+pickConnect: function () { self.setState({ mode: "connect" }); },
+pickFiles: function () { self.setState({ mode: "files" }); },
+pickDescribe: function () { self.setState({ mode: "describe" }); },
+start: function () { self.setState({ analyzing: true }); },
+cancel: function () { self.setState({ analyzing: false }); }
+};
+}
+}
+</script>
+</body>
+</html>

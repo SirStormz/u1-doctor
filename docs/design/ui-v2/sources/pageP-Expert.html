@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Pupitre 2 · Accueil — mode Expert</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+@@HEAD@@
+<style>
+.ladder{display:flex;gap:6px;align-items:center}
+.led.h{background:none;box-shadow:inset 0 0 0 2px #7C786F,0 0 0 2px #2A2926,0 0 0 3px rgba(255,255,255,.5)}
+.row{display:flex;align-items:center;gap:12px;padding:10px 0;font-size:15px}
+.row+.row{box-shadow:inset 0 1px 0 rgba(0,0,0,.1),inset 0 2px 0 rgba(255,255,255,.45)}
+.tag{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:3px;background:rgba(0,0,0,.08);font:600 11.5px/1 'Barlow Semi Condensed',sans-serif;letter-spacing:.06em;color:var(--ink2)}
+.cursorline{position:absolute;top:0;bottom:22px;width:0;border-left:2px solid #2A1B03;transition:left .5s cubic-bezier(.3,.7,.2,1)}
+.cursorline::before{content:"";position:absolute;top:-4px;left:-7px;border:6px solid transparent;border-top-color:#2A1B03}
+</style>
+</helmet>
+<div class="app">
+@@TOP:expert@@
+
+<div class="wrap">
+<div class="g2" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:21px">
+<section class="mod">
+<div class="mhead"><span class="silk">Session de démo · 13 janv.</span><span class="silk" style="color:var(--ink3)">heure de réception</span></div>
+<h1 style="margin:0;font:700 36px/1.05 'Barlow Semi Condensed',sans-serif">Blocage d'extrusion · tête 3</h1>
+<div style="margin-top:16px"><span class="lcd dot tip" tabindex="0" data-tip="Format du code : niveau · identifiant · index · code. Ici niveau 2 (avertissement), identifiant 525, index 2, code 4." style="display:inline-block;padding:8px 12px;font-size:20px">0002-0525-0002-0004</span></div>
+<p style="margin:16px 0 0;font-size:15px;color:var(--ink2)">14:09:12 → 14:14:20 UTC · 4 constats : 2 constatés · 2 pas assez d'infos</p>
+<div style="display:flex;gap:12px;margin-top:18px"><a href="P-Accueil.dc.html" class="key">Rapport</a><a href="P-Accueil.dc.html" class="key key-a">Exporter</a></div>
+</section>
+<section class="mod">
+<div class="mhead"><span class="silk">Buse · tête 3</span><span class="tag tip" tabindex="0" data-tip="Déduit (INFERRED) : l'objet extruder2 correspond à la tête 3 d'après son suffixe, pas d'après une lecture directe.">extruder2 · déduit</span></div>
+@@METER:0|300|214.7|BUSE · TÊTE 3 · °C|100|25|0.6s@@
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px"><span class="lcd dot" style="padding:6px 11px;font-size:20px">214,7 °C</span><span class="silk" style="color:var(--ink3)">14:14:12</span></div>
+</section>
+<section class="mod">
+<div class="mhead"><span class="silk">Plateau</span><span class="tag">heater_bed · vérifié</span></div>
+@@METER:0|120|59.9|PLATEAU · °C|20|5|0.9s@@
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px"><span class="lcd dot" style="padding:6px 11px;font-size:20px">59,9 °C</span><span class="silk" style="color:var(--ink3)">État : en pause · print_stats</span></div>
+</section>
+</div>
+
+<section class="mod" style="margin-top:21px">
+<div class="mhead"><span class="silk">Oscilloscope · température buse tête 3 · 214 – 221 °C</span><span style="display:inline-flex;align-items:center;gap:9px"><span class="led a"></span><span class="silk" style="color:var(--ink)">Code reçu 14:14:20</span></span></div>
+<div class="g2" style="display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:24px;align-items:center">
+<div class="lcd" style="padding:16px 18px 10px">
+<div style="position:relative">
+<svg viewBox="0 0 1180 150" width="100%" role="img" aria-label="Courbe de température de 14:09 à 14:15, trou de données de 14:12:30 à 14:14:00, pause à 14:14:12, code à 14:14:20">
+<defs><pattern id="hp" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="rgba(42,27,3,.35)" stroke-width="1.5"></line></pattern></defs>
+<g stroke="rgba(42,27,3,.18)" stroke-dasharray="1 5"><line x1="0" y1="30" x2="1180" y2="30"></line><line x1="0" y1="75" x2="1180" y2="75"></line><line x1="196.7" y1="8" x2="196.7" y2="120"></line><line x1="393.3" y1="8" x2="393.3" y2="120"></line><line x1="590" y1="8" x2="590" y2="120"></line><line x1="786.7" y1="8" x2="786.7" y2="120"></line></g>
+<line x1="0" y1="120" x2="1180" y2="120" stroke="#2A1B03" stroke-width="1.5"></line>
+<rect x="688.8" y="8" width="295" height="112" fill="url(#hp)"></rect>
+<polyline points="98.8,49.6 196.2,45.2 295,47.4 393.8,43 491.2,46.3 590,44.1 688.8,45.2" fill="none" stroke="#2A1B03" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"></polyline>
+<polyline points="983.8,67.2 1022.2,95.8" fill="none" stroke="#2A1B03" stroke-width="3" stroke-linecap="round"></polyline>
+<g fill="#2A1B03"><rect x="94.8" y="45.6" width="8" height="8"></rect><rect x="291" y="43.4" width="8" height="8"></rect><rect x="487.2" y="42.3" width="8" height="8"></rect><rect x="684.8" y="41.2" width="8" height="8"></rect><rect x="979.8" y="63.2" width="8" height="8"></rect><rect x="1018.2" y="91.8" width="8" height="8"></rect></g>
+<g font-family="Doto, monospace" font-weight="800" font-size="14" fill="#2A1B03"><text x="0" y="142">14:09</text><text x="196.7" y="142" text-anchor="middle">14:10</text><text x="393.3" y="142" text-anchor="middle">14:11</text><text x="590" y="142" text-anchor="middle">14:12</text><text x="786.7" y="142" text-anchor="middle">14:13</text><text x="983.3" y="142" text-anchor="middle">14:14</text></g>
+</svg>
+<span class="cursorline" aria-hidden="true" style="left:{{cx}}"></span>
+<span class="tip" tabindex="0" data-tip="Trou de données : rien reçu pendant 1 min 30. L'absence de données n'est pas une preuve qu'il ne s'est rien passé." style="position:absolute;left:58.4%;top:6%;width:25%;height:72%"></span>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:14px">
+<span class="silk">Molette de lecture</span>
+<div class="knob" style="width:150px;height:150px"><img src="/_blob/60fa9b111425ee337fb533286fdceff1" alt="" style="transform:rotate({{rot}})"></div>
+<div style="display:flex;gap:12px"><button type="button" class="key" aria-label="Événement précédent" style="width:52px;padding:0" onClick="{{prev}}">◂</button><button type="button" class="key key-k" aria-label="Événement suivant" style="width:52px;padding:0" onClick="{{next}}">▸</button></div>
+</div>
+</div>
+<div class="lcd" style="margin-top:22px;padding:12px 16px;display:flex;justify-content:space-between;gap:16px;align-items:baseline">
+<span class="dot" style="font-size:22px">{{evTime}}</span><span class="dot" style="font-size:18px;flex-grow:1">{{evText}}</span><span class="dot" style="font-size:16px;opacity:.75">{{evRule}}</span>
+</div>
+</section>
+
+<div class="g2" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.618fr);gap:21px;margin-top:21px;align-items:start">
+<section class="mod">
+<div class="mhead"><span class="silk">Preuves</span><span class="silk dotted tip" tabindex="0" data-tip="Nombre d'éléments qui soutiennent, contredisent ou manquent pour l'ensemble des constats. Ce n'est pas une probabilité.">Comment lire ?</span></div>
+<div style="display:grid;grid-template-columns:96px minmax(0,1fr) 30px;gap:14px;align-items:center">
+<span class="silk" style="color:var(--ink)">Pour</span><span class="ladder"><span class="led g"></span><span class="led g"></span><span class="led g"></span><span class="led g"></span><span class="led g"></span><span class="led g"></span></span><span class="dot" style="font-size:20px">6</span>
+<span class="silk" style="color:var(--ink)">Contre</span><span class="ladder"><span class="led"></span><span class="led"></span><span class="led"></span><span class="led"></span><span class="led"></span><span class="led"></span></span><span class="dot" style="font-size:20px">0</span>
+<span class="silk" style="color:var(--ink)">Manquant</span><span class="ladder"><span class="led h"></span><span class="led h"></span><span class="led h"></span><span class="led h"></span></span><span class="dot" style="font-size:20px">4</span>
+</div>
+<hr class="groove">
+<dl class="kv">
+<dt><span class="dotted tip" tabindex="0" data-tip="La règle du moteur qui a produit ce constat.">Règle</span></dt><dd class="dot" style="font-size:15px">U1-S01-CODE-DECODE</dd>
+<dt>Source</dt><dd>Catalogue officiel (413 codes)</dd>
+<dt><span class="dotted tip" tabindex="0" data-tip="Comment U1 Doctor relie le code à la tête 3 : par l'index du code. C'est une déduction, pas une mesure.">Lien tête</span></dt><dd>Déduit · INFERRED</dd>
+<dt>Consigne</dt><dd>Vérifier et nettoyer, puis relancer</dd>
+</dl>
+</section>
+<section class="mod">
+<div class="mhead"><span class="silk">Journal des constats</span><span class="silk" style="color:var(--ink3)">5 lectures + 1 abonnement · 0 écriture · 5 min 08 s</span></div>
+<div class="paper" style="border-radius:3px;box-shadow:0 1px 3px rgba(0,0,0,.2)">
+<div class="row" style="padding-top:0"><span class="led g"></span><b style="width:44px">S01</b><span style="flex-grow:1">Code décodé : blocage d'extrusion</span><span>Constaté</span></div>
+<div class="row"><span class="led g"></span><b style="width:44px">S03</b><span style="flex-grow:1">Impression → pause à 14:14:12</span><span>Constaté</span></div>
+<div class="row"><span class="led h"></span><b style="width:44px">S09</b><span style="flex-grow:1">Correspondance extruder2 → tête 3</span><span>Pas assez d'infos</span></div>
+<div class="row"><span class="led h"></span><b style="width:44px">S10</b><span style="flex-grow:1">Trou de données de 1 min 30</span><span>Pas assez d'infos</span></div>
+</div>
+<div style="display:flex;gap:12px;margin-top:18px;align-items:center"><a href="P-Accueil.dc.html" class="key">Aperçu de l'envoi</a><a href="P-Accueil.dc.html" class="key key-a">Exporter <span class="dotted tip" tabindex="0" data-tip="U1-DEB : archive de preuves vérifiable. Chaque fichier a son empreinte SHA-256 ; vos adresses IP sont masquées." style="text-transform:none;letter-spacing:0">U1-DEB</span></a></div>
+</section>
+</div>
+</div>
+
+@@DOCK:Historique@@
+<div style="height:30px"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1700}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { ev: 4 };
+}
+renderVals() {
+var self = this;
+var i = this.state.ev;
+var evs = [
+{ t: "14:09:12", x: "3.3%", txt: "Impression en cours", r: "print_stats" },
+{ t: "14:12:30", x: "58.3%", txt: "Plus aucune nouvelle", r: "S10" },
+{ t: "14:14:00", x: "83.3%", txt: "Données reçues à nouveau", r: "S10" },
+{ t: "14:14:12", x: "86.7%", txt: "Impression → pause", r: "S03" },
+{ t: "14:14:20", x: "88.9%", txt: "Code 0002-0525-0002-0004", r: "S01" }
+];
+var e = evs[i];
+return {
+evTime: e.t, evText: e.txt, evRule: e.r, cx: e.x,
+rot: (i * 60 - 120) + "deg",
+prev: function () { self.setState({ ev: Math.max(0, i - 1) }); },
+next: function () { self.setState({ ev: Math.min(4, i + 1) }); }
+};
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Pupitre 2 · Accueil — mode Simple</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+@@HEAD@@
+<style>
+.strip{display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 10px 14px;text-align:center;text-decoration:none}
+.strip+.strip{box-shadow:inset 2px 0 0 -0px rgba(255,255,255,.5),inset 1px 0 0 rgba(0,0,0,.14)}
+.prow{display:flex;align-items:center;gap:16px;width:100%;padding:10px 0;border:0;background:none;color:var(--ink);font:500 16.5px/1.4 Barlow,sans-serif;text-align:left;cursor:pointer}
+.prow+.prow{box-shadow:inset 0 1px 0 rgba(0,0,0,.1),inset 0 2px 0 rgba(255,255,255,.45)}
+.prow.on .t{color:var(--ink3);text-decoration:line-through;text-decoration-color:rgba(0,0,0,.25)}
+.pad{display:grid;grid-template-columns:repeat(3,58px);gap:12px}
+.pad .key{min-height:46px;padding:0;font:700 18px/1 'Barlow Semi Condensed',sans-serif;letter-spacing:0}
+</style>
+</helmet>
+<div class="app">
+@@TOP:simple@@
+
+<div class="wrap">
+<section class="mod">
+<div class="mhead"><span class="silk">Écran principal</span><span class="silk" style="color:var(--ink3)">Dernière lecture · il y a 2 min</span></div>
+<div class="lcd" style="padding:24px 30px 20px">
+<div class="dot" style="font-size:58px;line-height:1.02;white-space:nowrap"><span class="ty" style="animation-duration:1.4s;animation-timing-function:steps(34,end);animation-delay:.5s">Votre U1 a besoin d'un coup d'œil.</span><span class="cur" aria-hidden="true"></span></div>
+<div class="dot" style="margin-top:10px;font-size:22px;opacity:.85;white-space:nowrap"><span class="ty" style="animation-duration:1s;animation-timing-function:steps(46,end);animation-delay:2s">Tête 3 à vérifier · trois gestes · environ 5 min</span></div>
+</div>
+</section>
+
+<div class="g2" style="display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:21px;margin-top:21px">
+<section class="mod span2" style="grid-row:span 2;display:flex;flex-direction:column">
+<div class="mhead"><span class="silk">Votre U1 · fenêtre</span><span class="tip" tabindex="0" data-tip="L'imprimante a mis l'impression en pause d'elle-même. Elle attend votre intervention." style="display:inline-flex;align-items:center;gap:9px"><span class="led"></span><span class="silk">Impression en pause</span></span></div>
+<div class="win" style="height:540px">
+<img src="/_blob/5cb5b30eb2566c6b576c72da5194a86b" alt="Photo de la U1 vue de trois quarts ; la tête 3 est cadrée" style="position:absolute;left:156px;top:20px;width:421px;height:500px;display:block">
+<span class="vf" aria-hidden="true" style="left:423px;top:216px"></span>
+<a href="P-Verdict.dc.html" class="wtag" style="left:452px;top:166px;text-decoration:none">T3 · à vérifier</a>
+<span class="silk" style="position:absolute;left:16px;bottom:14px;color:#8B877F">Glissez pour tourner · molette pour zoomer</span>
+</div>
+<div class="g4" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:18px">
+<div class="strip tip" tabindex="0" data-tip="Aucun problème signalé pour cette tête pendant la dernière lecture."><span class="tape hand" style="transform:rotate(-2deg);font-size:17px">Tête 1</span><span class="led big g post" style="animation-delay:.4s"></span><span class="silk">Rien à signaler</span></div>
+<div class="strip tip" tabindex="0" data-tip="Aucun problème signalé pour cette tête pendant la dernière lecture."><span class="tape hand" style="transform:rotate(1.5deg);font-size:17px">Tête 2</span><span class="led big g post" style="animation-delay:.55s"></span><span class="silk">Rien à signaler</span></div>
+<a href="P-Verdict.dc.html" class="strip" style="background:rgba(255,181,71,.16);border-radius:10px"><span class="tape hand" style="transform:rotate(-1deg);font-size:17px">Tête 3 !</span><span class="led big a post" style="animation-delay:.7s"></span><span class="silk" style="color:var(--ink)">À vérifier →</span></a>
+<div class="strip tip" tabindex="0" data-tip="Aucun problème signalé pour cette tête pendant la dernière lecture."><span class="tape hand" style="transform:rotate(2deg);font-size:17px">Tête 4</span><span class="led big g post" style="animation-delay:.85s"></span><span class="silk">Rien à signaler</span></div>
+</div>
+</section>
+
+<section class="mod">
+<div class="mhead"><span class="silk">Buse · tête 3</span><span class="silk tip" tabindex="0" data-tip="Le lien entre extruder2 et la tête 3 est déduit de son nom (INFERRED), pas lu directement." style="color:var(--ink3)">extruder2 · déduit</span></div>
+@@METER:0|300|214.7|BUSE · TÊTE 3 · °C|100|25@@
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px"><span class="lcd dot" style="padding:7px 12px;font-size:22px">214,7 °C</span><span class="silk" style="color:var(--ink3)">dernière valeur 14:14:12</span></div>
+</section>
+
+<section class="mod" style="display:flex;flex-direction:column;gap:12px">
+<div class="mhead" style="margin:0"><span class="silk">Ce qu'il faut faire</span><span class="tip" tabindex="0" data-tip="À vérifier : l'imprimante a signalé quelque chose, mais il faut le confirmer à l'œil. Ce n'est pas une certitude." style="display:inline-flex;align-items:center;gap:9px"><span class="led a"></span><span class="silk" style="color:var(--ink)">À vérifier</span></span></div>
+<p style="margin:0;font-size:20px;line-height:1.3;font-weight:700">La tête 3 n'arrive plus à pousser le filament</p>
+<p style="margin:0;color:var(--ink2)">L'imprimante a signalé un blocage à l'engrenage qui entraîne le filament, puis elle a mis l'impression en pause.</p>
+<div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:6px"><a href="P-Verdict.dc.html" class="key key-a">Voir quoi faire</a><a href="P-Verdict.dc.html" class="key">Comment on le sait ?</a></div>
+</section>
+</div>
+
+<div class="g2" style="display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:21px;margin-top:21px;align-items:start">
+<section class="mod">
+<div class="mhead"><span class="silk">Procédure · basculez chaque levier quand c'est fait</span><span class="lcd dot" style="padding:5px 10px;font-size:18px">{{count}}/3</span></div>
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="3">
+<button type="button" class="{{s.cls}}" aria-pressed="{{s.pressed}}" onClick="{{s.toggle}}"><span class="tg" aria-hidden="true"><span class="pl"></span><span class="lev"></span><span class="nut"></span></span><span class="{{s.led}}" aria-hidden="true"></span><span class="t">{{s.text}}</span></button>
+</sc-for>
+<hr class="groove">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span style="font-size:13.5px;color:var(--ink3)">Consigne officielle Snapmaker pour ce code : vérifier, nettoyer, relancer.</span><a href="P-Accueil.dc.html" class="key key-a">C'est réglé</a></div>
+</section>
+
+<section class="mod">
+<div class="mhead"><span class="silk">Imprimante à tickets</span><span class="{{paperLed}}" aria-hidden="true"></span></div>
+<div class="slot" aria-hidden="true"></div>
+<div class="paperwrap" style="height:{{paperH}}">
+<div class="paper" aria-live="polite">
+<div style="font-weight:700;text-align:center">U1 DOCTOR · DIAGNOSTIC</div>
+<div style="text-align:center">13/01 · 14:14:20 · EXEMPLE</div>
+<div class="hr"></div>
+<div style="font-weight:700">TÊTE 3 : À VÉRIFIER</div>
+<div>Le filament n'avance plus.</div>
+<div>Code 0002-0525-0002-0004</div>
+<div class="hr"></div>
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="3"><div>{{s.box}} {{s.short}}</div></sc-for>
+<div class="hr"></div>
+<div>Lecture seule · 0 commande</div>
+<div style="text-align:center;margin-top:6px">* * *</div>
+</div>
+</div>
+<div style="display:flex;justify-content:center;margin-top:14px"><button type="button" class="key key-k" onClick="{{printToggle}}">{{printLabel}}</button></div>
+<p style="margin:12px 0 0;font-size:13px;color:var(--ink3);text-align:center">Le ticket reprend vos gestes cochés. À joindre au support.</p>
+</section>
+</div>
+
+<div class="g2" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.618fr);gap:21px;margin-top:21px;align-items:start">
+<section class="mod">
+<div class="mhead"><span class="silk">Un code à l'écran ?</span><button type="button" class="key" style="min-height:32px;padding:0 12px;font-size:11.5px" onClick="{{fillDemo}}">Exemple</button></div>
+<div class="lcd" style="padding:14px 16px">
+<div class="dot" style="font-size:24px;letter-spacing:.06em">{{codeShown}}</div>
+<div class="dot" style="font-size:15px;margin-top:6px;opacity:.85">{{codeResult}}</div>
+</div>
+<div style="display:flex;gap:18px;align-items:flex-start;margin-top:20px">
+<div class="pad">
+<sc-for list="{{keys}}" as="k" hint-placeholder-count="12"><button type="button" class="{{k.cls}}" onClick="{{k.press}}" aria-label="{{k.aria}}">{{k.label}}</button></sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;flex-grow:1"><button type="button" class="key key-a" onClick="{{decode}}">Décoder</button><p style="margin:0;font-size:13.5px;color:var(--ink2)">Tapez le code affiché sur l'écran tactile de la U1. Les tirets se placent tout seuls.</p></div>
+</div>
+</section>
+<section class="mod">
+<div class="mhead"><span class="silk">Quelque chose cloche sur la pièce ?</span><a href="P-Diagnostiquer.dc.html" class="silk" style="text-decoration:none">Les 16 symptômes →</a></div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px">
+<a href="P-Diagnostiquer.dc.html" class="key txt">La 1re couche n'accroche pas</a>
+<a href="P-Diagnostiquer.dc.html" class="key txt">Des fils entre les pièces</a>
+<a href="P-Diagnostiquer.dc.html" class="key txt">Pas assez de matière</a>
+<a href="P-Diagnostiquer.dc.html" class="key txt">Les coins se soulèvent</a>
+<a href="P-Diagnostiquer.dc.html" class="key txt">Couleurs décalées</a>
+<a href="P-Diagnostiquer.dc.html" class="key txt key-k">Voir les 11 autres</a>
+</div>
+<hr class="groove">
+<div style="display:flex;align-items:center;gap:14px"><span class="led g"></span><span style="font-size:14.5px;flex-grow:1">Wi-Fi · U1 lue il y a 2 min, rien n'a été modifié</span><a href="P-Diagnostiquer.dc.html" class="key" style="min-height:36px;padding:0 14px">Relire</a></div>
+<div style="display:flex;align-items:center;gap:14px;margin-top:12px"><span class="lcd dot" style="padding:4px 9px;font-size:16px">4/5</span><span style="font-size:14.5px">Entretien : nettoyer la plaque après 1 impression <span style="color:var(--ink3)">(conseil Snapmaker : tous les 5 travaux)</span></span></div>
+</section>
+</div>
+</div>
+
+@@DOCK:Accueil@@
+<div style="height:30px"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2300}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { done: [false, false, false], printed: false, digits: "", result: "En attente d'un code" };
+}
+renderVals() {
+var self = this;
+var s = this.state;
+var texts = ["Repérez la tête 3 : la troisième en partant de la gauche, à l'arrière.", "Vérifiez l'engrenage qui pousse le filament et retirez les débris.", "Relancez l'impression depuis l'écran de la U1."];
+var shorts = ["Repérer la tête 3", "Nettoyer l'engrenage", "Relancer l'impression"];
+var count = s.done.filter(function (d) { return d; }).length;
+var d = s.digits;
+var padded = (d + "················").slice(0, 16);
+var shown = padded.slice(0, 4) + "-" + padded.slice(4, 8) + "-" + padded.slice(8, 12) + "-" + padded.slice(12, 16);
+var labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "C", "0", "⌫"];
+return {
+count: count,
+steps: texts.map(function (t, i) {
+var on = s.done[i];
+return {
+text: t, short: shorts[i], box: on ? "[x]" : "[ ]",
+cls: on ? "prow on" : "prow", led: on ? "led g" : "led", pressed: on ? "true" : "false",
+toggle: function () { var n = s.done.slice(); n[i] = !n[i]; self.setState({ done: n }); }
+};
+}),
+paperH: s.printed ? "410px" : "0px",
+paperLed: s.printed ? "led g" : "led",
+printLabel: s.printed ? "Ranger le ticket" : "Imprimer le diagnostic",
+printToggle: function () { self.setState({ printed: !s.printed }); },
+codeShown: shown,
+codeResult: s.result,
+fillDemo: function () { self.setState({ digits: "0002052500020004", result: "Appuyez sur Décoder" }); },
+decode: function () {
+var r = s.digits.length < 16 ? "Code incomplet : " + s.digits.length + " chiffres sur 16" : (s.digits === "0002052500020004" ? "Blocage d'extrusion · tête 3" : "Code inconnu dans cet exemple");
+self.setState({ result: r });
+},
+keys: labels.map(function (l) {
+return {
+label: l,
+aria: l === "C" ? "Effacer tout" : (l === "⌫" ? "Effacer le dernier chiffre" : "Chiffre " + l),
+cls: (l === "C" || l === "⌫") ? "key key-k" : "key",
+press: function () {
+if (l === "C") { self.setState({ digits: "", result: "En attente d'un code" }); return; }
+if (l === "⌫") { self.setState({ digits: s.digits.slice(0, -1) }); return; }
+if (s.digits.length < 16) { self.setState({ digits: s.digits + l }); }
+}
+};
+})
+};
+}
+}
+</script>
+</body>
+</html>
