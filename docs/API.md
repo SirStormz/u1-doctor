@@ -2,7 +2,7 @@
 
 U1 Doctor's window and browser tab talk to a small local HTTP API. It is **not** a public service: it listens on `127.0.0.1` only (default port `8765`, `U1DOCTOR_PORT` changes it), has no accounts, and sends nothing anywhere. This page lists every route so you can check what the app can do. The list is kept in step with the code by a test (`backend/tests/test_api_doc.py`): a route added without a line here fails the test.
 
-Version of this page: 0.2.0-g1. Interactive docs (`/docs`, `/redoc`, `/openapi.json`) are switched off on purpose.
+Version of this page: 0.3.0-g1. Interactive docs (`/docs`, `/redoc`, `/openapi.json`) are switched off on purpose.
 
 ## The one route that can reach a printer
 
