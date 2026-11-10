@@ -2,7 +2,7 @@
 
 ## Fonts bundled with the app
 
-U1 Doctor runs offline, so its fonts ship inside the app (npm packages from [Fontsource](https://fontsource.org), pinned in `frontend/package.json`). All are under the [SIL Open Font License 1.1](https://openfontlicense.org/open-font-license-official-text/); the full license text is in each package's `LICENSE` file.
+U1 Doctor runs offline, so its fonts ship inside the app (npm packages from [Fontsource](https://fontsource.org), pinned in `frontend/package.json`). All are under the [SIL Open Font License 1.1](https://openfontlicense.org/open-font-license-official-text/). The full licence text of each font ships in the Windows zip under `licenses/fonts/`, and is in each package's `LICENSE` file.
 
 | Font | Used by theme | Package | Copyright |
 |---|---|---|---|
@@ -14,3 +14,4 @@ U1 Doctor runs offline, so its fonts ship inside the app (npm packages from [Fon
 | Oxanium | Visière | `@fontsource-variable/oxanium` | Copyright 2019 The Oxanium Project Authors (https://github.com/sevmeyer/oxanium) |
 | Saira | Visière | `@fontsource-variable/saira` | Copyright 2020 The Saira Project Authors (https://github.com/Omnibus-Type/Saira) |
 | JetBrains Mono | Pupitre, Visière | `@fontsource-variable/jetbrains-mono` | Copyright 2020 The JetBrains Mono Project Authors (https://github.com/JetBrains/JetBrainsMono) |
+| Doto | Pupitre (LCD titles and numbers) | `@fontsource-variable/doto` | Copyright 2024 The Doto Project Authors (https://github.com/oliverlalan/Doto) |
