@@ -1,0 +1,98 @@
+/* Visière — warm HUD: smoked glass panels with gold corner brackets and faint scan lines, cut-corner buttons,
+   gold for marks, red only for alerts, glows kept tight (1-7 px). Signature motion: panels power on (a short flicker).
+   Cut corners use clip-path, which would also clip the focus ring: focused controls drop the clip. */
+[data-theme="visiere"] {
+  --radius-s: 2px; --radius-m: 2px; --radius-l: 3px;
+  --gold: #ffb547; --gold-2: #ffd99a;
+  --cut: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+  scrollbar-color: rgba(255, 214, 154, 0.28) transparent;
+}
+[data-theme="visiere"] .stage {
+  background:
+    radial-gradient(1000px 560px at 92% -10%, rgba(255, 181, 71, 0.08), transparent 60%),
+    radial-gradient(800px 520px at -6% 110%, rgba(255, 59, 47, 0.06), transparent 60%),
+    var(--bg-0);
+}
+
+/* bars */
+[data-theme="visiere"] .topbar { background: rgba(11, 9, 11, 0.8); -webkit-backdrop-filter: blur(18px) saturate(150%); backdrop-filter: blur(18px) saturate(150%); }
+[data-theme="visiere"] .stage > .topbar:first-child { box-shadow: inset 0 -1px 0 rgba(255, 214, 154, 0.16); }
+[data-theme="visiere"] footer.topbar { box-shadow: inset 0 1px 0 rgba(255, 214, 154, 0.16); }
+[data-theme="visiere"] .brand span { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.06em; font-size: 16px; }
+[data-theme="visiere"] .brand svg { filter: drop-shadow(0 0 2px rgba(255, 181, 71, 0.75)); }
+[data-theme="visiere"] .btn.tbtn, [data-theme="visiere"] .tsel, [data-theme="visiere"] .langsw { border: 0; border-radius: 0; background: rgba(255, 214, 154, 0.08); color: var(--ink-2); clip-path: var(--cut);
+  font-family: var(--font-display); letter-spacing: 0.07em; text-transform: uppercase; font-size: 12px; }
+[data-theme="visiere"] .btn.tbtn:hover:not(:disabled) { background: rgba(255, 214, 154, 0.16); color: var(--gold-2); }
+[data-theme="visiere"] .btn.tbtn[aria-pressed="true"], [data-theme="visiere"] .btn.tbtn[aria-pressed="true"]:hover:not(:disabled) { background: linear-gradient(180deg, #ffc874, #ffab30); color: #1e1100; }
+[data-theme="visiere"] .tsel option { background: #140f0e; color: var(--ink); text-transform: none; }
+[data-theme="visiere"] .langsw button { background: transparent; color: var(--ink-2); }
+[data-theme="visiere"] .langsw button[aria-pressed="true"] { background: rgba(255, 181, 71, 0.28); color: var(--gold-2); }
+
+/* index strip: HUD tabs, the current page is underlined in gold */
+[data-theme="visiere"] .indexbar { background: rgba(11, 9, 11, 0.6); border-bottom: 0; box-shadow: inset 0 -1px 0 rgba(255, 214, 154, 0.13); }
+[data-theme="visiere"] .navitem { border-right: 1px solid rgba(255, 214, 154, 0.08); color: var(--ink-2); font-family: var(--font-display); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+[data-theme="visiere"] .navitem .nl { font-size: 12.5px; letter-spacing: 0.08em; }
+[data-theme="visiere"] .navitem:hover { background: rgba(255, 214, 154, 0.06); color: var(--ink); }
+[data-theme="visiere"] .navitem[aria-current="page"] { background: linear-gradient(180deg, rgba(255, 181, 71, 0.16), rgba(255, 181, 71, 0.04)); color: var(--gold-2); }
+[data-theme="visiere"] .navitem[aria-current="page"] .nn { color: var(--gold); }
+[data-theme="visiere"] .nav-ind { height: 2px; bottom: 0; background: var(--gold); box-shadow: 0 0 6px rgba(255, 181, 71, 0.8); }
+
+/* page title */
+[data-theme="visiere"] h1 { font-weight: 600; letter-spacing: -0.01em; }
+[data-theme="visiere"] .fig { color: var(--gold); letter-spacing: 0.18em; }
+[data-theme="visiere"] .title-icon { background: rgba(255, 181, 71, 0.12); color: var(--gold); border-radius: 0; clip-path: var(--cut); box-shadow: inset 0 0 0 1px rgba(255, 181, 71, 0.55); }
+[data-theme="visiere"] .title-icon svg { filter: drop-shadow(0 0 2px rgba(255, 181, 71, 0.75)); }
+
+/* panels: smoked glass, scan lines, gold corner brackets */
+[data-theme="visiere"] .panel { border: 0; border-radius: var(--radius-l);
+  background: linear-gradient(180deg, rgba(255, 196, 140, 0.075), rgba(255, 196, 140, 0.02)), rgba(16, 11, 10, 0.62);
+  -webkit-backdrop-filter: blur(18px) saturate(150%); backdrop-filter: blur(18px) saturate(150%);
+  box-shadow: inset 0 1px 0 rgba(255, 226, 182, 0.26), inset 0 0 0 1px rgba(255, 214, 154, 0.12), 0 30px 60px -30px rgba(0, 0, 0, 0.9); }
+[data-theme="visiere"] .panel::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(255, 181, 71, 0.03) 0 1px, transparent 1px 3px); }
+[data-theme="visiere"] .panel::after { content: ""; position: absolute; inset: -1px; pointer-events: none; opacity: 0.85;
+  background:
+    linear-gradient(var(--gold), var(--gold)) 0 0 / 15px 1.5px no-repeat, linear-gradient(var(--gold), var(--gold)) 0 0 / 1.5px 15px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) 100% 0 / 15px 1.5px no-repeat, linear-gradient(var(--gold), var(--gold)) 100% 0 / 1.5px 15px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) 0 100% / 15px 1.5px no-repeat, linear-gradient(var(--gold), var(--gold)) 0 100% / 1.5px 15px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) 100% 100% / 15px 1.5px no-repeat, linear-gradient(var(--gold), var(--gold)) 100% 100% / 1.5px 15px no-repeat; }
+[data-theme="visiere"] .panel[data-active="true"]::after { opacity: 1; filter: drop-shadow(0 0 3px rgba(255, 181, 71, 0.6)); }
+[data-theme="visiere"] .panel > header { border-bottom: 1px solid rgba(255, 214, 154, 0.13) !important; }
+[data-theme="visiere"] .panel > header h2 { font-family: var(--font-display); font-size: 12.5px; font-weight: 600; letter-spacing: 0.1em; color: var(--ink-2); }
+[data-theme="visiere"] .panel > header h2 > span { color: var(--gold); filter: drop-shadow(0 0 2px rgba(255, 181, 71, 0.7)); }
+[data-theme="visiere"] .paper, [data-theme="visiere"] .tpanel { border: 0; box-shadow: inset 0 0 0 1px rgba(255, 214, 154, 0.2); }
+[data-theme="visiere"] thead { border-bottom: 1px solid rgba(255, 214, 154, 0.28); }
+
+/* buttons: cut corners */
+[data-theme="visiere"] .btn { border: 0; border-radius: 0; clip-path: var(--cut); font-family: var(--font-display); font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; font-size: 13px;
+  transition: transform 200ms cubic-bezier(0.34, 1.45, 0.64, 1), filter 200ms, background 200ms; }
+[data-theme="visiere"] .btn:active:not(:disabled) { transform: translateY(1px) scale(0.98); }
+[data-theme="visiere"] .btn-primary { background: linear-gradient(180deg, #ffc874, #ffab30); color: #1e1100; box-shadow: none; }
+[data-theme="visiere"] .btn-primary:hover:not(:disabled) { filter: brightness(1.07); transform: none; box-shadow: none; }
+[data-theme="visiere"] .btn-secondary { background: rgba(255, 214, 154, 0.12); color: var(--gold-2); }
+[data-theme="visiere"] .btn-secondary:hover:not(:disabled) { background: rgba(255, 214, 154, 0.2); color: var(--gold-2); }
+[data-theme="visiere"] .btn-ghost { color: var(--ink-2); }
+[data-theme="visiere"] .btn-ghost:hover:not(:disabled) { background: rgba(255, 214, 154, 0.08); color: var(--ink); }
+[data-theme="visiere"] .btn:focus-visible, [data-theme="visiere"] .btn.tbtn:focus-visible, [data-theme="visiere"] .tsel:focus-visible, [data-theme="visiere"] .langsw:focus-within { clip-path: none; }
+
+/* chips: square tags */
+[data-theme="visiere"] .chip { border: 0; border-radius: 2px; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone) 45%, transparent); font-weight: 600; letter-spacing: 0.06em; }
+[data-theme="visiere"] .chip[data-tone="danger"] { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--danger) 60%, transparent), 0 0 5px rgba(255, 59, 47, 0.35); }
+[data-theme="visiere"] .kbd { border: 0; border-radius: 2px; background: rgba(255, 214, 154, 0.1); box-shadow: inset 0 0 0 1px rgba(255, 214, 154, 0.25); color: var(--gold-2); }
+
+/* fields */
+[data-theme="visiere"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), [data-theme="visiere"] textarea, [data-theme="visiere"] select:not(.tsel) {
+  border-radius: 2px; background: rgba(255, 214, 154, 0.05); border-color: rgba(255, 214, 154, 0.28); }
+[data-theme="visiere"] input[type="checkbox"], [data-theme="visiere"] input[type="radio"], [data-theme="visiere"] input[type="range"] { accent-color: var(--gold); }
+[data-theme="visiere"] .hint { border: 1px dashed rgba(255, 214, 154, 0.45); border-radius: 2px; background: rgba(255, 181, 71, 0.07); }
+[data-theme="visiere"] .rowhover:hover { box-shadow: inset 2px 0 0 var(--gold); background: rgba(255, 214, 154, 0.04); }
+[data-theme="visiere"] .scan-sweep { height: 2px; background: var(--gold); box-shadow: 0 0 6px rgba(255, 181, 71, 0.8); }
+
+/* motion: power on */
+@keyframes vis-power { 0% { opacity: 0; } 8% { opacity: 0.85; } 14% { opacity: 0.15; } 24% { opacity: 1; } 30% { opacity: 0.55; } 100% { opacity: 1; transform: none; } }
+[data-theme="visiere"] .reveal, [data-theme="visiere"] .title-mask > * { animation-name: vis-power; animation-duration: 900ms; animation-timing-function: linear; }
+
+/* 3D hotspots: gold target tags */
+[data-theme="visiere"] .hotspot { border: 0; border-radius: 0; background: rgba(16, 11, 10, 0.7); color: var(--gold-2); clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+  box-shadow: inset 0 0 0 1px var(--gold); font-family: var(--font-display); letter-spacing: 0.08em; }
+[data-theme="visiere"] .num-hero { text-shadow: 0 0 7px color-mix(in srgb, currentColor 35%, transparent); }

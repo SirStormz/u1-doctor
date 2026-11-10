@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MODEL_SCALE, partInfo } from "./u1model";
+import { LOOKS, NOTICE_FILL } from "./looks";
+import type { ThemeId } from "../themes/registry";
 
 export interface ViewerText {
   autoRotate: string;
@@ -22,6 +24,8 @@ interface Props {
   className?: string;
   /** hotspot label builder for the four PTFE paths (PTFE_CHANNEL_1..4) */
   hotspotLabel?: (n: number) => string;
+  /** UI V2 theme: how the machine is lit or drawn */
+  look?: ThemeId;
 }
 
 type Api = { setExplode: (v: number) => void; setAuto: (v: boolean) => void; setDoor: (v: number) => void; setBed: (v: number) => void; setHead: (v: number) => void; reset: () => void; dispose: () => void };
@@ -37,7 +41,7 @@ function hasWebGL(): boolean {
   }
 }
 
-export function U1Viewer({ src, fallbackSrc, text, className = "", hotspotLabel }: Props) {
+export function U1Viewer({ src, fallbackSrc, text, className = "", hotspotLabel, look = "obsidienne" }: Props) {
   const host = useRef<HTMLDivElement>(null);
   const api = useRef<Api | null>(null);
   const [state, setState] = useState<"loading" | "ready" | "unavailable">("loading");
@@ -72,7 +76,8 @@ export function U1Viewer({ src, fallbackSrc, text, className = "", hotspotLabel 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.05;
+        const LK = LOOKS[look];
+        renderer.toneMappingExposure = LK.exposure;
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         renderer.domElement.style.cssText = "width:100%;height:100%;display:block;touch-action:none";
@@ -81,23 +86,23 @@ export function U1Viewer({ src, fallbackSrc, text, className = "", hotspotLabel 
         const scene = new THREE.Scene();
         const pmrem = new THREE.PMREMGenerator(renderer);
         scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-        scene.environmentIntensity = 0.85;
+        scene.environmentIntensity = LK.env;
 
         const camera = new THREE.PerspectiveCamera(28, 1, 1, 600);
         const HOME = new THREE.Vector3(90, 58, 150);
         camera.position.copy(HOME);
 
-        const key = new THREE.DirectionalLight(0xffffff, 2.2);
+        const key = new THREE.DirectionalLight(LK.lights[0][0], LK.lights[0][1]);
         key.position.set(-40, 70, 60);
-        key.castShadow = true;
+        key.castShadow = !LK.flat;
         key.shadow.mapSize.set(2048, 2048);
         key.shadow.camera.left = -60; key.shadow.camera.right = 60; key.shadow.camera.top = 60; key.shadow.camera.bottom = -60;
         key.shadow.radius = 6; key.shadow.bias = -0.0004;
         scene.add(key);
-        const rim = new THREE.DirectionalLight(0xffffff, 1.5);
+        const rim = new THREE.DirectionalLight(LK.lights[1][0], LK.lights[1][1]);
         rim.position.set(60, 25, -70);
         scene.add(rim);
-        const rim2 = new THREE.DirectionalLight(0xffe7a3, 1.1);
+        const rim2 = new THREE.DirectionalLight(LK.lights[2][0], LK.lights[2][1]);
         rim2.position.set(-70, 10, -40);
         scene.add(rim2);
 
@@ -135,12 +140,29 @@ export function U1Viewer({ src, fallbackSrc, text, className = "", hotspotLabel 
         const mats: import("three").Material[] = [];
         const meshes: import("three").Mesh[] = [];
         model.traverse((o) => { if ((o as import("three").Mesh).isMesh) meshes.push(o as import("three").Mesh); });
+        const extras: { dispose: () => void }[] = [];
+        const edgeMat = LK.flat ? new THREE.LineBasicMaterial({ color: 0x141414 }) : null;
+        if (edgeMat) extras.push(edgeMat);
         for (const mesh of meshes) {
           const info = partInfo(mesh);
-          const m = (mesh.material as import("three").Material).clone();
+          const src0 = mesh.material as import("three").Material;
+          let m: import("three").Material;
+          if (LK.flat) {
+            // Notice: flat fill from the palette + black edges (coils keep their silhouette only, as in the line render)
+            m = src0.name === "Touchscreen" ? src0.clone() : new THREE.MeshBasicMaterial({ color: NOTICE_FILL[src0.name] ?? "#ffffff" });
+            if (/glass/i.test(mesh.name) && !/Front_Glass/i.test(mesh.name)) mesh.visible = false;
+            if (/Chamber_Light/.test(mesh.name)) mesh.visible = false;
+            if (mesh.visible && !/^Filament_/.test(src0.name)) {
+              const eg = new THREE.EdgesGeometry(mesh.geometry, 32);
+              extras.push(eg);
+              const ls = new THREE.LineSegments(eg, edgeMat!);
+              ls.raycast = () => {};
+              mesh.add(ls);
+            }
+          } else m = src0.clone();
           mats.push(m);
           mesh.material = m;
-          mesh.castShadow = !info.glass;
+          mesh.castShadow = !info.glass && !LK.flat;
           mesh.receiveShadow = true;
           mesh.userData.partName = info.name;
           mesh.renderOrder = info.glass ? 2 : 0;
@@ -159,7 +181,7 @@ export function U1Viewer({ src, fallbackSrc, text, className = "", hotspotLabel 
         const doorN = nodeOf("DOOR"), bedN = nodeOf("BED_Z"), gantryN = nodeOf("GANTRY_Y"), headN = nodeOf("TOOLHEAD_X"), tubesN = nodeOf("TUBE_SYSTEM");
         const doorBase = doorN?.rotation.y ?? 0, bedBase = bedN?.position.y ?? 0, gantryBase = gantryN?.position.z ?? 0, headBase = headN?.position.x ?? 0;
         let doorV = 0, bedV = 0, headV = 0.5, doorT = 0, bedT = 0, headT = 0.5;
-        const ringCol = new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue("--ink").trim() || "#0e0e0e");
+        const ringCol = new THREE.Color(LK.ring ?? (getComputedStyle(document.documentElement).getPropertyValue("--ink").trim() || "#0e0e0e"));
         // turntable ring (ink hairlines)
         const ring = new THREE.Group();
         const mkRing = (r: number, op: number) => {
@@ -175,7 +197,7 @@ export function U1Viewer({ src, fallbackSrc, text, className = "", hotspotLabel 
         ring.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(tickPts), new THREE.LineBasicMaterial({ color: ringCol, transparent: true, opacity: 0.4 })));
         ring.position.y = box.min.y - 0.4;
         scene.add(ring);
-        const shadowPlane = new THREE.Mesh(new THREE.PlaneGeometry(220, 220), new THREE.ShadowMaterial({ opacity: 0.25 }));
+        const shadowPlane = new THREE.Mesh(new THREE.PlaneGeometry(220, 220), new THREE.ShadowMaterial({ opacity: LK.shadow }));
         shadowPlane.rotation.x = -Math.PI / 2;
         shadowPlane.position.y = box.min.y - 0.35;
         shadowPlane.receiveShadow = true;
@@ -299,6 +321,7 @@ export function U1Viewer({ src, fallbackSrc, text, className = "", hotspotLabel 
           controls.dispose();
           parts.forEach((p) => p.obj.geometry.dispose());
           mats.forEach((m) => m.dispose());
+          extras.forEach((x) => x.dispose());
           gltf.scene.traverse((o) => { const mm = (o as import("three").Mesh).material as import("three").MeshStandardMaterial | undefined; if (mm?.isMeshStandardMaterial) for (const t of [mm.map, mm.normalMap, mm.roughnessMap, mm.metalnessMap, mm.emissiveMap, mm.aoMap]) t?.dispose(); });
           scene.environment?.dispose();
           pmrem.dispose();
@@ -315,7 +338,7 @@ export function U1Viewer({ src, fallbackSrc, text, className = "", hotspotLabel 
       api.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [src]);
+  }, [src, look]);
 
   useEffect(() => { api.current?.setExplode(explode / 100); }, [explode]);
   useEffect(() => { api.current?.setAuto(auto); }, [auto]);
@@ -336,7 +359,7 @@ export function U1Viewer({ src, fallbackSrc, text, className = "", hotspotLabel 
         )}
         <div ref={labelHost} className="pointer-events-none absolute inset-0" aria-hidden="true">
           {Array.from({ length: hotCount }, (_, i) => (
-            <div key={i} ref={(n) => { if (n) labels.current[i] = n; }} title={hotspotLabel ? hotspotLabel(i + 1) : undefined} className="group pointer-events-auto absolute left-0 top-0 flex items-center gap-1 whitespace-nowrap border border-ink bg-yellow px-2 py-0.5 text-xs font-extrabold text-[#0e0e0e] opacity-0 transition-opacity" style={{ willChange: "transform" }}>
+            <div key={i} ref={(n) => { if (n) labels.current[i] = n; }} title={hotspotLabel ? hotspotLabel(i + 1) : undefined} className="hotspot group pointer-events-auto absolute left-0 top-0 flex items-center gap-1 whitespace-nowrap px-2 py-0.5 text-xs font-extrabold opacity-0 transition-opacity" style={{ willChange: "transform" }}>
               <span>{i + 1}</span>
               <span className="hidden font-semibold group-hover:inline">{hotspotLabel ? hotspotLabel(i + 1) : ""}</span>
             </div>

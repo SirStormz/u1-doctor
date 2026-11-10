@@ -1,17 +1,22 @@
-/** UI V2 themes. The token values live in design/tokens.css under [data-theme="<id>"]. */
+/** UI V2 themes. Tokens live in design/tokens.css, skins in themes/<id>/theme.css, both under [data-theme="<id>"]. */
+import pupitreThumb from "../assets/themes/pupitre.webp";
+import noticeThumb from "../assets/themes/notice.webp";
+import obsidienneThumb from "../assets/themes/obsidienne.webp";
+import visiereThumb from "../assets/themes/visiere.webp";
+
 export type ThemeId = "pupitre" | "notice" | "obsidienne" | "visiere";
 
 export interface ThemeMeta {
   id: ThemeId;
-  /** Settings preview: page background, card surface, accent. */
-  swatch: [string, string, string];
+  /** Settings preview: a real capture of the Overview in this theme (480 x 300). */
+  thumb: string;
 }
 
 export const THEMES: readonly ThemeMeta[] = [
-  { id: "pupitre", swatch: ["#dedad1", "#f2efe8", "#ffb547"] },
-  { id: "notice", swatch: ["#ffffff", "#f4f3ef", "#ffb547"] },
-  { id: "obsidienne", swatch: ["#0e1013", "#14171c", "#ffb547"] },
-  { id: "visiere", swatch: ["#0b090b", "#100c0c", "#ffb547"] },
+  { id: "pupitre", thumb: pupitreThumb },
+  { id: "notice", thumb: noticeThumb },
+  { id: "obsidienne", thumb: obsidienneThumb },
+  { id: "visiere", thumb: visiereThumb },
 ];
 export const THEME_IDS: readonly ThemeId[] = THEMES.map((x) => x.id);
 export const DEFAULT_THEME: ThemeId = "obsidienne";

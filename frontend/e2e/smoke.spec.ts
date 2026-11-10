@@ -1,3 +1,4 @@
+import path from "node:path";
 import { expect, test } from "@playwright/test";
 
 const ROUTES = ["welcome", "connect", "overview", "explorer", "symptoms", "timeline", "findings", "evidence", "replay", "report", "settings"];
@@ -47,6 +48,33 @@ for (const [theme, families] of Object.entries(THEME_FONTS)) {
     const loaded = await page.evaluate(async () => { await document.fonts.ready; return [...document.fonts].filter((f) => f.status === "loaded").map((f) => f.family.replace(/"/g, "")); });
     for (const f of families) expect(loaded, `${f} loaded`).toContain(f);
     expect(foreign, "no request may leave the local app").toEqual([]);
+  });
+}
+
+// UI V2: every theme passes axe (no serious or critical violation) and never scrolls sideways, demo on
+const AXE = path.resolve(process.cwd(), "node_modules/axe-core/axe.min.js");
+for (const theme of Object.keys(THEME_FONTS)) {
+  test(`theme ${theme}: accessible and no horizontal scroll on the main screens`, async ({ page }) => {
+    test.setTimeout(90_000);
+    await page.addInitScript((t) => { localStorage.setItem("u1d.theme", t); localStorage.setItem("u1d.hints", '["marks","timeline","palette"]'); }, theme);
+    await page.goto("/#/overview");
+    await page.getByRole("button", { name: /^(Demo mode|Mode démo)$/ }).click();
+    for (const route of ["overview", "symptoms", "timeline", "findings", "evidence", "report", "settings"]) {
+      await page.goto(`/#/${route}`);
+      await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
+      await page.waitForTimeout(900); // entrance motion settles before measuring contrast
+      for (const width of [1024, 1440]) {
+        await page.setViewportSize({ width, height: 900 });
+        const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+        expect(overflow, `${route} at ${width}px`).toBeLessThanOrEqual(0);
+      }
+      await page.addScriptTag({ path: AXE });
+      const bad = await page.evaluate(async () => {
+        const r = await (window as unknown as { axe: { run: (c: unknown, o: unknown) => Promise<{ violations: { id: string; impact: string; nodes: { target: string[] }[] }[] }> } }).axe.run(document, { resultTypes: ["violations"] });
+        return r.violations.filter((v) => v.impact === "serious" || v.impact === "critical").map((v) => `${v.id}: ${v.nodes.slice(0, 3).map((n) => n.target.join(" ")).join(" | ")}`);
+      });
+      expect(bad, `${theme} #/${route}`).toEqual([]);
+    }
   });
 }
 

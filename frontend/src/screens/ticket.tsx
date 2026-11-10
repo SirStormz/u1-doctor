@@ -61,7 +61,7 @@ export function TicketPanel({ appVersion, source, obs, findings, initialCode }: 
         </div>
         <div className="grid content-start gap-2">
           <p className="micro">{t.tk.preview}</p>
-          <pre data-testid="ticket-text" className="mono max-h-96 overflow-auto whitespace-pre-wrap break-words rounded-lg border border-control bg-surface2 p-3 text-xs text-ink2">{text}</pre>
+          <pre data-testid="ticket-text" tabIndex={0} className="mono max-h-96 overflow-auto whitespace-pre-wrap break-words rounded-lg border border-control bg-surface2 p-3 text-xs text-ink2">{text}</pre>
           <div className="flex flex-wrap items-center gap-2">
             <Button variant="primary" icon={<ClipboardCopy size={16} />} onClick={() => void copy()}>{copied ? t.tk.copied : t.tk.copy}</Button>
             <a href={LOG_EXPORT_URL} target="_blank" rel="noreferrer noopener" className="btn btn-secondary">{t.tk.logLink}<ExternalLink size={15} aria-hidden /></a>

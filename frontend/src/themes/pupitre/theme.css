@@ -1,0 +1,96 @@
+/* Pupitre — the app as the U1's hardware console: warm grey bead-blasted plastic, screwed modules, keys with travel,
+   silkscreen labels, page titles on an amber LCD (dark text on amber, no glow). Signature motion: modules mount with a
+   small overshoot, the LCD switches on in steps. The plastic grain is an inline SVG noise (no image file). */
+[data-theme="pupitre"] {
+  --radius-s: 6px; --radius-m: 9px; --radius-l: 12px;
+  --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.15' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.1  0 0 0 0 0.09  0 0 0 0 0.08  0 0 0 0.11 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  --key: linear-gradient(180deg, #f8f6f1, #dedad1);
+  --key-edge: inset 0 1px 0 #ffffff, 0 0 0 1px rgba(0, 0, 0, 0.22), 0 3px 0 #a6a196, 0 5px 7px rgba(0, 0, 0, 0.16);
+  --key-down: inset 0 1px 0 #ffffff, 0 0 0 1px rgba(0, 0, 0, 0.22), 0 1px 0 #a6a196, 0 2px 3px rgba(0, 0, 0, 0.14);
+  --screw: radial-gradient(circle at 40% 35%, #d9d4ca 0 1.6px, #8f8a80 2.4px, #6f6a62 3.4px, rgba(255, 255, 255, 0.55) 3.9px, transparent 4.4px);
+  scrollbar-color: #8f8a80 #dedad1;
+}
+[data-theme="pupitre"] .stage { background: linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(0, 0, 0, 0.06)), var(--grain), var(--bg-0); }
+
+/* bars: dark console strip on top, label strip at the bottom */
+[data-theme="pupitre"] .stage > .topbar:first-child { background: linear-gradient(180deg, #3b3935, #26241f); color: #f2efe8; box-shadow: inset 0 -1px 0 #000, 0 1px 0 rgba(255, 255, 255, 0.5);
+  --ink: #f2efe8; --ink-2: #d8d3c8; --ink-3: #b9b4aa; --surface-1: #2e2c28; --surface-2: #3b3935; --line: #4a4740; --control-line: #8f8a80; --accent: var(--yellow); --demo: #c9b5ff; --replay: #9cc4ff; }
+[data-theme="pupitre"] footer.topbar { background: linear-gradient(180deg, #dedad1, #cfcbc3); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 -1px 0 rgba(0, 0, 0, 0.12); }
+[data-theme="pupitre"] .brand { color: #f2efe8; }
+[data-theme="pupitre"] .brand span { font-family: var(--font-display); font-weight: 700; letter-spacing: 0.12em; font-size: 16px; }
+[data-theme="pupitre"] .btn.tbtn { border: 0; border-radius: 7px; background: linear-gradient(180deg, #4a4740, #2e2c28); color: #f2efe8; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 0 0 1px #000, 0 3px 0 #000;
+  font-family: var(--font-display); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; font-size: 12.5px; }
+[data-theme="pupitre"] .btn.tbtn:hover:not(:disabled) { background: linear-gradient(180deg, #55524a, #36332e); }
+[data-theme="pupitre"] .btn.tbtn:active:not(:disabled) { transform: translateY(2px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 0 0 1px #000, 0 1px 0 #000; }
+[data-theme="pupitre"] .btn.tbtn[aria-pressed="true"], [data-theme="pupitre"] .btn.tbtn[aria-pressed="true"]:hover:not(:disabled) { background: linear-gradient(180deg, #ffca74, #ffaa2c); color: #2a1b03; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 0 0 1px rgba(110, 60, 0, 0.6), 0 3px 0 #8a5300; }
+[data-theme="pupitre"] .tsel, [data-theme="pupitre"] .langsw { border: 0; border-radius: 7px; background: #2e2c28; color: #f2efe8; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.12); }
+[data-theme="pupitre"] .langsw button { background: transparent; color: #d8d3c8; }
+[data-theme="pupitre"] .langsw button[aria-pressed="true"] { background: linear-gradient(180deg, #ffca74, #ffaa2c); color: #2a1b03; }
+
+/* index strip: a row of keys, the current page is the amber key held down */
+[data-theme="pupitre"] .indexbar { background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(0, 0, 0, 0.03)), var(--grain), #d6d2c9; border-bottom: 0; box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.14), 0 1px 0 rgba(255, 255, 255, 0.5); }
+[data-theme="pupitre"] .navitem { border-right: 0; margin: 9px 4px 11px; border-radius: 8px; background: var(--key); box-shadow: var(--key-edge); color: var(--ink);
+  font-family: var(--font-display); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; transition: transform 50ms, box-shadow 50ms; }
+[data-theme="pupitre"] .navitem .nl { font-size: 13px; letter-spacing: 0.08em; }
+[data-theme="pupitre"] .navitem:hover { background: linear-gradient(180deg, #ffffff, #e7e3db); color: var(--ink); }
+[data-theme="pupitre"] .navitem:active { transform: translateY(2px); box-shadow: var(--key-down); }
+[data-theme="pupitre"] .navitem[aria-current="page"] { background: linear-gradient(180deg, #ffca74, #ffaa2c); color: #2a1b03; transform: translateY(2px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 0 0 1px rgba(110, 60, 0, 0.45), 0 1px 0 #8a5300; }
+[data-theme="pupitre"] .navitem[aria-current="page"] .nn { color: #2a1b03; }
+[data-theme="pupitre"] .nav-ind { display: none; }
+
+/* page title on an amber LCD */
+[data-theme="pupitre"] .title-mask { padding: 8px 8px 12px; }
+[data-theme="pupitre"] .title-mask h1 { font-family: "Doto Variable", var(--font-mono); font-weight: 800; letter-spacing: 0; font-size: clamp(30px, 3.2vw, 44px) !important;
+  display: inline-flex !important; padding: 10px 18px 9px; border-radius: 7px; color: #2a1b03; background: linear-gradient(180deg, #ffbe5c, #ffaf3e);
+  box-shadow: inset 0 2px 8px rgba(90, 45, 0, 0.5), inset 0 0 0 1px rgba(70, 35, 0, 0.35), 0 0 0 5px #1e1d1b, 0 0 0 6px rgba(255, 255, 255, 0.45); }
+[data-theme="pupitre"] .title-icon { background: transparent; color: #2a1b03; width: auto; height: auto; }
+[data-theme="pupitre"] .fig { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.15em; color: var(--ink-2); }
+
+/* modules: screwed plastic plates */
+[data-theme="pupitre"] .panel { border: 0; border-radius: var(--radius-l); background: linear-gradient(180deg, rgba(255, 255, 255, 0.30), rgba(255, 255, 255, 0.10)), var(--grain), #e4e0d7;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75), inset 0 -1px 0 rgba(0, 0, 0, 0.10), 0 0 0 1px rgba(0, 0, 0, 0.14), 0 1px 0 1px rgba(255, 255, 255, 0.35), 0 3px 0 rgba(0, 0, 0, 0.06), 0 10px 22px -14px rgba(0, 0, 0, 0.35); }
+[data-theme="pupitre"] .panel::after { content: ""; position: absolute; inset: 7px; pointer-events: none;
+  background: var(--screw) 0 0 / 9px 9px no-repeat, var(--screw) 100% 0 / 9px 9px no-repeat, var(--screw) 0 100% / 9px 9px no-repeat, var(--screw) 100% 100% / 9px 9px no-repeat; }
+[data-theme="pupitre"] .panel[data-active="true"] { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75), 0 0 0 1px rgba(0, 0, 0, 0.18), 0 0 0 4px rgba(255, 181, 71, 0.55), 0 10px 22px -14px rgba(0, 0, 0, 0.35); }
+[data-theme="pupitre"] .panel > header { border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important; box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6); padding-left: 22px; padding-right: 22px; }
+[data-theme="pupitre"] .panel > header h2 { font-family: var(--font-display); font-size: 11.5px; font-weight: 600; letter-spacing: 0.15em; color: var(--ink-2); }
+[data-theme="pupitre"] .panel > header h2 > span { color: #8a5300; }
+[data-theme="pupitre"] .paper, [data-theme="pupitre"] .tpanel { border: 0; border-radius: var(--radius-l); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.7); }
+[data-theme="pupitre"] thead { border-bottom: 1px solid rgba(0, 0, 0, 0.25); }
+
+/* keys */
+[data-theme="pupitre"] .btn { border: 0; border-radius: var(--radius-m); background: var(--key); color: var(--ink); box-shadow: var(--key-edge);
+  font-family: var(--font-display); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; font-size: 13px; padding-top: 8px; padding-bottom: 8px; transition: transform 50ms, box-shadow 50ms; }
+[data-theme="pupitre"] .btn:hover:not(:disabled) { background: linear-gradient(180deg, #ffffff, #e7e3db); transform: none; }
+[data-theme="pupitre"] .btn:active:not(:disabled) { transform: translateY(2px); box-shadow: var(--key-down); }
+[data-theme="pupitre"] .btn-primary { background: linear-gradient(180deg, #ffca74, #ffaa2c); color: #2a1b03; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 0 0 1px rgba(110, 60, 0, 0.45), 0 3px 0 #bd7a10, 0 5px 7px rgba(0, 0, 0, 0.18); }
+[data-theme="pupitre"] .btn-primary:hover:not(:disabled) { background: linear-gradient(180deg, #ffd38a, #ffb23e); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 0 0 1px rgba(110, 60, 0, 0.45), 0 3px 0 #bd7a10, 0 5px 7px rgba(0, 0, 0, 0.18); }
+[data-theme="pupitre"] .btn-primary:active:not(:disabled) { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 0 0 1px rgba(110, 60, 0, 0.45), 0 1px 0 #bd7a10; }
+[data-theme="pupitre"] .btn-secondary:hover:not(:disabled) { color: var(--ink); }
+[data-theme="pupitre"] .btn-ghost { background: transparent; box-shadow: none; }
+[data-theme="pupitre"] .btn-ghost:hover:not(:disabled) { background: rgba(0, 0, 0, 0.05); }
+
+/* chips: printed labels */
+[data-theme="pupitre"] .chip { border-radius: 4px; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+[data-theme="pupitre"] .topbar .kbd { background: #1e1d1b; color: #f2efe8; box-shadow: 0 0 0 1px #000; }
+[data-theme="pupitre"] .kbd { border: 0; border-radius: 4px; background: var(--key); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25), 0 2px 0 #a6a196; color: var(--ink); }
+
+/* fields: recessed */
+[data-theme="pupitre"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), [data-theme="pupitre"] textarea, [data-theme="pupitre"] select:not(.tsel) {
+  border-radius: 7px; background: #f8f6f1; border-color: rgba(0, 0, 0, 0.28); box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.18); }
+[data-theme="pupitre"] input[type="checkbox"], [data-theme="pupitre"] input[type="radio"], [data-theme="pupitre"] input[type="range"] { accent-color: #8a5300; }
+[data-theme="pupitre"] .hint { border: 0; border-radius: 4px; background: linear-gradient(180deg, rgba(242, 232, 203, 0.96), rgba(232, 220, 186, 0.96)); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); }
+[data-theme="pupitre"] .rowhover:hover { box-shadow: inset 4px 0 0 var(--yellow); background: rgba(255, 255, 255, 0.35); }
+[data-theme="pupitre"] .scan-sweep { box-shadow: 0 1px 0 #2a1b03, 0 -1px 0 #2a1b03; }
+
+/* motion: modules mount, the LCD switches on in steps */
+@keyframes pup-mount { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+@keyframes pup-lcd { from { filter: brightness(0.42) saturate(0.6); } to { filter: none; } }
+[data-theme="pupitre"] .reveal { animation-name: pup-mount; animation-duration: 550ms; animation-timing-function: cubic-bezier(0.3, 1.35, 0.5, 1); }
+[data-theme="pupitre"] .title-mask > * { animation: pup-lcd 900ms steps(5, end) 150ms both; }
+
+/* 3D hotspots: tape labels; big numbers on the dot-matrix face */
+[data-theme="pupitre"] .hotspot { border: 0; border-radius: 0; background: linear-gradient(180deg, rgba(242, 232, 203, 0.97), rgba(232, 220, 186, 0.97)); color: #2c2a26; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  clip-path: polygon(3% 8%, 97% 0, 100% 50%, 97% 100%, 0 94%, 2% 50%); font-family: var(--font-display); letter-spacing: 0.06em; }
+[data-theme="pupitre"] .num-hero { font-family: "Doto Variable", var(--font-mono); font-weight: 900; letter-spacing: 0.02em; }

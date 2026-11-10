@@ -6,6 +6,7 @@ import { PageTitle } from "../components/shell";
 import { useIncident } from "../lib/data";
 import { usePrefs, type Density, type Mode } from "../lib/prefs";
 import { THEMES } from "../themes/registry";
+import { withThemeFade } from "../themes/transition";
 import { errText } from "../lib/errors";
 import { moduleLabel, scenarioLabel, tok, tx } from "../lib/dyn";
 import { pfLimit, pfView, type PfCheck } from "../lib/preflight-text";
@@ -681,9 +682,11 @@ export function SettingsScreen() {
       <div className="grid gap-d xl:grid-cols-2">
         <Panel title={t.appearance} i={0} active>
           <fieldset><legend className="micro mb-2">{t.theme}</legend>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">{THEMES.map(({ id: k, swatch }) => (
-              <button key={k} type="button" aria-pressed={theme === k} onClick={() => setTheme(k)} className="rounded-xl border p-3 text-left" style={{ borderColor: theme === k ? "var(--accent)" : "var(--line)", boxShadow: theme === k ? "var(--glow)" : "none", background: "var(--surface-2)" }}>
-                <span className="mb-2 flex h-8 overflow-hidden rounded-md border border-control" aria-hidden>{swatch.map((c) => <span key={c} className="flex-1" style={{ background: c }} />)}</span>{t.themes[k]}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">{THEMES.map(({ id: k, thumb }) => (
+              <button key={k} type="button" aria-pressed={theme === k} onClick={() => withThemeFade(() => setTheme(k))} className="rounded-xl border p-2 text-left" style={{ borderColor: theme === k ? "var(--accent)" : "var(--line)", boxShadow: theme === k ? "var(--glow)" : "none", background: "var(--surface-2)" }}>
+                <img src={thumb} alt="" width={480} height={300} loading="lazy" className="mb-2 aspect-[8/5] w-full rounded-md border border-control object-cover" />
+                <span className="block font-semibold">{t.themes[k]}</span>
+                <span className="mt-0.5 block text-xs text-ink3">{t.themeDesc[k]}</span>
               </button>))}</div>
           </fieldset>
           <fieldset className="mt-5"><legend className="micro mb-2">{t.density}</legend>
