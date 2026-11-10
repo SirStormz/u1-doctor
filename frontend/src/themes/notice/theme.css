@@ -96,3 +96,4 @@
 [data-theme="notice"] .home-ring { border: 4px solid var(--yellow); box-shadow: 0 0 0 2px var(--ink), inset 0 0 0 2px var(--ink); }
 [data-theme="notice"] .home-tag { background: #ffffff; color: var(--ink); border: 2px solid var(--ink); border-radius: 999px; box-shadow: 2px 2px 0 var(--ink); }
 [data-theme="notice"] .home-short:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); }
+[data-theme="notice"] .home-step[aria-current="step"] { background: #fff0d6; box-shadow: 4px 4px 0 var(--ink); }

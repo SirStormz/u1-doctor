@@ -15,6 +15,7 @@ const en = {
     codeQ: "A code on the screen?", codeB: "Type it to read what it means.", partQ: "Something wrong with the print?", partB: "Describe what you see on the part.",
     imgAlt: "The Snapmaker U1, toolhead {n} marked", imgAltNone: "The Snapmaker U1", illustration: "Illustration from the owner's 3D model, not a photo of your printer",
   },
+  verdict: { steps: "Steps", stepOf: "Step {i} of {n}", prev: "Previous", next: "Next" },
   actions: {
     check_path_obstruction: "Check that nothing blocks or tangles the filament path.", clean: "Clean what the code names.", resume_from_screen: "Resume from the printer screen.",
     retry: "Try again.", unload_filament: "Unload the filament (remove what is left).", load_filament: "Load the filament again.", check_cable: "Check the cable and its connector.",
@@ -271,6 +272,7 @@ const fr: Dict = {
     codeQ: "Un code à l'écran ?", codeB: "Saisissez-le pour savoir ce qu'il veut dire.", partQ: "Quelque chose cloche sur la pièce ?", partB: "Décrivez ce que vous voyez sur la pièce.",
     imgAlt: "La Snapmaker U1, tête {n} repérée", imgAltNone: "La Snapmaker U1", illustration: "Illustration tirée du modèle 3D du propriétaire, pas une photo de votre imprimante",
   },
+  verdict: { steps: "Étapes", stepOf: "Étape {i} sur {n}", prev: "Précédente", next: "Suivante" },
   actions: {
     check_path_obstruction: "Vérifiez que rien ne bloque ni n'emmêle le chemin du filament.", clean: "Nettoyez ce que le code indique.", resume_from_screen: "Reprenez depuis l'écran de l'imprimante.",
     retry: "Réessayez.", unload_filament: "Déchargez le filament (retirez ce qui reste).", load_filament: "Rechargez le filament.", check_cable: "Vérifiez le câble et son connecteur.",

@@ -6,19 +6,11 @@ import { usePrefs } from "../lib/prefs";
 import { tx } from "../lib/dyn";
 import type { RouteName } from "../lib/router";
 import { MiniStrip } from "../viz/HypothesisMap";
-import { renderFor, type Shot } from "../themes/renders";
+import { renderFor } from "../themes/renders";
+import { officialSteps } from "../lib/steps";
 import { RealCapturePanel } from "./real";
 import { NoData } from "../components/nodata";
 import { FirstSteps } from "../components/onboarding";
-
-/** Official action keys, shown inspection first, then action, then resume (the table gives no order; this is display only). */
-const ORDER = ["check_path_obstruction", "check_cable", "check_dock", "unload_filament", "clean", "load_filament", "maintenance", "home_axes", "power_cycle",
-  "update_firmware", "restore_factory_settings", "resume_from_screen", "retry", "reslice_with_orca", "export_logs", "contact_support", "see_article"];
-/** Which render illustrates an action: the toolheads for hands-on gestures, the screen for what is done on it. */
-const SHOT: Partial<Record<string, Shot>> = {
-  check_path_obstruction: "tetes", clean: "tetes", unload_filament: "tetes", load_filament: "tetes", check_dock: "tetes",
-  resume_from_screen: "ecran", retry: "ecran", home_axes: "ecran", power_cycle: "ecran", update_firmware: "ecran", restore_factory_settings: "ecran", export_logs: "ecran",
-};
 
 /**
  * UI V2 home (Simple mode): the mockups' layout, filled only from the data the app holds. The verdict sentence follows the decoded
@@ -39,7 +31,8 @@ export function Home({ go }: { go: (n: RouteName, p?: string) => void }) {
   const head = entry?.toolhead && entry.toolhead >= 1 && entry.toolhead <= 4 ? entry.toolhead : null;
   const verdict = !demo ? H.empty : d?.severity === "error" || d?.severity === "warning" ? H.needsLook : findings.length ? H.toCheck : H.nothing;
   const sub = !demo ? H.emptyBody : entry ? tx(lang, entry.title) : findings.length ? undefined : H.nothingNote;
-  const actions = [...(entry?.actions ?? [])].sort((a, b) => ORDER.indexOf(a) - ORDER.indexOf(b));
+  const steps = officialSteps(entry?.actions, head);
+  const actions = steps.map((x) => x.key);
   const general = actions.length ? [] : [...new Set(findings.flatMap((f) => f.safe_actions))].slice(0, 3);
   const codeObs = obs.find((o) => o.event_type === "user_reported_error_code");
   const paused = [...obs].reverse().find((o) => o.event_type === "state_transition" && val(o).state === "paused");
@@ -59,7 +52,7 @@ export function Home({ go }: { go: (n: RouteName, p?: string) => void }) {
             <Panel title={H.todo} icon={<ListChecks size={17} />} active i={0} actions={head ? <Chip tone="accent">{H.head.replace("{n}", String(head))} · {H.headNote}</Chip> : undefined}>
               <p className="micro mb-3">{actions.length ? H.todoSub : H.todoGeneral}</p>
               <ol className="home-steps grid gap-3">
-                {(actions.length ? actions.map((a) => ({ k: a, text: t.actions[a as keyof typeof t.actions] ?? a, shot: SHOT[a] })) : general.map((g) => ({ k: g, text: tx(lang, g), shot: undefined }))).map((s, i) => {
+                {(actions.length ? steps.map((x) => ({ k: x.key, text: t.actions[x.key as keyof typeof t.actions] ?? x.key, shot: x.shot })) : general.map((g) => ({ k: g, text: tx(lang, g), shot: undefined }))).map((s, i) => {
                   const r = s.shot ? renderFor(theme, s.shot) : null;
                   const at = r ? (s.shot === "ecran" ? r.at("screen") : head ? r.at(`head${head}` as "head1") : null) : null;
                   return (

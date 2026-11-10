@@ -130,3 +130,4 @@
 [data-theme="obsidienne"] .home-tag { background: rgba(20, 23, 28, 0.7); color: var(--ink); border-radius: 999px; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 0 0 1px rgba(255, 181, 71, 0.5); }
 @media (prefers-reduced-motion: reduce) { [data-theme="obsidienne"] .home-lens { animation: none; } }
 @media (prefers-reduced-transparency: reduce) { [data-theme="obsidienne"] .home-tag { background: var(--surface-2); } }
+[data-theme="obsidienne"] .home-step[aria-current="step"] { background: rgba(255, 181, 71, 0.10); box-shadow: inset 0 0 0 1px rgba(255, 181, 71, 0.55); }

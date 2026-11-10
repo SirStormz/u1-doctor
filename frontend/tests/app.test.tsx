@@ -118,6 +118,40 @@ test("the dock is the same in Simple and Expert mode; the Expert switch still to
   expect(localStorage.getItem("u1d.mode")).toBe("expert");
 });
 
+test("guided Verdict (Simple mode): the official actions of the decoded code, one step at a time, nothing else", async () => {
+  const extra = ENTRY as Record<string, unknown>;
+  Object.assign(extra, { actions: ["retry", "check_path_obstruction", "resume_from_screen", "clean"], article: { title: "U1 auto loading failure", url: "https://wiki.snapmaker.com/x", kind: "wiki" } });
+  try {
+    render(<App />);
+    await demoOn();
+    await go("#/findings");
+    const steps = await screen.findByRole("list", { name: "Steps" });
+    // shown inspection first, then the gesture, then resume; the texts are the app's own wording of the table's actions
+    expect(within(steps).getAllByRole("button").map((b) => b.textContent)).toEqual(["1Check that nothing blocks or tangles the filament path.", "2Clean what the code names.", "3Resume from the printer screen.", "4Try again."]);
+    expect(screen.getByText(/Step 1 of 4/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Previous/ })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: /Next/ }));
+    expect(screen.getByText(/Step 2 of 4/)).toBeInTheDocument();
+    expect(within(steps).getAllByRole("button")[1]).toHaveAttribute("aria-current", "step");
+    fireEvent.click(within(steps).getAllByRole("button")[3]!);
+    expect(screen.getByRole("button", { name: /Next/ })).toBeDisabled();
+    expect(screen.getByRole("link", { name: /Official article/ })).toHaveAttribute("href", "https://wiki.snapmaker.com/x");
+    expect(screen.getByText(/Toolhead 3 · from the code/)).toBeInTheDocument();
+    expect(screen.getByRole("table")).toBeInTheDocument(); // the full list of findings stays below
+  } finally {
+    delete extra.actions;
+    delete extra.article;
+  }
+});
+
+test("guided Verdict stays hidden in Expert mode and when the code has no official actions", async () => {
+  render(<App />);
+  await demoOn();
+  await go("#/findings");
+  await screen.findByRole("table");
+  expect(screen.queryByRole("list", { name: "Steps" })).toBeNull(); // the fixture entry has no actions
+});
+
 test("an expert screen stays reachable by direct link in Simple mode", async () => {
   render(<App />);
   await go("#/evidence");
