@@ -50,7 +50,7 @@ async function visibleText(route: string, theme: string, lang: string): Promise<
   return text;
 }
 
-test.each([["overview", "fr"], ["settings", "fr"], ["overview", "en"], ["settings", "en"]])("#/%s (%s): same visible text in every theme", async (route, lang) => {
+test.each([["overview", "fr"], ["settings", "fr"], ["findings", "fr"], ["overview", "en"], ["settings", "en"], ["findings", "en"]])("#/%s (%s): same visible text in every theme", async (route, lang) => {
   const texts: string[] = [];
   for (const id of THEME_IDS) texts.push(await visibleText(route, id, lang)); // one App at a time: they share the document
   const [first, ...rest] = texts;

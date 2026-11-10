@@ -9,6 +9,7 @@ import { usePrefs } from "../lib/prefs";
 import { errText } from "../lib/errors";
 import { eventLabel, tok, tx } from "../lib/dyn";
 import type { RouteName } from "../lib/router";
+import { VerdictGuide } from "./verdict";
 
 const ORDER: Record<string, number> = { OBSERVED: 0, SUSPECTED: 1, INCONCLUSIVE: 2 };
 const QUAL: Record<string, number> = { STRONG: 0, MODERATE: 1, WEAK: 2, UNKNOWN: 3 };
@@ -16,7 +17,7 @@ const clean = (s: string) => s.replace(/^SYNTHETIC: /, "");
 const useTx = () => { const { lang } = usePrefs(); return (s: string) => tx(lang, clean(s)); };
 
 export function Findings({ go }: { go: (n: RouteName, p?: string) => void }) {
-  const { t, lang } = usePrefs();
+  const { t, lang, mode } = usePrefs();
   const L = useTx();
   const inc = useIncident();
   const [filter, setFilter] = useState("ALL");
@@ -30,6 +31,7 @@ export function Findings({ go }: { go: (n: RouteName, p?: string) => void }) {
           <select value={filter} onChange={(e) => setFilter(e.target.value)} className="rounded-lg border border-control bg-surface2 px-2 py-1.5 text-ink">
             <option value="ALL">{t.all}</option><option value="OBSERVED">{tok(lang, "classification", "OBSERVED")}</option><option value="INCONCLUSIVE">{tok(lang, "classification", "INCONCLUSIVE")}</option>
           </select></label>} />
+      {mode === "simple" && <VerdictGuide />}
       {rows.length > 0 && <Hint id="marks" className="mb-d" />}
       <Panel bodyClass="p-0" label={t.nav.findings} active>
         {rows.length === 0 ? <div className="p-4"><StateBlock kind="empty" title={t.empty} body={t.emptyFilter} action={<Button onClick={() => setFilter("ALL")}>{t.reset}</Button>} /></div> : (

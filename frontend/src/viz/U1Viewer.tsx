@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { MODEL_SCALE, partInfo } from "./u1model";
 import { LOOKS, NOTICE_FILL } from "./looks";
 import type { ThemeId } from "../themes/registry";
+import type { Focus } from "../lib/steps";
 
 export interface ViewerText {
   autoRotate: string;
@@ -26,9 +27,11 @@ interface Props {
   hotspotLabel?: (n: number) => string;
   /** UI V2 theme: how the machine is lit or drawn */
   look?: ThemeId;
+  /** part the camera should look at (guided Verdict); null = the home view */
+  focus?: Focus | null;
 }
 
-type Api = { setExplode: (v: number) => void; setAuto: (v: boolean) => void; setDoor: (v: number) => void; setBed: (v: number) => void; setHead: (v: number) => void; reset: () => void; dispose: () => void };
+type Api = { setExplode: (v: number) => void; setAuto: (v: boolean) => void; setDoor: (v: number) => void; setBed: (v: number) => void; setHead: (v: number) => void; reset: () => void; focus: (f: Focus | null) => void; dispose: () => void };
 
 const REDUCED = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -41,7 +44,7 @@ function hasWebGL(): boolean {
   }
 }
 
-export function U1Viewer({ src, fallbackSrc, text, className = "", hotspotLabel, look = "obsidienne" }: Props) {
+export function U1Viewer({ src, fallbackSrc, text, className = "", hotspotLabel, look = "obsidienne", focus = null }: Props) {
   const host = useRef<HTMLDivElement>(null);
   const api = useRef<Api | null>(null);
   const [state, setState] = useState<"loading" | "ready" | "unavailable">("loading");
@@ -110,7 +113,7 @@ export function U1Viewer({ src, fallbackSrc, text, className = "", hotspotLabel,
         controls.enableDamping = true;
         controls.dampingFactor = 0.07;
         controls.enablePan = false;
-        controls.minDistance = 70;
+        controls.minDistance = 28;
         controls.maxDistance = 240;
         controls.maxPolarAngle = Math.PI * 0.56;
         controls.autoRotateSpeed = 0.7;
@@ -230,7 +233,7 @@ export function U1Viewer({ src, fallbackSrc, text, className = "", hotspotLabel,
         const onLeave = () => setHoverMesh(null);
         renderer.domElement.addEventListener("pointermove", onMove);
         renderer.domElement.addEventListener("pointerleave", onLeave);
-        controls.addEventListener("start", () => { controls.autoRotate = false; setAuto(false); });
+        controls.addEventListener("start", () => { controls.autoRotate = false; setAuto(false); focusT = 1; });
 
         // sizing
         const resize = () => {
@@ -242,6 +245,30 @@ export function U1Viewer({ src, fallbackSrc, text, className = "", hotspotLabel,
         const ro = new ResizeObserver(resize);
         ro.observe(el);
         resize();
+
+        // guided focus: camera glides to a toolhead (centre of its PTFE path parts) or the touchscreen, along the home view direction
+        const span = Math.max(size.x, size.y, size.z);
+        const centreOf = (ps: Part[]) => ps.reduce((a, p) => a.add(p.c0), new THREE.Vector3()).divideScalar(Math.max(1, ps.length));
+        // the screen texture sits on a plane larger than the visible screen: use the screen anchor checked during the UI V2 audit (GLB units, lab/u1stage.js)
+        const SCREEN_GLB: [number, number, number] = [0.11, 0.398, 0.246];
+        const FOCUS: Partial<Record<Focus, { target: import("three").Vector3; dist: number }>> = {};
+        // a toolhead path runs from the tubes on top down to the head: aim at its lowest third (the head itself), not at the tubes
+        const lowThird = (ps: Part[]) => { const ys = ps.map((p) => p.c0.y).sort((a, b) => a - b); const cut = ys[Math.floor((ys.length - 1) / 3)] ?? 0; return ps.filter((p) => p.c0.y <= cut); };
+        hot.forEach((h) => { FOCUS[`head${h.n}` as Focus] = { target: centreOf(lowThird(h.ps)), dist: span * 0.58 }; });
+        FOCUS.screen = { target: new THREE.Vector3(...SCREEN_GLB).multiplyScalar(MODEL_SCALE).add(model.position), dist: span * 0.55 };
+        const viewDir = HOME.clone().normalize();
+        const frontDir = new THREE.Vector3(0.35, 0.28, 1).normalize(); // the touchscreen faces the front
+        const camFrom = new THREE.Vector3(), camTo = HOME.clone(), tgtFrom = new THREE.Vector3(), tgtTo = new THREE.Vector3();
+        let focusT = 1, focusStart = 0;
+        const focusOn = (f: Focus | null) => {
+          const spot = f ? FOCUS[f] : undefined;
+          tgtTo.copy(spot ? spot.target : new THREE.Vector3());
+          camTo.copy(spot ? spot.target.clone().addScaledVector(f === "screen" ? frontDir : viewDir, spot.dist) : HOME);
+          camFrom.copy(camera.position); tgtFrom.copy(controls.target);
+          controls.autoRotate = false;
+          if (f) setAuto(false);
+          if (REDUCED()) { camera.position.copy(camTo); controls.target.copy(tgtTo); focusT = 1; } else { focusT = 0; focusStart = performance.now(); }
+        };
 
         // animation state
         let explodeV = 0, explodeT = 0;
@@ -282,6 +309,12 @@ export function U1Viewer({ src, fallbackSrc, text, className = "", hotspotLabel,
           apply();
           group.scale.setScalar(1 / (1 + 0.38 * explodeV));
           ring.rotation.y -= dt * 0.08;
+          if (focusT < 1) {
+            focusT = Math.min(1, (now - focusStart) / 1100); // wall clock: a slow GPU drops frames, not time
+            const k2 = focusT < 0.5 ? 4 * focusT ** 3 : 1 - (-2 * focusT + 2) ** 3 / 2;
+            camera.position.lerpVectors(camFrom, camTo, k2);
+            controls.target.lerpVectors(tgtFrom, tgtTo, k2);
+          }
           controls.update();
           renderer.render(scene, camera);
           const w = renderer.domElement.clientWidth, h = renderer.domElement.clientHeight;
@@ -305,7 +338,8 @@ export function U1Viewer({ src, fallbackSrc, text, className = "", hotspotLabel,
           setDoor: (v) => { doorT = v; },
           setBed: (v) => { bedT = v; },
           setHead: (v) => { headT = v; },
-          reset: () => { camera.position.copy(HOME); controls.target.set(0, 0, 0); controls.update(); explodeT = 0; doorT = 0; bedT = 0; headT = 0.5; },
+          reset: () => { camera.position.copy(HOME); controls.target.set(0, 0, 0); controls.update(); explodeT = 0; doorT = 0; bedT = 0; headT = 0.5; focusT = 1; },
+          focus: focusOn,
           dispose: () => {},
         };
         labels.current = labels.current.slice(0, hot.length);
@@ -345,6 +379,7 @@ export function U1Viewer({ src, fallbackSrc, text, className = "", hotspotLabel,
   useEffect(() => { api.current?.setDoor(door / 100); }, [door]);
   useEffect(() => { api.current?.setBed(bed / 100); }, [bed]);
   useEffect(() => { api.current?.setHead(head / 100); }, [head]);
+  useEffect(() => { if (state === "ready") api.current?.focus(focus); }, [focus, state]);
   const reset = useCallback(() => { setExplode(0); setDoor(0); setBed(0); setHead(50); api.current?.reset(); }, []);
 
   return (

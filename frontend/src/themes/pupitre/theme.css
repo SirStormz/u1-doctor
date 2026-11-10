@@ -138,3 +138,4 @@
     linear-gradient(var(--yellow), var(--yellow)) 100% 100% / 22px 3px no-repeat, linear-gradient(var(--yellow), var(--yellow)) 100% 100% / 3px 22px no-repeat; }
 [data-theme="pupitre"] .home-tag { background: linear-gradient(180deg, rgba(242, 232, 203, 0.97), rgba(232, 220, 186, 0.97)); color: #2c2a26; border-radius: 0; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   clip-path: polygon(3% 8%, 97% 0, 100% 50%, 97% 100%, 0 94%, 2% 50%); font-family: var(--font-display); letter-spacing: 0.08em; text-transform: uppercase; }
+[data-theme="pupitre"] .home-step[aria-current="step"] { background: linear-gradient(180deg, #fff6e3, #ffe8bf); box-shadow: inset 0 0 0 2px #bd7a10, 0 1px 0 rgba(255, 255, 255, 0.7); }
