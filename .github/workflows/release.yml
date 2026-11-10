@@ -83,7 +83,7 @@ jobs:
 
           Notes:
           - The exe is not code-signed, so Windows SmartScreen may warn. Extract with Windows Explorer ("Extract all"), not WinRAR/7-Zip, so Windows keeps the download mark.
-          - The app listens on 127.0.0.1 only. It never sends a command that changes a printer. It reads from a printer only when you type its address and tick the approval box on the Connect screen (read-only requests, nothing stored but derived facts).
+          - The app listens on 127.0.0.1 only. It never sends a command that changes a printer. It reads from a printer only when you type its address and tick the approval box on the Diagnose screen (read-only requests, nothing stored but derived facts).
           - Double-click u1-doctor.exe: the app opens in its own window and starts empty (demo mode is a switch in the header). If the Microsoft WebView2 component is missing, the app offers to install it with Microsoft's own installer shipped in the zip.
           - A VirusTotal scan of this exact zip is added to these notes once it has been run.
           "@ | Set-Content release-notes.md -Encoding utf8
