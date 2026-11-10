@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
 import type { Color, Material, Mesh, Vector3 } from "three";
 import { MODEL_SCALE, partInfo } from "./u1model";
+import { LOOKS, NOTICE_FILL } from "./looks";
+import type { ThemeId } from "../themes/registry";
 
 /**
  * Cinematic landing scene (three.js). One fixed canvas, driven by the scroll position through
@@ -21,6 +23,8 @@ interface Props {
   rootRef: React.RefObject<HTMLElement | null>;
   onReady: () => void;
   onFail: () => void;
+  /** UI V2 theme: light and drawing style of the machine (see looks.ts) */
+  look?: ThemeId;
 }
 
 const clamp = (x: number, a = 0, b = 1) => Math.min(b, Math.max(a, x));
@@ -36,7 +40,7 @@ function curve(t: number, keys: [number, number][]): number {
   return keys[keys.length - 1]![1];
 }
 
-export function LandingScene({ src, rootRef, onReady, onFail, ctl, onPick }: Props) {
+export function LandingScene({ src, rootRef, onReady, onFail, ctl, onPick, look = "obsidienne" }: Props) {
   const host = useRef<HTMLDivElement>(null);
   const cb = useRef({ onReady, onFail, onPick });
   cb.current = { onReady, onFail, onPick };
@@ -59,8 +63,13 @@ export function LandingScene({ src, rootRef, onReady, onFail, ctl, onPick }: Pro
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
         let pixelRatio = Math.min(window.devicePixelRatio || 1, 1.75);
         renderer.setPixelRatio(pixelRatio);
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.0;
+        const LK = LOOKS[look];
+        const css = getComputedStyle(document.documentElement);
+        const ink = css.getPropertyValue("--ink").trim() || "#0e0e0e";
+        const amberHex = css.getPropertyValue("--yellow").trim() || "#ffb547";
+        // Notice keeps its palette exactly: no tone mapping, flat light (ambient only), black edges
+        renderer.toneMapping = LK.flat ? THREE.NoToneMapping : THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = LK.exposure;
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         renderer.domElement.style.cssText = "width:100%;height:100%;display:block";
@@ -69,20 +78,21 @@ export function LandingScene({ src, rootRef, onReady, onFail, ctl, onPick }: Pro
         const scene = new THREE.Scene();
         const pmrem = new THREE.PMREMGenerator(renderer);
         scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-        scene.environmentIntensity = 1.0;
+        scene.environmentIntensity = LK.env;
         const camera = new THREE.PerspectiveCamera(26, 1, 1, 900);
+        if (LK.flat) scene.add(new THREE.AmbientLight(0xffffff, Math.PI)); // Lambert divides by pi: this renders the palette as is
 
-        const key = new THREE.DirectionalLight(0xffffff, 2.1);
+        const key = new THREE.DirectionalLight(LK.lights[0][0], LK.lights[0][1]);
         key.position.set(-50, 80, 70);
-        key.castShadow = true;
+        key.castShadow = !LK.flat;
         key.shadow.mapSize.set(1536, 1536);
         Object.assign(key.shadow.camera, { left: -60, right: 60, top: 60, bottom: -60 });
         key.shadow.bias = -0.0004;
         scene.add(key);
-        const rim = new THREE.DirectionalLight(0xffffff, 1.6);
+        const rim = new THREE.DirectionalLight(LK.lights[1][0], LK.lights[1][1]);
         rim.position.set(70, 30, -80);
         scene.add(rim);
-        const rim2 = new THREE.DirectionalLight(0xffe7a3, 1.1);
+        const rim2 = new THREE.DirectionalLight(LK.lights[2][0], LK.lights[2][1]);
         rim2.position.set(-80, 12, -50);
         scene.add(rim2);
 
@@ -110,12 +120,29 @@ export function LandingScene({ src, rootRef, onReady, onFail, ctl, onPick }: Pro
         const parts: Part[] = [];
         const meshes: Mesh[] = [];
         model.traverse((o) => { if ((o as Mesh).isMesh) meshes.push(o as Mesh); });
+        const extras: { dispose: () => void }[] = [];
+        const edgeMat = LK.flat ? new THREE.LineBasicMaterial({ color: 0x141414 }) : null;
+        if (edgeMat) extras.push(edgeMat);
         meshes.forEach((mesh) => {
           const info = partInfo(mesh);
-          const m = (mesh.material as Material).clone(); // own material per part so a group can be highlighted; the model's textures are kept
+          const src0 = mesh.material as Material;
+          let m: Material;
+          if (LK.flat) {
+            // Lambert (not Basic) so the scan band and the head highlights can still light parts through emissive
+            m = src0.name === "Touchscreen" ? src0.clone() : new THREE.MeshLambertMaterial({ color: NOTICE_FILL[src0.name] ?? "#ffffff" });
+            if (/glass/i.test(mesh.name) && !/Front_Glass/i.test(mesh.name)) mesh.visible = false;
+            if (/Chamber_Light/.test(mesh.name)) mesh.visible = false;
+            if (mesh.visible && !/^Filament_/.test(src0.name)) {
+              const eg = new THREE.EdgesGeometry(mesh.geometry, 32);
+              extras.push(eg);
+              const ls = new THREE.LineSegments(eg, edgeMat!);
+              ls.raycast = () => {};
+              mesh.add(ls);
+            }
+          } else m = src0.clone(); // own material per part so a group can be highlighted; the model's textures are kept
           mats.push(m);
           mesh.material = m;
-          mesh.castShadow = !info.glass;
+          mesh.castShadow = !info.glass && !LK.flat;
           mesh.receiveShadow = true;
           const em = (m as import("three").MeshStandardMaterial).emissive;
           const c = new THREE.Box3().setFromObject(mesh).getCenter(new THREE.Vector3());
@@ -127,25 +154,26 @@ export function LandingScene({ src, rootRef, onReady, onFail, ctl, onPick }: Pro
           parts.push({ obj: mesh, base: mesh.position.clone(), dir: d, name: info.name, w: Math.min(1, L / 16), c: c.clone(), hot: info.hot, group: info.group, glass: info.glass, em0: em ? em.clone() : null });
         });
 
-        // turntable rings, floor shadow, scan plane
+        // turntable rings, floor shadow, scan plane (colours follow the theme)
+        const ringHex = LK.ring ?? ink;
         const rings = new THREE.Group();
         [46, 52, 64].forEach((r, i) => {
           const pts = Array.from({ length: 181 }, (_, k) => new THREE.Vector3(Math.cos((k / 180) * Math.PI * 2) * r, 0, Math.sin((k / 180) * Math.PI * 2) * r));
-          rings.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0x0e0e0e, transparent: true, opacity: [0.45, 0.22, 0.1][i] })));
+          rings.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: ringHex, transparent: true, opacity: [0.45, 0.22, 0.1][i] })));
         });
         rings.position.y = bottom + 1.6;
         scene.add(rings);
-        const floor = new THREE.Mesh(new THREE.PlaneGeometry(260, 260), new THREE.ShadowMaterial({ opacity: 0.22 }));
+        const floor = new THREE.Mesh(new THREE.PlaneGeometry(260, 260), new THREE.ShadowMaterial({ opacity: LK.shadow }));
         floor.rotation.x = -Math.PI / 2;
         floor.position.y = bottom + 1.5;
         floor.receiveShadow = true;
         scene.add(floor);
 
         const scan = new THREE.Group();
-        const sheet = new THREE.Mesh(new THREE.PlaneGeometry(84, 84), new THREE.MeshBasicMaterial({ color: 0xffc400, transparent: true, opacity: 0.14, side: THREE.DoubleSide, depthWrite: false }));
+        const sheet = new THREE.Mesh(new THREE.PlaneGeometry(84, 84), new THREE.MeshBasicMaterial({ color: amberHex, transparent: true, opacity: 0.14, side: THREE.DoubleSide, depthWrite: false }));
         sheet.rotation.x = -Math.PI / 2;
-        const edge = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints([[-42, -42], [42, -42], [42, 42], [-42, 42]].map(([x, z]) => new THREE.Vector3(x, 0, z))), new THREE.LineBasicMaterial({ color: 0x0e0e0e }));
-        const hair = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-42, 0, 0), new THREE.Vector3(42, 0, 0), new THREE.Vector3(0, 0, -42), new THREE.Vector3(0, 0, 42)]), new THREE.LineBasicMaterial({ color: 0x0e0e0e, transparent: true, opacity: 0.35 }));
+        const edge = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints([[-42, -42], [42, -42], [42, 42], [-42, 42]].map(([x, z]) => new THREE.Vector3(x, 0, z))), new THREE.LineBasicMaterial({ color: ringHex }));
+        const hair = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-42, 0, 0), new THREE.Vector3(42, 0, 0), new THREE.Vector3(0, 0, -42), new THREE.Vector3(0, 0, 42)]), new THREE.LineBasicMaterial({ color: ringHex, transparent: true, opacity: 0.35 }));
         scan.add(sheet, edge, hair);
         scene.add(scan);
 
@@ -253,8 +281,7 @@ export function LandingScene({ src, rootRef, onReady, onFail, ctl, onPick }: Pro
             const band = scanning ? Math.exp(-((p.c.y - sy) ** 2) / 32) : 0;
             em.setRGB(p.em0.r + 0.55 * a + 0.6 * band, p.em0.g + 0.3 * a + 0.46 * band, p.em0.b + 0.02 * band);
           }
-          const gapTint = c.incident === "gap" ? 0xe0a800 : 0x0e0e0e;
-          ringMats.forEach((m) => m.color.setHex(gapTint));
+          ringMats.forEach((m) => m.color.set(c.incident === "gap" ? amberHex : ringHex));
 
           // camera path
           if (!dragging) { const k = Math.max(0, 1 - dt * 1.1); userAz *= k; userEl *= k; }
@@ -327,6 +354,7 @@ export function LandingScene({ src, rootRef, onReady, onFail, ctl, onPick }: Pro
           cv.removeEventListener("pointerdown", onDown); cv.removeEventListener("pointermove", onMove); cv.removeEventListener("pointerup", onUp); cv.removeEventListener("pointercancel", onUp); cv.removeEventListener("pointerleave", onLeave);
           parts.forEach((p) => p.obj.geometry.dispose());
           mats.forEach((m) => m.dispose());
+          extras.forEach((x) => x.dispose());
           gltf.scene.traverse((o) => { const mm = (o as Mesh).material as import("three").MeshStandardMaterial | undefined; if (mm?.isMeshStandardMaterial) for (const t of [mm.map, mm.normalMap, mm.roughnessMap, mm.metalnessMap, mm.emissiveMap, mm.aoMap]) t?.dispose(); });
           scene.environment?.dispose();
           pmrem.dispose();
@@ -339,7 +367,7 @@ export function LandingScene({ src, rootRef, onReady, onFail, ctl, onPick }: Pro
       }
     })();
     return () => { cancelled = true; teardown?.(); };
-  }, [src, rootRef]);
+  }, [src, rootRef, look]);
 
   return <div ref={host} className="absolute inset-0" aria-hidden="true" />;
 }

@@ -101,11 +101,24 @@ main:focus-visible { outline: none; box-shadow: none; }
   .rowin, .node-in, .chart-in, .seal-pop, .title-mask > * { animation: none; }
 }
 
-/* opaque text panel for the landing (readable over the 3D scene) */
-.tpanel { background: var(--bg-1); border: 2px solid var(--line-strong); padding: 21px; box-shadow: 6px 6px 0 var(--yellow), 6px 6px 0 2px var(--line-strong); }
-.tour-bar { position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 35; display: flex; align-items: center; gap: 10px; background: #0e0e0e; color: #f4f4f0; padding: 6px 10px; border: 2px solid #0e0e0e; box-shadow: 4px 4px 0 var(--yellow); max-width: calc(100vw - 24px); }
-.tour-dot { width: 22px; height: 22px; border: 2px solid #f4f4f0; background: transparent; cursor: pointer; font: 700 10px var(--font-mono); color: #f4f4f0; display: grid; place-items: center; }
-.tour-dot[aria-current="true"] { background: var(--yellow); color: #0e0e0e; border-color: var(--yellow); }
+/* landing (scroll story over the 3D U1): shared defaults, each theme dresses it in themes/<id>/theme.css */
+.landing { --lead: var(--ink); }
+.lstage { background: var(--bg-1); }
+.lnum { color: var(--ink); }
+.tpanel { background: var(--surface-1); border: 2px solid var(--line-strong); padding: 21px; box-shadow: 6px 6px 0 var(--yellow), 6px 6px 0 2px var(--line-strong); }
+.tpanel:not(.sticky) { position: relative; }
+.lcard { border: 2px solid var(--line-strong); background: var(--surface-1); }
+.lcard[data-kind="hyp"] { border-style: dashed; }
+.lcard[data-kind="gap"] { border-style: dotted; }
+.lseal { border: 2px solid var(--line-strong); background: var(--surface-1); box-shadow: 5px 5px 0 var(--yellow); }
+.lseal-mark { background: var(--yellow); color: #1a1100; }
+.lclose { background: #0e0e0e; color: #f4f4f0; border-top: 8px solid var(--yellow); }
+.lfoot { color: #a1a197; }
+.tour-bar { position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 35; display: flex; align-items: center; gap: 10px; background: var(--surface-1); color: var(--ink); padding: 6px 10px; border: 2px solid var(--line-strong); box-shadow: 4px 4px 0 var(--yellow); max-width: calc(100vw - 24px); }
+.tour-bar .lhint { color: inherit; opacity: 0.75; }
+.tour-bar .btn { white-space: nowrap; }
+.tour-dot { width: 22px; height: 22px; border: 2px solid currentColor; background: transparent; cursor: pointer; font: 700 10px var(--font-mono); color: inherit; display: grid; place-items: center; }
+.tour-dot[aria-current="true"] { background: var(--yellow); color: #1a1100; border-color: var(--yellow); }
 
 /* side columns: the last panel stretches so every column ends on the same line */
 .col-fill { display: flex; flex-direction: column; gap: var(--gap); min-width: 0; }

@@ -94,3 +94,35 @@
 [data-theme="pupitre"] .hotspot { border: 0; border-radius: 0; background: linear-gradient(180deg, rgba(242, 232, 203, 0.97), rgba(232, 220, 186, 0.97)); color: #2c2a26; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
   clip-path: polygon(3% 8%, 97% 0, 100% 50%, 97% 100%, 0 94%, 2% 50%); font-family: var(--font-display); letter-spacing: 0.06em; }
 [data-theme="pupitre"] .num-hero { font-family: "Doto Variable", var(--font-mono); font-weight: 900; letter-spacing: 0.02em; }
+
+/* ---- landing: the U1 console on the bench ---- */
+[data-theme="pupitre"] .landing { --lead: #1d1c1a; }
+[data-theme="pupitre"] .lstage { background: radial-gradient(900px 640px at 70% 46%, rgba(255, 255, 255, 0.35), transparent 62%), var(--grain), var(--bg-0); }
+[data-theme="pupitre"] .landing > header.topbar { background: linear-gradient(180deg, #3b3935, #26241f); color: #f2efe8; box-shadow: inset 0 -1px 0 #000, 0 1px 0 rgba(255, 255, 255, 0.5);
+  --ink: #f2efe8; --ink-2: #d8d3c8; --ink-3: #b9b4aa; --surface-1: #2e2c28; --surface-2: #3b3935; --line: #4a4740; --control-line: #8f8a80; --accent: var(--yellow); --demo: #c9b5ff; --replay: #9cc4ff; }
+[data-theme="pupitre"] .landing > header.topbar .brand { color: #f2efe8; }
+[data-theme="pupitre"] .landing > header.topbar .kbd { background: #1e1d1b; color: #f2efe8; box-shadow: 0 0 0 1px #000; }
+[data-theme="pupitre"] .tpanel { border: 0; border-radius: 14px; padding: 26px; background: linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.12)), var(--grain), #e4e0d7;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75), inset 0 -1px 0 rgba(0, 0, 0, 0.10), 0 0 0 1px rgba(0, 0, 0, 0.14), 0 3px 0 rgba(0, 0, 0, 0.06), 0 14px 28px -16px rgba(0, 0, 0, 0.4); }
+[data-theme="pupitre"] .tpanel::after { content: ""; position: absolute; inset: 8px; pointer-events: none;
+  background: var(--screw) 0 0 / 9px 9px no-repeat, var(--screw) 100% 0 / 9px 9px no-repeat, var(--screw) 0 100% / 9px 9px no-repeat, var(--screw) 100% 100% / 9px 9px no-repeat; }
+[data-theme="pupitre"] .lhero { font-family: "Doto Variable", var(--font-mono); font-weight: 800; letter-spacing: 0; line-height: 1.08 !important; font-size: clamp(34px, 4.4vw, 62px) !important;
+  color: #2a1b03; padding: 16px 20px 12px; border-radius: 8px; background: linear-gradient(180deg, #ffbe5c, #ffaf3e);
+  box-shadow: inset 0 2px 8px rgba(90, 45, 0, 0.5), inset 0 0 0 1px rgba(70, 35, 0, 0.35), 0 0 0 5px #1e1d1b, 0 0 0 6px rgba(255, 255, 255, 0.45);
+  animation: pup-lcd 900ms steps(5, end) 150ms both; }
+[data-theme="pupitre"] .landing h2 { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.01em; text-transform: uppercase; }
+[data-theme="pupitre"] .landing dt { font-family: var(--font-display); letter-spacing: 0.15em; }
+[data-theme="pupitre"] .manual-label { background: linear-gradient(180deg, rgba(242, 232, 203, 0.97), rgba(232, 220, 186, 0.97)); color: #2c2a26; padding: 4px 14px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  clip-path: polygon(1.5% 6%, 98% 0, 100% 48%, 98.5% 100%, 0 95%, 1% 50%); font-family: var(--font-display); letter-spacing: 0.14em; }
+[data-theme="pupitre"] .lcard { border: 0; border-radius: 8px; background: #f2efe8; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 0 rgba(255, 255, 255, 0.7); }
+[data-theme="pupitre"] .lcard[data-kind="hyp"] { box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 0 0 1.5px rgba(143, 64, 0, 0.55); }
+[data-theme="pupitre"] .lcard[data-kind="gap"] { background: #e7e3db; }
+[data-theme="pupitre"] .lseal { border: 0; border-radius: 12px; background: linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1)), var(--grain), #e4e0d7; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75), 0 0 0 1px rgba(0, 0, 0, 0.16), 0 3px 0 rgba(0, 0, 0, 0.06); }
+[data-theme="pupitre"] .lseal-mark { border-radius: 9px; background: linear-gradient(180deg, #ffca74, #ffaa2c); color: #2a1b03; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 0 0 1px rgba(110, 60, 0, 0.45), 0 3px 0 #bd7a10; }
+[data-theme="pupitre"] .lclose { background: linear-gradient(180deg, #3b3935, #1e1d1b); color: #f2efe8; border-top: 4px solid var(--yellow); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12); }
+[data-theme="pupitre"] .lfoot { color: #b9b4aa; }
+[data-theme="pupitre"] .lnum { font-family: "Doto Variable", var(--font-mono); font-weight: 900; color: #1d1c1a; letter-spacing: 0; }
+[data-theme="pupitre"] .tour-bar { background: linear-gradient(180deg, #3b3935, #26241f); color: #f2efe8; border: 0; border-radius: 12px; padding: 8px 12px 10px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 0 0 1px #000, 0 8px 18px -8px rgba(0, 0, 0, 0.6); }
+[data-theme="pupitre"] .tour-dot { border: 0; border-radius: 6px; background: var(--key); color: #1d1c1a; box-shadow: inset 0 1px 0 #ffffff, 0 0 0 1px #000, 0 2px 0 #6f6a62; font-family: var(--font-display); }
+[data-theme="pupitre"] .tour-dot[aria-current="true"] { background: linear-gradient(180deg, #ffca74, #ffaa2c); color: #2a1b03; transform: translateY(1px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 0 0 1px #000, 0 1px 0 #8a5300; }
