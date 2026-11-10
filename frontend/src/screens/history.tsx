@@ -93,23 +93,7 @@ export function HistoryView() {
         <div aria-live="polite" className="mt-3">
           {busy && <p className="text-ink3" data-testid="hist-busy">{t.histLogsBusy}</p>}
           {note && <Chip tone="ok">{note}</Chip>}
-          {read && (
-            <div className="mt-2 rounded-lg border border-control p-3 text-sm" data-testid="logs-read">
-              <p className="micro mb-1">{t.histLogsRead} · {read.summary.recognized} / {read.summary.files}</p>
-              <ul className="grid gap-1">
-                {read.files.map((f, i) => (
-                  <li key={i} className="text-ink2">
-                    <strong>{(t.histLogKind as Record<string, string>)[f.kind] ?? f.kind}</strong>
-                    {f.lines > 0 && <> · {f.lines.toLocaleString(lang === "fr" ? "fr-CH" : "en-GB")} {t.histLogLines}</>}
-                    {f.from && f.to && <> · {f.from.slice(0, 10)} → {f.to.slice(0, 10)}</>}
-                    {typeof f.exceptions === "number" && f.exceptions > 0 && <> · {f.exceptions} {t.histLogExceptions}</>}
-                    {f.kind === "encrypted" && <> · {t.histLogEncrypted}</>}
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-2 text-xs text-ink3">{read.summary.dropped_observations > 0 ? `${t.histLogDropped} ` : ""}{t.histLogsPrivacy}</p>
-            </div>
-          )}
+          {read && <LogsRead read={read} />}
           {err && <StateBlock kind="error" title={t.histRefused} body={err} />}
         </div>
         {!list && !err && <p className="mt-4 text-ink3">{t.loading}</p>}
@@ -139,6 +123,57 @@ export function HistoryView() {
         <p className="mt-4 flex gap-2 text-xs text-ink3"><span className="text-warn" aria-hidden>▲</span>{t.histNote}</p>
       </Panel>
       {sel && <div className="mt-4 grid gap-4"><SessionFindings id={sel} /><ReconPanel source={`history:${sel}`} /></div>}
+    </>
+  );
+}
+
+/** What was read in imported log files: kinds, lines, dates, exceptions; nothing of the files themselves is kept. */
+export function LogsRead({ read }: { read: LogImportInfo }) {
+  const { t, lang } = usePrefs();
+  return (
+    <div className="mt-2 rounded-lg border border-control p-3 text-sm" data-testid="logs-read">
+      <p className="micro mb-1">{t.histLogsRead} · {read.summary.recognized} / {read.summary.files}</p>
+      <ul className="grid gap-1">
+        {read.files.map((f, i) => (
+          <li key={i} className="text-ink2">
+            <strong>{(t.histLogKind as Record<string, string>)[f.kind] ?? f.kind}</strong>
+            {f.lines > 0 && <> · {f.lines.toLocaleString(lang === "fr" ? "fr-CH" : "en-GB")} {t.histLogLines}</>}
+            {f.from && f.to && <> · {f.from.slice(0, 10)} → {f.to.slice(0, 10)}</>}
+            {typeof f.exceptions === "number" && f.exceptions > 0 && <> · {f.exceptions} {t.histLogExceptions}</>}
+            {f.kind === "encrypted" && <> · {t.histLogEncrypted}</>}
+          </li>
+        ))}
+      </ul>
+      <p className="mt-2 text-xs text-ink3">{read.summary.dropped_observations > 0 ? `${t.histLogDropped} ` : ""}{t.histLogsPrivacy}</p>
+    </div>
+  );
+}
+
+/** Log files only (Diagnose screen): read on this PC by the local service, saved as a history session. */
+export function LogsImport({ onOpen }: { onOpen: () => void }) {
+  const { t } = usePrefs();
+  const [busy, setBusy] = useState(false);
+  const [note, setNote] = useState<string | null>(null);
+  const [read, setRead] = useState<LogImportInfo | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const pick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0]; e.target.value = "";
+    if (!f) return;
+    setBusy(true); setErr(null); setNote(null); setRead(null);
+    try { const r = await historyApi.saveLogs(f); setNote(r.already_saved ? t.histAlready : t.histSaved); setRead(r.import ?? null); }
+    catch (x) { setErr(x instanceof HistoryRefused ? ((t.histRefusal as Record<string, string>)[x.code] ?? t.histRefusal.UNKNOWN) : errText(t, x, t.histUnavailable)); }
+    finally { setBusy(false); }
+  };
+  return (
+    <>
+      <label className="btn btn-primary cursor-pointer" data-testid="dg-import-logs">{t.histImportLogs}<input type="file" accept=".log,.txt,.csv,.gz,.tgz,.zip,.tar,text/plain" className="sr-only" onChange={(e) => void pick(e)} /></label>
+      <p className="mt-2 text-xs text-ink3">{t.histLogsHelp}</p>
+      <div aria-live="polite" className="mt-3">
+        {busy && <p className="text-ink3">{t.histLogsBusy}</p>}
+        {note && <p className="flex flex-wrap items-center gap-2"><Chip tone="ok">{note}</Chip><span className="text-sm text-ink2">{t.dg.logsSaved}</span><Button onClick={onOpen}>{t.dg.openHistory}</Button></p>}
+        {read && <LogsRead read={read} />}
+        {err && <StateBlock kind="error" title={t.histRefused} body={err} />}
+      </div>
     </>
   );
 }

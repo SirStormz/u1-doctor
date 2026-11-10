@@ -36,7 +36,7 @@ function Screens() {
   const screen = (() => {
     switch (route.name) {
       case "welcome": return <Welcome go={go} />;
-      case "connect": return <Connect />;
+      case "connect": return <Connect param={route.param} go={go} />;
       case "overview": return <Overview go={go} />;
       case "explorer": return <Explorer param={route.param} />;
       case "symptoms": return <Symptoms />;
