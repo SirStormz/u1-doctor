@@ -71,9 +71,8 @@ Rapport complet : `U1_DOCTOR_AUDIT_4_THEMES.md` ; plan d'intégration : `U1_DOCT
 - Visière : si la U1 de l'app reste le modèle 3D, l'hologramme et le scan se font sur le modèle (contours du GLB) plutôt qu'avec une image ; jamais d'hologramme généré par IA. Le rouge reste réservé aux alertes.
 - Curseur `.thumb` des sélecteurs : la règle `.seg>span` écrasait `position:absolute` ; corrigé partout par `.seg>.thumb` (audit du 2026-11-10). À ne pas reproduire dans le code.
 
-## Prochaines étapes
+## Intégration dans l'app (2026-11-10, branche `feat/ui-v2-themes`)
 
-1. Remplacer le type `Theme` (`light | graphite | night`) par `pupitre | notice | obsidienne | visiere`, avec migration de la préférence enregistrée (`u1d.theme`). Garder le système de thèmes ouvert à d'autres thèmes.
-2. Écrire un jeu de tokens par thème dans `frontend/src/design/tokens.css`, puis les composants propres à chaque thème (galvanomètre, ticket, loupe, illustrations, réticule, radar, hologramme).
-3. Choisir le thème par défaut et la bascule dans Réglages.
-4. Mettre à jour README, Pages, captures et release une fois le code livré.
+Fait : registre `frontend/src/themes/registry.ts` (Obsidienne par défaut, migration light → notice, graphite → pupitre, night → obsidienne), jetons et polices par thème, une peau par thème (`themes/<id>/theme.css`) sur tous les écrans, 3D selon le thème (`viz/looks.ts`), Réglages avec vraies captures et fondu, titre qui se décode (Visière), titres et chiffres LCD (Pupitre). Détail et écarts : `U1_DOCTOR_PLAN_IMPLEMENTATION_THEMES.md`.
+
+Reste, à décider avec le propriétaire : la structure d'écrans des planches (dock en bas à 5 entrées, Accueil en tuiles, Verdict guidé pas à pas, Diagnostiquer) et leurs pièces interactives (galvanomètre, ticket, clavier, bouton rotatif, capot, radar, appui long, loupe liquide, vols de caméra). C'est une refonte des écrans, pas des thèmes.
