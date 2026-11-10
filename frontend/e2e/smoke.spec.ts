@@ -59,7 +59,7 @@ for (const theme of Object.keys(THEME_FONTS)) {
     await page.addInitScript((t) => { localStorage.setItem("u1d.theme", t); localStorage.setItem("u1d.hints", '["marks","timeline","palette"]'); }, theme);
     await page.goto("/#/overview");
     await page.getByRole("button", { name: /^(Demo mode|Mode démo)$/ }).click();
-    for (const route of ["overview", "symptoms", "timeline", "findings", "evidence", "report", "settings", ""]) { // "" = the landing page
+    for (const route of ["overview", "connect", "symptoms", "timeline", "findings", "evidence", "report", "settings", ""]) { // "" = the landing page
       await page.goto(`/#/${route}`);
       await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
       await page.waitForTimeout(route ? 900 : 2200); // entrance motion settles before measuring contrast (the landing title rises word by word)

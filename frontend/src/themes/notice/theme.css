@@ -133,3 +133,22 @@
 [data-theme="notice"] .ex-event { border: 2px solid transparent; border-radius: 8px; }
 [data-theme="notice"] .ex-event[aria-current="true"] { border-color: var(--ink); background: #fff0d6; box-shadow: 3px 3px 0 var(--ink); }
 [data-theme="notice"] .ex-event > .mono { color: var(--ink-2); }
+
+/* ---- Diagnose: outlined cards with a box to tick, the chosen one filled in amber; the approval box in its own card ---- */
+[data-theme="notice"] .dg-card { border: 2px solid var(--ink); border-radius: 14px; background: #ffffff; box-shadow: 4px 4px 0 var(--ink); padding: 18px 46px 18px 18px; flex-direction: column; }
+[data-theme="notice"] .dg-card:hover { background: #ffffff; transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--ink); }
+[data-theme="notice"] .dg-card:has(.dg-radio:checked) { background: var(--yellow); box-shadow: 4px 4px 0 var(--ink); }
+[data-theme="notice"] .dg-card:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
+[data-theme="notice"] .dg-ic { border: 2px solid var(--ink); color: var(--ink); background: #ffffff; border-radius: 10px; }
+[data-theme="notice"] .dg-card:has(.dg-radio:checked) .dg-ic { color: var(--ink); border-color: var(--ink); }
+[data-theme="notice"] .dg-txt strong { font-family: var(--font-display); font-size: 18px; }
+[data-theme="notice"] .dg-b { color: var(--ink-2); }
+[data-theme="notice"] .dg-card:has(.dg-radio:checked) .dg-b { color: var(--ink); }
+[data-theme="notice"] .dg-tag { border: 2px solid var(--ink); color: var(--ink); background: #ffffff; font-weight: 700; }
+[data-theme="notice"] .dg-tick { display: block; position: absolute; top: 16px; right: 16px; width: 22px; height: 22px; border: 2px solid var(--ink); border-radius: 5px; background: #ffffff; }
+[data-theme="notice"] .dg-card:has(.dg-radio:checked) .dg-tick { background: var(--ink); }
+[data-theme="notice"] .dg-card:has(.dg-radio:checked) .dg-tick::after { content: ""; position: absolute; left: 6px; top: 2px; width: 6px; height: 11px; border: solid #ffffff; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); }
+[data-theme="notice"] .dg-consent { gap: 12px; padding: 14px 16px; border: 2px solid var(--ink); border-radius: 12px; background: #ffffff; }
+[data-theme="notice"] .dg-consent input[type="checkbox"] { -webkit-appearance: none; appearance: none; position: relative; flex: none; width: 22px; height: 22px; margin-top: 1px; border: 2px solid var(--ink); border-radius: 5px; background: #ffffff; cursor: pointer; }
+[data-theme="notice"] .dg-consent input[type="checkbox"]:checked { background: var(--yellow); }
+[data-theme="notice"] .dg-consent input[type="checkbox"]:checked::after { content: ""; position: absolute; left: 5px; top: 1px; width: 6px; height: 11px; border: solid var(--ink); border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); }

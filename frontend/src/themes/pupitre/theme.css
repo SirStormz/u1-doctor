@@ -182,3 +182,29 @@
 [data-theme="pupitre"] .ex-time { font-family: "Doto Variable", var(--font-mono); font-weight: 900; font-size: 18px; padding: 4px 10px; border-radius: 5px; color: #2a1b03; background: linear-gradient(180deg, #ffbe5c, #ffaf3e); box-shadow: inset 0 2px 5px rgba(90, 45, 0, 0.45), 0 0 0 3px #1e1d1b; }
 [data-theme="pupitre"] .ex-event[aria-current="true"] { border-color: transparent; background: #f2efe8; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2), inset 3px 0 0 #ffaa2c; }
 @media (prefers-reduced-motion: reduce) { [data-theme="pupitre"] .ex-callout { animation: none; } }
+
+/* ---- Diagnose: a knurled rotary knob turns to the chosen mode, the modes are keys with a lamp ---- */
+[data-theme="pupitre"] .dg-modes { grid-template-columns: 250px minmax(0, 1fr); align-items: center; padding: 22px 22px 30px; border-radius: var(--radius-l);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.30), rgba(255, 255, 255, 0.10)), var(--grain), #e4e0d7;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75), 0 0 0 1px rgba(0, 0, 0, 0.14), 0 10px 22px -14px rgba(0, 0, 0, 0.35); }
+@media (max-width: 760px) { [data-theme="pupitre"] .dg-modes { grid-template-columns: minmax(0, 1fr); } }
+[data-theme="pupitre"] .dg-knob { display: grid; place-items: center; position: relative; width: 210px; height: 210px; justify-self: center; cursor: pointer; }
+[data-theme="pupitre"] .dg-knob-ring { position: absolute; inset: 0; }
+[data-theme="pupitre"] .dg-knob-tick { position: absolute; left: 50%; top: 50%; width: 3px; height: 14px; border-radius: 2px; background: #47443e;
+  transform: translate(-50%, -50%) rotate(calc(-60deg + var(--t) * 40deg)) translateY(-96px); }
+[data-theme="pupitre"] .dg-knob-tick[data-on="true"] { width: 9px; height: 9px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #fff2c8, #ffb547 45%, #b86e00); box-shadow: 0 0 0 1.5px #1e1d1b; }
+[data-theme="pupitre"] .dg-knob-cap { position: relative; width: 160px; height: 160px; border-radius: 50%; background: repeating-conic-gradient(#8f8a80 0 3deg, #e4e0d7 3deg 6deg);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25), 0 10px 18px rgba(0, 0, 0, 0.4); transform: rotate(calc(-60deg + var(--k, 0) * 40deg)); transition: transform 420ms cubic-bezier(0.34, 1.45, 0.64, 1); }
+[data-theme="pupitre"] .dg-knob-cap::after { content: ""; position: absolute; inset: 9px; border-radius: 50%; background: radial-gradient(circle at 36% 30%, #55524a, #2b2a27 58%, #1e1d1b); box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.5); }
+[data-theme="pupitre"] .dg-knob-mark { position: absolute; z-index: 1; left: 50%; top: 19px; width: 5px; height: 46px; margin-left: -2.5px; border-radius: 3px; background: #f2efe8; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.6); }
+[data-theme="pupitre"] .dg-knob-hint { position: absolute; bottom: -24px; white-space: nowrap; font: 600 10.5px var(--font-display); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-2); }
+[data-theme="pupitre"] .dg-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 560px) { [data-theme="pupitre"] .dg-cards { grid-template-columns: minmax(0, 1fr); } }
+[data-theme="pupitre"] .dg-card { border: 0; border-radius: var(--radius-m); background: var(--key); box-shadow: var(--key-edge); transition: transform 50ms, box-shadow 50ms; }
+[data-theme="pupitre"] .dg-card:hover { background: linear-gradient(180deg, #ffffff, #e7e3db); }
+[data-theme="pupitre"] .dg-card:has(.dg-radio:checked) { transform: translateY(2px); background: linear-gradient(180deg, #ffca74, #ffaa2c); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 0 0 1px rgba(110, 60, 0, 0.45), 0 1px 0 #8a5300; }
+[data-theme="pupitre"] .dg-ic { border: 0; border-radius: 6px; background: #2e2c28; color: #d8d3c8; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6); }
+[data-theme="pupitre"] .dg-card:has(.dg-radio:checked) .dg-ic { color: #ffb547; }
+[data-theme="pupitre"] .dg-txt strong { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.06em; font-size: 15px; }
+[data-theme="pupitre"] .dg-card:has(.dg-radio:checked) .dg-b, [data-theme="pupitre"] .dg-card:has(.dg-radio:checked) .dg-txt strong { color: #2a1b03; }
+[data-theme="pupitre"] .dg-tag { border: 0; border-radius: 3px; background: #f4ecc9; color: #2a1b03; font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.08em; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18); }

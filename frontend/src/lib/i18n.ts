@@ -30,6 +30,18 @@ const en = {
     replayNote: "from the saved readings, without reconnecting", play: "Play", pause: "Pause", position: "Replay position", events: "Session events",
     share: "Share with support",
   },
+  dg: {
+    title: "How do you want to diagnose?", sub: "Read-only: no command is ever sent to the printer.", pick: "Diagnostic mode", locked: "Locked",
+    modes: {
+      capture: { t: "Connect my U1", b: "Read what the printer reports for a few seconds, on your own network.", tag: "printer on the network" },
+      bundle: { t: "Import a bundle", b: "Open a U1-DEB bundle: checked, then replayed with the local rules.", tag: "no connection" },
+      logs: { t: "Read log files", b: "Moonraker, Klipper, unisrv, system or Snapmaker Orca logs, read on this PC.", tag: "no connection" },
+      demo: { t: "See the demo", b: "A clearly labelled synthetic incident, to see every screen filled.", tag: "synthetic data" },
+    },
+    knob: "Turn the knob or pick a mode", hold: "Hold for 1.2 seconds to approve, or press Space on the keyboard.", holding: "Keep holding…",
+    happens: "What happens", logsSaved: "The reading is saved in the history.", openHistory: "Open the history",
+    demoBody: "Demo scenario: {s}. Synthetic data, never from a printer.", demoOn: "Demo mode is on", openHome: "Open the home",
+  },
   actions: {
     check_path_obstruction: "Check that nothing blocks or tangles the filament path.", clean: "Clean what the code names.", resume_from_screen: "Resume from the printer screen.",
     retry: "Try again.", unload_filament: "Unload the filament (remove what is left).", load_filament: "Load the filament again.", check_cable: "Check the cable and its connector.",
@@ -300,6 +312,18 @@ const fr: Dict = {
     thRule: "Règle", thFinding: "Constat", thStatus: "Statut", thBasis: "Fondé sur",
     replayNote: "à partir des relevés enregistrés, sans se reconnecter", play: "Lire", pause: "Pause", position: "Position du rejeu", events: "Événements de la session",
     share: "Partager avec le support",
+  },
+  dg: {
+    title: "Comment voulez-vous diagnostiquer ?", sub: "Lecture seule : aucune commande n'est jamais envoyée à l'imprimante.", pick: "Mode de diagnostic", locked: "Verrouillé",
+    modes: {
+      capture: { t: "Connecter ma U1", b: "Lire ce que l'imprimante indique pendant quelques secondes, sur votre réseau.", tag: "imprimante sur le réseau" },
+      bundle: { t: "Importer un paquet", b: "Ouvrir un paquet U1-DEB : vérifié, puis rejoué avec les règles locales.", tag: "sans connexion" },
+      logs: { t: "Lire des journaux", b: "Journaux Moonraker, Klipper, unisrv, système ou Snapmaker Orca, lus sur ce PC.", tag: "sans connexion" },
+      demo: { t: "Voir la démo", b: "Un incident synthétique clairement étiqueté, pour voir tous les écrans remplis.", tag: "données synthétiques" },
+    },
+    knob: "Tournez le bouton ou choisissez un mode", hold: "Maintenez 1,2 seconde pour autoriser, ou appuyez sur Espace au clavier.", holding: "Maintenez encore…",
+    happens: "Ce qui va se passer", logsSaved: "La lecture est enregistrée dans l'historique.", openHistory: "Ouvrir l'historique",
+    demoBody: "Scénario de démo : {s}. Données synthétiques, jamais issues d'une imprimante.", demoOn: "Le mode démo est activé", openHome: "Ouvrir l'accueil",
   },
   actions: {
     check_path_obstruction: "Vérifiez que rien ne bloque ni n'emmêle le chemin du filament.", clean: "Nettoyez ce que le code indique.", resume_from_screen: "Reprenez depuis l'écran de l'imprimante.",

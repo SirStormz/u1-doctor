@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import { Ban, Cpu, ExternalLink, FlaskConical, History, Info, MessageSquareText, Play, Plug, Search, ShieldCheck, Settings as SettingsIcon, TriangleAlert, Users } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Activity, ArrowRight, Ban, Cpu, ExternalLink, FileUp, FlaskConical, History, Info, MessageSquareText, Play, Plug, ScrollText, Search, ShieldCheck, Settings as SettingsIcon, TriangleAlert, Users, Wifi } from "lucide-react";
 import { api, firmwareIssues, goodToKnow, knownIssues, liveApi, LiveRefused, preflight, supportChecklist, PreflightRefused, type CommunityCause, type InterpretOut, type LiveOut, type FirmwareIssues, type GoodToKnow, type KnownIssues, type MessageMatch, type PfPlate, type PreflightOut } from "../api";
 import { Button, Chip, Kbd, Panel, ProvenanceChip, SeverityChip, Seal, StateBlock, TechDetails } from "../components/ui";
 import { PageTitle } from "../components/shell";
-import { useIncident } from "../lib/data";
+import { DEMO_SCENARIO, useIncident } from "../lib/data";
 import { usePrefs, type Density, type Mode } from "../lib/prefs";
 import { THEMES } from "../themes/registry";
 import { withThemeFade } from "../themes/transition";
@@ -13,6 +13,8 @@ import { pfLimit, pfView, type PfCheck } from "../lib/preflight-text";
 import { buildRequest, supNote, supText, type SupportOut } from "../lib/support-text";
 import type { RouteName } from "../lib/router";
 import { ALLOW, DENY } from "../lib/allowlist";
+import { ImportPanel } from "./deb";
+import { LogsImport } from "./history";
 import { EvidenceNotice } from "../components/evidence-notice";
 import { LiveNet } from "../components/live-net";
 import { CaptureAlert, useCaptureAlert } from "../components/capture-alert";
@@ -59,8 +61,66 @@ export function Welcome({ go }: { go: Go }) {
 }
 
 /* ---------------- Connect (read-only live capture, owner-approved) ---------------- */
-export function Connect() {
+type DgMode = "capture" | "bundle" | "logs" | "demo";
+const DG_MODES: readonly DgMode[] = ["capture", "bundle", "logs", "demo"];
+const DG_ICON: Record<DgMode, React.ReactNode> = { capture: <Wifi size={22} />, bundle: <FileUp size={22} />, logs: <ScrollText size={22} />, demo: <FlaskConical size={22} /> };
+
+/**
+ * Diagnose screen (UI V2): pick how the data comes in, then the matching panel. Each theme dresses the same choice with its own
+ * control (rotary knob, check cards, glass selector, locking cards); the mode lives in the address (#/connect/<mode>).
+ */
+export function Connect({ param, go }: { param?: string; go: Go }) {
   const { t, lang } = usePrefs();
+  const inc = useIncident();
+  const X = t.dg;
+  const mode: DgMode = (DG_MODES as readonly string[]).includes(param ?? "") ? (param as DgMode) : "capture";
+  const i = DG_MODES.indexOf(mode);
+  const pick = (m: DgMode) => { if (m !== mode) go("connect", m === "capture" ? undefined : m); };
+  return (
+    <>
+      <PageTitle title={X.title} sub={X.sub} icon={<Activity size={26} />} actions={<Chip tone="ok" icon={<ShieldCheck size={12} aria-hidden />}>{t.notInBuild}</Chip>} />
+      <fieldset className="dg-modes mb-d" style={{ "--k": i } as React.CSSProperties}>
+        <legend className="sr-only">{X.pick}</legend>
+        <div className="dg-knob" aria-hidden onClick={() => pick(DG_MODES[(i + 1) % DG_MODES.length]!)}>
+          <span className="dg-knob-ring">{DG_MODES.map((m, k) => <span key={m} className="dg-knob-tick" data-on={k === i ? "true" : undefined} style={{ "--t": k } as React.CSSProperties} />)}</span>
+          <span className="dg-knob-cap"><span className="dg-knob-mark" /></span>
+          <span className="dg-knob-hint">{X.knob}</span>
+        </div>
+        <div className="dg-cards">
+          {DG_MODES.map((m) => (
+            <label key={m} className="dg-card" data-mode={m} data-lock={X.locked}>
+              <input type="radio" name="dg-mode" value={m} checked={mode === m} onChange={() => pick(m)} className="dg-radio" />
+              <span className="dg-ic" aria-hidden>{DG_ICON[m]}</span>
+              <span className="dg-txt"><strong>{X.modes[m].t}</strong><span className="dg-b">{X.modes[m].b}</span><span className="dg-tag">{X.modes[m].tag}</span></span>
+              <span className="dg-tick" aria-hidden />
+            </label>
+          ))}
+        </div>
+      </fieldset>
+      {mode === "capture" && <CaptureMode />}
+      {mode === "bundle" && <ImportPanel />}
+      {mode === "logs" && (
+        <Panel title={X.modes.logs.t} icon={<ScrollText size={17} />} i={1} active demo={false}>
+          <p className="mb-3 text-ink2">{X.modes.logs.b}</p>
+          <LogsImport onOpen={() => go("timeline")} />
+        </Panel>
+      )}
+      {mode === "demo" && (
+        <Panel title={X.modes.demo.t} icon={<FlaskConical size={17} />} i={1} active>
+          <p className="text-ink2">{X.demoBody.replace("{s}", scenarioLabel(lang, DEMO_SCENARIO))}</p>
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            {inc.demo ? <Chip tone="demo" icon={<FlaskConical size={12} aria-hidden />}>{X.demoOn}</Chip> : <Button variant="primary" icon={<FlaskConical size={16} />} onClick={() => inc.setDemo(true)}>{t.emptyApp.demo}</Button>}
+            <Button icon={<ArrowRight size={16} />} disabled={!inc.demo} onClick={() => go("overview")}>{X.openHome}</Button>
+          </div>
+        </Panel>
+      )}
+    </>
+  );
+}
+
+/** Read-only capture: private address, the owner's approval box, then one capture. Unchanged by the mode choice. */
+function CaptureMode() {
+  const { t, lang, theme } = usePrefs();
   const [host, setHost] = useState("");
   const [consent, setConsent] = useState(false);
   const [secs, setSecs] = useState(15);
@@ -71,6 +131,20 @@ export function Connect() {
   const [gcodeMm] = useState<number[] | null>(() => loadGcodeNozzle());
   const alert = useCaptureAlert("live-result");
   const [maint, setMaint] = useState<Current | null>(null);
+  // Visor theme: the approval is given by holding the box 1.2 s (a pointer tap does not tick it); the keyboard and assistive
+  // technologies (click events with detail 0) tick it as usual, and unticking is always one tap.
+  const hold = theme === "visiere";
+  const [holding, setHolding] = useState(false);
+  const holdTimer = useRef<number | undefined>(undefined);
+  const held = useRef(false);
+  const startHold = () => { held.current = false; setHolding(true); holdTimer.current = window.setTimeout(() => { held.current = true; setHolding(false); setConsent(true); }, 1200); };
+  const stopHold = () => { window.clearTimeout(holdTimer.current); setHolding(false); };
+  useEffect(() => () => window.clearTimeout(holdTimer.current), []);
+  const holdClick = (e: React.MouseEvent) => {
+    if (!hold || e.detail === 0) return;
+    if (held.current) { e.preventDefault(); held.current = false; return; }
+    if (!consent) e.preventDefault();
+  };
 
   async function run() {
     setBusy(true); setErr(null); setOut(null); setMaint(null); alert.clear();
@@ -88,7 +162,7 @@ export function Connect() {
   const ready = consent && /^\d{1,3}(\.\d{1,3}){3}$/.test(host.trim()) && !busy;
   return (
     <>
-      <PageTitle title={t.nav.connect} sub={t.connectSub} icon={<Plug size={26} />} actions={<Chip tone="ok" icon={<ShieldCheck size={12} aria-hidden />}>{t.notInBuild}</Chip>} />
+      <p className="mb-3 text-ink2">{t.connectSub}</p>
       <CaptureAlert cause={alert.cause} kind="capture" onView={alert.view} onDismiss={alert.clear} />
       <div className="grid gap-d xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <Panel title={t.connSteps} icon={<Cpu size={17} />} i={0} active demo={false}>
@@ -102,7 +176,11 @@ export function Connect() {
           <label className="mt-3 grid gap-1 text-sm">{t.liveSeconds}
             <input type="number" min={3} max={60} value={secs} onChange={(e) => setSecs(Math.max(3, Math.min(60, Number(e.target.value) || 15)))} className="mono w-28 rounded-lg border border-control bg-surface2 px-3 py-2 text-ink" />
           </label>
-          <label className="mt-3 flex items-start gap-2 text-sm"><input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-1" /><span>{t.liveConsent}</span></label>
+          <label className="dg-consent mt-3 flex items-start gap-2 text-sm" data-hold={hold ? "true" : undefined} data-holding={holding ? "true" : undefined} data-on={consent ? "true" : undefined}
+            onPointerDown={hold && !consent ? startHold : undefined} onPointerUp={stopHold} onPointerLeave={stopHold} onPointerCancel={stopHold} onClick={holdClick}>
+            <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-1" aria-describedby={hold ? "dg-hold" : undefined} />
+            <span>{t.liveConsent}<span id="dg-hold" className="dg-hold-hint">{holding ? t.dg.holding : t.dg.hold}</span></span>
+          </label>
           <label className="mt-2 flex items-start gap-2 text-sm"><input type="checkbox" checked={save} onChange={(e) => setSave(e.target.checked)} className="mt-1" /><span>{t.liveSave}</span></label>
           {gcodeMm && <p className="mt-2 text-xs text-ink3">{t.net.gcode.replace("{mm}", gcodeMm.map((x) => (lang === "fr" ? String(x).replace(".", ",") : String(x))).join(", "))}</p>}
           <div className="mt-4"><Button variant="primary" disabled={!ready} onClick={() => void run()} icon={<Plug size={16} />}>{busy ? t.liveRunning : t.connectBtn}</Button></div>
