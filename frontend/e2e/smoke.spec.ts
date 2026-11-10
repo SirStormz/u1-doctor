@@ -78,6 +78,29 @@ for (const theme of Object.keys(THEME_FONTS)) {
   });
 }
 
+// UI V2: the Expert home (render with readings, curve, findings, replay) passes axe and never scrolls sideways, in every theme
+for (const theme of Object.keys(THEME_FONTS)) {
+  test(`theme ${theme}: the Expert home is accessible and does not scroll sideways`, async ({ page }) => {
+    test.setTimeout(60_000);
+    await page.addInitScript((t) => { localStorage.setItem("u1d.theme", t); localStorage.setItem("u1d.mode", "expert"); localStorage.setItem("u1d.hints", '["marks","timeline","palette"]'); }, theme);
+    await page.goto("/#/overview");
+    await page.getByRole("button", { name: /^(Demo mode|Mode démo)$/ }).click();
+    await expect(page.getByRole("table", { name: /^(Findings|Conclusions)$/ })).toBeVisible();
+    await page.waitForTimeout(1500);
+    for (const width of [1024, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      expect(overflow, `Expert home at ${width}px`).toBeLessThanOrEqual(0);
+    }
+    await page.addScriptTag({ path: AXE });
+    const bad = await page.evaluate(async () => {
+      const r = await (window as unknown as { axe: { run: (c: unknown, o: unknown) => Promise<{ violations: { id: string; impact: string; nodes: { target: string[] }[] }[] }> } }).axe.run(document, { resultTypes: ["violations"] });
+      return r.violations.filter((v) => v.impact === "serious" || v.impact === "critical").map((v) => `${v.id}: ${v.nodes.slice(0, 3).map((n) => n.target.join(" ")).join(" | ")}`);
+    });
+    expect(bad, `${theme} Expert home`).toEqual([]);
+  });
+}
+
 test("language switch changes the document language", async ({ page }) => {
   await page.goto("/#/settings");
   await page.getByRole("button", { name: "FR", exact: true }).click();
