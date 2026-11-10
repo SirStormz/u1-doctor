@@ -13,7 +13,6 @@
 .btn:active { transform: translate(1px, 1px); }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-primary { background: var(--yellow); color: #0e0e0e; border-color: #0e0e0e; box-shadow: 3px 3px 0 #0e0e0e; }
-[data-theme="obsidienne"] .btn-primary, [data-theme="visiere"] .btn-primary { border-color: #0e0e0e; box-shadow: 3px 3px 0 var(--ink-3); }
 .btn-primary:hover:not(:disabled) { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 #0e0e0e; }
 .btn-secondary { background: var(--surface-1); color: var(--ink); border-color: var(--line-strong); }
 .btn-secondary:hover:not(:disabled) { background: var(--yellow); color: #0e0e0e; }
@@ -23,8 +22,17 @@
 .kbd { font-family: var(--font-mono); font-size: 11px; padding: 1px 6px; border: 1px solid var(--control-line); border-bottom-width: 2px; border-radius: 2px; color: var(--ink-2); background: var(--surface-2); }
 
 /* top bar (always black) + numbered index strip */
-.topbar { --ink: #f4f4f0; --ink-2: #c9c9c0; --ink-3: #a1a197; --surface-1: #161614; --surface-2: #1e1e1b; --surface-3: #272724; --line: #2f2f2b; --line-strong: #f4f4f0; --control-line: #8d8d84; --accent: var(--yellow); --accent-ink: #0e0e0e; --demo: #b39dfa; --replay: #7db4ff; background: #0e0e0e; color: var(--ink); }
-.topbar select { background: #1e1e1b; color: #f4f4f0; }
+/* top bar and footer: each theme dresses them (themes/<id>/theme.css); these are the shared defaults */
+.topbar { background: var(--bg-1); color: var(--ink); }
+.brand { color: var(--ink); }
+.btn.tbtn { padding-block: 6px; background: var(--surface-1); color: var(--ink); border-color: var(--control-line); }
+.btn.tbtn:hover:not(:disabled) { background: var(--surface-2); }
+.btn.tbtn[aria-pressed="true"] { background: var(--yellow); color: #1a1100; border-color: var(--yellow); }
+.tsel { background: var(--surface-1); color: var(--ink); border: 1px solid var(--control-line); border-radius: var(--radius-m); }
+.langsw { border: 1px solid var(--control-line); border-radius: var(--radius-m); }
+.langsw button { background: var(--surface-1); color: var(--ink-2); }
+.langsw button[aria-pressed="true"] { background: var(--yellow); color: #1a1100; }
+.title-icon { background: var(--yellow); color: #1a1100; border-radius: var(--radius-m); }
 .wrap { width: 100%; max-width: 1520px; margin-inline: auto; }
 .indexbar .wrap { container-type: inline-size; }
 .indexbar { padding-inline: max(21px, 3vw); display: flex; overflow-x: auto; min-height: var(--s-5); border-bottom: 1px solid var(--line-strong); background: var(--bg-1); scrollbar-width: none; }
@@ -42,11 +50,16 @@
 .navitem[aria-current="page"] { background: var(--yellow); color: #0e0e0e; }
 .navitem[aria-current="page"] .nn { color: #0e0e0e; }
 .nav-ind { position: absolute; left: 0; right: 0; bottom: -1px; height: 4px; background: #0e0e0e; }
-[data-theme="obsidienne"] .nav-ind, [data-theme="visiere"] .nav-ind { background: #0e0e0e; }
 
 :root { --pad: 16px; --gap: 16px; }
 [data-density="compact"] { --pad: 10px; --gap: 10px; }
 .pad { padding: var(--pad); }
+/* theme switch: short cross-fade (View Transitions), none under reduced motion */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 250ms; }
+@media (prefers-reduced-motion: reduce) { ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; } }
+.mb-d { margin-bottom: var(--gap); }
+/* 3D hotspot tags on the four PTFE paths; themes restyle them */
+.hotspot { border: 1px solid var(--ink); background: var(--yellow); color: #1a1100; }
 .gap-d { gap: var(--gap); }
 
 .paper { background: var(--surface-1); border: 1px solid var(--line-strong); border-radius: 0; }
@@ -54,8 +67,7 @@
 
 /* panels: manual label + ruled header */
 .panel > header { position: relative; border-bottom: 1px solid var(--line-strong) !important; }
-.panel > header h2 { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; background: var(--yellow); color: #0e0e0e; padding: 2px 9px; }
-.panel > header h2 > span { color: #0e0e0e !important; }
+.panel > header h2 { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
 .panel > header::after { content: none; }
 .panel svg [filter] { filter: none; }
 

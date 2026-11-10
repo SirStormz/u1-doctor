@@ -166,7 +166,7 @@ export function Report() {
             </div>
             <p className="mt-3 text-xs text-ink3">{t.sealNote}</p>
           </Panel>
-          {previewOpen && privacyJson && <Panel title="privacy-report.json" i={0}><pre className="mono max-h-48 overflow-auto whitespace-pre-wrap break-all text-xs text-ink2">{privacyJson}</pre></Panel>}
+          {previewOpen && privacyJson && <Panel title="privacy-report.json" i={0}><pre tabIndex={0} aria-label="privacy-report.json" className="mono max-h-48 overflow-auto whitespace-pre-wrap break-all text-xs text-ink2">{privacyJson}</pre></Panel>}
         </div>
       </div>
       <div className="mt-4">

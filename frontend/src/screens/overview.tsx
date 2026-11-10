@@ -15,7 +15,7 @@ import { NoData } from "../components/nodata";
 import { FirstSteps } from "../components/onboarding";
 
 export function Overview({ go }: { go: (n: RouteName, p?: string) => void }) {
-  const { t, lang } = usePrefs();
+  const { t, lang, theme } = usePrefs();
   const inc = useIncident();
   if (inc.status === "loading") return <StateBlock kind="loading" title={t.loading} />;
   if (inc.status === "error") return <StateBlock kind="error" title={t.error} body={errText(t, inc.error)} action={<Button onClick={inc.reload}>{t.retry}</Button>} />;
@@ -41,7 +41,7 @@ export function Overview({ go }: { go: (n: RouteName, p?: string) => void }) {
       <div className="grid gap-d xl:grid-cols-[minmax(0,1.618fr)_minmax(380px,1fr)]">
         <Panel title={t.machine} icon={<Boxes size={17} />} active brackets i={0} bodyClass="p-0" actions={<Chip tone="demo">{t.illustration}</Chip>} className="blueprint grain">
           <div className="scan-host relative h-[520px]"><div className="scan-sweep" aria-hidden />
-          <U1Viewer className="h-full" src={MODEL_URL} fallbackSrc={hero} hotspotLabel={(n) => `${t.toolhead} ${n} · ${t.unmapped}`}
+          <U1Viewer className="h-full" look={theme} src={MODEL_URL} fallbackSrc={hero} hotspotLabel={(n) => `${t.toolhead} ${n} · ${t.unmapped}`}
             text={{ autoRotate: t.viewer.autoRotate, explode: t.viewer.explode, reset: t.viewer.reset, loading: t.viewer.loading, unavailable: t.viewer.unavailable, hint: t.viewer.hint, partNote: t.viewer.partNote, door: t.viewer.door, bed: t.viewer.bed, head: t.viewer.head, illustrative: t.viewer.illustrative }} /></div>
           <p className="border-t border-line px-4 py-2 text-xs text-ink3">{t.viewer.disclaimer}</p>
         </Panel>

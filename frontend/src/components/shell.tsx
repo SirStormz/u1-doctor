@@ -5,6 +5,8 @@ import { api, type InterpretOut } from "../api";
 import { useIncident } from "../lib/data";
 import { usePrefs, type StepId, type Theme } from "../lib/prefs";
 import { THEME_IDS } from "../themes/registry";
+import { withThemeFade } from "../themes/transition";
+import { useDecode } from "../themes/useDecode";
 import { Onboarding } from "./onboarding";
 import { parseHash, ROUTES, visibleRoutes, type RouteName } from "../lib/router";
 import { Chip, Hint, Kbd, Logo, SeverityChip } from "./ui";
@@ -147,29 +149,29 @@ export function Shell({ route, go, replay, children }: { route: RouteName; go: (
       <div className="stage grid h-full grid-rows-[auto_auto_auto_1fr_auto]">
         <header className="topbar topbar-h px-[max(21px,3vw)]">
           <div className="wrap flex flex-wrap items-center gap-3 py-1.5">
-          <a href="#/" className="flex items-center gap-3 no-underline" style={{ color: "#f4f4f0" }} aria-label={t.appName}><Logo /><span className="text-[17px] font-extrabold uppercase tracking-[0.04em]">{t.appName}</span></a>
+          <a href="#/" className="brand flex items-center gap-3 no-underline" aria-label={t.appName}><Logo /><span className="text-[17px] font-extrabold uppercase tracking-[0.04em]">{t.appName}</span></a>
           <span className="flex items-center gap-3 max-sm:hidden"><span className="mx-1 h-5 w-px bg-line" aria-hidden />
           {(replay || demo) && <Chip tone={replay ? "replay" : "demo"}>{replay ? t.modeReplay : t.modeDemo}</Chip>}
           <Chip tone="accent" icon={<Lock size={11} aria-hidden />}>{t.readOnly}</Chip></span>
           <div className="ml-auto flex items-center gap-2">
-            <button type="button" aria-pressed={demo} onClick={() => setDemo(!demo)} title={demo ? t.demoToggleOn : t.demoToggleOff} className="btn btn-secondary !py-1.5" style={{ background: demo ? "var(--yellow)" : "#1e1e1b", color: demo ? "#0e0e0e" : "#f4f4f0", borderColor: demo ? "var(--yellow)" : "#8d8d84" }}>
+            <button type="button" aria-pressed={demo} onClick={() => setDemo(!demo)} title={demo ? t.demoToggleOn : t.demoToggleOff} className="btn tbtn">
               <FlaskConical size={15} aria-hidden /> <span>{t.demoToggle}</span>
             </button>
-            <button type="button" aria-pressed={expert} onClick={() => setMode(expert ? "simple" : "expert")} title={expert ? t.modeToggleOn : t.modeToggleOff} className="btn btn-secondary !py-1.5" style={{ background: expert ? "var(--yellow)" : "#1e1e1b", color: expert ? "#0e0e0e" : "#f4f4f0", borderColor: expert ? "var(--yellow)" : "#8d8d84" }}>
+            <button type="button" aria-pressed={expert} onClick={() => setMode(expert ? "simple" : "expert")} title={expert ? t.modeToggleOn : t.modeToggleOff} className="btn tbtn">
               <Wrench size={15} aria-hidden /> <span>{t.modeToggle}</span>
             </button>
-            <button type="button" onClick={() => setPalette(true)} className="btn btn-secondary !py-1.5" style={{ background: "#1e1e1b", color: "#f4f4f0", borderColor: "#8d8d84" }} aria-label={`${t.palette} — ${t.palettePlaceholder.split("…")[0]}… Ctrl K`}>
+            <button type="button" onClick={() => setPalette(true)} className="btn tbtn" aria-label={`${t.palette} — ${t.palettePlaceholder.split("…")[0]}… Ctrl K`}>
               <Search size={15} aria-hidden /> <span className="hidden min-[1500px]:inline">{t.palettePlaceholder.split("…")[0]}…</span> <span className="max-sm:hidden"><Kbd>Ctrl K</Kbd></span>
             </button>
             <label className="flex items-center gap-1 text-xs">
               <span className="sr-only">{t.theme}</span>
-              <select value={theme} onChange={(e) => setTheme(e.target.value as Theme)} className="border border-control px-2 py-1.5" aria-label={t.theme}>
+              <select value={theme} onChange={(e) => { const v = e.target.value as Theme; withThemeFade(() => setTheme(v)); }} className="tsel px-2 py-1.5" aria-label={t.theme}>
                 {THEME_IDS.map((x) => <option key={x} value={x}>{t.themes[x]}</option>)}
               </select>
             </label>
-            <div role="group" aria-label={t.language} className="flex overflow-hidden border border-control">
+            <div role="group" aria-label={t.language} className="langsw flex overflow-hidden">
               {(["en", "fr"] as const).map((l) => (
-                <button key={l} type="button" aria-pressed={lang === l} onClick={() => setLang(l)} className="px-2.5 py-1.5 text-xs font-bold" style={{ background: lang === l ? "var(--yellow)" : "#1e1e1b", color: lang === l ? "#0e0e0e" : "#c9c9c0" }}>{l.toUpperCase()}</button>
+                <button key={l} type="button" aria-pressed={lang === l} onClick={() => setLang(l)} className="px-2.5 py-1.5 text-xs font-bold">{l.toUpperCase()}</button>
               ))}
             </div>
           </div>
@@ -184,7 +186,7 @@ export function Shell({ route, go, replay, children }: { route: RouteName; go: (
           {visibleRoutes(mode).map((r, k) => (
             <button key={r} type="button" className="navitem" aria-current={route === r ? "page" : undefined} onClick={() => go(r)} title={t.nav[r]} aria-label={`${String(k + 1).padStart(2, "0")} ${t.nav[r]}`}>
               {route === r && <motion.span layoutId="nav-ind" className="nav-ind" transition={{ duration: 0.324, ease: [0.618, 0, 0.382, 1] }} aria-hidden />}
-              <span className="nn" aria-hidden>{String(k + 1).padStart(2, "0")}</span><span className="nl" aria-hidden>{t.nav[r]}</span>
+              <span className="nn" aria-hidden>{String(k + 1).padStart(2, "0")}</span>{" "}<span className="nl" aria-hidden>{t.nav[r]}</span>
             </button>
           ))}
           </div>
@@ -209,14 +211,15 @@ export function Shell({ route, go, replay, children }: { route: RouteName; go: (
 }
 
 export function PageTitle({ title, sub, actions, icon }: { title: string; sub?: string; actions?: ReactNode; icon?: ReactNode }) {
-  const { mode } = usePrefs();
+  const { mode, theme } = usePrefs();
+  const shown = useDecode(title, theme === "visiere");
   const current = parseHash(location.hash).name;
   const list = visibleRoutes(mode).includes(current) ? visibleRoutes(mode) : ROUTES; // an expert screen opened from a link in Simple mode keeps its full-list position
   return (
     <div className="mb-[21px] flex flex-wrap items-end justify-between gap-3">
       <div>
         <p className="fig reveal" aria-hidden>FIG. {String(list.indexOf(current) + 1).padStart(2, "0")} / {list.length}</p>
-        <div className="title-mask"><h1 className="mt-1 flex items-center gap-3 text-[length:var(--t-5)] font-extrabold leading-[1.02] tracking-[-0.045em]">{icon && <span aria-hidden className="grid h-10 w-10 place-items-center bg-yellow text-[#0e0e0e]">{icon}</span>}{title}</h1></div>
+        <div className="title-mask"><h1 className="mt-1 flex items-center gap-3 text-[length:var(--t-5)] font-extrabold leading-[1.02] tracking-[-0.045em]" aria-label={shown !== title ? title : undefined}>{icon && <span aria-hidden className="title-icon grid h-10 w-10 shrink-0 place-items-center">{icon}</span>}<span aria-hidden={shown !== title || undefined}>{shown}</span></h1></div>
         {sub && <p className="reveal mt-1 max-w-3xl text-ink2" style={{ "--i": 2 } as React.CSSProperties}>{sub}</p>}
       </div>
       {actions && <div className="flex items-center gap-2">{actions}</div>}

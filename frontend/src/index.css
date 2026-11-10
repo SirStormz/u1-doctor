@@ -19,9 +19,15 @@
 @import "@fontsource-variable/oxanium";
 @import "@fontsource-variable/saira";
 @import "@fontsource-variable/jetbrains-mono";
+@import "@fontsource-variable/doto";
 @import "tailwindcss";
 @import "./design/tokens.css";
 @import "./design/components.css";
+/* UI V2 theme skins, each scoped to [data-theme="<id>"] (one theme applies at a time) */
+@import "./themes/pupitre/theme.css";
+@import "./themes/notice/theme.css";
+@import "./themes/obsidienne/theme.css";
+@import "./themes/visiere/theme.css";
 
 @theme inline {
   --font-sans: var(--font-ui);
