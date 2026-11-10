@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>V · Accueil, mode Expert</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+@@HEAD@@
+<style>
+.u1{position:absolute;left:636px;top:70px;width:724px;height:860px;overflow:hidden;-webkit-mask-image:radial-gradient(ellipse 64% 60% at 54% 52%,#000 62%,transparent 100%);mask-image:radial-gradient(ellipse 64% 60% at 54% 52%,#000 62%,transparent 100%)}
+.u1 img{position:absolute;inset:0;width:100%;height:100%;display:block}
+.holo2{position:absolute;inset:0;background-image:url('/_blob/0ebb1648c2bf975cdb7fd1abb760b0d9');background-size:100% 100%}
+.split{position:absolute;top:0;bottom:0;width:1.5px;margin-left:-.75px;background:var(--gold2);box-shadow:0 0 6px rgba(255,181,71,.8)}
+.over{position:absolute;z-index:5;margin:0;opacity:0;cursor:ew-resize;-webkit-appearance:none;appearance:none}
+.knob{position:absolute;z-index:4;top:800px;width:156px;height:38px;margin-left:-78px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 12px;white-space:nowrap;font:600 11.5px/1 'Oxanium',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--gold2);pointer-events:none}
+.over:focus-visible ~ .knob{outline:2px solid var(--gold);outline-offset:3px}
+.pin{position:absolute;z-index:6;width:10px;height:10px;margin:-5px 0 0 -5px;transform:rotate(45deg);background:var(--gold);box-shadow:0 0 0 3px rgba(8,7,10,.85),0 0 6px rgba(255,181,71,.9)}
+.lead{position:absolute;z-index:6;height:1.5px;background:var(--gold);box-shadow:0 0 4px rgba(255,181,71,.7);transform-origin:0 50%}
+.ar{position:absolute;z-index:7;display:flex;align-items:center;gap:12px;padding:12px 14px}
+.ar .k{font-size:12px;font-weight:600;font-stretch:82%;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.ar .v{font:600 22px/1.15 'Oxanium',sans-serif;margin-top:2px}
+.tg{display:inline-flex;align-items:center;white-space:nowrap;height:22px;padding:0 8px;margin-top:6px;border-radius:2px;background:rgba(255,214,154,.09);font:500 11.5px/1 'JetBrains Mono',monospace;color:var(--ink2)}
+.tbl{width:100%;border-collapse:collapse;font-size:15px}
+.tbl th{padding:0 14px 12px 0;text-align:left;font-size:12px;font-weight:600;font-stretch:82%;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3)}
+.tbl td{padding:14px 14px 14px 0;border-top:1px solid var(--line)}
+.radar .sw2{transform-box:view-box;transform-origin:200px 200px;transition:transform .12s linear}
+.blip{transition:opacity .3s}
+.rc{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:5px;pointer-events:none}
+.play{width:52px;min-height:48px;padding:0}
+.scrub{flex-grow:1;height:28px;margin:0;-webkit-appearance:none;appearance:none;background:transparent;cursor:pointer}
+.scrub::-webkit-slider-runnable-track{height:4px;background:linear-gradient(90deg,var(--gold) var(--p),rgba(246,241,234,.16) var(--p))}
+.scrub::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;margin-top:-9px;background:var(--gold2);clip-path:polygon(5px 0,100% 0,100% calc(100% - 5px),calc(100% - 5px) 100%,0 100%,0 5px)}
+.lg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px;padding-top:12px;border-top:1px solid var(--line);font-size:14px;color:var(--ink2)}
+.lg>div{display:flex;align-items:center;gap:8px;transition:opacity .3s}
+.lg .mono{font-size:13px;color:var(--ink)}
+.now{display:flex;align-items:center;gap:10px;min-height:28px;font-size:14.5px;color:var(--ink2)}
+</style>
+</helmet>
+<div class="app">
+@@DEFS@@
+@@NAV:expert@@
+
+<section style="position:relative;height:960px">
+<div class="u1">
+<img src="/_blob/bba1de9d130c2706bd3d310e199185ed" alt="Photo de la U1 dans l'obscurité, avec la vue hologramme à gauche du curseur">
+<div class="holo2" aria-hidden="true" style="clip-path:inset(0 {{clipR}} 0 0)"></div>
+<span class="split" aria-hidden="true" style="left:{{splitL}}"></span>
+</div>
+<input class="over" type="range" min="4" max="96" value="{{split}}" onChange="{{setSplit}}" aria-label="Vue hologramme : glissez pour comparer l'hologramme et la photo" style="left:636px;top:70px;width:724px;height:860px">
+<span class="knob gl br" aria-hidden="true" style="left:calc(636px + {{splitPx}})"><span>‹ Holo</span><span>Photo ›</span></span>
+
+@@RET:1094|407|110@@
+<span class="pin pwr" style="left:1094px;top:407px;animation-delay:.9s"></span>
+<span class="lead pwr" aria-hidden="true" style="left:1132px;top:380px;width:24px;transform:rotate(-30deg);animation-delay:1s"></span>
+<div class="ar gl br pwr" style="left:1150px;top:290px;width:240px;animation-delay:1.05s">
+<svg width="50" height="50" viewBox="0 0 50 50" aria-hidden="true"><g fill="none" stroke-width="3.5"><path d="M10.9 39.1A20 20 0 1 1 39.1 39.1" stroke="rgba(246,241,234,.14)"></path><path class="glow" d="M10.9 39.1A20 20 0 1 1 42 14.4" stroke="#FFB547"></path></g></svg>
+<div><div class="k">Buse tête 3</div><div class="v neon">214,7 °C</div><span class="tg tip" tabindex="0" data-tip="Déduit (INFERRED) : l'objet extruder2 correspond à la tête 3 d'après son suffixe, pas d'après une lecture directe.">extruder2 · déduit</span></div>
+</div>
+
+<span class="pin pwr" style="left:925px;top:504px;background:var(--red);box-shadow:0 0 0 3px rgba(8,7,10,.85),0 0 6px rgba(255,59,47,.9);animation-delay:1.15s"></span>
+<span class="lead pwr" aria-hidden="true" style="left:862px;top:494px;width:58px;transform:rotate(10deg);animation-delay:1.2s"></span>
+<div class="ar gl br pwr" style="left:646px;top:452px;width:216px;animation-delay:1.25s">
+<div><div class="k">État · écran</div><div class="v neon-r">En pause</div><span class="tg">print_stats · vérifié</span></div>
+</div>
+
+<span class="pin pwr" style="left:862px;top:674px;background:var(--ink);box-shadow:0 0 0 3px rgba(8,7,10,.85);animation-delay:1.35s"></span>
+<span class="lead pwr" aria-hidden="true" style="left:830px;top:684px;width:32px;transform:rotate(-12deg);animation-delay:1.4s"></span>
+<div class="ar gl br pwr" style="left:592px;top:654px;width:238px;animation-delay:1.45s">
+<svg width="50" height="50" viewBox="0 0 50 50" aria-hidden="true"><g fill="none" stroke-width="3.5"><path d="M10.9 39.1A20 20 0 1 1 39.1 39.1" stroke="rgba(246,241,234,.14)"></path><path d="M10.9 39.1A20 20 0 0 1 25 5" stroke="#F6F1EA"></path></g></svg>
+<div><div class="k">Plateau</div><div class="v">59,9 °C</div><span class="tg">heater_bed · vérifié</span></div>
+</div>
+
+<div class="rise" style="position:absolute;left:80px;top:176px;width:500px;animation-delay:.1s">
+<span class="chip">Session de démo · 13 janv. · 14:09:12 → 14:14:20 UTC</span>
+<h1 class="h" style="margin:20px 0 0;font-size:54px;line-height:1.04">Blocage d'extrusion<span class="neon" style="display:block">tête 3</span></h1>
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:20px">
+<span class="chip mono tip neon" tabindex="0" data-tip="Format du code : niveau · identifiant · index · code. Ici niveau 2 (avertissement), identifiant 525, index 2, code 4." style="height:36px;padding:0 14px;font-size:15px;background:rgba(255,181,71,.10);box-shadow:inset 0 0 0 1px rgba(255,181,71,.45)">0002-0525-0002-0004</span>
+</div>
+<p style="margin:16px 0 0;font-size:16px;color:var(--ink2)">4 constats : 2 constatés · 2 pas assez d'infos.<br>Preuves : 6 pour · 0 contre · 4 manquantes.</p>
+<div style="display:flex;gap:12px;margin-top:26px"><a href="#rejeu" class="btn btn-g">Rejouer la session</a><a href="V-Accueil.dc.html" class="btn btn-a">Exporter le rapport</a></div>
+<dl class="kv gl br" style="margin-top:30px;padding:20px 22px;font-size:14.5px">
+<dt><span class="dotted tip" tabindex="0" data-tip="La règle du moteur qui a produit ce constat.">Règle</span></dt><dd class="mono" style="font-size:13.5px;color:var(--gold2)">U1-S01-CODE-DECODE</dd>
+<dt>Source</dt><dd>Catalogue officiel (413 codes)</dd>
+<dt><span class="dotted tip" tabindex="0" data-tip="Comment U1 Doctor relie le code à la tête 3 : par l'index du code. C'est une déduction, pas une mesure.">Lien avec la tête</span></dt><dd>Déduit · INFERRED</dd>
+<dt>Lectures</dt><dd>5 GET + 1 abonnement · 0 écriture</dd>
+</dl>
+</div>
+<span class="cond" style="position:absolute;right:40px;bottom:26px">Heures de réception (RECEIPT_ONLY)</span>
+</section>
+
+<div class="wrap">
+<div id="rejeu" class="g2" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.618fr);gap:21px">
+<section class="pn br" style="padding:24px 26px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><h3 class="h" style="margin:0;font-size:22px">Radar de la session</h3><span class="cond tip" tabindex="0" data-tip="Un tour complet = 6 minutes, de 14:09 à 14:15. Un degré = une seconde.">1 tour = 6 min</span></div>
+<div style="position:relative;width:100%;max-width:340px;align-self:center">
+<svg class="radar" viewBox="20 20 360 360" width="100%" role="img" aria-label="Radar de la session : impression de 14:09:12 à 14:12:30, rien reçu jusqu'à 14:14, pause à 14:14:12, code de blocage à 14:14:20" style="display:block">
+<defs><pattern id="vh" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" stroke="rgba(255,214,154,.22)" stroke-width="1.5"></line></pattern></defs>
+<g fill="none" stroke="rgba(255,214,154,.13)"><circle cx="200" cy="200" r="150"></circle><circle cx="200" cy="200" r="110"></circle><circle cx="200" cy="200" r="70"></circle><path d="M200 50V350M50 200H350"></path></g>
+<path d="M200 50V58M200 342V350M50 200H58M342 200H350" stroke="rgba(255,214,154,.5)" stroke-width="2"></path>
+@@RTICKS@@
+<path d="M125 329.9A150 150 0 0 1 70.1 125L104.7 145A110 110 0 0 0 145 295.3Z" fill="url(#vh)" stroke="rgba(255,214,154,.3)"></path>
+<path d="M227 72.8A130 130 0 1 1 135 312.6" class="glow" fill="none" stroke="#FFB547" stroke-width="2.2"></path>
+<path d="M87.4 135A130 130 0 0 1 103.4 113" fill="none" stroke="#FFD99A" stroke-width="2.2"></path>
+<g class="sw2" style="transform:rotate({{ang}}deg)">
+<path d="M200 200L200 50A150 150 0 0 0 174 52.3Z" fill="rgba(255,181,71,.16)"></path>
+<path d="M200 200L174 52.3A150 150 0 0 0 148.7 59Z" fill="rgba(255,181,71,.08)"></path>
+<path d="M200 200L148.7 59A150 150 0 0 0 125 70.1Z" fill="rgba(255,181,71,.035)"></path>
+<path class="glow" d="M200 200V50" stroke="#FFD99A" stroke-width="1.5"></path>
+</g>
+<g class="blip" style="opacity:{{b0}}"><polygon points="227,64.8 235,72.8 227,80.8 219,72.8" fill="#F6F1EA" stroke="#100C0C" stroke-width="2.5"></polygon></g>
+<g class="blip" style="opacity:{{b1}}"><polygon points="112.3,113 120.3,121 112.3,129 104.3,121" fill="#F6F1EA" stroke="#100C0C" stroke-width="2.5"></polygon></g>
+<g class="blip glow-r" style="opacity:{{b2}}"><polygon points="108.7,81.2 118.7,91.2 108.7,101.2 98.7,91.2" fill="#FF3B2F" stroke="#100C0C" stroke-width="2.5"></polygon></g>
+<text x="118" y="228" font-family="Saira, sans-serif" font-size="12.5" fill="rgba(246,241,234,.62)" text-anchor="middle">rien reçu</text>
+<circle cx="200" cy="200" r="50" fill="#100C0C" stroke="rgba(255,214,154,.25)"></circle>
+</svg>
+<div class="rc" aria-hidden="true"><span class="h neon" style="font-size:19px;line-height:1">{{clock}}</span><span class="cond" style="font-size:10.5px">Rejeu</span></div>
+</div>
+<div style="display:flex;align-items:center;gap:14px">
+<button type="button" class="btn btn-a play" aria-label="{{playLabel}}" onClick="{{toggle}}"><sc-if value="{{playing}}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4h4v16H6zM14 4h4v16h-4z"></path></svg></sc-if><sc-if value="{{paused}}" hint-placeholder-val="{{ true }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"></path></svg></sc-if></button>
+<input class="scrub" type="range" min="12" max="320" value="{{sec}}" onChange="{{scrub}}" aria-label="Position dans la session" style="--p:{{pct}}">
+<span class="mono" style="font-size:14px;min-width:66px;text-align:right">{{clock}}</span>
+</div>
+<div class="now" aria-live="polite"><span class="{{nowCls}}"><i></i>{{nowState}}</span>{{nowText}}</div>
+<div class="lg">
+<div style="opacity:{{b0}}"><span class="dia" style="background:var(--ink)"></span><span class="mono">14:09:12</span>départ</div>
+<div style="opacity:{{bg}}"><span class="dia" style="box-shadow:inset 0 0 0 1.5px rgba(246,241,234,.6)"></span><span class="mono">14:12:30</span>rien reçu</div>
+<div style="opacity:{{b1}}"><span class="dia" style="background:var(--ink)"></span><span class="mono">14:14:12</span>pause</div>
+<div style="opacity:{{b2}};color:var(--redt)"><span class="dia" style="background:var(--red);box-shadow:0 0 5px rgba(255,59,47,.8)"></span><span class="mono">14:14:20</span>code de blocage</div>
+</div>
+</section>
+
+<div style="display:flex;flex-direction:column;gap:21px">
+<section class="pn br" style="padding:24px 26px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px"><h3 class="h" style="margin:0;font-size:22px">Température buse tête 3</h3><span class="mono" style="font-size:13px;color:var(--ink3)">214 à 221 °C</span></div>
+<div style="position:relative">
+<svg viewBox="0 0 1200 204" width="100%" role="img" aria-label="Courbe de température de 14:09 à 14:15, trou de données de 14:12:30 à 14:14:00, pause à 14:14:12, code à 14:14:20">
+<defs><linearGradient id="vfa" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFB547" stop-opacity=".2"></stop><stop offset="1" stop-color="#FFB547" stop-opacity="0"></stop></linearGradient>
+<pattern id="vfh" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="rgba(255,214,154,.14)" stroke-width="1.5"></line></pattern></defs>
+<rect x="706.3" y="10" width="295" height="150" fill="url(#vfh)"></rect>
+<polygon points="98.8,49.6 196.2,45.2 295,47.4 393.8,43 491.2,46.3 590,44.1 688.8,45.2 688.8,160 98.8,160" fill="url(#vfa)"></polygon>
+<polygon points="1001.3,67.2 1040.7,95.8 1040.7,160 1001.3,160" fill="url(#vfa)"></polygon>
+<polyline class="glow" points="98.8,49.6 196.2,45.2 295,47.4 393.8,43 491.2,46.3 590,44.1 688.8,45.2" fill="none" stroke="#FFD99A" stroke-width="2" stroke-linejoin="round"></polyline>
+<polyline class="glow" points="1001.3,67.2 1040.7,95.8" fill="none" stroke="#FFD99A" stroke-width="2"></polyline>
+<line x1="1040.7" y1="10" x2="1040.7" y2="160" stroke="rgba(246,241,234,.55)" stroke-dasharray="3 4"></line>
+<line class="glow-r" x1="1066.9" y1="10" x2="1066.9" y2="160" stroke="#FF3B2F" stroke-width="2"></line>
+<rect x="1074" y="10" width="124" height="34" fill="rgba(255,59,47,.16)"></rect>
+<text x="1136" y="33" text-anchor="middle" font-family="Oxanium, sans-serif" font-size="19" font-weight="600" fill="#FF7266">Code 14:14:20</text>
+<line x1="0" y1="160" x2="1200" y2="160" stroke="rgba(255,214,154,.14)"></line>
+<g style="transform:translateX({{cx}}px);transition:transform .12s linear"><line x1="0" y1="6" x2="0" y2="160" stroke="#FFB547" stroke-width="1.2" stroke-opacity=".8"></line><polygon points="0,0 6,6 0,12 -6,6" fill="#FFB547"></polygon></g>
+<g font-family="Saira, sans-serif" font-size="20" fill="rgba(246,241,234,.62)" text-anchor="middle"><text x="30" y="190">14:09</text><text x="214.7" y="190">14:10</text><text x="411.3" y="190">14:11</text><text x="608" y="190">14:12</text><text x="804.7" y="190">14:13</text><text x="1001.3" y="190">14:14</text></g>
+</svg>
+<span class="tip" tabindex="0" data-tip="Trou de données : rien reçu pendant 1 min 30. L'absence de données n'est pas une preuve qu'il ne s'est rien passé." style="position:absolute;left:58.9%;top:5%;width:24.6%;height:72%"></span>
+</div>
+<p style="margin:10px 0 0;font-size:14px;color:var(--ink3)">Le curseur or suit le rejeu du radar.</p>
+</section>
+<section class="pn br" style="padding:22px 28px;flex-grow:1">
+<table class="tbl">
+<thead><tr><th>Règle</th><th>Constat</th><th>Statut</th><th>Source</th></tr></thead>
+<tbody>
+<tr><td class="mono" style="color:var(--gold2)">S01</td><td>Code décodé : blocage d'extrusion</td><td><span class="st s-o"><i></i>Constaté</span></td><td style="color:var(--ink2)">Catalogue officiel</td></tr>
+<tr><td class="mono" style="color:var(--gold2)">S03</td><td>Impression → pause à 14:14:12</td><td><span class="st s-o"><i></i>Constaté</span></td><td style="color:var(--ink2)">print_stats</td></tr>
+<tr><td class="mono" style="color:var(--gold2)">S09</td><td>Correspondance extruder2 → tête 3</td><td><span class="st s-u"><i></i>Pas assez d'infos</span></td><td style="color:var(--ink2)">Nom de l'objet</td></tr>
+<tr><td class="mono" style="color:var(--gold2)">S10</td><td>Trou de données de 1 min 30</td><td><span class="st s-u"><i></i>Pas assez d'infos</span></td><td style="color:var(--ink2)">Réception</td></tr>
+</tbody>
+</table>
+</section>
+</div>
+</div>
+
+<section class="pn br" style="display:flex;flex-wrap:wrap;align-items:center;gap:16px 28px;margin-top:21px;padding:22px 28px">
+<h3 class="h" style="margin:0;font-size:20px">Partager avec le support</h3>
+<p style="margin:0;font-size:14.5px;color:var(--ink2);flex-grow:1">Rapport + paquet <span class="dotted tip" tabindex="0" data-tip="U1-DEB : archive de preuves vérifiable. Chaque fichier a son empreinte SHA-256 ; vos adresses IP sont masquées.">U1-DEB</span> avec empreintes. Vos adresses IP sont masquées.</p>
+<div style="display:flex;gap:10px"><a href="V-Accueil.dc.html" class="btn btn-g">Aperçu</a><a href="V-Accueil.dc.html" class="btn btn-a">Exporter</a></div>
+</section>
+</div>
+
+@@DOCK:Historique@@
+<div style="height:30px"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1850}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { split: 46, sec: 201, playing: false };
+}
+componentWillUnmount() { clearInterval(this.iv); }
+two(n) { return (n < 10 ? "0" : "") + n; }
+renderVals() {
+var self = this;
+var s = this.state;
+var sec = s.sec;
+var now;
+if (sec < 210) { now = { c: "st s-o", st: "Reçu", t: "L'impression avance, les données arrivent." }; }
+else if (sec < 300) { now = { c: "st s-u", st: "Pas assez d'infos", t: "Rien reçu à ce moment-là." }; }
+else if (sec < 312) { now = { c: "st s-o", st: "Reçu", t: "Les données reviennent." }; }
+else if (sec < 320) { now = { c: "st s-o", st: "Constaté", t: "L'imprimante se met en pause." }; }
+else { now = { c: "st s-r", st: "Constaté", t: "Code de blocage reçu." }; }
+return {
+split: s.split,
+clipR: (100 - s.split) + "%",
+splitL: s.split + "%",
+splitPx: (s.split * 7.24).toFixed(1) + "px",
+setSplit: function (e) { self.setState({ split: Number(e.target.value) }); },
+sec: sec,
+ang: sec,
+pct: ((sec - 12) / 308 * 100).toFixed(1) + "%",
+cx: (18 + sec * 3.2778).toFixed(1),
+clock: "14:" + self.two(9 + Math.floor(sec / 60)) + ":" + self.two(sec % 60),
+b0: sec >= 12 ? "1" : ".3", bg: sec >= 210 ? "1" : ".35", b1: sec >= 312 ? "1" : ".3", b2: sec >= 320 ? "1" : ".3",
+nowCls: now.c, nowState: now.st, nowText: now.t,
+playing: s.playing, paused: !s.playing,
+playLabel: s.playing ? "Pause du rejeu" : "Lancer le rejeu",
+scrub: function (e) { self.setState({ sec: Number(e.target.value) }); },
+toggle: function () {
+if (self.state.playing) { clearInterval(self.iv); self.setState({ playing: false }); return; }
+var start = self.state.sec >= 320 ? 12 : self.state.sec;
+self.setState({ playing: true, sec: start });
+self.iv = setInterval(function () {
+var n = Math.min(320, self.state.sec + 2);
+self.setState({ sec: n });
+if (n >= 320) { clearInterval(self.iv); self.setState({ playing: false }); }
+}, 50);
+}
+};
+}
+}
+</script>
+</body>
+</html>

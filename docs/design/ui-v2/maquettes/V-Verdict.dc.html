@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>V · Verdict, tête 3</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400..700&amp;family=Saira:wdth,wght@75..125,300..700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#08070A}
+.app{--bg:#08070A;--panel:#100C0C;--line:rgba(255,214,154,.13);--line2:rgba(255,214,154,.28);--ink:#F6F1EA;--ink2:rgba(246,241,234,.74);--ink3:rgba(246,241,234,.56);--gold:#FFB547;--gold2:#FFD99A;--red:#FF3B2F;--redt:#FF7266;position:relative;min-height:1100px;background:var(--bg);color:var(--ink);font:400 16px/1.5 'Saira',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+.app *{box-sizing:border-box}
+.app a{color:inherit}
+.h{font-family:'Oxanium','Saira',sans-serif;font-weight:600;letter-spacing:-.01em}
+.mono{font-family:'JetBrains Mono',monospace;letter-spacing:0}
+.cond{font-stretch:80%;font-weight:600;font-size:12.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3)}
+.wrap{max-width:1360px;margin:0 auto;padding:0 40px}
+/* néon serré : jamais de halo large */
+.neon{color:var(--gold2);text-shadow:0 0 1px rgba(255,181,71,.85),0 0 7px rgba(255,181,71,.38)}
+.neon-r{color:var(--redt);text-shadow:0 0 1px rgba(255,59,47,.9),0 0 7px rgba(255,59,47,.4)}
+/* verre liquide sombre (approximation web) */
+.gl{position:relative;border-radius:3px;background:linear-gradient(180deg,rgba(255,196,140,.09),rgba(255,196,140,.025)),rgba(16,11,10,.46);-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%);box-shadow:inset 0 1px 0 rgba(255,226,182,.30),inset 0 0 0 1px rgba(255,214,154,.12),0 30px 60px -30px rgba(0,0,0,.9)}
+.gl::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,181,71,.032) 0 1px,transparent 1px 3px)}
+.lq{-webkit-backdrop-filter:blur(16px) saturate(150%);backdrop-filter:url(#lq) blur(16px) saturate(150%)}
+.pn{position:relative;border-radius:3px;background:var(--panel);box-shadow:inset 0 0 0 1px var(--line)}
+/* équerres d'angle : la signature des panneaux */
+.br::after{content:"";position:absolute;inset:-1px;pointer-events:none;background:linear-gradient(var(--gold),var(--gold)) 0 0/15px 1.5px no-repeat,linear-gradient(var(--gold),var(--gold)) 0 0/1.5px 15px no-repeat,linear-gradient(var(--gold),var(--gold)) 100% 0/15px 1.5px no-repeat,linear-gradient(var(--gold),var(--gold)) 100% 0/1.5px 15px no-repeat,linear-gradient(var(--gold),var(--gold)) 0 100%/15px 1.5px no-repeat,linear-gradient(var(--gold),var(--gold)) 0 100%/1.5px 15px no-repeat,linear-gradient(var(--gold),var(--gold)) 100% 100%/15px 1.5px no-repeat,linear-gradient(var(--gold),var(--gold)) 100% 100%/1.5px 15px no-repeat;filter:drop-shadow(0 0 2px rgba(255,181,71,.55));opacity:.9}
+/* barre de navigation */
+.nav{position:absolute;z-index:20;left:50%;top:22px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;padding:7px 8px 7px 16px;white-space:nowrap}
+.brand{display:flex;align-items:center;gap:9px;text-decoration:none;font:600 16px/1 'Oxanium',sans-serif;letter-spacing:.02em}
+.seg{position:relative;display:inline-grid;grid-auto-flow:column;grid-auto-columns:1fr;padding:3px;border-radius:2px;background:rgba(0,0,0,.45);box-shadow:inset 0 0 0 1px var(--line)}
+.seg>a,.seg>span,.seg>button{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;height:32px;padding:0 15px;border:0;background:none;font:600 12.5px/1 'Oxanium',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);text-decoration:none;cursor:pointer}
+.seg .on{color:var(--gold2)}
+.seg>.thumb{position:absolute;z-index:0;top:3px;bottom:3px;height:auto;padding:0;border-radius:1px;background:linear-gradient(180deg,rgba(255,181,71,.30),rgba(255,181,71,.14));box-shadow:inset 0 1px 0 rgba(255,226,182,.5),inset 0 0 0 1px rgba(255,181,71,.55);transition:left .45s cubic-bezier(.34,1.45,.64,1),width .45s cubic-bezier(.34,1.45,.64,1)}
+.ibtn{width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;border:0;background:rgba(255,214,154,.08);color:var(--ink2);cursor:pointer;clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px)}
+.ibtn:hover{background:rgba(255,214,154,.16);color:var(--gold2)}
+.chip{display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 10px;border-radius:2px;font-size:13px;font-weight:500;color:var(--ink2);background:rgba(255,214,154,.07);box-shadow:inset 0 0 0 1px var(--line)}
+.chip.dash{background:none;box-shadow:none;outline:1px dashed rgba(255,214,154,.45);outline-offset:-1px}
+.dia{display:inline-block;width:7px;height:7px;transform:rotate(45deg);flex-shrink:0}
+/* boutons à coins coupés */
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:48px;padding:0 24px;border:0;clip-path:polygon(11px 0,100% 0,100% calc(100% - 11px),calc(100% - 11px) 100%,0 100%,0 11px);font:600 14.5px/1 'Oxanium',sans-serif;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;white-space:nowrap;cursor:pointer;transition:transform .2s cubic-bezier(.34,1.45,.64,1),filter .2s,background .2s}
+.btn:active{transform:translateY(1px) scale(.98)}
+.btn-a{background:linear-gradient(180deg,#FFC874,#FFAB30);color:#1E1100}
+.btn-a:hover{filter:brightness(1.07)}
+.btn-g{background:rgba(255,214,154,.12);color:var(--gold2)}
+.btn-g:hover{background:rgba(255,214,154,.2)}
+.btn[disabled]{opacity:.38;cursor:not-allowed;transform:none;filter:none}
+/* états : losange + mot courant */
+.st{display:inline-flex;align-items:center;gap:8px;height:28px;padding:0 11px;border-radius:2px;font-size:13.5px;font-weight:600;white-space:nowrap}
+.st i{width:8px;height:8px;transform:rotate(45deg);flex-shrink:0}
+.s-w{background:rgba(255,181,71,.14);color:var(--gold2)}.s-w i{background:var(--gold);box-shadow:0 0 5px rgba(255,181,71,.75)}
+.s-o{background:rgba(246,241,234,.08);color:var(--ink)}.s-o i{background:var(--ink)}
+.s-u{background:rgba(246,241,234,.04);color:var(--ink2)}.s-u i{box-shadow:inset 0 0 0 1.5px rgba(246,241,234,.62)}
+.s-r{background:rgba(255,59,47,.14);color:var(--redt)}.s-r i{background:var(--red);box-shadow:0 0 5px rgba(255,59,47,.8)}
+/* dock */
+.dock{position:sticky;bottom:22px;z-index:20;display:flex;gap:2px;width:max-content;max-width:calc(100% - 32px);margin:42px auto 0;padding:6px}
+.dock a{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:106px;padding:11px 12px 9px;border-radius:2px;color:var(--ink2);text-decoration:none;font-size:12px;font-weight:600;font-stretch:85%;letter-spacing:.07em;text-transform:uppercase;transition:color .2s,background .2s}
+.dock a:hover{color:var(--ink);background:rgba(255,214,154,.06)}
+.dock a.on{color:var(--gold2);background:linear-gradient(180deg,rgba(255,181,71,.17),rgba(255,181,71,.04))}
+.dock a.on::before{content:"";position:absolute;left:26%;right:26%;top:0;height:2px;background:var(--gold);box-shadow:0 0 6px rgba(255,181,71,.8)}
+.dock a.on svg{filter:drop-shadow(0 0 3px rgba(255,181,71,.7))}
+/* infobulles */
+.tip{position:relative;cursor:help}
+.tip::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%);width:max-content;max-width:290px;padding:10px 13px;border-radius:2px;background:rgba(18,13,12,.96);box-shadow:inset 0 0 0 1px rgba(255,181,71,.38),0 14px 30px -10px rgba(0,0,0,.9);color:var(--ink);font:500 13.5px/1.5 'Saira',sans-serif;font-stretch:100%;letter-spacing:0;text-transform:none;text-align:left;white-space:normal;opacity:0;pointer-events:none;transition:opacity .15s;z-index:40}
+.tip.dn::after{bottom:auto;top:calc(100% + 10px)}
+.tip:hover::after,.tip:focus-visible::after,.tip.show::after{opacity:1}
+.dotted{border-bottom:1px dotted var(--ink3)}
+.kv{display:grid;grid-template-columns:136px minmax(0,1fr);gap:10px 14px;margin:0;font-size:15px}
+.kv dt{color:var(--ink3)}.kv dd{margin:0}
+/* verrou (interrupteur) */
+.sw{position:relative;width:54px;height:28px;flex-shrink:0;background:rgba(246,241,234,.10);box-shadow:inset 0 0 0 1px var(--line2);clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);transition:background .3s}
+.sw::before{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;background:#D8D0C5;clip-path:polygon(5px 0,100% 0,100% calc(100% - 5px),calc(100% - 5px) 100%,0 100%,0 5px);transition:left .45s cubic-bezier(.34,1.45,.64,1),background .3s}
+.on .sw,.sw.on{background:var(--gold)}
+.on .sw::before,.sw.on::before{left:29px;background:#1E1100}
+/* réticule */
+.ret{position:absolute;z-index:6;pointer-events:none;overflow:visible}
+.ret .ra,.ret .rb,.ret .lk{transform-box:fill-box;transform-origin:center}
+.ret .ra{animation:spin 16s linear infinite}
+.ret .rb{animation:spin 10s linear infinite reverse}
+.ret .lk{animation:lock 1.1s cubic-bezier(.2,.9,.25,1.25) .7s both}
+.glow{filter:drop-shadow(0 0 2px rgba(255,181,71,.75))}
+.glow-r{filter:drop-shadow(0 0 2px rgba(255,59,47,.8))}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes lock{from{transform:scale(2);opacity:0}55%{opacity:1}to{transform:none;opacity:1}}
+/* allumage : un tube néon qui s'allume */
+.pwr{animation:pwr .9s linear both}
+@keyframes pwr{0%{opacity:0}8%{opacity:.85}12%{opacity:.1}20%{opacity:1}27%{opacity:.35}36%,100%{opacity:1}}
+.rise{opacity:0;transform:translateY(14px);animation:rise .7s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+.app :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+@media (max-width:960px){.g2,.g3{grid-template-columns:minmax(0,1fr)!important}.hide-sm{display:none!important}.wrap{padding:0 16px}.dock a{min-width:62px}}
+@media (prefers-reduced-motion:reduce){.app *{animation:none!important;transition:none!important}.rise{opacity:1;transform:none}}
+@media (prefers-reduced-transparency:reduce){.gl,.lq{background:#140F0E;-webkit-backdrop-filter:none;backdrop-filter:none}}
+.nav .seg:has(>:nth-child(1):hover) .thumb{left:3px!important}
+.nav .seg:has(>:nth-child(2):hover) .thumb{left:50%!important}
+</style>
+
+<style>
+.bg{position:absolute;inset:0;background-repeat:no-repeat;transition:background-size .9s cubic-bezier(.65,0,.35,1),background-position .9s cubic-bezier(.65,0,.35,1),opacity .6s ease}
+.bg-t{background-image:url('/_blob/dba15c43f5cdec9baadc08c3517ed9f3')}
+.bg-e{background-image:url('/_blob/beed230dcb1bfaeb94c09ec39ad41847');background-size:2000px 1333px;background-position:-28px -162px}
+.shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,7,10,.86) 0%,rgba(8,7,10,.4) 42%,rgba(8,7,10,0) 62%),linear-gradient(0deg,#08070A 0%,rgba(8,7,10,0) 22%)}
+.scan{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.scan::before{content:"";position:absolute;left:0;right:0;top:0;height:120px;background:linear-gradient(180deg,rgba(255,181,71,0),rgba(255,181,71,.10) 85%,rgba(255,217,154,.85) 100%);transform:translateY(-130px);animation:var(--swn) 1.1s cubic-bezier(.65,0,.35,1) both}
+@keyframes sw0{from{transform:translateY(-130px)}to{transform:translateY(1000px)}}
+@keyframes sw1{from{transform:translateY(-130px)}to{transform:translateY(1000px)}}
+@keyframes sw2{from{transform:translateY(-130px)}to{transform:translateY(1000px)}}
+.tgt{position:absolute;z-index:3;width:240px;height:240px;margin:-120px 0 0 -120px;pointer-events:none;transition:left .9s cubic-bezier(.65,0,.35,1),top .9s cubic-bezier(.65,0,.35,1),transform .9s cubic-bezier(.65,0,.35,1)}
+.tgt svg{position:absolute;inset:0;overflow:visible}
+.tgt .ra,.tgt .rb,.tgt .lk{transform-box:fill-box;transform-origin:center}
+.tgt .ra{animation:spin 16s linear infinite}.tgt .rb{animation:spin 10s linear infinite reverse}
+.tgt .lk{animation:lock 1s cubic-bezier(.2,.9,.25,1.25) .85s both}
+.rd{position:absolute;z-index:4;display:flex;flex-direction:column;gap:3px;padding:10px 14px;transition:left .9s cubic-bezier(.65,0,.35,1),top .9s cubic-bezier(.65,0,.35,1)}
+.rd .k{font-size:11.5px;font-weight:600;font-stretch:80%;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2)}
+.ev{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);font-size:15px}
+.donebtn{display:flex;align-items:center;gap:12px;padding:10px 14px 10px 10px;border:0;background:rgba(255,214,154,.08);color:var(--ink);font:600 15px/1 'Saira',sans-serif;cursor:pointer;clip-path:polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px)}
+.steps{display:grid;margin-top:24px;width:100%}
+.steps button{font-size:12px}
+</style>
+</helmet>
+<div class="app">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="lq" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.007 0.011" numOctaves="1" seed="4" result="t"></feTurbulence><feGaussianBlur in="t" stdDeviation="2.5" result="tb"></feGaussianBlur><feDisplacementMap in="SourceGraphic" in2="tb" scale="30" xChannelSelector="R" yChannelSelector="B"></feDisplacementMap></filter></defs></svg>
+<header class="nav gl lq br" role="banner">
+<a class="brand" href="V-Accueil.dc.html"><svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true" class="glow"><path d="M5 5v13a8 8 0 0 0 16 0v-3h2.5l2-5 3 10 2-5" stroke="#FFB547" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="30" cy="20" r="1.6" fill="#FFB547"></circle></svg>U1 Doctor</a>
+<a href="V-Accueil.dc.html" class="chip hide-sm" style="text-decoration:none">← Accueil</a>
+<span class="chip tip dn hide-sm" tabindex="0" data-tip="U1 Doctor lit l’état de l’imprimante, il n’envoie jamais de commande."><span class="dia" style="background:var(--ink)"></span>Lecture seule</span>
+<span class="chip dash tip dn hide-sm" tabindex="0" data-tip="Ces données sont un exemple fictif pour découvrir l’application. Rien ne vient de votre imprimante.">Exemple de démo</span>
+<div class="seg" role="group" aria-label="Niveau de détail"><span class="on" aria-current="true">Simple</span><a href="V-Expert.dc.html" class="tip dn" data-tip="Affiche le détail technique : codes bruts, horaires précis, sources et preuves. Chaque terme a son explication au survol.">Expert</a><span class="thumb" style="left:3px;width:calc(50% - 3px)"></span></div>
+<div class="seg hide-sm" role="group" aria-label="Langue"><span class="on">FR</span><a href="V-Accueil.dc.html">EN</a><span class="thumb" style="left:3px;width:calc(50% - 3px)"></span></div>
+<button type="button" class="ibtn" aria-label="Réglages"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"></path><circle cx="15" cy="6" r="2"></circle><circle cx="9" cy="12" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg></button>
+</header>
+
+<section style="position:relative;height:900px">
+<div class="bg bg-t" role="img" aria-label="{{alt}}" style="background-size:{{tSize}};background-position:{{tPos}};opacity:{{tOp}}"></div>
+<div class="bg bg-e" aria-hidden="true" style="opacity:{{eOp}}"></div>
+<div class="shade" aria-hidden="true"></div>
+<div class="scan" aria-hidden="true" style="--swn:{{swn}}"></div>
+
+<div class="tgt" aria-hidden="true" style="left:{{px}};top:{{py}};transform:scale({{tk}})">
+<svg viewBox="0 0 240 240"><g class="glow" fill="none" stroke="#FFB547"><circle class="ra" cx="120" cy="120" r="110" stroke-opacity=".6" stroke-width="1.3" stroke-dasharray="2 7"></circle><path d="M120 4V16M120 224V236M4 120H16M224 120H236" stroke-width="1.6"></path><circle class="rb" cx="120" cy="120" r="88" stroke-width="1.6" stroke-dasharray="99.5 38.7"></circle><path d="M110 120H116M124 120H130M120 110V116M120 124V130" stroke-width="1.6"></path></g></svg>
+<sc-if value="{{st0}}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 240 240"><path class="lk glow" d="M66 84V66H84M156 66H174V84M174 156V174H156M84 174H66V156" fill="none" stroke="#FFB547" stroke-width="2.6" stroke-linecap="square"></path></svg></sc-if>
+<sc-if value="{{st1}}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 240 240"><path class="lk glow" d="M66 84V66H84M156 66H174V84M174 156V174H156M84 174H66V156" fill="none" stroke="#FFB547" stroke-width="2.6" stroke-linecap="square"></path></svg></sc-if>
+<sc-if value="{{st2}}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 240 240"><path class="lk glow" d="M66 84V66H84M156 66H174V84M174 156V174H156M84 174H66V156" fill="none" stroke="#FFB547" stroke-width="2.6" stroke-linecap="square"></path></svg></sc-if>
+</div>
+<div class="rd gl br" style="left:{{rx}};top:{{ry}}" aria-hidden="true"><span class="k">Cible verrouillée</span><span class="h" style="font-size:17px">{{caption}}</span></div>
+
+<div class="gl lq br rise" style="position:absolute;z-index:5;left:80px;top:150px;width:540px;padding:30px;animation-delay:.15s">
+<span class="st s-w tip" tabindex="0" data-tip="À vérifier : l'imprimante l'a signalé, il faut le confirmer à l'œil. Ce n'est pas une certitude."><i></i>À vérifier · tête 3</span>
+<h1 class="h" style="margin:16px 0 0;font-size:38px;line-height:1.08">La tête 3 n'arrive plus à pousser le filament</h1>
+<div class="seg steps" role="tablist" aria-label="Étapes">
+<button type="button" role="tab" aria-selected="{{s0.sel}}" class="{{s0.cls}}" onClick="{{go0}}">1 · Repérer</button>
+<button type="button" role="tab" aria-selected="{{s1.sel}}" class="{{s1.cls}}" onClick="{{go1}}">2 · Nettoyer</button>
+<button type="button" role="tab" aria-selected="{{s2.sel}}" class="{{s2.cls}}" onClick="{{go2}}">3 · Relancer</button>
+<span class="thumb" style="left:{{thumbL}};width:calc((100% - 6px) / 3)"></span>
+</div>
+<div class="h" style="margin-top:22px;font-size:25px">{{cur.title}}</div>
+<p style="margin:10px 0 0;font-size:16.5px;color:var(--ink2);min-height:76px">{{cur.text}}</p>
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:14px">
+<button type="button" class="donebtn" aria-pressed="{{pressed}}" onClick="{{toggle}}"><span class="{{swCls}}"></span>{{doneLabel}}</button>
+<span style="margin-left:auto;font-size:13.5px;color:var(--ink3)">{{count}} sur 3 faits</span>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:22px">
+<sc-if value="{{notLast}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn-a" onClick="{{next}}">Étape suivante</button></sc-if>
+<sc-if value="{{isLast}}" hint-placeholder-val="{{ false }}"><a href="V-Accueil.dc.html" class="btn btn-a">C'est réglé</a><a href="V-Expert.dc.html" class="btn btn-g">Toujours bloqué ? Partager</a></sc-if>
+</div>
+<p style="margin:16px 0 0;font-size:13px;color:var(--ink3)">Consigne officielle Snapmaker pour ce code : vérifier, nettoyer, relancer.</p>
+</div>
+</section>
+
+<div class="wrap">
+<section class="pn br" style="padding:24px 28px;margin-top:-60px;position:relative;z-index:6">
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px"><h3 class="h" style="margin:0;font-size:22px">Comment on le sait</h3><a href="V-Expert.dc.html" style="font-size:14px;font-weight:600;color:var(--gold2)">Détails techniques →</a></div>
+<div class="g2" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 28px">
+<div class="ev"><span class="st s-o"><i></i>Constaté</span>Code de blocage à 14:14</div>
+<div class="ev"><span class="st s-o"><i></i>Constaté</span>Pause juste avant</div>
+<div class="ev tip" tabindex="0" data-tip="Pendant 1 min 30, U1 Doctor n'a rien reçu (Wi-Fi coupé ?)."><span class="st s-u"><i></i>Pas assez d'infos</span>Rien reçu 1 min 30</div>
+</div>
+</section>
+</div>
+
+<nav class="dock gl lq br" aria-label="Navigation principale">
+<a href="V-Accueil.dc.html" class="on" aria-current="page"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path><path d="M10 21v-6h4v6"></path></svg>Accueil</a>
+<a href="V-Diagnostiquer.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>Diagnostiquer</a>
+<a href="V-Diagnostiquer.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>J'ai un problème</a>
+<a href="V-Expert.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Historique</a>
+<a href="V-Expert.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"></path><path d="M16 6l-4-4-4 4"></path><path d="M12 2v13"></path></svg>Partager</a>
+</nav>
+<div style="height:30px"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1140}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { step: 0, done: [false, false, false] };
+}
+renderVals() {
+var self = this;
+var s = this.state;
+var i = s.step;
+var defs = [
+{ title: "Repérez la tête 3", text: "C'est la troisième en partant de la gauche, à l'arrière de la machine. Le réticule la montre sur la photo.", tSize: "1440px 960px", tPos: "0px -60px", px: 702, py: 690, k: 0.6, caption: "Tête 3, vue de l'avant", alt: "Les quatre têtes à l'arrière de la U1, la troisième dans le réticule" },
+{ title: "Vérifiez l'engrenage", text: "Regardez l'engrenage qui pousse le filament dans la tête 3 et retirez les débris ou le filament cassé.", tSize: "2600px 1733px", tPos: "-210px -860px", px: 1016, py: 470, k: 1.3, caption: "Gros plan, tête 3", alt: "Gros plan sur la tête 3" },
+{ title: "Relancez l'impression", text: "Sur l'écran tactile de la U1, reprenez l'impression mise en pause.", tSize: "2600px 1733px", tPos: "-210px -860px", px: 900, py: 360, k: 1.15, caption: "Écran tactile", alt: "L'écran tactile de la U1, dans le réticule" }
+];
+var d = defs[i];
+var on = s.done[i];
+function tab(k) { return { cls: k === i ? "on" : "", sel: k === i ? "true" : "false" }; }
+var half = 120 * d.k;
+return {
+cur: d, alt: d.alt, caption: d.caption,
+tSize: d.tSize, tPos: d.tPos, tOp: i === 2 ? "0" : "1", eOp: i === 2 ? "1" : "0",
+px: d.px + "px", py: d.py + "px", tk: d.k,
+rx: (d.px + half * 0.78 + 14) + "px", ry: (d.py + half * 0.62) + "px",
+st0: i === 0, st1: i === 1, st2: i === 2,
+swn: "sw" + i,
+s0: tab(0), s1: tab(1), s2: tab(2),
+thumbL: "calc(3px + " + i + " * (100% - 6px) / 3)",
+go0: function () { self.setState({ step: 0 }); },
+go1: function () { self.setState({ step: 1 }); },
+go2: function () { self.setState({ step: 2 }); },
+pressed: on ? "true" : "false",
+swCls: on ? "sw on" : "sw",
+doneLabel: on ? "Fait" : "C'est fait",
+count: s.done.filter(function (x) { return x; }).length,
+toggle: function () { var n = s.done.slice(); n[i] = !n[i]; self.setState({ done: n }); },
+notLast: i < 2, isLast: i === 2,
+next: function () { var n = s.done.slice(); n[i] = true; self.setState({ step: Math.min(2, i + 1), done: n }); }
+};
+}
+}
+</script>
+</body>
+</html>
