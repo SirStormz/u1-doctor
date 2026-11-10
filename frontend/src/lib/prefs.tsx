@@ -1,7 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { messages, type Lang, type Messages } from "./i18n";
+import { resolveTheme, type ThemeId } from "../themes/registry";
 
-export type Theme = "night" | "graphite" | "light";
+export type Theme = ThemeId;
 export type Density = "comfortable" | "compact";
 export type Mode = "simple" | "expert";
 export type StepId = "demo" | "code" | "timeline" | "evidence" | "report";
@@ -17,7 +18,8 @@ const Ctx = createContext<Prefs | null>(null);
 
 export function PrefsProvider({ children }: { children: ReactNode }) {
   const [lang, setLang] = useState<Lang>(() => (read("u1d.lang", navigator.language.toLowerCase().startsWith("fr") ? "fr" : "en") === "fr" ? "fr" : "en"));
-  const [theme, setTheme] = useState<Theme>(() => { const v = read("u1d.theme", "light"); return v === "graphite" || v === "night" ? v : "light"; });
+  // themes saved before UI V2 (light, graphite, night) are migrated once: the effect below writes the new id back
+  const [theme, setTheme] = useState<Theme>(() => resolveTheme(read("u1d.theme", "")));
   const [density, setDensity] = useState<Density>(() => (read("u1d.density", "comfortable") === "compact" ? "compact" : "comfortable"));
   const [mode, setMode] = useState<Mode>(() => (read("u1d.mode", "simple") === "expert" ? "expert" : "simple"));
   useEffect(() => { write("u1d.mode", mode); }, [mode]);

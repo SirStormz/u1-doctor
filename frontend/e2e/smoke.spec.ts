@@ -28,6 +28,28 @@ test.describe("every screen, demo mode on, read-only", () => {
   }
 });
 
+// UI V2: each theme's title and text fonts are bundled with the app (it runs offline) and actually used
+const THEME_FONTS: Record<string, string[]> = {
+  pupitre: ["Barlow Semi Condensed", "Barlow"],
+  notice: ["Schibsted Grotesk Variable", "Atkinson Hyperlegible Next Variable"],
+  obsidienne: ["Geist Variable"],
+  visiere: ["Oxanium Variable", "Saira Variable"],
+};
+for (const [theme, families] of Object.entries(THEME_FONTS)) {
+  test(`theme ${theme}: its fonts load from the app and nothing leaves it`, async ({ page, baseURL }) => {
+    const origin = new URL(baseURL!).origin;
+    const foreign: string[] = [];
+    page.on("request", (r) => { if (/^https?:/.test(r.url()) && new URL(r.url()).origin !== origin) foreign.push(r.url()); });
+    await page.addInitScript((t) => localStorage.setItem("u1d.theme", t), theme);
+    await page.goto("/#/overview");
+    await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+    const loaded = await page.evaluate(async () => { await document.fonts.ready; return [...document.fonts].filter((f) => f.status === "loaded").map((f) => f.family.replace(/"/g, "")); });
+    for (const f of families) expect(loaded, `${f} loaded`).toContain(f);
+    expect(foreign, "no request may leave the local app").toEqual([]);
+  });
+}
+
 test("language switch changes the document language", async ({ page }) => {
   await page.goto("/#/settings");
   await page.getByRole("button", { name: "FR", exact: true }).click();

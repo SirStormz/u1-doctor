@@ -203,7 +203,7 @@ export function Landing({ go }: { go: (n: RouteName, p?: string) => void }) {
   const meta: [string, string][] = [[L.metaObject, "Snapmaker U1"], [L.metaMode, "DEMO"], [L.metaAccess, L.pill1], [L.metaData, "SYNTHETIC"]];
 
   return (
-    <div ref={root} data-theme="light" className="landing relative min-h-full overflow-x-clip bg-bg text-ink">
+    <div ref={root} data-theme="notice" className="landing relative min-h-full overflow-x-clip bg-bg text-ink">
       {/* fixed stage */}
       <div className="fixed inset-0 z-0 overflow-hidden" style={{ background: "#f4f4f0" }}>
         {scene !== "fallback" && (

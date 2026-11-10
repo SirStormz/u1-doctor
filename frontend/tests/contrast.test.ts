@@ -1,11 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
+import { THEME_IDS, type ThemeId } from "../src/themes/registry";
 
 /** WCAG 2.x contrast ratios computed straight from tokens.css, for every theme. */
 const css = fs.readFileSync(path.resolve(__dirname, "../src/design/tokens.css"), "utf8");
 
-function themeVars(name: "night" | "graphite" | "light"): Record<string, string> {
-  const sel = name === "night" ? /:root,\s*\[data-theme="night"\]\s*\{([^}]*)\}/ : new RegExp(`\\[data-theme="${name}"\\]\\s*\\{([^}]*)\\}`);
+function themeVars(name: ThemeId): Record<string, string> {
+  const sel = new RegExp(`\\[data-theme="${name}"\\]\\s*\\{([^}]*)\\}`);
   const body = sel.exec(css)?.[1] ?? "";
   const out: Record<string, string> = {};
   for (const m of body.matchAll(/--([a-z0-9-]+):\s*(#[0-9a-fA-F]{6})/g)) out[m[1]!] = m[2]!;
@@ -17,7 +18,7 @@ const lum = (h: string) => { const [r, g, b] = rgb(h).map(lin); return 0.2126 * 
 const ratio = (a: string, b: string) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x! + 0.05) / (y! + 0.05); };
 const mix = (fg: string, pct: number, bg: string) => "#" + rgb(fg).map((c, i) => Math.round(c * pct + rgb(bg)[i]! * (1 - pct)).toString(16).padStart(2, "0")).join("");
 
-for (const theme of ["night", "graphite", "light"] as const) {
+for (const theme of THEME_IDS) {
   const v = themeVars(theme);
   describe(`contrast ${theme}`, () => {
     test("body text on every surface >= 7:1 (AAA) and secondary >= 4.5:1", () => {
