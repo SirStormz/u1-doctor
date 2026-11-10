@@ -1,4 +1,4 @@
-# IMPLEMENTATION_STATUS — updated 2026-11-10 (release v0.2.0-g1 published with the four UI V2 themes; G0–G2, G4 U1-DEB and G3 timeline done; forum roadmap, audit and log import done and released)
+# IMPLEMENTATION_STATUS — updated 2026-11-10 (release v0.3.0-g1 prepared with the UI V2 screens, v0.2.0-g1 published with the four UI V2 themes; G0–G2, G4 U1-DEB and G3 timeline done; forum roadmap, audit and log import done and released)
 
 States: PLANNED · IMPLEMENTED_UNTESTED · TESTED_SYNTHETIC · TESTED_REAL · BLOCKED. **H-01 passed 2026-11-05 (TESTED_REAL for: Moonraker HTTP :7125, objects list, official version read; nothing else).** H-02 passed 2026-11-05 (WS subscribe, 27 min normal print, 9 333 frames, no gap > 0.74 s). Machine calls made so far: read-only GET requests and one WS subscribe per session, in supervised sessions H-01, H-02, H-05, H-06 and one capture from the UI (2026-11-07, idle U1: 4 reads, 0 writes); 0 non-read operation in every audit log (see `docs/evidence/`, `docs/LIMITS.md`). Observed: Moonraker 2.1.0, Klipper 2.1.0.157, 197 objects, `exception_manager` component present.
 
@@ -34,6 +34,10 @@ States: PLANNED · IMPLEMENTED_UNTESTED · TESTED_SYNTHETIC · TESTED_REAL · BL
 
 Tests run (Windows, Python 3.14 venv, 2026-11-09): `pytest` **1213 passed** · `vitest` **184 passed** · 16 Playwright e2e tests (run in CI) · `ruff` clean · `mypy app` clean · `tsc --noEmit` clean · `vite build` OK. CI (Python 3.12, Linux/Windows/macOS) green on main.
 Deviations: stdlib migrations instead of Alembic (ADR-0004); no TanStack Query / i18n lib (plain fetch + dictionary).
+
+## UI V2 screens (2026-11-10) — **merged into `main` (PR #4), release v0.3.0-g1 prepared, not published yet**
+
+Bottom dock (five places), Simple home, guided Verdict with the 3D camera, Expert home (readings at the replay position, toolhead curve with its data gap, findings, replay, share), Diagnose with four modes (capture, bundle, logs, demo) and each theme's own control, signature pieces where they show the data. Detail: `U1_DOCTOR_PLAN_IMPLEMENTATION_THEMES.md` section 10. Checked: vitest 222, Playwright e2e 28 (axe and horizontal scroll per theme), pytest 1213.
 
 ## UI V2 themes (2026-11-10) — **released in v0.2.0-g1 (2026-11-10, VirusTotal 0/66)**
 - Four themes replace light / graphite / night: Pupitre, Notice, Obsidienne (default), Visière (`frontend/src/themes/`: registry, one skin per theme, View Transitions switch); saved themes migrate once (light → notice, graphite → pupitre, night → obsidienne).

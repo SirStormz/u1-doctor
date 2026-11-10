@@ -55,7 +55,7 @@ from .support import checklist as support_checklist
 from .timeline import build_timeline
 
 API_VERSION = "1"
-APP_VERSION = "0.2.0-g1"
+APP_VERSION = "0.3.0-g1"
 
 FIXTURES = ROOT / "fixtures" / "synthetic"
 REAL = ROOT / "fixtures" / "real"
