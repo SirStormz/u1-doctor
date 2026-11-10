@@ -191,3 +191,18 @@ Réglages, Simple/Expert, démo, langue et thème restent en haut. Toutes les ro
 | R5 | Diagnostiquer : choix du mode (capture, import, journaux, démo) avec la commande propre au thème | |
 | R6 | Pièces de signature restantes (galvanomètre, ticket, clavier, bouton rotatif, capot, radar, appui long, loupe liquide) | |
 | R7 | Tests, captures, docs, release | |
+
+### Avancement (branche `feat/ui-v2-screens`, rien poussé)
+
+| Phase | Fait | Commit |
+|---|---|---|
+| R1 | Dock à 5 entrées (`components/shell.tsx`, `DOCK`), Réglages en haut, bande 01-11 retirée, une peau par thème | `29477ba` |
+| R1 bis | Rendus Blender de la U1 versionnés en WebP (`assets/renders/`, `themes/renders.ts`, repères projetés) | `b37e1f5` |
+| R2 | Accueil Simple (`screens/home.tsx`) : verdict, gestes officiels du code, rendu avec la tête repérée, « ce qui s'est passé », « comment on le sait » | `4cd3bdf` |
+| R3 | Verdict guidé en haut des Conclusions (Simple), caméra 3D qui va de pièce en pièce (`U1Viewer` prop `focus`, `lib/steps.ts`) | `5391d61` |
+| R4 | Accueil Expert (`screens/expert.tsx`) : incident et sources, relevés à la position du rejeu sur le rendu, courbe de la tête du code avec son trou de données (`viz/HeadCurve.tsx`), constats, rejeu, partage | `cd35118` |
+| R5 | Diagnostiquer (`Connect`, `#/connect/<mode>`) : capture, paquet U1-DEB, journaux, démo ; bouton rotatif (Pupitre), cartes à cocher (Notice), sélecteur de verre et interrupteur liquide (Obsidienne), verrouillage et appui long 1,2 s (Visière, clavier et technologies d'assistance inchangés) ; consentement inchangé | `474f57c` |
+| R6 | Galvanomètres, ticket des constats, clavier du code, capot avant le levier (Pupitre) ; radar de la session (Visière) ; loupe liquide (Obsidienne) ; vol de caméra sur le rendu pendant le rejeu (tous). Même DOM et même texte dans les 4 thèmes, chaque thème affiche ses pièces | `5e2cf2d` |
+| R7 | Tests (vitest : Accueil Expert, Diagnostiquer, pièces, parité des thèmes en Expert ; e2e : Diagnostiquer et Accueil Expert dans axe et le débordement par thème), captures du README et planche des 4 thèmes, Page, docs | ce commit |
+
+Écarts assumés : la planche Diagnostiquer proposait « Décrire ce que je vois » ; il reste dans « J'ai un problème » et le 4e mode est la démo. Le bouton rotatif de Visière (écarté en maquette) n'est pas repris. Le réticule qui vole de cible en cible (Verdict Visière) est remplacé par le vol de caméra commun. Release 0.3.0-g1 : attend l'accord du propriétaire.

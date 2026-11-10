@@ -46,25 +46,25 @@ U1 Doctor runs **on your own PC**. It gives you three things:
 
 ## A quick look
 
-| Overview | Incident timeline | Error codes |
+| Home (Expert mode) | Incident timeline | Error codes |
 |---|---|---|
-| ![Overview](docs/media/screens/03-overview.png) | ![Timeline](docs/media/screens/06-timeline.png) | ![Error codes](docs/media/screens/04-error-codes.png) |
+| ![Home in Expert mode](docs/media/screens/03-overview.png) | ![Timeline](docs/media/screens/06-timeline.png) | ![Error codes](docs/media/screens/04-error-codes.png) |
 
-Screenshots were taken in the default **Obsidienne** theme, in **Expert mode** with **demo mode** on, which shows the built-in **synthetic demo data** (the `DEMO` banner is visible whenever it is on). All 11 screens are in [`docs/media/screens/`](docs/media/screens/).
+Screenshots were taken in the default **Obsidienne** theme, in **Expert mode** with **demo mode** on, which shows the built-in **synthetic demo data** (the `DEMO` banner is visible whenever it is on). All 11 screens are in [`docs/media/screens/`](docs/media/screens/). A dock at the bottom gathers them in five places: **Home**, **Diagnose**, **I have a problem**, **History** and **Share**; every screen keeps its own address and stays in the `Ctrl K` search.
 
 ### Four themes
 
-![The Overview in the four themes: Pupitre, Notice, Obsidienne and Visière](docs/media/themes.jpg)
+![The Home screen in Expert mode in the four themes: Pupitre, Notice, Obsidienne and Visière](docs/media/themes.jpg)
 
-**Pupitre** (top left) turns the app into the U1's hardware console: keys, screwed plastic modules, titles on an amber LCD. **Notice** (top right) reads like an illustrated manual: white paper, black outlines, the 3D printer drawn in lines; it is the easiest to read. **Obsidienne** (bottom left, the default) is dark frosted glass. **Visière** (bottom right) is a warm head-up display with gold corner marks. Pick one in Settings or in the top bar. A theme changes the look only, never what the app says, and a theme chosen in an older version is carried over (light becomes Notice, graphite becomes Pupitre, night becomes Obsidienne). All fonts ship with the app.
+**Pupitre** (top left) turns the app into the U1's hardware console: keys, screwed plastic modules, titles on an amber LCD. **Notice** (top right) reads like an illustrated manual: white paper, black outlines, the 3D printer drawn in lines; it is the easiest to read. **Obsidienne** (bottom left, the default) is dark frosted glass. **Visière** (bottom right) is a warm head-up display with gold corner marks. Each theme has its own pieces where they show the session's data: in Pupitre, moving-coil meters read the temperatures at the replay position, the findings come out as a printed ticket, a keypad types the error code and a safety cover must be lifted before the approval lever; in Notice, numbered callouts on the line drawing and cards to tick; in Obsidienne, a liquid glass lens on the toolhead the code names and a glass selector; in Visière, a session radar (one turn = 6 minutes) and a 1.2 s press-and-hold to approve a capture (the keyboard approves as usual). Pick one in Settings or in the top bar. A theme changes the look only, never what the app says, and a theme chosen in an older version is carried over (light becomes Notice, graphite becomes Pupitre, night becomes Obsidienne). All fonts ship with the app.
 
 ## What is inside: the 11 screens
 
 | # | Screen | What you do there |
 |---|---|---|
 | 01 | **Welcome** | What the tool is, and its promises: no account, no cloud, no AI, nothing leaves your PC |
-| 02 | **Connect** | Take a short **read-only capture** of your own U1: type its private address, tick the approval box. A new observed finding or an error/shutdown state in the result raises an **on-screen alert** (banner + `(!)` in the window title; no system notification, can be turned off in Settings) |
-| 03 | **Overview** | What is actually known about the incident and where it comes from, with the U1 in 3D (illustrative controls) |
+| 02 | **Diagnose** | Choose how the data comes in: a short **read-only capture** of your own U1, a U1-DEB bundle, log files, or the demo. For a capture, type its private address and tick the approval box. A new observed finding or an error/shutdown state in the result raises an **on-screen alert** (banner + `(!)` in the window title; no system notification, can be turned off in Settings) |
+| 03 | **Home** | In Simple mode: the verdict in plain words, what the official guidance asks (the Findings screen then walks through it step by step, the 3D camera going to each part), what happened and how we know. In Expert mode: the incident and its sources, the readings at the replay position on a render of the U1, the temperature of the toolhead the code names with its data gap, the findings, the session replay and the way to share |
 | 04 | **Error codes** | Decode any of the 413 official codes. Also here: firmware notes, which toolheads to inspect, the "what support will ask" checklist, 5 documented known issues, **known issues per firmware version** (13 dated, sourced entries from 1.0.0 to 2.1.0, filterable by version, may be out of date), causes **reported by the community** on the forum (11 entries, each with its topic link, never official), 3 **good-to-know notes** reported by the community (camera not shown in Fluidd, read-only configuration files until Advanced Mode, encrypted logs), "did you mean" for mistyped codes, explanations for 8 messages that carry no code, and an offline **G-code pre-flight** (20 checks on a sliced `.gcode` or on the G-code inside a sliced `.3mf`) |
 | 05 | **Print quality** | The "needs your eyes" assistant: 16 symptoms, causes in the official order, evidence only from numbers you type or saved temperatures. No ranking, no score |
 | 06 | **Incident timeline** | The observed window with phases and explicit gaps. Also here: the **History** of your saved sessions (never merged) and the import of **U1 Dry Run** reports |
@@ -80,7 +80,7 @@ Press `Ctrl K` anywhere to jump to a screen or paste an error code.
 
 **Hints.** In Simple mode, once the first-start assistant is closed, three short notes appear once each, next to what they explain: the *Observed / Suspected / Missing* marks, how to read the incident timeline, and the `Ctrl K` search button. *Got it* (or `Esc`) hides a note for good; *Replay the guided start* in Settings brings them back.
 
-**First start.** A three-step assistant asks for your language and display level, offers the demo or the connection to your own printer, and explains the three marks used everywhere (*Observed*, *Suspected*, *Missing*). Press `Esc` to skip it. A *Getting started* list on the Overview ticks itself as you use the app; both can be replayed from Settings.
+**First start.** A three-step assistant asks for your language and display level, offers the demo or the connection to your own printer, and explains the three marks used everywhere (*Observed*, *Suspected*, *Missing*). Press `Esc` to skip it. A *Getting started* list on the Home screen ticks itself as you use the app; both can be replayed from Settings.
 
 ## Get started in two minutes (Windows)
 
@@ -105,21 +105,21 @@ Press `Ctrl K` anywhere to jump to a screen or paste an error code.
 
 ## Use it with your own U1
 
-1. Open the **Connect** screen.
+1. Open the **Diagnose** screen and keep **Connect my U1**.
 2. Type your printer's private address (for example `192.168.x.x`).
 3. Read the list of allowed requests, tick **"I own this printer"**, press **Capture (read-only)**.
 4. You get what the printer reports (state, versions, temperatures over time) and the findings from the rules, with the capture saved to the History if you wish.
 5. To keep or share it, open the **Report composer**, choose your capture under *Report source*, check the privacy scan and press **Export bundle**. The bundle can be opened and replayed on any other PC.
 
-No printer at hand? In **History → Analyse log files** you can drop the logs you already have (for example `moonraker.log`, `klippy.log` or a Snapmaker Orca log archive): U1 Doctor reads them on your PC, decodes the machine exceptions and shows the findings and the timeline, nothing is sent anywhere. The code decoder also accepts an exception pasted from Fluidd or `moonraker.log`.
+No printer at hand? In **Diagnose → Read log files** (or **History → Analyse log files**) you can drop the logs you already have (for example `moonraker.log`, `klippy.log` or a Snapmaker Orca log archive): U1 Doctor reads them on your PC, decodes the machine exceptions and shows the findings and the timeline, nothing is sent anywhere. The code decoder also accepts an exception pasted from Fluidd or `moonraker.log`.
 
-![The Connect screen](docs/media/screens/02-connect.png)
+![The Diagnose screen](docs/media/screens/02-connect.png)
 
 The capture never contains your address or file names. It sends 5 GET requests (one of them, `/server/files/directory?path=logs`, only reads the free space of the log partition; another, `/server/history/totals`, only reads four job totals of the print history for the maintenance reminders) and 1 live subscription message. If the live stream closes early, the app checks with up to 6 more read-only status GET requests whether the printer itself still answers, so a lost connection is not mistaken for a stopped printer: 11 GET at most.
 
 **Maintenance reminders (UNTESTED on a real U1).** In Settings you keep a small local list of tasks with an interval in print hours, jobs or tool changes and the totals at which you last did them. After a capture the app compares them with the printer's job-history totals and the `switch_count` counters (as the firmware reports them; their meaning is not documented officially) and shows what is due, with the numbers left: no prediction, nothing sent anywhere. Two presets come from official Snapmaker wiki pages (PEI sheet wash every 5-10 prints, pogo-pin contact cleaning every 100,000 swaps), each with its link and check date; anything else is your own task.
 
-**Live rules and connectivity self-check.** From the same capture, eight rules (S17-S24) report the spread of the toolhead Y offsets, implausible bed or cavity readings, a heater that does not warm up, nozzle diameters that disagree (with a G-code you analysed in the app), a controller clock reset while printing, the log partition usage, toolhead counters and bed-mesh numbers. They were written from forum reports. One supervised read-only capture on the owner's U1 (firmware 2.1.0, printing, 2026-11-08; 4 GET and 1 subscription, nothing written) read every source and fired S22, S23 and S24; S17 to S21 stayed quiet on that healthy print, so their positive case has never been seen on a real printer. Each rule says "not observable" when the printer does not report the data. The Connect screen also shows how long each request took, whether the stream dropped and whether the address changed since the last capture (only a keyed fingerprint of the address is kept, never the address).
+**Live rules and connectivity self-check.** From the same capture, eight rules (S17-S24) report the spread of the toolhead Y offsets, implausible bed or cavity readings, a heater that does not warm up, nozzle diameters that disagree (with a G-code you analysed in the app), a controller clock reset while printing, the log partition usage, toolhead counters and bed-mesh numbers. They were written from forum reports. One supervised read-only capture on the owner's U1 (firmware 2.1.0, printing, 2026-11-08; 4 GET and 1 subscription, nothing written) read every source and fired S22, S23 and S24; S17 to S21 stayed quiet on that healthy print, so their positive case has never been seen on a real printer. Each rule says "not observable" when the printer does not report the data. The capture panel also shows how long each request took, whether the stream dropped and whether the address changed since the last capture (only a keyed fingerprint of the address is kept, never the address).
 
 ## What works today
 
@@ -128,7 +128,7 @@ The capture never contains your address or file names. It sends 5 GET requests (
 | Offline decoder for 413 official error codes (paraphrased, with link) | tested on synthetic data |
 | Deterministic rules engine: same observations and same rule set always give the same findings and the same hash. 28 rules | tested on synthetic and real-capture data, on Windows, Linux and macOS (identical replay hash in CI) |
 | Explainable findings: evidence for, evidence against, what is missing, limits, official references. No score, no percentage | tested |
-| Read-only live capture from the Connect screen, with read-only probes if the stream closes early | tested against a mock and on the owner's U1 (no write ever sent) |
+| Read-only live capture from the Diagnose screen, with read-only probes if the stream closes early | tested against a mock and on the owner's U1 (no write ever sent) |
 | Saved-session **history** and import of U1 Dry Run reports | tested |
 | **G-code pre-flight**: 20 offline checks on a sliced `.gcode` or the G-code embedded in a sliced `.3mf` (every plate is checked, one tab per plate; only the embedded G-code and project settings are read) (for example decimal commas, a 0 °C bed, nozzle diameter, `#` in the file name; and, from community reports, M191, a start line at Y1, the probing temperature, tool order and auto-mapping, another printer's profile, prime tower outside the bed, TPU settings, purge used, a final travel at the last layer height) | tested on synthetic files |
 | **Log import** (History → Analyse log files): Moonraker, Klipper, unisrv, system and Snapmaker Orca logs, alone or in a `.zip` / `.tar.gz`, read on your PC only and labelled IMPORTED. Machine exceptions are decoded to the on-screen code (`level-id-index-code`), with link-counter health, Wi-Fi/cloud trouble, failed firmware updates, failed timelapse frames and Snapmaker Orca link problems as findings; the printer's encrypted system log is recognized, never opened. See [`docs/LOGS.md`](docs/LOGS.md) | tested on the owner's real U1 logs and a real Snapmaker Orca log (two rules, S27 and live exceptions, have not met a real fault yet) |
@@ -155,7 +155,7 @@ U1 Doctor never controls the printer.
 - Every request is checked against a frozen allowlist **before** any network I/O: `GET /server/info`, `GET /printer/info`, `GET /printer/objects/list`, `GET /server/files/directory?path=logs` (that exact query only) and one WebSocket method, `printer.objects.subscribe`, with a fixed list of object names. Anything else is refused, including `POST /printer/objects/query`, which the app never needed.
 - The local API refuses any POST or DELETE that does not come from the app's own page (foreign `Origin` or missing `X-U1D` header), so another web page open in your browser cannot drive it.
 - Pause, resume, cancel, restart, emergency stop and `printer.gcode.script` are covered by tests that must stay refused.
-- Supervised sessions on the owner's U1 (scripted runs, a capture from the Connect screen and a 55-minute passive watch of a print) recorded **0 non-read operations**. The evidence is in [`docs/evidence/`](docs/evidence/).
+- Supervised sessions on the owner's U1 (scripted runs, a capture from the Diagnose screen and a 55-minute passive watch of a print) recorded **0 non-read operations**. The evidence is in [`docs/evidence/`](docs/evidence/).
 - The app listens on `127.0.0.1` only. Nothing leaves your machine.
 
 Details: [`docs/threat-model.md`](docs/threat-model.md), [`docs/capability-matrix.md`](docs/capability-matrix.md), [`SECURITY.md`](SECURITY.md).

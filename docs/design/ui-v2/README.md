@@ -1,6 +1,6 @@
 # UI V2 — quatre thèmes retenus : Pupitre 2, Notice, Obsidienne, Visière
 
-Maquettes validées le 2026-11-10 par le propriétaire (Visière ajoutée et validée le même jour). Ces quatre directions **remplacent les thèmes actuels** de l'app (`light`, `graphite`, `night` dans `frontend/src/lib/prefs.tsx` et `frontend/src/design/tokens.css`). Rien n'est encore codé dans `frontend/src`.
+Maquettes validées le 2026-11-10 par le propriétaire (Visière ajoutée et validée le même jour). Ces quatre directions **remplacent les thèmes actuels** de l'app (`light`, `graphite`, `night` dans `frontend/src/lib/prefs.tsx` et `frontend/src/design/tokens.css`). Intégrées dans l'app depuis la 0.2.0-g1 (voir plus bas).
 
 Canevas de maquette (privé, claude.ai) : https://claude.ai/artifact/9WfUYAyLC6KUM9Ca6Nb8k6 — 4 rangées de 4 planches cliquables (Accueil Simple, Accueil Expert, Verdict, Diagnostiquer).
 
@@ -79,4 +79,4 @@ Les 12 rendus de `render_u1.py` sont versionnés en WebP dans `frontend/src/asse
 
 Fait : registre `frontend/src/themes/registry.ts` (Obsidienne par défaut, migration light → notice, graphite → pupitre, night → obsidienne), jetons et polices par thème, une peau par thème (`themes/<id>/theme.css`) sur tous les écrans, 3D selon le thème (`viz/looks.ts`), Réglages avec vraies captures et fondu, titre qui se décode (Visière), titres et chiffres LCD (Pupitre). Détail et écarts : `U1_DOCTOR_PLAN_IMPLEMENTATION_THEMES.md`.
 
-Reste, à décider avec le propriétaire : la structure d'écrans des planches (dock en bas à 5 entrées, Accueil en tuiles, Verdict guidé pas à pas, Diagnostiquer) et leurs pièces interactives (galvanomètre, ticket, clavier, bouton rotatif, capot, radar, appui long, loupe liquide, vols de caméra). C'est une refonte des écrans, pas des thèmes.
+Refonte des écrans faite ensuite (phases R1 à R7, branche `feat/ui-v2-screens`, détail dans `U1_DOCTOR_PLAN_IMPLEMENTATION_THEMES.md` § 10) : dock en bas à 5 entrées, Accueil Simple et Accueil Expert, Verdict guidé, Diagnostiquer à 4 modes avec la commande de chaque thème, et les pièces de signature là où elles montrent les données (galvanomètres, ticket, clavier, capot, radar, appui long, loupe liquide, bouton rotatif, vol de caméra).
