@@ -35,6 +35,12 @@ States: PLANNED · IMPLEMENTED_UNTESTED · TESTED_SYNTHETIC · TESTED_REAL · BL
 Tests run (Windows, Python 3.14 venv, 2026-11-09): `pytest` **1213 passed** · `vitest` **184 passed** · 16 Playwright e2e tests (run in CI) · `ruff` clean · `mypy app` clean · `tsc --noEmit` clean · `vite build` OK. CI (Python 3.12, Linux/Windows/macOS) green on main.
 Deviations: stdlib migrations instead of Alembic (ADR-0004); no TanStack Query / i18n lib (plain fetch + dictionary).
 
+## UI V2 themes (2026-11-10) — **integrated on branch `feat/ui-v2-themes`, not released yet**
+- Four themes replace light / graphite / night: Pupitre, Notice, Obsidienne (default), Visière (`frontend/src/themes/`: registry, one skin per theme, View Transitions switch); saved themes migrate once (light → notice, graphite → pupitre, night → obsidienne).
+- Colour tokens and fonts per theme (10 Fontsource families, offline, `THIRD_PARTY_NOTICES.md`); the 3D viewer follows the theme (Notice line drawing, Visière warm light with a red rim); Settings shows a real capture of each theme.
+- Tests: vitest **203 passed** (registry, migration, token set and contrast per theme, same visible text in every theme) · e2e **24 passed** under Edge (local fonts and no foreign request per theme; axe without serious or critical violation and no horizontal scroll at 1024 and 1440 px on 7 screens per theme).
+- Not done: the mockups' own screen layouts and interactive parts (bottom dock, guided Verdict, galvanometer, ticket printer, keypad, rotary knob, radar, hold-to-confirm, liquid lens, camera flights), real FPS in a visible window, screen-reader pass.
+
 ## G0.5 — Product design & UX (2026-11-05) — **prototype built, design VALIDATED by owner 2026-11-05 (improvements later)**
 - Design docs: `docs/design/{DESIGN_VISION,DESIGN_SYSTEM,UX_ARCHITECTURE,COMPONENT_INVENTORY,REVIEW_G0.5-D,MOCKUP_AUDIT,3D_MODEL}.md`.
 - Frontend rewritten on a token-based design system (3 themes), 10 screens (4 priority at full fidelity), command palette, 3D viewer (three.js, lazy).

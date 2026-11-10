@@ -50,7 +50,13 @@ U1 Doctor runs **on your own PC**. It gives you three things:
 |---|---|---|
 | ![Overview](docs/media/screens/03-overview.png) | ![Timeline](docs/media/screens/06-timeline.png) | ![Error codes](docs/media/screens/04-error-codes.png) |
 
-Screenshots were taken in **Expert mode** with **demo mode** on, which shows the built-in **synthetic demo data** (the `DEMO` banner is visible whenever it is on). All 11 screens are in [`docs/media/screens/`](docs/media/screens/).
+Screenshots were taken in the default **Obsidienne** theme, in **Expert mode** with **demo mode** on, which shows the built-in **synthetic demo data** (the `DEMO` banner is visible whenever it is on). All 11 screens are in [`docs/media/screens/`](docs/media/screens/).
+
+### Four themes
+
+![The Overview in the four themes: Pupitre, Notice, Obsidienne and Visière](docs/media/themes.jpg)
+
+**Pupitre** (top left) turns the app into the U1's hardware console: keys, screwed plastic modules, titles on an amber LCD. **Notice** (top right) reads like an illustrated manual: white paper, black outlines, the 3D printer drawn in lines; it is the easiest to read. **Obsidienne** (bottom left, the default) is dark frosted glass. **Visière** (bottom right) is a warm head-up display with gold corner marks. Pick one in Settings or in the top bar. A theme changes the look only, never what the app says, and a theme chosen in an older version is carried over (light becomes Notice, graphite becomes Pupitre, night becomes Obsidienne). All fonts ship with the app.
 
 ## What is inside: the 11 screens
 
@@ -66,7 +72,7 @@ Screenshots were taken in **Expert mode** with **demo mode** on, which shows the
 | 08 | **Evidence detail** | The observations behind every finding, with source, time quality and hashes (in the menu in Expert mode; in Simple mode it opens from "Open" on a finding) |
 | 09 | **Replay lab** | Rerun the rules on frozen synthetic data and check the result is identical, byte for byte (in the menu in Expert mode) |
 | 10 | **Report composer** | Prepare a privacy-checked **evidence bundle** of the demo scenario or of **your own saved capture**, import someone else's, and copy a **ticket-ready summary** (versions, code, toolhead, LAN or cloud, filaments, what you tried, capture facts) for a support ticket or a forum post |
-| 11 | **Settings** | Language (English or French), **Simple or Expert** display level, 3 themes, 2 densities, replay of the guided start, versions and the compatibility list |
+| 11 | **Settings** | Language (English or French), **Simple or Expert** display level, 4 themes (Pupitre, Notice, Obsidienne, Visière), 2 densities, replay of the guided start, versions and the compatibility list |
 
 Press `Ctrl K` anywhere to jump to a screen or paste an error code.
 
