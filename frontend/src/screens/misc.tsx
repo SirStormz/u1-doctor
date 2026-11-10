@@ -15,6 +15,7 @@ import type { RouteName } from "../lib/router";
 import { ALLOW, DENY } from "../lib/allowlist";
 import { ImportPanel } from "./deb";
 import { LogsImport } from "./history";
+import { CodeKeypad } from "../components/keypad";
 import { EvidenceNotice } from "../components/evidence-notice";
 import { LiveNet } from "../components/live-net";
 import { CaptureAlert, useCaptureAlert } from "../components/capture-alert";
@@ -134,6 +135,8 @@ function CaptureMode() {
   // Visor theme: the approval is given by holding the box 1.2 s (a pointer tap does not tick it); the keyboard and assistive
   // technologies (click events with detail 0) tick it as usual, and unticking is always one tap.
   const hold = theme === "visiere";
+  const cover = theme === "pupitre";
+  const [lifted, setLifted] = useState(false);
   const [holding, setHolding] = useState(false);
   const holdTimer = useRef<number | undefined>(undefined);
   const held = useRef(false);
@@ -176,11 +179,14 @@ function CaptureMode() {
           <label className="mt-3 grid gap-1 text-sm">{t.liveSeconds}
             <input type="number" min={3} max={60} value={secs} onChange={(e) => setSecs(Math.max(3, Math.min(60, Number(e.target.value) || 15)))} className="mono w-28 rounded-lg border border-control bg-surface2 px-3 py-2 text-ink" />
           </label>
-          <label className="dg-consent mt-3 flex items-start gap-2 text-sm" data-hold={hold ? "true" : undefined} data-holding={holding ? "true" : undefined} data-on={consent ? "true" : undefined}
+          <div className="dg-guard mt-3" data-lifted={lifted ? "true" : undefined}>
+          <button type="button" className="dg-cover" aria-expanded={lifted} aria-controls="dg-consent-box" onClick={() => setLifted((l) => !l)}><span>{lifted ? t.sig.coverClose : t.sig.cover}</span></button>
+          <label className="dg-consent flex items-start gap-2 text-sm" data-hold={hold ? "true" : undefined} data-holding={holding ? "true" : undefined} data-on={consent ? "true" : undefined}
             onPointerDown={hold && !consent ? startHold : undefined} onPointerUp={stopHold} onPointerLeave={stopHold} onPointerCancel={stopHold} onClick={holdClick}>
-            <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-1" aria-describedby={hold ? "dg-hold" : undefined} />
-            <span>{t.liveConsent}<span id="dg-hold" className="dg-hold-hint">{holding ? t.dg.holding : t.dg.hold}</span></span>
+            <input id="dg-consent-box" type="checkbox" checked={consent} disabled={cover && !lifted} onChange={(e) => setConsent(e.target.checked)} className="mt-1" aria-describedby={hold ? "dg-hold" : cover ? "dg-cover-hint" : undefined} />
+            <span>{t.liveConsent}<span id="dg-hold" className="dg-hold-hint">{holding ? t.dg.holding : t.dg.hold}</span><span id="dg-cover-hint" className="dg-cover-hint">{t.sig.coverHint}</span></span>
           </label>
+          </div>
           <label className="mt-2 flex items-start gap-2 text-sm"><input type="checkbox" checked={save} onChange={(e) => setSave(e.target.checked)} className="mt-1" /><span>{t.liveSave}</span></label>
           {gcodeMm && <p className="mt-2 text-xs text-ink3">{t.net.gcode.replace("{mm}", gcodeMm.map((x) => (lang === "fr" ? String(x).replace(".", ",") : String(x))).join(", "))}</p>}
           <div className="mt-4"><Button variant="primary" disabled={!ready} onClick={() => void run()} icon={<Plug size={16} />}>{busy ? t.liveRunning : t.connectBtn}</Button></div>
@@ -250,7 +256,8 @@ export function Explorer({ param }: { param?: string }) {
       <div className="grid gap-d xl:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">
         <Panel title={t.codeLabel} i={0} active>
           <form onSubmit={(e) => { e.preventDefault(); void run(code); }} className="grid gap-3">
-            <input value={code} maxLength={200} onChange={(e) => setCode(e.target.value)} placeholder="0002-0525-0002-0002" aria-label={t.codeLabel} title={t.codePasteHint} className="mono rounded-lg border border-control bg-surface2 px-3 py-2.5 text-base text-ink" />
+            <input value={code} maxLength={200} onChange={(e) => setCode(e.target.value)} placeholder="0002-0525-0002-0002" aria-label={t.codeLabel} title={t.codePasteHint} className="code-field mono rounded-lg border border-control bg-surface2 px-3 py-2.5 text-base text-ink" />
+            <CodeKeypad value={code} onChange={setCode} />
             <label className="grid gap-1.5"><span className="micro">{t.fwLabel}</span>
               <input value={fw} maxLength={32} onChange={(e) => setFw(e.target.value)} placeholder="2.1.0" aria-label={t.fwLabel} className="mono rounded-lg border border-control bg-surface2 px-3 py-2.5 text-base text-ink" />
               <span className="text-xs text-ink3">{t.fwHint}</span></label>

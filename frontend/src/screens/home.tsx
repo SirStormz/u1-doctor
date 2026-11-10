@@ -7,6 +7,7 @@ import { tx } from "../lib/dyn";
 import type { RouteName } from "../lib/router";
 import { MiniStrip } from "../viz/HypothesisMap";
 import { renderFor } from "../themes/renders";
+import { LiquidDefs } from "../viz/LiquidDefs";
 import { officialSteps } from "../lib/steps";
 import { RealCapturePanel } from "./real";
 import { NoData } from "../components/nodata";
@@ -91,6 +92,7 @@ export function Home({ go }: { go: (n: RouteName, p?: string) => void }) {
         </div>
 
         <Panel title={t.machine} icon={<Boxes size={17} />} i={1} bodyClass="p-0" actions={<Chip tone="demo">{t.illustration}</Chip>}>
+          <LiquidDefs />
           <figure className="home-figure m-0" style={{ "--ar": hero.width / hero.height } as React.CSSProperties}>
             <img src={hero.src} alt={head ? H.imgAlt.replace("{n}", String(head)) : H.imgAltNone} width={hero.width} height={hero.height} className="h-full w-full object-contain" />
             {mark && <span className="home-lens" aria-hidden style={{ left: `${mark.x}%`, top: `${mark.y}%`, backgroundImage: `url(${hero.src})`, backgroundPosition: `${mark.x}% ${mark.y}%` }} />}

@@ -208,3 +208,51 @@
 [data-theme="pupitre"] .dg-txt strong { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.06em; font-size: 15px; }
 [data-theme="pupitre"] .dg-card:has(.dg-radio:checked) .dg-b, [data-theme="pupitre"] .dg-card:has(.dg-radio:checked) .dg-txt strong { color: #2a1b03; }
 [data-theme="pupitre"] .dg-tag { border: 0; border-radius: 3px; background: #f4ecc9; color: #2a1b03; font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.08em; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18); }
+
+/* ---- signature pieces: moving-coil meters, the findings printed on a ticket, a keypad, a safety cover over the lever ---- */
+[data-theme="pupitre"] .ex-meters { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-top: 10px; }
+[data-theme="pupitre"] .meter { display: block; width: 100%; height: auto; padding: 9px; border-radius: 18px; background: linear-gradient(180deg, #2e2c28, #1e1d1b);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 0 0 1px #000, 0 8px 16px -6px rgba(0, 0, 0, 0.45); }
+[data-theme="pupitre"] .meter-face { fill: #f4ecd8; }
+[data-theme="pupitre"] .meter-arc { fill: none; stroke: #2a2620; stroke-width: 1.4; }
+[data-theme="pupitre"] .meter-major { stroke: #2a2620; stroke-width: 2; }
+[data-theme="pupitre"] .meter-minor { stroke: #2a2620; stroke-width: 1; }
+[data-theme="pupitre"] .meter-num { fill: #2a2620; font: 600 13px var(--font-display); }
+[data-theme="pupitre"] .meter-label { fill: #5b5346; font: 600 10px var(--font-display); letter-spacing: 0.12em; text-transform: uppercase; }
+[data-theme="pupitre"] .meter-needle { transition: transform 1100ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+[data-theme="pupitre"] .meter-needle line { stroke: #1a1714; stroke-width: 2.2; stroke-linecap: round; }
+[data-theme="pupitre"] .meter-hub { fill: #2b2a27; stroke: #8f8a80; stroke-width: 2; }
+/* the findings come out of the printer as a ticket */
+[data-theme="pupitre"] .ex-findings .overflow-x-auto { margin: 14px 18px 20px; padding-bottom: 12px; background: #fbfaf5; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / 16px 100%; mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / 16px 100%;
+  animation: pup-ticket 1100ms steps(7, end) 250ms both; }
+@keyframes pup-ticket { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+[data-theme="pupitre"] .ex-table th, [data-theme="pupitre"] .ex-table td { font-family: var(--font-mono); }
+[data-theme="pupitre"] .ex-table thead { border-bottom: 1px dashed #8f8a80; }
+[data-theme="pupitre"] .ex-table td { border-top: 1px dashed #d9d4c8; }
+/* keypad that types the code into the amber screen */
+[data-theme="pupitre"] input.code-field:not([type="checkbox"]):not([type="radio"]):not([type="range"]) { border: 0; border-radius: 7px; padding: 12px 14px; color: #2a1b03; font-family: "Doto Variable", var(--font-mono); font-weight: 900; font-size: 22px; letter-spacing: 0.02em;
+  background: linear-gradient(180deg, #ffbe5c, #ffaf3e); box-shadow: inset 0 2px 8px rgba(90, 45, 0, 0.5), inset 0 0 0 1px rgba(70, 35, 0, 0.35), 0 0 0 5px #1e1d1b, 0 0 0 6px rgba(255, 255, 255, 0.45); margin: 6px; }
+[data-theme="pupitre"] input.code-field::placeholder { color: rgba(42, 27, 3, 0.35); }
+[data-theme="pupitre"] .kp { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 14px; border-radius: 12px; background: #2e2c28; box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.6); }
+[data-theme="pupitre"] .kp-key { display: grid; place-items: center; height: 46px; border: 0; border-radius: 8px; background: var(--key); box-shadow: var(--key-edge); color: var(--ink); font: 700 20px var(--font-display); cursor: pointer; transition: transform 50ms, box-shadow 50ms; }
+[data-theme="pupitre"] .kp-key:active { transform: translateY(2px); box-shadow: var(--key-down); }
+[data-theme="pupitre"] .kp-key[data-k="back"], [data-theme="pupitre"] .kp-key[data-k="clear"] { background: linear-gradient(180deg, #55524a, #36332e); color: #f2efe8; }
+/* safety cover over the approval lever */
+[data-theme="pupitre"] .dg-guard { position: relative; }
+[data-theme="pupitre"] .dg-cover { display: block; position: absolute; z-index: 2; left: 12px; top: 10px; width: 56px; height: 66px; border: 0; border-radius: 9px 9px 6px 6px; cursor: pointer;
+  background: linear-gradient(180deg, rgba(255, 202, 116, 0.94), rgba(255, 170, 44, 0.9)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), inset 0 -10px 14px -10px rgba(110, 60, 0, 0.5), 0 0 0 1px rgba(110, 60, 0, 0.55), 0 5px 9px rgba(0, 0, 0, 0.28);
+  transform-origin: 50% 0; transition: transform 460ms cubic-bezier(0.34, 1.45, 0.64, 1); }
+[data-theme="pupitre"] .dg-cover::before { content: ""; position: absolute; left: 8px; right: 8px; top: 6px; height: 3px; border-radius: 2px; background: rgba(110, 60, 0, 0.35); }
+[data-theme="pupitre"] .dg-cover > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+[data-theme="pupitre"] .dg-guard[data-lifted="true"] .dg-cover { transform: perspective(320px) rotateX(-118deg); }
+[data-theme="pupitre"] .dg-consent { position: relative; min-height: 86px; padding: 12px 14px 12px 84px; border-radius: 10px; background: #e7e3db; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.22), 0 1px 0 rgba(255, 255, 255, 0.7); }
+[data-theme="pupitre"] .dg-consent input[type="checkbox"] { -webkit-appearance: none; appearance: none; position: absolute; left: 27px; top: 17px; width: 26px; height: 52px; margin: 0; border-radius: 13px; cursor: pointer;
+  background: #2e2c28; box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.6); }
+[data-theme="pupitre"] .dg-consent input[type="checkbox"]::before { content: ""; position: absolute; left: 3px; top: 29px; width: 20px; height: 20px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #ffffff, #c9c4ba 55%, #6f6a62); box-shadow: 0 2px 3px rgba(0, 0, 0, 0.5); transition: top 160ms cubic-bezier(0.34, 1.45, 0.64, 1); }
+[data-theme="pupitre"] .dg-consent input[type="checkbox"]:checked { background: #1f6636; }
+[data-theme="pupitre"] .dg-consent input[type="checkbox"]:checked::before { top: 3px; }
+[data-theme="pupitre"] .dg-consent input[type="checkbox"]:disabled { cursor: not-allowed; }
+[data-theme="pupitre"] .dg-cover-hint { display: block; margin-top: 6px; font: 600 10.5px var(--font-display); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); }
+@media (prefers-reduced-motion: reduce) { [data-theme="pupitre"] .ex-findings .overflow-x-auto { animation: none; } }

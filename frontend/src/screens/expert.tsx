@@ -13,6 +13,9 @@ import { ALLOW } from "../lib/allowlist";
 import type { RouteName } from "../lib/router";
 import { renderFor, type Spot } from "../themes/renders";
 import { HeadCurve } from "../viz/HeadCurve";
+import { LiquidDefs } from "../viz/LiquidDefs";
+import { Meter } from "../viz/Meter";
+import { Radar as SessionRadar } from "../viz/Radar";
 import { RealCapturePanel } from "./real";
 
 type Go = (n: RouteName, p?: string) => void;
@@ -90,10 +93,11 @@ export function ExpertHome({ go }: { go: Go }) {
   const lo = points.length ? Math.floor(Math.min(...points.map((p) => p.v))) : 0;
   const hi = points.length ? Math.ceil(Math.max(...points.map((p) => p.v))) : 0;
 
-  interface Reading { id: string; spot: Spot; label: string; value: string | null; at: number | null; tag: string | null; alert?: boolean }
+  interface Reading { id: string; spot: Spot; label: string; value: string | null; at: number | null; tag: string | null; alert?: boolean; num?: number | null }
   const reading = (id: string, spot: Spot, label: string, list: Observation[], show: (o: Observation) => string): Reading => {
     const o = lastAt(list, cursor);
-    return { id, spot, label, value: o ? show(o) : null, at: o ? tms(o) : null, tag: o ? `${entityLabel(lang, o.entity_id)} · ${tok(lang, "mapping", o.mapping_quality).toLowerCase()}` : null };
+    const n = o ? Number(val(o).celsius) : NaN;
+    return { id, spot, label, value: o ? show(o) : null, at: o ? tms(o) : null, num: Number.isFinite(n) ? n : null, tag: o ? `${entityLabel(lang, o.entity_id)} · ${tok(lang, "mapping", o.mapping_quality).toLowerCase()}` : null };
   };
   const readings: Reading[] = [
     ...(head ? [reading("nozzle", `head${head}` as Spot, fill(X.nozzle, { n: head }), nozzleObs, (o) => `${num(Number(val(o).celsius))} °C`)] : []),
@@ -101,6 +105,12 @@ export function ExpertHome({ go }: { go: Go }) {
     reading("bed", "bed", X.bed, bedObs, (o) => `${num(Number(val(o).celsius))} °C`),
   ];
 
+  const here = obs.filter((o) => tms(o) === cursor);
+  const camSpot: Spot | null = !playing ? null
+    : here.some((o) => o.event_type === "user_reported_error_code") && head ? (`head${head}` as Spot)
+    : here.some((o) => o.event_type === "state_transition") ? "screen"
+    : here.some((o) => nozzleObs.includes(o)) && head ? (`head${head}` as Spot)
+    : here.some((o) => o.event_type === "bed_temperature_sample") ? "bed" : null;
   const replayFromStart = () => {
     setIdx(0); setPlaying(true);
     replayRef.current?.scrollIntoView?.({ behavior: reduce ? "auto" : "smooth", block: "center" });
@@ -134,7 +144,7 @@ export function ExpertHome({ go }: { go: Go }) {
             </dl>
           </Panel>
         </div>
-        <ExpertFigure readings={readings} head={head} theme={theme} label={X.readings} atLabel={X.at} none={X.none} />
+        <ExpertFigure readings={readings} head={head} theme={theme} label={X.readings} atLabel={X.at} none={X.none} focus={camSpot} />
       </div>
 
       {points.length > 0 && head && (
@@ -167,6 +177,10 @@ export function ExpertHome({ go }: { go: Go }) {
       <div className="mt-[var(--gap)] grid gap-d lg:grid-cols-[minmax(0,1.618fr)_minmax(0,1fr)]">
         <div ref={replayRef} className="min-w-0">
           <Panel title={X.replay} icon={<Play size={17} />} i={4} className="ex-replay" actions={<span className="text-xs text-ink3">{X.replayNote}</span>}>
+            <div className="ex-replay-body">
+            <SessionRadar t0={t0} cursor={cursor} note={t.sig.radarTurn} gaps={gaps}
+              events={events.filter((o) => o.event_type !== "capture_gap").map((o) => ({ t: tms(o), alert: o.event_type === "user_reported_error_code" || (o.event_type === "state_transition" && ["paused", "error"].includes(String(val(o).state))) }))} />
+            <div className="min-w-0">
             <div className="ex-transport flex items-center gap-3">
               <Button variant="primary" className="ex-play" aria-label={playing ? X.pause : X.play} icon={playing ? <Pause size={18} /> : <Play size={18} />}
                 onClick={() => { if (playing) setPlaying(false); else { if (index >= stops.length - 1) setIdx(0); setPlaying(true); } }} />
@@ -186,6 +200,8 @@ export function ExpertHome({ go }: { go: Go }) {
                 );
               })}
             </ul>
+            </div>
+            </div>
           </Panel>
         </div>
         <Panel title={X.share} icon={<Share size={17} />} i={5} className="ex-share">
@@ -202,20 +218,31 @@ export function ExpertHome({ go }: { go: Go }) {
 }
 
 /** The owner's render with the readings at the replay position: labels with a leader line on wide screens, a list everywhere (the list is what assistive tech reads). */
-function ExpertFigure({ readings, head, theme, label, atLabel, none }: {
-  readings: { id: string; spot: Spot; label: string; value: string | null; at: number | null; tag: string | null; alert?: boolean }[];
-  head: number | null; theme: Parameters<typeof renderFor>[0]; label: string; atLabel: string; none: string;
+function ExpertFigure({ readings, head, theme, label, atLabel, none, focus }: {
+  readings: { id: string; spot: Spot; label: string; value: string | null; at: number | null; tag: string | null; alert?: boolean; num?: number | null }[];
+  head: number | null; theme: Parameters<typeof renderFor>[0]; label: string; atLabel: string; none: string; focus: Spot | null;
 }) {
   const { t } = usePrefs();
   const hero = renderFor(theme, "hero");
   const ar = hero.width / hero.height;
   const sx = (x: number) => 50 + (x - 50) * (ar / STAGE_AR); // image % -> stage %
+  const cam = focus ? hero.at(focus) : null;
+  const headAt = head ? hero.at(`head${head}` as Spot) : null;
+  const LENS = 150, ZOOM = 3.8; // lens diameter (px) and magnification of the render inside it
+  const nozzle = readings.find((r) => r.id === "nozzle"), bed = readings.find((r) => r.id === "bed");
   const place = (id: string, a: { x: number; y: number }) => id === "nozzle" ? { side: "r" as const, x: 72, y: Math.max(4, a.y - 30) } : { side: "l" as const, x: 30, y: id === "state" ? a.y - 9 : a.y + 1 };
   return (
     <figure className="ex-figure m-0" aria-label={label}>
-      <div className="ex-stage" style={{ "--ar": STAGE_AR, "--iar": ar } as CSSProperties}>
-        <img src={hero.src} alt={head ? t.home.imgAlt.replace("{n}", String(head)) : t.home.imgAltNone} width={hero.width} height={hero.height} className="ex-img" />
+      <LiquidDefs />
+      <div className="ex-stage" data-cam={focus ?? undefined} style={{ "--ar": STAGE_AR, "--iar": ar } as CSSProperties}>
+        <div className="ex-cam"><div className="ex-cam-in" style={cam ? { transformOrigin: `${sx(cam.x)}% ${cam.y}%` } : undefined}>
+          <img src={hero.src} alt={head ? t.home.imgAlt.replace("{n}", String(head)) : t.home.imgAltNone} width={hero.width} height={hero.height} className="ex-img" />
+        </div></div>
         <div className="ex-overlay" aria-hidden>
+          {headAt && (
+            <span className="ex-lens" style={{ left: `${sx(headAt.x)}%`, top: `${headAt.y}%`, width: LENS, height: LENS, backgroundImage: `url(${hero.src})`,
+              backgroundSize: `${LENS * ZOOM}px auto`, backgroundPosition: `${LENS / 2 - (headAt.x / 100) * LENS * ZOOM}px ${LENS / 2 - (headAt.y / 100) * ((LENS * ZOOM) / ar)}px` } as CSSProperties} />
+          )}
           <svg className="ex-leaders" viewBox="0 0 100 100" preserveAspectRatio="none">
             {readings.map((r) => {
               const a = hero.at(r.spot); if (!a) return null;
@@ -228,7 +255,7 @@ function ExpertFigure({ readings, head, theme, label, atLabel, none }: {
             const p = place(r.id, a);
             return (
               <span key={r.id}>
-                <span className="ex-pin" data-id={r.id} style={{ left: `${sx(a.x)}%`, top: `${a.y}%` }}><span>{k + 1}</span></span>
+                <span className="ex-pin" data-id={r.id} data-on={focus === r.spot ? "true" : undefined} style={{ left: `${sx(a.x)}%`, top: `${a.y}%` }}><span>{k + 1}</span></span>
                 <span className="ex-callout" data-id={r.id} data-side={p.side} data-alert={r.alert ? "true" : undefined} style={{ [p.side === "l" ? "right" : "left"]: `${p.side === "l" ? 100 - p.x : p.x}%`, top: `${p.y}%` } as CSSProperties}>
                   <span className="ex-callout-k">{r.label}</span>
                   <span className="ex-callout-v">{r.value ?? none}</span>
@@ -238,6 +265,10 @@ function ExpertFigure({ readings, head, theme, label, atLabel, none }: {
             );
           })}
         </div>
+      </div>
+      <div className="ex-meters" aria-hidden>
+        {nozzle && head && <Meter min={0} max={300} major={100} minor={20} value={nozzle.num ?? null} label={t.sig.meterNozzle.replace("{n}", String(head))} />}
+        {bed && <Meter min={0} max={120} major={20} minor={5} value={bed.num ?? null} label={t.sig.meterBed} />}
       </div>
       <ol className="ex-readings">
         {readings.map((r, k) => (
