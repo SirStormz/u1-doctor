@@ -70,3 +70,23 @@
 
 /* 3D hotspots: numbered callouts */
 [data-theme="notice"] .hotspot { border: 2px solid var(--ink); border-radius: 999px; background: var(--yellow); color: var(--ink); box-shadow: 2px 2px 0 var(--ink); }
+
+/* ---- landing: an illustrated manual opened on a drafting sheet ---- */
+[data-theme="notice"] .landing { --lead: var(--ink); }
+[data-theme="notice"] .lstage { background: radial-gradient(circle, #e4e1da 1px, transparent 1.3px) 0 0 / 22px 22px, #ffffff; }
+[data-theme="notice"] .landing > header.topbar { background: #ffffff; border-bottom: 2px solid var(--ink); }
+[data-theme="notice"] .tpanel { background: #ffffff; border: 2px solid var(--ink); border-radius: 18px; box-shadow: 4px 4px 0 var(--ink); padding: 24px; }
+[data-theme="notice"] .lhero { font-weight: 800; letter-spacing: -0.035em; }
+[data-theme="notice"] .landing h2 { font-weight: 800; letter-spacing: -0.03em; }
+[data-theme="notice"] .manual-label { background: var(--yellow); color: var(--ink); border: 2px solid var(--ink); border-radius: 999px; padding: 2px 12px; font-family: var(--font-ui); letter-spacing: 0.06em; }
+[data-theme="notice"] .lcard { border: 2px solid var(--ink); border-radius: 12px; background: #ffffff; }
+[data-theme="notice"] .lcard[data-kind="hyp"] { border-style: dashed; }
+[data-theme="notice"] .lcard[data-kind="gap"] { border-style: dotted; background: #f4f3ef; }
+[data-theme="notice"] .lseal { border: 2px solid var(--ink); border-radius: 14px; background: #ffffff; box-shadow: 4px 4px 0 var(--ink); }
+[data-theme="notice"] .lseal-mark { border: 2px solid var(--ink); border-radius: 50%; color: var(--ink); }
+[data-theme="notice"] .lclose { background: var(--ink); color: #ffffff; border-top: 6px solid var(--yellow); }
+[data-theme="notice"] .lfoot { color: #c9c6be; }
+[data-theme="notice"] .lnum { font-family: var(--font-display); color: var(--ink); }
+[data-theme="notice"] .tour-bar { background: #ffffff; color: var(--ink); border: 2px solid var(--ink); border-radius: 999px; box-shadow: 3px 3px 0 var(--ink); padding: 6px 14px; }
+[data-theme="notice"] .tour-dot { border: 2px solid var(--ink); border-radius: 50%; }
+[data-theme="notice"] .tour-dot[aria-current="true"] { color: var(--ink); border-color: var(--ink); }

@@ -96,3 +96,25 @@
 [data-theme="obsidienne"] .hotspot { border: 0; border-radius: 999px; background: rgba(20, 23, 28, 0.62); color: var(--ink); -webkit-backdrop-filter: blur(12px) saturate(180%); backdrop-filter: blur(12px) saturate(180%);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 0 0 1px rgba(255, 181, 71, 0.55), 0 6px 16px -6px rgba(0, 0, 0, 0.8); }
 [data-theme="obsidienne"] .hotspot > span:first-child { color: var(--yellow); }
+
+/* ---- landing: the printer in a dark glass room ---- */
+[data-theme="obsidienne"] .landing { --lead: rgba(242, 244, 247, 0.72); }
+[data-theme="obsidienne"] .lstage {
+  background: radial-gradient(900px 640px at 72% 46%, rgba(255, 181, 71, 0.10), transparent 62%), radial-gradient(800px 600px at 10% 100%, rgba(120, 150, 255, 0.08), transparent 60%), var(--bg-0); }
+[data-theme="obsidienne"] .tpanel { background: linear-gradient(180deg, rgba(20, 23, 28, 0.62), rgba(20, 23, 28, 0.42)); border: 0; border-radius: 28px; padding: 28px;
+  -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%); box-shadow: var(--glass-edge), 0 30px 60px -30px rgba(0, 0, 0, 0.85); }
+[data-theme="obsidienne"] .lhero { font-weight: 600; letter-spacing: -0.045em; }
+[data-theme="obsidienne"] .landing h2 { font-weight: 600; letter-spacing: -0.035em; }
+[data-theme="obsidienne"] .landing dl { border-color: rgba(255, 255, 255, 0.14) !important; border-width: 1px 0 !important; }
+[data-theme="obsidienne"] .manual-label { background: rgba(255, 181, 71, 0.14); color: var(--yellow); border-radius: 999px; box-shadow: inset 0 0 0 1px rgba(255, 181, 71, 0.4); padding: 3px 12px; text-transform: none; letter-spacing: 0.02em; font-weight: 600; }
+[data-theme="obsidienne"] .lcard { border: 0; border-radius: 16px; background: rgba(255, 255, 255, 0.05); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12); }
+[data-theme="obsidienne"] .lcard[data-kind="hyp"] { box-shadow: inset 0 0 0 1px rgba(255, 158, 94, 0.5); }
+[data-theme="obsidienne"] .lcard[data-kind="gap"] { background: rgba(255, 255, 255, 0.025); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); }
+[data-theme="obsidienne"] .lseal { border: 0; border-radius: 18px; background: rgba(255, 255, 255, 0.06); box-shadow: var(--glass-edge), inset 0 0 0 1px rgba(143, 217, 168, 0.35); }
+[data-theme="obsidienne"] .lseal-mark { border-radius: 50%; background: rgba(143, 217, 168, 0.16); color: var(--ok); }
+[data-theme="obsidienne"] .lclose { background: linear-gradient(180deg, rgba(11, 13, 16, 0.55), #0b0d10 40%); color: var(--ink); border-top: 1px solid rgba(255, 181, 71, 0.45); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
+[data-theme="obsidienne"] .lfoot { color: var(--ink-3); }
+[data-theme="obsidienne"] .lnum { font-weight: 300; color: var(--ink); letter-spacing: -0.04em; }
+[data-theme="obsidienne"] .tour-bar { background: rgba(20, 23, 28, 0.62); color: var(--ink); border: 0; border-radius: 999px; padding: 6px 8px 6px 6px; -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); box-shadow: var(--glass-edge), 0 14px 30px -12px rgba(0, 0, 0, 0.8); }
+[data-theme="obsidienne"] .tour-dot { border: 0; border-radius: 50%; background: rgba(255, 255, 255, 0.08); color: var(--ink-2); }
+[data-theme="obsidienne"] .tour-dot[aria-current="true"] { background: linear-gradient(180deg, #ffc872, #ffae34); color: #241600; }
