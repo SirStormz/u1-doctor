@@ -24,7 +24,7 @@ A local, read-only evidence tool for the Snapmaker U1. No cloud, no telemetry, n
 
 > Unofficial. Not affiliated with, endorsed by, or approved by Snapmaker.
 
-https://github.com/user-attachments/assets/b164399f-4021-45d3-b8f1-79cc4562f80d
+https://github.com/user-attachments/assets/d7ad3b51-ea4c-40c8-b4de-bf7bd6530c2a
 
 ---
 
