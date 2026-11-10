@@ -71,6 +71,10 @@ Rapport complet : `U1_DOCTOR_AUDIT_4_THEMES.md` ; plan d'intégration : `U1_DOCT
 - Visière : si la U1 de l'app reste le modèle 3D, l'hologramme et le scan se font sur le modèle (contours du GLB) plutôt qu'avec une image ; jamais d'hologramme généré par IA. Le rouge reste réservé aux alertes.
 - Curseur `.thumb` des sélecteurs : la règle `.seg>span` écrasait `position:absolute` ; corrigé partout par `.seg>.thumb` (audit du 2026-11-10). À ne pas reproduire dans le code.
 
+## Rendus dans l'app
+
+Les 12 rendus de `render_u1.py` sont versionnés en WebP dans `frontend/src/assets/renders/` : `studio-*` (Obsidienne et Pupitre), `hud-*` (Visière), `line-*` (Notice), `holo-*` (hologramme Visière, fond transparent), chacun en `hero`, `tetes` et `ecran`, plus `anchors.json` (repères projetés : têtes, écran, plateau, buse). Les PNG sources restent dans `private/ui-v2/renders/`. Pour les refaire : `render_u1.py`, puis la conversion WebP (qualité 82).
+
 ## Intégration dans l'app (2026-11-10, branche `feat/ui-v2-themes`)
 
 Fait : registre `frontend/src/themes/registry.ts` (Obsidienne par défaut, migration light → notice, graphite → pupitre, night → obsidienne), jetons et polices par thème, une peau par thème (`themes/<id>/theme.css`) sur tous les écrans, 3D selon le thème (`viz/looks.ts`), Réglages avec vraies captures et fondu, titre qui se décode (Visière), titres et chiffres LCD (Pupitre). Détail et écarts : `U1_DOCTOR_PLAN_IMPLEMENTATION_THEMES.md`.

@@ -154,7 +154,7 @@ Outils déjà présents : vitest, Testing Library, Playwright, axe-core. Le banc
 | 3 | Le propriétaire fournit une photo de sa U1 en pause, posée en texture sur l'écran ; « PRÊTE · HORS LIGNE » reste en attendant |
 | 4 | Notice garde le cercle ambre et la flèche, sans main dessinée |
 | 5 | Geist pour Obsidienne |
-| 6 | À reprendre : la recommandation donnée reposait sur une erreur (le GLB web est commité, voir § 9.6) |
+| 6 | Rendus Blender versionnés (décision du 2026-11-10) : les 12 images en WebP dans `frontend/src/assets/renders/` (680 Ko au total, servies par `/assets` sans changer le backend) avec leurs repères (`anchors.json`) ; les PNG en pleine taille et la scène Blender restent dans `private/` |
 | 7 | Planches envoyées au canevas en un seul envoi, après les points 3 et 4 |
 | 8 | Feu vert, étape par étape, arrêt après chaque étape pour essai |
 
