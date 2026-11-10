@@ -121,6 +121,46 @@
       "w": 1440,
       "x": 4560,
       "y": 4900
+    },
+    "V-Accueil.dc.html": {
+      "expand": "fill",
+      "h": 2180,
+      "is_interactive": true,
+      "radius": 24,
+      "title": "V · 1 · Visière : Accueil, réticule verrouillé sur la tête 3, scan hologramme, titre qui se décode",
+      "w": 1440,
+      "x": 0,
+      "y": 7300
+    },
+    "V-Expert.dc.html": {
+      "expand": "fill",
+      "h": 1850,
+      "is_interactive": true,
+      "radius": 24,
+      "title": "V · 2 · Visière : Expert, vue hologramme à glisser, radar de session qui rejoue",
+      "w": 1440,
+      "x": 1520,
+      "y": 7300
+    },
+    "V-Verdict.dc.html": {
+      "expand": "fill",
+      "h": 1140,
+      "is_interactive": true,
+      "radius": 24,
+      "title": "V · 3 · Visière : Verdict, le réticule vole de cible en cible (cliquable)",
+      "w": 1440,
+      "x": 3040,
+      "y": 7300
+    },
+    "V-Diagnostiquer.dc.html": {
+      "expand": "fill",
+      "h": 1120,
+      "is_interactive": true,
+      "radius": 24,
+      "title": "V · 4 · Visière : Diagnostiquer, verrouiller un mode, maintenir pour autoriser",
+      "w": 1440,
+      "x": 4560,
+      "y": 7300
     }
   },
   "createdOnFiles": {
@@ -135,7 +175,8 @@
     "title",
     "rowA",
     "rowB",
-    "rowF"
+    "rowF",
+    "rowV"
   ],
   "notes": {
     "rowA": {
@@ -157,7 +198,7 @@
     "title": {
       "kind": "title1",
       "maxW": 7520,
-      "text": "U1 Doctor · UI V2 — trois directions : Pupitre 2, Notice, Obsidienne",
+      "text": "U1 Doctor · UI V2 · quatre directions : Pupitre 2, Notice, Obsidienne, Visière",
       "w": 240,
       "x": 0,
       "y": -420
@@ -169,6 +210,14 @@
       "w": 240,
       "x": 0,
       "y": 4705
+    },
+    "rowV": {
+      "kind": "title1",
+      "maxW": 7520,
+      "w": 240,
+      "x": 0,
+      "y": 7105,
+      "text": "V · Visière : HUD de casque néon or et rouge sur la vraie U1 (retouches Codex des rendus U1_Jay), hologramme tiré des pixels du rendu, réticule qui verrouille la tête 3, verre liquide sombre, lueur serrée sans halo"
     }
   },
   "order": [
@@ -183,8 +232,12 @@
     "F-Accueil.dc.html",
     "F-Expert.dc.html",
     "F-Verdict.dc.html",
-    "F-Diagnostiquer.dc.html"
+    "F-Diagnostiquer.dc.html",
+    "V-Accueil.dc.html",
+    "V-Expert.dc.html",
+    "V-Verdict.dc.html",
+    "V-Diagnostiquer.dc.html"
   ],
   "pages": [],
-  "title": "U1 Doctor UI V2 — Pupitre 2, Notice, Obsidienne"
+  "title": "U1 Doctor UI V2 · Pupitre 2, Notice, Obsidienne, Visière"
 }

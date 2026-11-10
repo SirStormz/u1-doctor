@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>V · Accueil, mode Simple</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400..700&amp;family=Saira:wdth,wght@75..125,300..700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#08070A}
+.app{--bg:#08070A;--panel:#100C0C;--line:rgba(255,214,154,.13);--line2:rgba(255,214,154,.28);--ink:#F6F1EA;--ink2:rgba(246,241,234,.74);--ink3:rgba(246,241,234,.56);--gold:#FFB547;--gold2:#FFD99A;--red:#FF3B2F;--redt:#FF7266;position:relative;min-height:1100px;background:var(--bg);color:var(--ink);font:400 16px/1.5 'Saira',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+.app *{box-sizing:border-box}
+.app a{color:inherit}
+.h{font-family:'Oxanium','Saira',sans-serif;font-weight:600;letter-spacing:-.01em}
+.mono{font-family:'JetBrains Mono',monospace;letter-spacing:0}
+.cond{font-stretch:80%;font-weight:600;font-size:12.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3)}
+.wrap{max-width:1360px;margin:0 auto;padding:0 40px}
+/* néon serré : jamais de halo large */
+.neon{color:var(--gold2);text-shadow:0 0 1px rgba(255,181,71,.85),0 0 7px rgba(255,181,71,.38)}
+.neon-r{color:var(--redt);text-shadow:0 0 1px rgba(255,59,47,.9),0 0 7px rgba(255,59,47,.4)}
+/* verre liquide sombre (approximation web) */
+.gl{position:relative;border-radius:3px;background:linear-gradient(180deg,rgba(255,196,140,.09),rgba(255,196,140,.025)),rgba(16,11,10,.46);-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%);box-shadow:inset 0 1px 0 rgba(255,226,182,.30),inset 0 0 0 1px rgba(255,214,154,.12),0 30px 60px -30px rgba(0,0,0,.9)}
+.gl::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,181,71,.032) 0 1px,transparent 1px 3px)}
+.lq{-webkit-backdrop-filter:blur(16px) saturate(150%);backdrop-filter:url(#lq) blur(16px) saturate(150%)}
+.pn{position:relative;border-radius:3px;background:var(--panel);box-shadow:inset 0 0 0 1px var(--line)}
+/* équerres d'angle : la signature des panneaux */
+.br::after{content:"";position:absolute;inset:-1px;pointer-events:none;background:linear-gradient(var(--gold),var(--gold)) 0 0/15px 1.5px no-repeat,linear-gradient(var(--gold),var(--gold)) 0 0/1.5px 15px no-repeat,linear-gradient(var(--gold),var(--gold)) 100% 0/15px 1.5px no-repeat,linear-gradient(var(--gold),var(--gold)) 100% 0/1.5px 15px no-repeat,linear-gradient(var(--gold),var(--gold)) 0 100%/15px 1.5px no-repeat,linear-gradient(var(--gold),var(--gold)) 0 100%/1.5px 15px no-repeat,linear-gradient(var(--gold),var(--gold)) 100% 100%/15px 1.5px no-repeat,linear-gradient(var(--gold),var(--gold)) 100% 100%/1.5px 15px no-repeat;filter:drop-shadow(0 0 2px rgba(255,181,71,.55));opacity:.9}
+/* barre de navigation */
+.nav{position:absolute;z-index:20;left:50%;top:22px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;padding:7px 8px 7px 16px;white-space:nowrap}
+.brand{display:flex;align-items:center;gap:9px;text-decoration:none;font:600 16px/1 'Oxanium',sans-serif;letter-spacing:.02em}
+.seg{position:relative;display:inline-grid;grid-auto-flow:column;grid-auto-columns:1fr;padding:3px;border-radius:2px;background:rgba(0,0,0,.45);box-shadow:inset 0 0 0 1px var(--line)}
+.seg>a,.seg>span,.seg>button{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;height:32px;padding:0 15px;border:0;background:none;font:600 12.5px/1 'Oxanium',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);text-decoration:none;cursor:pointer}
+.seg .on{color:var(--gold2)}
+.seg>.thumb{position:absolute;z-index:0;top:3px;bottom:3px;height:auto;padding:0;border-radius:1px;background:linear-gradient(180deg,rgba(255,181,71,.30),rgba(255,181,71,.14));box-shadow:inset 0 1px 0 rgba(255,226,182,.5),inset 0 0 0 1px rgba(255,181,71,.55);transition:left .45s cubic-bezier(.34,1.45,.64,1),width .45s cubic-bezier(.34,1.45,.64,1)}
+.ibtn{width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;border:0;background:rgba(255,214,154,.08);color:var(--ink2);cursor:pointer;clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px)}
+.ibtn:hover{background:rgba(255,214,154,.16);color:var(--gold2)}
+.chip{display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 10px;border-radius:2px;font-size:13px;font-weight:500;color:var(--ink2);background:rgba(255,214,154,.07);box-shadow:inset 0 0 0 1px var(--line)}
+.chip.dash{background:none;box-shadow:none;outline:1px dashed rgba(255,214,154,.45);outline-offset:-1px}
+.dia{display:inline-block;width:7px;height:7px;transform:rotate(45deg);flex-shrink:0}
+/* boutons à coins coupés */
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:48px;padding:0 24px;border:0;clip-path:polygon(11px 0,100% 0,100% calc(100% - 11px),calc(100% - 11px) 100%,0 100%,0 11px);font:600 14.5px/1 'Oxanium',sans-serif;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;white-space:nowrap;cursor:pointer;transition:transform .2s cubic-bezier(.34,1.45,.64,1),filter .2s,background .2s}
+.btn:active{transform:translateY(1px) scale(.98)}
+.btn-a{background:linear-gradient(180deg,#FFC874,#FFAB30);color:#1E1100}
+.btn-a:hover{filter:brightness(1.07)}
+.btn-g{background:rgba(255,214,154,.12);color:var(--gold2)}
+.btn-g:hover{background:rgba(255,214,154,.2)}
+.btn[disabled]{opacity:.38;cursor:not-allowed;transform:none;filter:none}
+/* états : losange + mot courant */
+.st{display:inline-flex;align-items:center;gap:8px;height:28px;padding:0 11px;border-radius:2px;font-size:13.5px;font-weight:600;white-space:nowrap}
+.st i{width:8px;height:8px;transform:rotate(45deg);flex-shrink:0}
+.s-w{background:rgba(255,181,71,.14);color:var(--gold2)}.s-w i{background:var(--gold);box-shadow:0 0 5px rgba(255,181,71,.75)}
+.s-o{background:rgba(246,241,234,.08);color:var(--ink)}.s-o i{background:var(--ink)}
+.s-u{background:rgba(246,241,234,.04);color:var(--ink2)}.s-u i{box-shadow:inset 0 0 0 1.5px rgba(246,241,234,.62)}
+.s-r{background:rgba(255,59,47,.14);color:var(--redt)}.s-r i{background:var(--red);box-shadow:0 0 5px rgba(255,59,47,.8)}
+/* dock */
+.dock{position:sticky;bottom:22px;z-index:20;display:flex;gap:2px;width:max-content;max-width:calc(100% - 32px);margin:42px auto 0;padding:6px}
+.dock a{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:106px;padding:11px 12px 9px;border-radius:2px;color:var(--ink2);text-decoration:none;font-size:12px;font-weight:600;font-stretch:85%;letter-spacing:.07em;text-transform:uppercase;transition:color .2s,background .2s}
+.dock a:hover{color:var(--ink);background:rgba(255,214,154,.06)}
+.dock a.on{color:var(--gold2);background:linear-gradient(180deg,rgba(255,181,71,.17),rgba(255,181,71,.04))}
+.dock a.on::before{content:"";position:absolute;left:26%;right:26%;top:0;height:2px;background:var(--gold);box-shadow:0 0 6px rgba(255,181,71,.8)}
+.dock a.on svg{filter:drop-shadow(0 0 3px rgba(255,181,71,.7))}
+/* infobulles */
+.tip{position:relative;cursor:help}
+.tip::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%);width:max-content;max-width:290px;padding:10px 13px;border-radius:2px;background:rgba(18,13,12,.96);box-shadow:inset 0 0 0 1px rgba(255,181,71,.38),0 14px 30px -10px rgba(0,0,0,.9);color:var(--ink);font:500 13.5px/1.5 'Saira',sans-serif;font-stretch:100%;letter-spacing:0;text-transform:none;text-align:left;white-space:normal;opacity:0;pointer-events:none;transition:opacity .15s;z-index:40}
+.tip.dn::after{bottom:auto;top:calc(100% + 10px)}
+.tip:hover::after,.tip:focus-visible::after,.tip.show::after{opacity:1}
+.dotted{border-bottom:1px dotted var(--ink3)}
+.kv{display:grid;grid-template-columns:136px minmax(0,1fr);gap:10px 14px;margin:0;font-size:15px}
+.kv dt{color:var(--ink3)}.kv dd{margin:0}
+/* verrou (interrupteur) */
+.sw{position:relative;width:54px;height:28px;flex-shrink:0;background:rgba(246,241,234,.10);box-shadow:inset 0 0 0 1px var(--line2);clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);transition:background .3s}
+.sw::before{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;background:#D8D0C5;clip-path:polygon(5px 0,100% 0,100% calc(100% - 5px),calc(100% - 5px) 100%,0 100%,0 5px);transition:left .45s cubic-bezier(.34,1.45,.64,1),background .3s}
+.on .sw,.sw.on{background:var(--gold)}
+.on .sw::before,.sw.on::before{left:29px;background:#1E1100}
+/* réticule */
+.ret{position:absolute;z-index:6;pointer-events:none;overflow:visible}
+.ret .ra,.ret .rb,.ret .lk{transform-box:fill-box;transform-origin:center}
+.ret .ra{animation:spin 16s linear infinite}
+.ret .rb{animation:spin 10s linear infinite reverse}
+.ret .lk{animation:lock 1.1s cubic-bezier(.2,.9,.25,1.25) .7s both}
+.glow{filter:drop-shadow(0 0 2px rgba(255,181,71,.75))}
+.glow-r{filter:drop-shadow(0 0 2px rgba(255,59,47,.8))}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes lock{from{transform:scale(2);opacity:0}55%{opacity:1}to{transform:none;opacity:1}}
+/* allumage : un tube néon qui s'allume */
+.pwr{animation:pwr .9s linear both}
+@keyframes pwr{0%{opacity:0}8%{opacity:.85}12%{opacity:.1}20%{opacity:1}27%{opacity:.35}36%,100%{opacity:1}}
+.rise{opacity:0;transform:translateY(14px);animation:rise .7s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+.app :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+@media (max-width:960px){.g2,.g3{grid-template-columns:minmax(0,1fr)!important}.hide-sm{display:none!important}.wrap{padding:0 16px}.dock a{min-width:62px}}
+@media (prefers-reduced-motion:reduce){.app *{animation:none!important;transition:none!important}.rise{opacity:1;transform:none}}
+@media (prefers-reduced-transparency:reduce){.gl,.lq{background:#140F0E;-webkit-backdrop-filter:none;backdrop-filter:none}}
+.nav .seg:has(>:nth-child(1):hover) .thumb{left:3px!important}
+.nav .seg:has(>:nth-child(2):hover) .thumb{left:50%!important}
+</style>
+
+<style>
+.layer{position:absolute;inset:0;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.scr{pointer-events:none}.scr>*{pointer-events:auto}
+.u1{position:absolute;left:636px;top:70px;width:724px;height:860px;overflow:hidden;-webkit-mask-image:radial-gradient(ellipse 64% 60% at 54% 52%,#000 62%,transparent 100%);mask-image:radial-gradient(ellipse 64% 60% at 54% 52%,#000 62%,transparent 100%)}
+.u1 img{position:absolute;inset:0;width:100%;height:100%;display:block}
+.holo{position:absolute;inset:0;background-image:url('/_blob/0ebb1648c2bf975cdb7fd1abb760b0d9');background-size:100% 100%;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 38%,#000 62%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 38%,#000 62%,transparent 100%);-webkit-mask-size:100% 230px;mask-size:100% 230px;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:0 -230px;mask-position:0 -230px;animation:band 7s cubic-bezier(.65,0,.35,1) 1.4s infinite alternate both}
+@keyframes band{from{-webkit-mask-position:0 -230px;mask-position:0 -230px}to{-webkit-mask-position:0 860px;mask-position:0 860px}}
+.beam{position:absolute;left:0;right:0;top:0;height:1.5px;background:linear-gradient(90deg,transparent,rgba(255,217,154,.95) 25%,rgba(255,217,154,.95) 75%,transparent);box-shadow:0 0 6px rgba(255,181,71,.7);transform:translateY(-115px);animation:beam 7s cubic-bezier(.65,0,.35,1) 1.4s infinite alternate both}
+@keyframes beam{from{transform:translateY(-115px)}to{transform:translateY(975px)}}
+.vp{position:absolute;z-index:6;left:1150px;top:115px;width:230px;height:230px;border-radius:50%;overflow:hidden;background-color:#0E0B0A;background-image:url('/_blob/dba15c43f5cdec9baadc08c3517ed9f3');background-size:841px 561px;background-position:-269px -312px;box-shadow:inset 0 0 0 1px rgba(255,214,154,.55),0 30px 60px -20px #000}
+.vp::after{content:"";position:absolute;inset:0;border-radius:50%;background:repeating-linear-gradient(0deg,rgba(8,7,10,.22) 0 1px,transparent 1px 3px),radial-gradient(circle,transparent 58%,rgba(8,7,10,.55) 100%)}
+.vpx{position:absolute;z-index:7;left:1150px;top:115px;width:230px;height:230px;pointer-events:none}
+.ring{position:absolute;z-index:5;left:1125px;top:90px;width:280px;height:280px;pointer-events:none}
+.ring .ra{transform-box:fill-box;transform-origin:center;animation:spin 40s linear infinite}
+.lead{position:absolute;z-index:6;height:1.5px;background:var(--gold);box-shadow:0 0 4px rgba(255,181,71,.7);transform-origin:0 50%}
+.node{position:absolute;z-index:7;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;background:var(--gold);transform:rotate(45deg)}
+.tag{position:absolute;z-index:7;display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 12px;text-decoration:none;font-size:13.5px;font-weight:600;color:var(--gold2)}
+.tg4{position:absolute;z-index:4;left:80px;top:870px;display:flex;align-items:stretch;gap:2px;padding:6px}
+.hm{display:flex;align-items:center;gap:12px;min-width:128px;padding:9px 14px;border-radius:2px;text-decoration:none}
+.hm .hn{font-size:26px;line-height:1}
+.hm .k{display:block;font-size:11px;font-weight:600;font-stretch:80%;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.hm .v{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:600}
+.hm.t3{background:linear-gradient(180deg,rgba(255,181,71,.24),rgba(255,181,71,.08));box-shadow:inset 0 0 0 1px rgba(255,181,71,.5)}
+.stepc{position:relative;display:flex;flex-direction:column;transition:box-shadow .3s}
+.stepc.done{box-shadow:inset 0 0 0 1px rgba(246,241,234,.45)}
+.pic{position:relative;height:220px;background-color:#0E0B0A;background-repeat:no-repeat;overflow:hidden}
+.pic::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(8,7,10,.18) 0 1px,transparent 1px 3px),linear-gradient(0deg,rgba(16,12,12,.9),transparent 45%)}
+.im1{background-image:url('/_blob/dba15c43f5cdec9baadc08c3517ed9f3');background-size:690px 460px;background-position:-109px -235px}
+.im2{background-image:url('/_blob/dba15c43f5cdec9baadc08c3517ed9f3');background-size:1150px 767px;background-position:-320px -420px}
+.im3{background-image:url('/_blob/beed230dcb1bfaeb94c09ec39ad41847');background-size:690px 460px;background-position:-113px -65px}
+.num{position:absolute;z-index:2;left:16px;bottom:10px;font:600 46px/1 'Oxanium',sans-serif;color:transparent;-webkit-text-stroke:1.2px var(--gold);filter:drop-shadow(0 0 3px rgba(255,181,71,.6))}
+.stamp{position:absolute;z-index:2;right:14px;top:14px;display:flex;align-items:center;gap:6px;height:26px;padding:0 10px;background:var(--ink);color:#120D0C;font:700 12px/1 'Oxanium',sans-serif;letter-spacing:.1em;text-transform:uppercase;clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px)}
+.mini{position:absolute;z-index:2;width:74px;height:74px;margin:-37px 0 0 -37px;pointer-events:none}
+.row{display:flex;align-items:center;gap:12px;width:100%;margin-top:auto;padding:14px 16px;border:0;background:rgba(255,214,154,.05);box-shadow:inset 0 1px 0 var(--line);color:var(--ink);font:600 15px/1 'Saira',sans-serif;cursor:pointer;text-align:left}
+.segs{display:flex;gap:4px}.segs i{width:22px;height:6px;background:rgba(246,241,234,.16);transform:skewX(-20deg)}.segs i.on{background:var(--gold);box-shadow:0 0 5px rgba(255,181,71,.7)}
+.ev{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);font-size:15px}
+.sym{display:inline-flex;align-items:center;min-height:42px;padding:0 16px;background:rgba(255,214,154,.07);box-shadow:inset 0 0 0 1px var(--line);clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);font-size:14.5px;font-weight:500;text-decoration:none;transition:background .2s,color .2s}
+.sym:hover{background:rgba(255,181,71,.16);color:var(--gold2)}
+.field{width:100%;height:50px;padding:0 18px;border:0;border-radius:2px;background:rgba(0,0,0,.5);box-shadow:inset 0 0 0 1px var(--line2);color:var(--gold2);font:500 16px/1 'JetBrains Mono',monospace;letter-spacing:.04em;outline:none}
+.field::placeholder{color:var(--ink3)}
+.dec{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px;padding:16px 18px;border-radius:2px;background:rgba(0,0,0,.35);box-shadow:inset 0 0 0 1px var(--line)}
+.dec .k{font-size:11.5px;font-weight:600;font-stretch:80%;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.dec .v{font:500 15px/1.3 'JetBrains Mono',monospace;color:var(--ink)}
+.corner{position:absolute;width:46px;height:46px;pointer-events:none;border-color:rgba(255,181,71,.55);border-style:solid;border-width:0}
+</style>
+</helmet>
+<div class="app">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="lq" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.007 0.011" numOctaves="1" seed="4" result="t"></feTurbulence><feGaussianBlur in="t" stdDeviation="2.5" result="tb"></feGaussianBlur><feDisplacementMap in="SourceGraphic" in2="tb" scale="30" xChannelSelector="R" yChannelSelector="B"></feDisplacementMap></filter></defs></svg>
+<header class="nav gl lq br" role="banner">
+<a class="brand" href="V-Accueil.dc.html"><svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true" class="glow"><path d="M5 5v13a8 8 0 0 0 16 0v-3h2.5l2-5 3 10 2-5" stroke="#FFB547" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="30" cy="20" r="1.6" fill="#FFB547"></circle></svg>U1 Doctor</a>
+
+<span class="chip tip dn hide-sm" tabindex="0" data-tip="U1 Doctor lit l’état de l’imprimante, il n’envoie jamais de commande."><span class="dia" style="background:var(--ink)"></span>Lecture seule</span>
+<span class="chip dash tip dn hide-sm" tabindex="0" data-tip="Ces données sont un exemple fictif pour découvrir l’application. Rien ne vient de votre imprimante.">Exemple de démo</span>
+<div class="seg" role="group" aria-label="Niveau de détail"><span class="on" aria-current="true">Simple</span><a href="V-Expert.dc.html" class="tip dn" data-tip="Affiche le détail technique : codes bruts, horaires précis, sources et preuves. Chaque terme a son explication au survol.">Expert</a><span class="thumb" style="left:3px;width:calc(50% - 3px)"></span></div>
+<div class="seg hide-sm" role="group" aria-label="Langue"><span class="on">FR</span><a href="V-Accueil.dc.html">EN</a><span class="thumb" style="left:3px;width:calc(50% - 3px)"></span></div>
+<button type="button" class="ibtn" aria-label="Réglages"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"></path><circle cx="15" cy="6" r="2"></circle><circle cx="9" cy="12" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg></button>
+</header>
+
+<section style="position:relative;height:1010px" onMouseMove="{{move}}" onMouseLeave="{{leave}}">
+<span class="corner pwr" aria-hidden="true" style="left:24px;top:96px;border-left-width:1.5px;border-top-width:1.5px;animation-delay:.1s"></span>
+<span class="corner pwr" aria-hidden="true" style="right:24px;top:96px;border-right-width:1.5px;border-top-width:1.5px;animation-delay:.15s"></span>
+<span class="corner pwr" aria-hidden="true" style="left:24px;bottom:18px;border-left-width:1.5px;border-bottom-width:1.5px;animation-delay:.2s"></span>
+<span class="corner pwr" aria-hidden="true" style="right:24px;bottom:18px;border-right-width:1.5px;border-bottom-width:1.5px;animation-delay:.25s"></span>
+
+<div class="layer" style="transform:{{world}}">
+<div class="u1">
+<img src="/_blob/bba1de9d130c2706bd3d310e199185ed" alt="Photo de la U1 dans l'obscurité, éclairée en or et en rouge, vue de trois quarts">
+<div class="holo" aria-hidden="true"></div>
+<div class="beam" aria-hidden="true"></div>
+</div>
+<svg class="ret" width="150" height="150" viewBox="0 0 150 150" aria-hidden="true" style="left:1019px;top:332px"><g class="glow" fill="none" stroke="#FFB547"><circle class="ra" cx="75.0" cy="75.0" r="69.0" stroke-opacity=".55" stroke-width="1.2" stroke-dasharray="2 7"></circle><path d="M144.0 75.0L151.0 75.0 M75.0 144.0L75.0 151.0 M6.0 75.0L-1.0 75.0 M75.0 6.0L75.0 -1.0" stroke-width="1.5" stroke-opacity=".8"></path><circle class="rb" cx="75.0" cy="75.0" r="54.0" stroke-width="1.5" stroke-dasharray="61.1 23.8"></circle><path class="lk" d="M52.5 37.5H37.5V52.5 M97.5 37.5H112.5V52.5 M97.5 112.5H112.5V97.5 M52.5 112.5H37.5V97.5" stroke-width="2.2" stroke-linecap="square"></path><path d="M68.0 75.0H72.5M77.5 75.0H82.0M75.0 68.0V72.5M75.0 77.5V82.0" stroke-width="1.5"></path></g></svg>
+<span class="lead pwr" aria-hidden="true" style="left:1146px;top:353px;width:57px;transform:rotate(-46deg);animation-delay:1.3s"></span>
+<span class="node pwr" aria-hidden="true" style="left:1185px;top:313px;animation-delay:1.35s"></span>
+<svg class="ring pwr" viewBox="0 0 280 280" aria-hidden="true" style="animation-delay:1.4s"><g class="glow" fill="none" stroke="#FFB547"><circle class="ra" cx="140" cy="140" r="128" stroke-opacity=".7" stroke-width="5" stroke-dasharray="1 6.02"></circle><circle cx="140" cy="140" r="133" stroke-opacity=".9" stroke-width="1.2" stroke-dasharray="40 30 4 30"></circle></g></svg>
+<div class="vp pwr" role="img" aria-label="Gros plan sur la tête 3 : les quatre têtes, la troisième au centre" style="animation-delay:1.45s"></div>
+<svg class="vpx" viewBox="0 0 230 230" aria-hidden="true"><g class="glow" fill="none" stroke="#FFB547" stroke-width="1.4"><path d="M115 92V104M115 126V138M92 115H104M126 115H138"></path><path class="lk" d="M88 100V88H100M130 88H142V100M142 130V142H130M100 142H88V130" stroke-width="2"></path></g></svg>
+<a href="V-Verdict.dc.html" class="tag gl br pwr" style="left:1176px;top:358px;animation-delay:1.6s"><span class="dia" style="background:var(--gold);box-shadow:0 0 5px rgba(255,181,71,.8)"></span>Tête 3 · à vérifier</a>
+</div>
+
+<div class="layer scr" style="transform:{{scr}}">
+<div class="rise" style="position:absolute;left:80px;top:178px;width:580px;animation-delay:.1s">
+<span class="chip">Dernière lecture · il y a 2 min</span>
+<h1 class="h" aria-label="Votre U1 a besoin d'un coup d'œil." style="margin:22px 0 0;font-size:66px;line-height:1.02;letter-spacing:-.02em"><span aria-hidden="true">{{h1}}</span></h1>
+<p style="margin:22px 0 0;font-size:20px;color:var(--ink2);max-width:28ch">Une chose à vérifier sur la tête 3. Trois gestes, environ cinq minutes.</p>
+<div style="display:flex;gap:12px;margin-top:30px"><a href="#gestes" class="btn btn-a">Voir les 3 gestes</a><a href="V-Verdict.dc.html" class="btn btn-g">Comment on le sait ?</a></div>
+</div>
+
+<div class="gl lq br rise" style="position:absolute;z-index:4;left:540px;top:636px;width:440px;padding:24px 26px;animation-delay:.4s">
+<div style="display:flex;justify-content:space-between;align-items:center"><span class="st s-w tip" tabindex="0" data-tip="À vérifier : l'imprimante a signalé quelque chose, mais il faut le confirmer à l'œil. Ce n'est pas une certitude."><i></i>À vérifier</span><span class="cond">Tête 3 · ~5 min</span></div>
+<div class="h" style="margin-top:14px;font-size:24px;line-height:1.18">La tête 3 n'arrive plus à pousser le filament</div>
+<p style="margin:10px 0 0;font-size:15px;color:var(--ink2)">Blocage signalé à l'engrenage qui entraîne le filament, puis pause de l'impression.</p>
+</div>
+
+<div class="tg4 gl lq br rise" style="animation-delay:.55s">
+<div class="hm tip" tabindex="0" data-tip="Aucun problème signalé pour cette tête pendant la dernière lecture."><span class="h hn">1</span><span><span class="k">Tête</span><span class="v"><span class="dia" style="background:var(--ink)"></span>OK</span></span></div>
+<div class="hm tip" tabindex="0" data-tip="Aucun problème signalé pour cette tête pendant la dernière lecture."><span class="h hn">2</span><span><span class="k">Tête</span><span class="v"><span class="dia" style="background:var(--ink)"></span>OK</span></span></div>
+<a href="V-Verdict.dc.html" class="hm t3"><span class="h hn neon">3</span><span><span class="k">Tête</span><span class="v" style="color:var(--gold2)"><span class="dia" style="background:var(--gold);box-shadow:0 0 5px rgba(255,181,71,.8)"></span>À vérifier</span></span></a>
+<div class="hm tip" tabindex="0" data-tip="Aucun problème signalé pour cette tête pendant la dernière lecture."><span class="h hn">4</span><span><span class="k">Tête</span><span class="v"><span class="dia" style="background:var(--ink)"></span>OK</span></span></div>
+<div class="hm tip" tabindex="0" data-tip="L'imprimante a mis l'impression en pause d'elle-même."><span class="st s-r"><i></i>Impression en pause</span></div>
+</div>
+</div>
+</section>
+
+<div class="wrap">
+<section id="gestes" style="padding-top:20px">
+<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:22px">
+<h2 class="h" style="margin:0;font-size:40px;line-height:1.05">Trois gestes, dans l'ordre</h2>
+<div style="display:flex;align-items:center;gap:12px"><span class="segs" aria-hidden="true"><i class="{{seg0}}"></i><i class="{{seg1}}"></i><i class="{{seg2}}"></i></span><span style="font-size:14.5px;color:var(--ink2)">{{doneLabel}}</span></div>
+</div>
+<div class="g3" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:21px">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="3">
+<div class="{{s.cls}}">
+<div class="{{s.pic}}" role="img" aria-label="{{s.alt}}">
+<svg class="mini" viewBox="0 0 74 74" aria-hidden="true" style="left:{{s.mx}};top:{{s.my}}"><g class="glow" fill="none" stroke="#FFB547"><circle cx="37" cy="37" r="30" stroke-width="1.2" stroke-dasharray="14 5"></circle><path d="M17 26V17H26M48 17H57V26M57 48V57H48M26 57H17V48" stroke-width="2"></path></g></svg>
+<span class="num" aria-hidden="true">{{s.n}}</span>
+<sc-if value="{{s.on}}" hint-placeholder-val="{{ false }}"><span class="stamp"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="square" aria-hidden="true"><path d="M4 12l5 5L20 6"></path></svg>Fait</span></sc-if>
+</div>
+<div style="padding:18px 18px 16px;display:flex;flex-direction:column;gap:8px;flex-grow:1">
+<div class="h" style="font-size:21px">{{s.title}}</div>
+<div style="font-size:15px;color:var(--ink2)">{{s.text}}</div>
+</div>
+<button type="button" class="row" aria-pressed="{{s.pressed}}" onClick="{{s.toggle}}"><span class="{{s.sw}}"></span>{{s.label}}</button>
+</div>
+</sc-for>
+</div>
+<p style="margin:16px 0 0;font-size:13.5px;color:var(--ink3)">Consigne officielle Snapmaker pour ce code : vérifier, nettoyer, relancer.</p>
+</section>
+
+<div class="g2" style="display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:21px;margin-top:34px">
+<section class="pn br" style="padding:26px 28px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px"><h3 class="h" style="margin:0;font-size:22px">Ce qui s'est passé</h3><span class="cond">13 janv. · exemple</span></div>
+<div style="position:relative">
+<svg viewBox="0 0 727 150" width="100%" role="img" aria-label="Impression à 14:09, plus de nouvelles de 14:12:30 à 14:14, pause à 14:14:12, code de blocage à 14:14:20">
+<defs><linearGradient id="vsp" gradientUnits="userSpaceOnUse" x1="20" y1="0" x2="420" y2="0"><stop offset="0" stop-color="#FFB547" stop-opacity=".2"></stop><stop offset="1" stop-color="#FFD99A" stop-opacity=".95"></stop></linearGradient></defs>
+<g class="glow"><path d="M20 74 H420" stroke="url(#vsp)" stroke-width="2.5" stroke-linecap="square"></path></g>
+<path d="M420 74 H592" stroke="rgba(255,214,154,.45)" stroke-width="2" stroke-dasharray="2 7"></path>
+<path d="M592 74 H632" stroke="#F6F1EA" stroke-width="2.5"></path>
+<polygon points="43,66 51,74 43,82 35,74" fill="#F6F1EA" stroke="#100C0C" stroke-width="3"></polygon>
+<polygon points="615,66 623,74 615,82 607,74" fill="#F6F1EA" stroke="#100C0C" stroke-width="3"></polygon>
+<g class="glow-r"><polygon points="634,63 645,74 634,85 623,74" fill="#FF3B2F" stroke="#100C0C" stroke-width="2.5"></polygon></g>
+<g font-family="Saira, sans-serif" font-size="14" fill="#F6F1EA">
+<text x="34" y="110"><tspan font-family="Oxanium, sans-serif" font-weight="600">14:09</tspan><tspan fill-opacity=".74"> · l'impression démarre</tspan></text>
+<text x="506" y="110" text-anchor="middle" fill-opacity=".74"><tspan font-family="Oxanium, sans-serif" font-weight="600">14:12 → 14:14</tspan> · plus de nouvelles</text>
+<text x="622" y="138" text-anchor="end"><tspan font-family="Oxanium, sans-serif" font-weight="600">14:14</tspan><tspan fill-opacity=".74"> · pause</tspan></text>
+<text x="707" y="40" text-anchor="end" font-family="Oxanium, sans-serif" font-weight="600" fill="#FF7266">14:14 · code de blocage</text>
+</g>
+</svg>
+<span class="tip" tabindex="0" data-tip="U1 Doctor n'a rien reçu pendant 1 min 30 (Wi-Fi coupé ?). On ne peut pas savoir ce qui s'est passé à ce moment-là." style="position:absolute;left:57.8%;top:30%;width:23.6%;height:50%"></span>
+</div>
+</section>
+<section class="pn br" style="padding:26px 28px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px"><h3 class="h" style="margin:0;font-size:22px">Comment on le sait</h3><a href="V-Expert.dc.html" style="font-size:14px;font-weight:600;color:var(--gold2)">Détails →</a></div>
+<div class="ev"><span class="st s-o"><i></i>Constaté</span>Code de blocage reçu à 14:14</div>
+<div class="ev"><span class="st s-o"><i></i>Constaté</span>Pause juste avant</div>
+<div class="ev tip" tabindex="0" data-tip="Pendant 1 min 30, U1 Doctor n'a rien reçu. On ne peut pas savoir ce qui s'est passé à ce moment-là."><span class="st s-u"><i></i>Pas assez d'infos</span>Rien reçu 1 min 30</div>
+</section>
+</div>
+
+<div class="g2" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.618fr);gap:21px;margin-top:21px">
+<section class="pn br" style="padding:26px 28px;display:flex;flex-direction:column;gap:12px">
+<h3 class="h" style="margin:0;font-size:22px">Un code à l'écran ?</h3>
+<label for="code" style="font-size:14.5px;color:var(--ink2)">Tapez le code affiché sur l'écran tactile de la U1.</label>
+<div style="display:flex;gap:10px"><input id="code" class="field" type="text" placeholder="0002-0525-0002-0004"><button type="button" class="btn btn-g" style="flex-shrink:0" onClick="{{decode}}">Décoder</button></div>
+<sc-if value="{{hasDec}}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:4px"><span class="h neon" style="font-size:20px">{{dTitle}}</span><span class="chip dash" style="height:24px;font-size:12px">Exemple de démo</span></div>
+<div class="dec" aria-live="polite">
+<div><div class="k">Niveau</div><div class="v">{{d1}}</div></div>
+<div><div class="k">Identifiant</div><div class="v">{{d2}}</div></div>
+<div><div class="k tip" tabindex="0" data-tip="L'index du code désigne la tête. C'est une déduction, pas une mesure.">Index · tête</div><div class="v">{{d3}}</div></div>
+<div><div class="k">Code</div><div class="v">{{d4}}</div></div>
+</div>
+<span style="font-size:13px;color:var(--ink3)">Source : catalogue officiel (413 codes).</span>
+</sc-if>
+</section>
+<section class="pn br" style="padding:26px 28px;display:flex;flex-direction:column;gap:12px">
+<h3 class="h" style="margin:0;font-size:22px">Quelque chose cloche sur la pièce ?</h3>
+<div style="display:flex;flex-wrap:wrap;gap:10px">
+<a href="V-Diagnostiquer.dc.html" class="sym">La 1re couche n'accroche pas</a>
+<a href="V-Diagnostiquer.dc.html" class="sym">Des fils entre les pièces</a>
+<a href="V-Diagnostiquer.dc.html" class="sym">Pas assez de matière</a>
+<a href="V-Diagnostiquer.dc.html" class="sym">Les coins se soulèvent</a>
+<a href="V-Diagnostiquer.dc.html" class="sym">Couleurs décalées</a>
+<a href="V-Diagnostiquer.dc.html" class="sym" style="color:var(--gold2)">Voir les 11 autres</a>
+</div>
+</section>
+</div>
+</div>
+
+<nav class="dock gl lq br" aria-label="Navigation principale">
+<a href="V-Accueil.dc.html" class="on" aria-current="page"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path><path d="M10 21v-6h4v6"></path></svg>Accueil</a>
+<a href="V-Diagnostiquer.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>Diagnostiquer</a>
+<a href="V-Diagnostiquer.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>J'ai un problème</a>
+<a href="V-Expert.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Historique</a>
+<a href="V-Expert.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"></path><path d="M16 6l-4-4-4 4"></path><path d="M12 2v13"></path></svg>Partager</a>
+</nav>
+<div style="height:30px"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2180}}'>
+class Component extends DCLogic {
+scramble(txt, p) {
+var pool = "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789<>/#";
+var n = Math.floor(txt.length * p), out = "";
+for (var i = 0; i < txt.length; i++) {
+var ch = txt.charAt(i);
+if (i < n || ch === " " || ch === "'" || ch === ".") { out += ch; } else { out += pool.charAt(Math.floor(Math.random() * pool.length)); }
+}
+return out;
+}
+constructor(props) {
+super(props);
+this.state = { done: [false, false, false], f: 0, mx: 0, my: 0, dec: 0 };
+}
+componentDidMount() {
+var self = this;
+this.reduce = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+if (this.reduce) { this.setState({ f: 24 }); return; }
+this.t0 = setTimeout(function () {
+self.iv = setInterval(function () {
+var f = self.state.f + 1;
+self.setState({ f: f });
+if (f >= 24) { clearInterval(self.iv); }
+}, 38);
+}, 250);
+}
+componentWillUnmount() { clearTimeout(this.t0); clearInterval(this.iv); clearInterval(this.div); if (this.raf) { cancelAnimationFrame(this.raf); } }
+renderVals() {
+var self = this;
+var s = this.state;
+var done = s.done;
+var defs = [
+{ n: "1", title: "Repérez la tête 3", text: "La troisième en partant de la gauche, à l'arrière de la machine.", pic: "pic im1", mx: "216px", my: "118px", alt: "Les quatre têtes à l'arrière, la troisième marquée par un réticule" },
+{ n: "2", title: "Nettoyez l'engrenage", text: "Retirez les débris ou le filament cassé coincés dans l'engrenage qui pousse le filament.", pic: "pic im2", mx: "222px", my: "160px", alt: "Gros plan sur la tête 3" },
+{ n: "3", title: "Relancez l'impression", text: "Sur l'écran tactile de la U1, reprenez l'impression mise en pause.", pic: "pic im3", mx: "207px", my: "115px", alt: "L'écran tactile de la U1, marqué par un réticule" }
+];
+var count = done.filter(function (d) { return d; }).length;
+var p = Math.min(1, s.dec / 22);
+return {
+h1: s.f >= 24 ? "Votre U1 a besoin d'un coup d'œil." : self.scramble("Votre U1 a besoin d'un coup d'œil.", s.f / 24),
+world: "translate3d(" + (s.mx * 10).toFixed(1) + "px," + (s.my * 8).toFixed(1) + "px,0)",
+scr: "translate3d(" + (s.mx * -6).toFixed(1) + "px," + (s.my * -4).toFixed(1) + "px,0)",
+move: function (e) {
+if (self.reduce) { return; }
+var r = e.currentTarget.getBoundingClientRect();
+var x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+if (self.raf) { cancelAnimationFrame(self.raf); }
+self.raf = requestAnimationFrame(function () { self.setState({ mx: x, my: y }); });
+},
+leave: function () { self.setState({ mx: 0, my: 0 }); },
+doneLabel: count + " sur 3 faits",
+seg0: count > 0 ? "on" : "", seg1: count > 1 ? "on" : "", seg2: count > 2 ? "on" : "",
+steps: defs.map(function (d, i) {
+var on = done[i];
+return Object.assign({}, d, {
+on: on,
+cls: on ? "stepc pn br done" : "stepc pn br",
+sw: on ? "sw on" : "sw",
+label: on ? "Fait" : "Marquer comme fait",
+pressed: on ? "true" : "false",
+toggle: function () { var n = done.slice(); n[i] = !n[i]; self.setState({ done: n }); }
+});
+}),
+hasDec: s.dec > 0,
+dTitle: p >= 1 ? "Blocage d'extrusion" : self.scramble("Blocage d'extrusion", p),
+d1: p >= 1 ? "2 · avertissement" : self.scramble("2 · avertissement", p),
+d2: p >= 1 ? "525" : self.scramble("525", p),
+d3: p >= 1 ? "2 · tête 3 (déduit)" : self.scramble("2 · tête 3 (déduit)", p),
+d4: p >= 1 ? "4" : self.scramble("4", p),
+decode: function () {
+clearInterval(self.div);
+if (self.reduce) { self.setState({ dec: 22 }); return; }
+self.setState({ dec: 1 });
+self.div = setInterval(function () {
+var k = self.state.dec + 1;
+self.setState({ dec: k });
+if (k >= 22) { clearInterval(self.div); }
+}, 45);
+}
+};
+}
+}
+</script>
+</body>
+</html>
