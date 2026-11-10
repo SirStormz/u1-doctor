@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { App } from "../src/App";
 import { THEME_IDS } from "../src/themes/registry";
@@ -35,14 +35,16 @@ beforeEach(() => {
 });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
-async function visibleText(route: string, theme: string, lang: string): Promise<string> {
+async function visibleText(route: string, theme: string, lang: string, mode = "simple", demo = false): Promise<string> {
   localStorage.clear();
   localStorage.setItem("u1d.onboarded", "1");
+  localStorage.setItem("u1d.mode", mode);
   localStorage.setItem("u1d.theme", theme);
   localStorage.setItem("u1d.lang", lang);
   location.hash = `#/${route}`;
   render(<App />);
   await waitFor(() => expect(screen.getByRole("main").querySelector("h1, h2")).not.toBeNull(), { timeout: 5000 }); // screens load lazily
+  if (demo) { fireEvent.click(await screen.findByRole("button", { name: /^(demo mode|mode démo)$/i })); await waitFor(() => expect(screen.getByRole("main").querySelector("table")).not.toBeNull(), { timeout: 5000 }); }
   for (let i = 0; i < 5; i++) await act(async () => { await new Promise((r) => setTimeout(r, 20)); });
   expect(document.documentElement.dataset.theme).toBe(theme);
   const text = document.body.textContent?.replace(/\s+/g, " ").trim() ?? "";
@@ -53,6 +55,14 @@ async function visibleText(route: string, theme: string, lang: string): Promise<
 test.each([["overview", "fr"], ["settings", "fr"], ["findings", "fr"], ["overview", "en"], ["settings", "en"], ["findings", "en"]])("#/%s (%s): same visible text in every theme", async (route, lang) => {
   const texts: string[] = [];
   for (const id of THEME_IDS) texts.push(await visibleText(route, id, lang)); // one App at a time: they share the document
+  const [first, ...rest] = texts;
+  expect(first!.length).toBeGreaterThan(200);
+  for (const t of rest) expect(t).toBe(first);
+}, 40_000);
+
+test.each([["overview", "fr"], ["overview", "en"], ["connect", "fr"], ["connect", "en"]])("#/%s (%s, Expert): same visible text in every theme", async (route, lang) => {
+  const texts: string[] = [];
+  for (const id of THEME_IDS) texts.push(await visibleText(route, id, lang, "expert", route === "overview"));
   const [first, ...rest] = texts;
   expect(first!.length).toBeGreaterThan(200);
   for (const t of rest) expect(t).toBe(first);
