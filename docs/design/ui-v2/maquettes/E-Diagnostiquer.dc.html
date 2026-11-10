@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>E · Diagnostiquer</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500..900&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FFFFFF}
+.app{--paper:#FFFFFF;--wash:#F4F3EF;--grey:#E4E1DA;--ink:#1D1C1A;--ink2:#55534E;--ink3:#85827B;--amber:#FFB547;--amber-soft:#FFF0D6;--ok:#2F7D47;--okfill:#DDF0E1;position:relative;min-height:1100px;background:var(--paper);color:var(--ink);font:400 16px/1.55 'Atkinson Hyperlegible Next',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.app *{box-sizing:border-box}
+.app a{color:inherit}
+.t{font-family:'Schibsted Grotesk',sans-serif;font-weight:800;letter-spacing:-.02em}
+.mono{font-family:'IBM Plex Mono',monospace;letter-spacing:0}
+.wrap{max-width:1360px;margin:0 auto;padding:0 40px}
+.top{display:flex;align-items:center;gap:16px;height:80px;padding:0 40px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand b{font:800 21px/1 'Schibsted Grotesk',sans-serif;letter-spacing:-.02em}
+.pill{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 13px;border:2px solid var(--ink);border-radius:999px;background:#fff;font:700 13.5px/1 'Atkinson Hyperlegible Next',sans-serif;white-space:nowrap}
+.pill.dash{border-style:dashed;color:var(--ink2)}
+.seg{display:inline-flex;border:2px solid var(--ink);border-radius:12px;background:#fff;box-shadow:3px 3px 0 var(--ink)}
+.seg>*{display:inline-flex;align-items:center;height:36px;padding:0 15px;font:700 14px/1 'Atkinson Hyperlegible Next',sans-serif;text-decoration:none;color:var(--ink2)}
+.seg>*+*{border-left:2px solid var(--ink)}
+.seg>*:first-child{border-radius:9px 0 0 9px}.seg>*:last-child{border-radius:0 9px 9px 0}
+.seg .on{background:var(--amber);color:var(--ink)}
+.seg a:hover{background:var(--wash);color:var(--ink)}
+.box{position:relative;border:2px solid var(--ink);border-radius:18px;background:#fff}
+.box.wash{background:var(--wash)}
+.lbl{font:700 13px/1.2 'Atkinson Hyperlegible Next',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border:2px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);font:700 15.5px/1 'Atkinson Hyperlegible Next',sans-serif;text-decoration:none;cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:transform .08s,box-shadow .08s,background .15s}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+.btn-a{background:var(--amber)}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;box-shadow:3px 3px 0 var(--ink)}
+.state{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 13px;border:2px solid var(--ink);border-radius:999px;font:700 14px/1 'Atkinson Hyperlegible Next',sans-serif;white-space:nowrap}
+.s-w{background:var(--amber)}
+.s-o{background:var(--okfill);color:var(--ok);border-color:var(--ok)}
+.s-u{border-style:dashed;color:var(--ink2)}
+.num{width:46px;height:46px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:2px solid var(--ink);border-radius:50%;background:#fff;font:800 21px/1 'Schibsted Grotesk',sans-serif}
+.num.on{background:var(--amber)}
+.check{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 14px 0 8px;border:2px solid var(--ink);border-radius:12px;background:#fff;font:700 14.5px/1 'Atkinson Hyperlegible Next',sans-serif;cursor:pointer;box-shadow:2px 2px 0 var(--ink);transition:transform .08s,box-shadow .08s}
+.check:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+.check .sq{width:26px;height:26px;display:flex;align-items:center;justify-content:center;border:2px solid var(--ink);border-radius:7px;background:#fff}
+.check.on{background:var(--okfill)}
+.check.on .sq{background:var(--amber)}
+.field{width:100%;height:50px;padding:0 15px;border:2px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);font:600 16px/1 'IBM Plex Mono',monospace;outline:none}
+.field:focus{box-shadow:3px 3px 0 var(--amber)}
+.field::placeholder{color:var(--ink3)}
+.sym{display:inline-flex;align-items:center;min-height:40px;padding:0 15px;border:2px solid var(--ink);border-radius:999px;background:#fff;font-size:14.5px;font-weight:600;text-decoration:none;transition:background .15s}
+.sym:hover{background:var(--amber-soft)}
+.tip{position:relative;cursor:help}
+.tip::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%);width:max-content;max-width:280px;padding:10px 12px;border:2px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);font:500 13.5px/1.5 'Atkinson Hyperlegible Next',sans-serif;letter-spacing:0;text-transform:none;text-align:left;white-space:normal;box-shadow:3px 3px 0 var(--ink);opacity:0;pointer-events:none;transition:opacity .15s;z-index:30}
+.tip.dn::after{bottom:auto;top:calc(100% + 10px)}
+.tip:hover::after,.tip:focus-visible::after,.tip.show::after{opacity:1}
+.dotted{border-bottom:2px dotted var(--ink3)}
+.kv{display:grid;grid-template-columns:140px minmax(0,1fr);gap:10px 14px;margin:0;font-size:15px}
+.kv dt{color:var(--ink3);font-weight:600}.kv dd{margin:0}
+.dock{position:sticky;bottom:20px;z-index:10;display:flex;gap:6px;width:max-content;max-width:calc(100% - 32px);margin:42px auto 0;padding:7px;border:2px solid var(--ink);border-radius:20px;background:#fff;box-shadow:4px 4px 0 var(--ink)}
+.dock a{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:100px;padding:9px 12px 8px;border-radius:13px;color:var(--ink2);text-decoration:none;font:700 12.5px/1 'Atkinson Hyperlegible Next',sans-serif}
+.dock a:hover{background:var(--wash);color:var(--ink)}
+.dock a.on{background:var(--amber);color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.pop{opacity:0;transform:translateY(8px);animation:pop .4s cubic-bezier(.3,.7,.2,1) forwards}
+@keyframes pop{to{opacity:1;transform:none}}
+.app :focus-visible{outline:3px solid var(--amber);outline-offset:3px}
+@media (max-width:960px){.g2,.g3{grid-template-columns:minmax(0,1fr)!important}.dock a{min-width:62px}.hide-sm{display:none!important}.top{padding:0 16px}.wrap{padding:0 16px}}
+@media (prefers-reduced-motion:reduce){.app *{animation:none!important;transition:none!important}.pop{opacity:1;transform:none}}
+</style>
+
+<style>
+.ch{display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:22px;border:2px solid var(--ink);border-radius:18px;background:#fff;color:var(--ink);text-align:left;cursor:pointer;font:inherit;box-shadow:3px 3px 0 var(--ink);transition:transform .08s,box-shadow .08s,background .15s}
+.ch:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.ch.on{background:var(--amber);box-shadow:0 0 0 var(--ink);transform:translate(3px,3px)}
+.ch.dim{opacity:.5;pointer-events:none}
+.ch .ico{width:84px;height:64px}
+.consent{display:flex;gap:12px;align-items:flex-start;padding:16px;border:2px solid var(--ink);border-radius:14px;background:#fff;font-size:15.5px;line-height:1.5;cursor:pointer;text-align:left;width:100%;font-family:inherit;color:var(--ink)}
+.consent .sq{width:26px;height:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:2px solid var(--ink);border-radius:7px;background:#fff}
+.consent.on{background:var(--okfill)}
+.consent.on .sq{background:var(--amber)}
+.drop{display:flex;flex-direction:column;align-items:center;gap:14px;padding:40px 21px;border:3px dashed var(--ink);border-radius:18px;background:var(--wash);text-align:center}
+.tag{display:inline-flex;align-items:center;height:26px;padding:0 9px;border:2px solid var(--ink);border-radius:7px;font:600 12.5px/1 'IBM Plex Mono',monospace;background:#fff}
+.srow{display:flex;align-items:center;gap:14px;padding:13px 0;border-top:2px solid var(--grey);font-size:16px}
+.mk{width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:2px solid var(--ink);border-radius:50%;font-size:14px;font-weight:700}
+.spin{border-color:var(--grey);border-top-color:var(--ink);animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</helmet>
+<div class="app">
+<header class="top">
+<a class="brand" href="E-Accueil.dc.html"><svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M5 5v13a8 8 0 0 0 16 0v-3h2.5l2-5 3 10 2-5" stroke="#1D1C1A" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="30" cy="20" r="1.5" fill="#FFB547" stroke="#1D1C1A" stroke-width="1.2"></circle></svg><b>U1 Doctor</b></a>
+<a href="E-Accueil.dc.html" class="pill hide-sm" style="text-decoration:none">← Accueil</a>
+<span class="pill tip dn hide-sm" tabindex="0" data-tip="U1 Doctor lit l'état de l'imprimante, il n'envoie jamais de commande. Rien ne peut être modifié sur votre U1."><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>Lecture seule</span>
+<span class="pill dash tip dn hide-sm" tabindex="0" data-tip="Ces données sont un exemple fictif pour découvrir l’application. Rien ne vient de votre imprimante.">Exemple de démo</span>
+<div style="flex-grow:1"></div>
+<div class="seg" role="group" aria-label="Niveau de détail"><span class="on" aria-current="true">Simple</span><a href="E-Expert.dc.html" class="tip dn" data-tip="Affiche le détail technique : codes bruts, horaires précis, sources et preuves. Chaque terme a son explication au survol.">Expert</a></div>
+<div class="seg hide-sm" role="group" aria-label="Langue"><span class="on">FR</span><a href="E-Accueil.dc.html">EN</a></div>
+<button type="button" class="btn" aria-label="Réglages" style="width:44px;min-height:40px;padding:0"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"></path><circle cx="15" cy="6" r="2"></circle><circle cx="9" cy="12" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg></button>
+</header>
+
+<div class="wrap" style="max-width:1180px">
+<div style="padding-top:21px">
+<span class="lbl">Lecture seule · rien n'est jamais envoyé à l'imprimante</span>
+<h1 class="t" style="margin:12px 0 0;font-size:52px;line-height:1.04">Comment voulez-vous diagnostiquer ?</h1>
+</div>
+
+<div class="g2" role="radiogroup" aria-label="Façon de diagnostiquer" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:21px;margin-top:30px">
+<button type="button" role="radio" aria-checked="{{c1.checked}}" class="{{c1.cls}}" onClick="{{pickConnect}}">
+<svg class="ico" viewBox="0 0 84 64" fill="none" stroke="#1D1C1A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="22" width="40" height="36" rx="6" fill="#FFFFFF"></rect><rect x="12" y="28" width="14" height="9" rx="2" fill="#E4E1DA"></rect><path d="M58 30a14 14 0 0 1 20 0M62 36a8 8 0 0 1 12 0"></path><circle cx="68" cy="42" r="2.4" fill="#1D1C1A"></circle><path d="M14 22V14a4 4 0 0 1 4-4h0M30 22V8"></path></svg>
+<span class="t" style="font-size:22px">Connecter ma U1</span>
+<span style="font-size:15px;color:var(--ink2)">Sur le même Wi-Fi. On lit son état pendant quelques secondes.</span>
+<span class="pill" style="height:28px;font-size:12.5px">Le plus précis</span>
+</button>
+<button type="button" role="radio" aria-checked="{{c2.checked}}" class="{{c2.cls}}" onClick="{{pickFiles}}">
+<svg class="ico" viewBox="0 0 84 64" fill="none" stroke="#1D1C1A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 8h22l10 10v38a2 2 0 0 1-2 2H14a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z" fill="#FFFFFF"></path><path d="M36 8v10h10M20 32h18M20 40h18M20 48h12"></path><path d="M58 22h18v30a2 2 0 0 1-2 2H60a2 2 0 0 1-2-2z" fill="#E4E1DA"></path><path d="M67 10v18M61 22l6 6 6-6"></path></svg>
+<span class="t" style="font-size:22px">Glisser des fichiers</span>
+<span style="font-size:15px;color:var(--ink2)">Les journaux de la U1, un fichier d'impression 3MF ou G-code.</span>
+<span class="pill" style="height:28px;font-size:12.5px">Sans connexion</span>
+</button>
+<button type="button" role="radio" aria-checked="{{c3.checked}}" class="{{c3.cls}}" onClick="{{pickDescribe}}">
+<svg class="ico" viewBox="0 0 84 64" fill="none" stroke="#1D1C1A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="34" width="44" height="22" rx="3" fill="#E4E1DA"></rect><path d="M8 40h44M8 46h44M8 52h44"></path><circle cx="60" cy="24" r="14" fill="#FFFFFF"></circle><path d="M70 34l10 10"></path><path d="M54 24h12"></path></svg>
+<span class="t" style="font-size:22px">Décrire ce que je vois</span>
+<span style="font-size:15px;color:var(--ink2)">Choisissez le défaut visible sur la pièce, on liste les causes connues.</span>
+<span class="pill" style="height:28px;font-size:12.5px">Le plus rapide</span>
+</button>
+</div>
+
+<section class="box" style="margin-top:26px;padding:30px">
+<sc-if value="{{idle}}" hint-placeholder-val="{{ true }}">
+
+<sc-if value="{{isConnect}}" hint-placeholder-val="{{ true }}">
+<div class="g2" style="display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:30px;align-items:start">
+<div style="display:flex;flex-direction:column;gap:16px">
+<label for="ip" class="t" style="font-size:20px">Adresse de votre U1 <span class="tip" tabindex="0" data-tip="Elle s'affiche dans les réglages réseau de l'écran tactile de la U1. Elle ressemble à 192.168.1.42." style="display:inline-flex;width:24px;height:24px;margin-left:4px;align-items:center;justify-content:center;border:2px solid var(--ink);border-radius:50%;font-size:13px;vertical-align:3px">?</span></label>
+<input id="ip" class="field" type="text" inputmode="decimal" placeholder="192.168.1.xx">
+<button type="button" class="{{consentCls}}" aria-pressed="{{agreedStr}}" onClick="{{toggleAgree}}"><span class="sq">{{agreedMark}}</span><span>J'autorise U1 Doctor à <strong>lire</strong> l'état de mon imprimante pendant 30 secondes. Aucune commande n'est envoyée.</span></button>
+<div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center"><button type="button" class="btn btn-a" disabled="{{notAgreed}}" onClick="{{start}}">Lancer l'analyse</button><span style="font-size:14px;color:var(--ink3)">{{hint}}</span></div>
+</div>
+<div class="box wash" style="padding:20px;display:flex;flex-direction:column;gap:12px">
+<span class="lbl">Ce qui va se passer</span>
+<div style="display:flex;gap:10px;align-items:center;font-size:15px"><span class="num" style="width:30px;height:30px;font-size:14px">1</span>On vérifie que la U1 répond.</div>
+<div style="display:flex;gap:10px;align-items:center;font-size:15px"><span class="num" style="width:30px;height:30px;font-size:14px">2</span>On lit températures, têtes et codes.</div>
+<div style="display:flex;gap:10px;align-items:center;font-size:15px"><span class="num" style="width:30px;height:30px;font-size:14px">3</span>On compare et on vous explique.</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isFiles}}" hint-placeholder-val="{{ false }}">
+<div class="drop">
+<div class="t" style="font-size:28px">Glissez vos fichiers ici</div>
+<button type="button" class="btn" onClick="{{start}}">ou choisir des fichiers</button>
+<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px">
+<span class="tag tip" tabindex="0" data-tip="Journal principal de Klipper, le logiciel qui pilote les moteurs et les températures.">klippy.log</span>
+<span class="tag tip" tabindex="0" data-tip="Journal de Moonraker, le service qui fait le lien entre l'écran, le réseau et Klipper.">moonraker.log</span>
+<span class="tag">.zip de journaux</span>
+<span class="tag tip" tabindex="0" data-tip="Le fichier d'impression : on vérifie qu'il convient à la U1 avant de lancer.">.3mf · .gcode</span>
+</div>
+<div style="font-size:14px;color:var(--ink3)">Le fichier chiffré de l'écran tactile est reconnu, mais jamais ouvert.</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isDescribe}}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div class="t" style="font-size:22px">Qu'est-ce que vous voyez sur la pièce ?</div>
+<div style="display:flex;flex-wrap:wrap;gap:10px">
+<a href="E-Verdict.dc.html" class="sym">La 1re couche n'accroche pas</a>
+<a href="E-Verdict.dc.html" class="sym">Des trous dans la 1re couche</a>
+<a href="E-Verdict.dc.html" class="sym">Des fils entre les pièces</a>
+<a href="E-Verdict.dc.html" class="sym">Pas assez de matière</a>
+<a href="E-Verdict.dc.html" class="sym">Les coins se soulèvent</a>
+<a href="E-Verdict.dc.html" class="sym">Couleurs décalées</a>
+<a href="E-Verdict.dc.html" class="sym">Les couches se fendent</a>
+<a href="E-Verdict.dc.html" class="sym">Le dessous des ponts pend</a>
+<a href="E-Verdict.dc.html" class="sym" style="background:var(--amber)">Voir les 8 autres</a>
+</div>
+<div style="font-size:14px;color:var(--ink3)">Les causes viennent du wiki officiel Snapmaker, dans son ordre. Aucune n'est classée comme « la bonne ».</div>
+</div>
+</sc-if>
+
+</sc-if>
+
+<sc-if value="{{analyzing}}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px">
+<div><span class="lbl">Analyse en cours</span><div class="t" style="margin-top:8px;font-size:30px">On écoute votre U1…</div></div>
+<div class="t" style="font-size:48px;line-height:1">18<span style="font-size:18px;color:var(--ink3)"> s</span></div>
+</div>
+<div style="height:16px;margin:20px 0 10px;border:2px solid var(--ink);border-radius:8px;overflow:hidden;background:#fff"><div style="width:45%;height:100%;background:var(--amber);border-right:2px solid var(--ink)"></div></div>
+<div class="srow" style="border-top:0"><span class="mk" style="background:var(--okfill)">✓</span><span style="flex-grow:1">La U1 répond</span><span style="color:var(--ink3);font-size:14px">12 ms</span></div>
+<div class="srow"><span class="mk spin" role="img" aria-label="En cours"></span><span style="flex-grow:1;font-weight:700">Lecture de l'état de l'imprimante</span><span style="font-size:14px">3 lectures sur 5</span></div>
+<div class="srow" style="color:var(--ink3)"><span class="mk" style="border-color:var(--grey)"></span><span style="flex-grow:1">Recherche des codes d'erreur</span></div>
+<div class="srow" style="color:var(--ink3)"><span class="mk" style="border-color:var(--grey)"></span><span style="flex-grow:1">Comparaison avec les problèmes connus</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-top:18px"><span style="font-size:14px;color:var(--ink3)">Lecture seule · 0 commande envoyée</span><div style="display:flex;gap:12px"><button type="button" class="btn" onClick="{{cancel}}">Annuler</button><a href="E-Verdict.dc.html" class="btn btn-a">Voir le résultat</a></div></div>
+</sc-if>
+</section>
+</div>
+
+<nav class="dock" aria-label="Navigation principale">
+<a href="E-Accueil.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path><path d="M10 21v-6h4v6"></path></svg>Accueil</a>
+<a href="E-Diagnostiquer.dc.html" class="on" aria-current="page"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>Diagnostiquer</a>
+<a href="E-Diagnostiquer.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>J'ai un problème</a>
+<a href="E-Expert.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Historique</a>
+<a href="E-Expert.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"></path><path d="M16 6l-4-4-4 4"></path><path d="M12 2v13"></path></svg>Partager</a>
+</nav>
+<div style="height:30px"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1150}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { mode: "connect", agreed: false, analyzing: false };
+}
+renderVals() {
+var s = this.state;
+var self = this;
+function choice(m) {
+var on = s.mode === m;
+return { cls: "ch" + (on ? " on" : "") + (s.analyzing ? " dim" : ""), checked: on ? "true" : "false" };
+}
+return {
+idle: !s.analyzing,
+analyzing: s.analyzing,
+isConnect: s.mode === "connect",
+isFiles: s.mode === "files",
+isDescribe: s.mode === "describe",
+c1: choice("connect"),
+c2: choice("files"),
+c3: choice("describe"),
+agreedStr: s.agreed ? "true" : "false",
+agreedMark: s.agreed ? "✓" : "",
+consentCls: s.agreed ? "consent on" : "consent",
+notAgreed: !s.agreed,
+hint: s.agreed ? "Prêt. L'analyse dure environ 30 secondes." : "Cochez l'autorisation pour continuer.",
+pickConnect: function () { self.setState({ mode: "connect" }); },
+pickFiles: function () { self.setState({ mode: "files" }); },
+pickDescribe: function () { self.setState({ mode: "describe" }); },
+toggleAgree: function () { self.setState({ agreed: !s.agreed }); },
+start: function () { self.setState({ analyzing: true }); },
+cancel: function () { self.setState({ analyzing: false }); }
+};
+}
+}
+</script>
+</body>
+</html>

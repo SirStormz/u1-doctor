@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>E · Verdict — tête 3</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+@@HEAD@@
+<style>
+.big{position:relative;height:560px;border:2px solid var(--ink);border-radius:18px;overflow:hidden;background:#fff}
+.big img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb{position:relative;display:flex;align-items:center;gap:12px;width:100%;padding:8px;border:2px solid var(--ink);border-radius:14px;background:#fff;cursor:pointer;text-align:left;font:700 14.5px/1.3 'Atkinson Hyperlegible Next',sans-serif;color:var(--ink);transition:background .15s}
+.thumb:hover{background:var(--wash)}
+.thumb.cur{background:var(--amber-soft);box-shadow:3px 3px 0 var(--ink)}
+.thumb .mini{width:96px;height:64px;flex-shrink:0;border:2px solid var(--ink);border-radius:9px;overflow:hidden}
+.thumb .mini img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb .ok{margin-left:auto;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border:2px solid var(--ink);border-radius:6px;font-size:14px}
+.thumb.done .ok{background:var(--amber)}
+.ev{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:2px solid var(--grey);font-size:15px}
+</style>
+</helmet>
+<div class="app">
+@@TOP:simple:back@@
+
+<div class="wrap">
+<div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:21px;padding-top:21px">
+<div style="max-width:760px">
+<span class="state s-w tip" tabindex="0" data-tip="À vérifier : l'imprimante l'a signalé, il faut le confirmer à l'œil. Ce n'est pas une certitude.">À vérifier · tête 3</span>
+<h1 class="t" style="margin:14px 0 0;font-size:48px;line-height:1.04">La tête 3 n'arrive plus à pousser le filament</h1>
+<p style="margin:12px 0 0;font-size:17px;color:var(--ink2)">L'imprimante a signalé un blocage à l'engrenage qui entraîne le filament, puis elle a mis l'impression en pause.</p>
+</div>
+<span class="state" style="height:40px;font-size:16px">{{doneLabel}}</span>
+</div>
+
+<div class="g2" style="display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:26px;margin-top:26px;align-items:start">
+<div class="big">
+<img src="{{cur.img}}" alt="{{cur.alt}}" style="object-position:{{cur.pos}}">
+<span class="num on" style="position:absolute;left:18px;top:18px;width:64px;height:64px;font-size:30px">{{cur.n}}</span>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:16px">
+<section class="box" style="padding:26px;display:flex;flex-direction:column;gap:14px">
+<span class="lbl">{{stepLabel}}</span>
+<h2 class="t" style="margin:0;font-size:32px;line-height:1.1">{{cur.title}}</h2>
+<p style="margin:0;font-size:17px;color:var(--ink2)">{{cur.text}}</p>
+<button type="button" class="{{chk}}" aria-pressed="{{pressed}}" onClick="{{toggle}}" style="align-self:flex-start"><span class="sq">{{mark}}</span>{{chkLabel}}</button>
+<div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:6px">
+<sc-if value="{{notFirst}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn" onClick="{{prev}}">← Précédent</button></sc-if>
+<sc-if value="{{notLast}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn-a" onClick="{{next}}">Étape suivante →</button></sc-if>
+<sc-if value="{{isLast}}" hint-placeholder-val="{{ false }}"><a href="E-Accueil.dc.html" class="btn btn-a">C'est réglé</a><a href="E-Expert.dc.html" class="btn">Toujours bloqué ? Partager</a></sc-if>
+</div>
+</section>
+<sc-for list="{{thumbs}}" as="t" hint-placeholder-count="3">
+<button type="button" class="{{t.cls}}" onClick="{{t.go}}"><span class="mini"><img src="{{t.img}}" alt="" style="object-position:{{t.pos}}"></span><span>{{t.n}} · {{t.title}}</span><span class="ok" aria-hidden="true">{{t.mark}}</span></button>
+</sc-for>
+<p style="margin:0;font-size:13.5px;color:var(--ink3)">Consigne officielle Snapmaker pour ce code : vérifier, nettoyer, relancer.</p>
+</div>
+</div>
+
+<section class="box wash" style="margin-top:26px;padding:24px 26px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px"><h3 class="t" style="margin:0;font-size:22px">Comment on le sait</h3><a href="E-Expert.dc.html" style="font-weight:700;font-size:14px">Notice technique →</a></div>
+<div class="g2" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 26px">
+<div class="ev"><span class="state s-o" style="height:28px;font-size:13px">Constaté</span>Code de blocage reçu à 14:14</div>
+<div class="ev"><span class="state s-o" style="height:28px;font-size:13px">Constaté</span>Pause juste avant</div>
+<div class="ev tip" tabindex="0" data-tip="Pendant 1 min 30, U1 Doctor n'a rien reçu (Wi-Fi coupé ?)."><span class="state s-u" style="height:28px;font-size:13px">Pas assez d'infos</span>Rien reçu 1 min 30</div>
+</div>
+</section>
+</div>
+
+@@DOCK:Accueil@@
+<div style="height:30px"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1200}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { step: 0, done: [false, false, false] };
+}
+renderVals() {
+var self = this;
+var s = this.state;
+var defs = [
+{ n: "1", title: "Repérez la tête 3", text: "C'est la troisième en partant de la gauche, à l'arrière de la machine. Elle est entourée en ambre sur le dessin.", img: "/_blob/23950175a9ff7d8e664bde2a6e6c745c", pos: "55% 50%", alt: "Une main montre la troisième tête, entourée en ambre" },
+{ n: "2", title: "Nettoyez l'engrenage", text: "Regardez l'engrenage qui pousse le filament dans la tête 3 et retirez les débris ou le filament cassé avec une pince fine.", img: "/_blob/8faf0c1ed54e7a213208ca69f9c0f2fb", pos: "50% 50%", alt: "Une pince retire un débris de l'engrenage, en ambre" },
+{ n: "3", title: "Relancez l'impression", text: "Sur l'écran tactile de la U1, reprenez l'impression mise en pause.", img: "/_blob/3cf673db02c995f5b050c54f2cd6708e", pos: "55% 50%", alt: "Un doigt touche l'écran tactile de la U1" }
+];
+var i = s.step;
+var on = s.done[i];
+var count = s.done.filter(function (d) { return d; }).length;
+return {
+cur: defs[i],
+stepLabel: "Étape " + (i + 1) + " sur 3",
+doneLabel: count + " sur 3 faits",
+chk: on ? "check on" : "check",
+mark: on ? "✓" : "",
+chkLabel: on ? "Fait" : "C'est fait",
+pressed: on ? "true" : "false",
+toggle: function () { var n = s.done.slice(); n[i] = !n[i]; self.setState({ done: n }); },
+notFirst: i > 0, notLast: i < 2, isLast: i === 2,
+next: function () { var n = s.done.slice(); n[i] = true; self.setState({ step: Math.min(2, i + 1), done: n }); },
+prev: function () { self.setState({ step: Math.max(0, i - 1) }); },
+thumbs: defs.map(function (d, k) {
+var cls = "thumb" + (k === i ? " cur" : "") + (s.done[k] ? " done" : "");
+return { n: d.n, title: d.title, img: d.img, pos: d.pos, cls: cls, mark: s.done[k] ? "✓" : "", go: function () { self.setState({ step: k }); } };
+})
+};
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>F · Diagnostiquer</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@300..800&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0B0D10}
+.app{--bg:#0B0D10;--card:#14171C;--card2:#191D23;--line:rgba(255,255,255,.08);--ink:#F2F4F7;--ink2:rgba(242,244,247,.68);--ink3:rgba(242,244,247,.44);--amber:#FFB547;--ok:#8FD9A8;position:relative;min-height:1100px;background:var(--bg);color:var(--ink);font:400 16px/1.5 'Albert Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+.app *{box-sizing:border-box}
+.app a{color:inherit}
+.h{font-weight:600;letter-spacing:-.035em}
+.mono{font-family:'IBM Plex Mono',monospace;letter-spacing:0}
+.wrap{max-width:1360px;margin:0 auto;padding:0 40px}
+.lbl{font-size:13px;font-weight:600;letter-spacing:.02em;color:var(--ink3)}
+/* verre liquide */
+.glass{position:relative;background:linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,.045));-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);box-shadow:inset 0 1px 0 rgba(255,255,255,.42),inset 0 -1px 0 rgba(255,255,255,.07),inset 0 0 0 1px rgba(255,255,255,.10),0 24px 48px -24px rgba(0,0,0,.75)}
+.glass::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,0) 32%,rgba(255,255,255,0) 72%,rgba(255,255,255,.05))}
+.lq{-webkit-backdrop-filter:blur(16px) saturate(180%);backdrop-filter:url(#lq) blur(16px) saturate(180%)}
+.solid{background:var(--card);border-radius:24px;box-shadow:inset 0 0 0 1px var(--line)}
+/* barre de navigation flottante */
+.nav{position:absolute;z-index:20;left:50%;top:22px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;padding:7px 8px 7px 18px;border-radius:999px;white-space:nowrap}
+.brand{display:flex;align-items:center;gap:9px;text-decoration:none;font-weight:700;font-size:16px;letter-spacing:-.01em}
+.seg{position:relative;display:inline-grid;grid-auto-flow:column;grid-auto-columns:1fr;padding:3px;border-radius:999px;background:rgba(0,0,0,.28);box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
+.seg>a,.seg>span,.seg>button{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;height:32px;padding:0 15px;border:0;background:none;border-radius:999px;font:600 13.5px/1 'Albert Sans',sans-serif;color:var(--ink2);text-decoration:none;cursor:pointer}
+.seg .on{color:var(--ink)}
+.thumb{position:absolute;z-index:0;top:3px;bottom:3px;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.30),rgba(255,255,255,.14));box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 2px 8px rgba(0,0,0,.35);transition:left .45s cubic-bezier(.34,1.45,.64,1),width .45s cubic-bezier(.34,1.45,.64,1)}
+.ibtn{width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:50%;background:rgba(255,255,255,.08);color:var(--ink2);cursor:pointer}
+.ibtn:hover{background:rgba(255,255,255,.16);color:var(--ink)}
+.chip{display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 11px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--ink2);background:rgba(255,255,255,.07)}
+.chip.dash{background:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
+/* boutons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 22px;border:0;border-radius:999px;font:600 15.5px/1 'Albert Sans',sans-serif;color:var(--ink);text-decoration:none;cursor:pointer;transition:transform .25s cubic-bezier(.34,1.45,.64,1),background .2s}
+.btn:hover{transform:scale(1.03)}
+.btn:active{transform:scale(.97)}
+.btn-a{background:linear-gradient(180deg,#FFC872,#FFAE34);color:#241600;box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -1px 0 rgba(120,60,0,.25),0 10px 24px -12px rgba(0,0,0,.8)}
+.btn-g{background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.06));-webkit-backdrop-filter:blur(16px) saturate(180%);backdrop-filter:blur(16px) saturate(180%);box-shadow:inset 0 1px 0 rgba(255,255,255,.38),inset 0 0 0 1px rgba(255,255,255,.10)}
+.btn[disabled]{opacity:.4;cursor:not-allowed;transform:none}
+/* états */
+.st{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 13px;border-radius:999px;font-size:13.5px;font-weight:600}
+.st i{width:8px;height:8px;border-radius:50%}
+.s-w{background:rgba(255,181,71,.16);color:#FFD18A}.s-w i{background:var(--amber)}
+.s-o{background:rgba(143,217,168,.13);color:var(--ok)}.s-o i{background:var(--ok)}
+.s-u{background:rgba(255,255,255,.06);color:var(--ink2)}.s-u i{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.5)}
+/* loupe liquide */
+.lens{position:absolute;z-index:6;border-radius:50%;background-color:#0E1013;background-repeat:no-repeat;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35),inset 0 14px 22px -8px rgba(255,255,255,.35),inset 0 -18px 30px -10px rgba(0,0,0,.6),0 30px 60px -20px rgba(0,0,0,.85);animation:lensin .9s cubic-bezier(.34,1.45,.64,1) .5s both}
+.lens::after{content:"";position:absolute;inset:6px;border-radius:50%;pointer-events:none;background:radial-gradient(120% 60% at 30% 8%,rgba(255,255,255,.28),rgba(255,255,255,0) 45%)}
+@keyframes lensin{from{transform:scale(.2);opacity:0}to{transform:none;opacity:1}}
+.stem{position:absolute;z-index:5;height:1.5px;background:linear-gradient(90deg,rgba(255,255,255,.7),rgba(255,255,255,.15));transform-origin:0 50%}
+.pin{position:absolute;z-index:6;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 3px rgba(11,13,16,.85),0 0 0 4.5px rgba(255,255,255,.6)}
+/* dock */
+.dock{position:sticky;bottom:22px;z-index:20;display:flex;gap:4px;width:max-content;max-width:calc(100% - 32px);margin:42px auto 0;padding:6px;border-radius:30px}
+.dock a{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:98px;padding:10px 12px 9px;border-radius:24px;color:var(--ink2);text-decoration:none;font-size:12.5px;font-weight:600;transition:background .2s,color .2s}
+.dock a:hover{color:var(--ink);background:rgba(255,255,255,.07)}
+.dock a.on{color:var(--ink);background:linear-gradient(180deg,rgba(255,255,255,.24),rgba(255,255,255,.10));box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+.dock a.on svg{color:var(--amber)}
+.tip{position:relative;cursor:help}
+.tip::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%);width:max-content;max-width:280px;padding:10px 13px;border-radius:16px;background:rgba(30,34,40,.92);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 12px 30px -10px rgba(0,0,0,.8);color:var(--ink);font:500 13.5px/1.5 'Albert Sans',sans-serif;letter-spacing:0;text-transform:none;text-align:left;white-space:normal;opacity:0;pointer-events:none;transition:opacity .15s;z-index:40}
+.tip.dn::after{bottom:auto;top:calc(100% + 10px)}
+.tip:hover::after,.tip:focus-visible::after,.tip.show::after{opacity:1}
+.dotted{border-bottom:1px dotted var(--ink3)}
+.kv{display:grid;grid-template-columns:136px minmax(0,1fr);gap:10px 14px;margin:0;font-size:15px}
+.kv dt{color:var(--ink3)}.kv dd{margin:0}
+.rise{opacity:0;transform:translateY(14px);animation:rise .7s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+.app :focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+@media (max-width:960px){.g2,.g3{grid-template-columns:minmax(0,1fr)!important}.hide-sm{display:none!important}.wrap{padding:0 16px}.dock a{min-width:62px}}
+@media (prefers-reduced-motion:reduce){.app *{animation:none!important;transition:none!important}.rise{opacity:1;transform:none}}
+.nav .seg:has(>:nth-child(1):hover) .thumb{left:3px!important}
+.nav .seg:has(>:nth-child(2):hover) .thumb{left:50%!important}
+/* interrupteur liquide */
+.sw{position:relative;width:52px;height:32px;flex-shrink:0;border-radius:999px;background:rgba(255,255,255,.14);box-shadow:inset 0 1px 3px rgba(0,0,0,.5);transition:background .3s}
+.sw::before{content:"";position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:999px;background:linear-gradient(180deg,#FFFFFF,#DADDE2);box-shadow:inset 0 1px 0 #fff,0 3px 8px rgba(0,0,0,.45);transition:left .45s cubic-bezier(.34,1.45,.64,1),width .2s}
+.on .sw,.sw.on{background:var(--amber)}
+.on .sw::before,.sw.on::before{left:23px}
+button:active .sw::before{width:32px}
+</style>
+
+<style>
+.big{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:6px;border-radius:34px}
+.big button{position:relative;z-index:1;display:flex;align-items:center;gap:14px;padding:16px 18px;border:0;border-radius:28px;background:none;color:var(--ink2);text-align:left;cursor:pointer;font:inherit;transition:color .3s}
+.big button.on{color:var(--ink)}
+.big button[disabled]{cursor:default;opacity:.5}
+.big .thumb{top:6px;bottom:6px;border-radius:28px}
+.field{width:100%;height:52px;padding:0 20px;border:0;border-radius:999px;background:rgba(0,0,0,.35);box-shadow:inset 0 1px 3px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.08);color:var(--ink);font:500 16px/1 'IBM Plex Mono',monospace;outline:none}
+.field::placeholder{color:var(--ink3)}
+.consent{display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;border:0;border-radius:22px;background:rgba(255,255,255,.06);color:var(--ink);font:500 15.5px/1.45 'Albert Sans',sans-serif;text-align:left;cursor:pointer}
+.drop{display:flex;flex-direction:column;align-items:center;gap:14px;padding:44px 21px;border-radius:28px;background:rgba(0,0,0,.25);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.18);text-align:center}
+.tg{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.09);font:500 12.5px/1 'IBM Plex Mono',monospace;color:var(--ink2)}
+.sym{display:inline-flex;align-items:center;min-height:42px;padding:0 16px;border-radius:999px;background:rgba(255,255,255,.07);box-shadow:inset 0 1px 0 rgba(255,255,255,.12);font-size:14.5px;font-weight:500;text-decoration:none}
+.sym:hover{background:rgba(255,255,255,.13)}
+.srow{display:flex;align-items:center;gap:14px;padding:13px 0;border-top:1px solid var(--line);font-size:16px}
+.mk{width:26px;height:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:50%}
+.spin{box-shadow:inset 0 0 0 2px rgba(255,255,255,.15);border-top:2px solid #F2F4F7;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</helmet>
+<div class="app">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="lq" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.007 0.011" numOctaves="1" seed="4" result="t"></feTurbulence><feGaussianBlur in="t" stdDeviation="2.5" result="tb"></feGaussianBlur><feDisplacementMap in="SourceGraphic" in2="tb" scale="34" xChannelSelector="R" yChannelSelector="B"></feDisplacementMap></filter><filter id="lens" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="1" seed="9" result="t"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="t" scale="9" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter></defs></svg>
+<header class="nav glass lq" role="banner">
+<a class="brand" href="F-Accueil.dc.html"><svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M5 5v13a8 8 0 0 0 16 0v-3h2.5l2-5 3 10 2-5" stroke="#FFB547" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="30" cy="20" r="1.6" fill="#FFB547"></circle></svg>U1 Doctor</a>
+<a href="F-Accueil.dc.html" class="chip hide-sm" style="text-decoration:none">← Accueil</a>
+<span class="chip tip dn hide-sm" tabindex="0" data-tip="U1 Doctor lit l’état de l’imprimante, il n’envoie jamais de commande."><span style="width:7px;height:7px;border-radius:50%;background:#8FD9A8"></span>Lecture seule</span>
+<span class="chip dash tip dn hide-sm" tabindex="0" data-tip="Ces données sont un exemple fictif pour découvrir l’application. Rien ne vient de votre imprimante.">Exemple de démo</span>
+<div class="seg" role="group" aria-label="Niveau de détail"><span class="on" aria-current="true">Simple</span><a href="F-Expert.dc.html" class="tip dn" data-tip="Affiche le détail technique : codes bruts, horaires précis, sources et preuves. Chaque terme a son explication au survol.">Expert</a><span class="thumb" style="left:3px;width:calc(50% - 3px)"></span></div>
+<div class="seg hide-sm" role="group" aria-label="Langue"><span class="on">FR</span><a href="F-Accueil.dc.html">EN</a><span class="thumb" style="left:3px;width:calc(50% - 3px)"></span></div>
+<button type="button" class="ibtn" aria-label="Réglages"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"></path><circle cx="15" cy="6" r="2"></circle><circle cx="9" cy="12" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg></button>
+</header>
+
+<img src="/_blob/5cb5b30eb2566c6b576c72da5194a86b" alt="" aria-hidden="true" style="position:absolute;right:-60px;top:40px;width:640px;height:760px;opacity:.55;-webkit-mask-image:radial-gradient(ellipse 60% 58% at 55% 50%,#000 55%,transparent 100%);mask-image:radial-gradient(ellipse 60% 58% at 55% 50%,#000 55%,transparent 100%)">
+
+<div class="wrap" style="position:relative;z-index:2;padding-top:150px;max-width:1180px">
+<span class="chip">Lecture seule · rien n'est jamais envoyé à l'imprimante</span>
+<h1 class="h" style="margin:18px 0 0;font-size:62px;line-height:1;max-width:11em">Comment voulez-vous diagnostiquer ?</h1>
+
+<div class="big glass lq" role="radiogroup" aria-label="Façon de diagnostiquer" style="margin-top:36px">
+<button type="button" role="radio" aria-checked="{{c1.checked}}" class="{{c1.cls}}" disabled="{{busy}}" onClick="{{pickConnect}}"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9a15 15 0 0 1 20 0"></path><path d="M5 12.5a10 10 0 0 1 14 0"></path><path d="M8.5 16a5 5 0 0 1 7 0"></path><path d="M12 19.5h.01"></path></svg><span><span style="display:block;font-size:17px;font-weight:600">Connecter ma U1</span><span style="display:block;font-size:13px;color:var(--ink3)">le plus précis</span></span></button>
+<button type="button" role="radio" aria-checked="{{c2.checked}}" class="{{c2.cls}}" disabled="{{busy}}" onClick="{{pickFiles}}"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6"></path><path d="M12 18v-6M9 15l3-3 3 3"></path></svg><span><span style="display:block;font-size:17px;font-weight:600">Glisser des fichiers</span><span style="display:block;font-size:13px;color:var(--ink3)">sans connexion</span></span></button>
+<button type="button" role="radio" aria-checked="{{c3.checked}}" class="{{c3.cls}}" disabled="{{busy}}" onClick="{{pickDescribe}}"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg><span><span style="display:block;font-size:17px;font-weight:600">Décrire ce que je vois</span><span style="display:block;font-size:13px;color:var(--ink3)">le plus rapide</span></span></button>
+<span class="thumb" style="left:{{thumbL}};width:calc((100% - 12px) / 3)"></span>
+</div>
+
+<section class="glass" style="margin-top:21px;padding:32px;border-radius:34px">
+<sc-if value="{{idle}}" hint-placeholder-val="{{ true }}">
+
+<sc-if value="{{isConnect}}" hint-placeholder-val="{{ true }}">
+<div class="g2" style="display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:30px;align-items:start">
+<div style="display:flex;flex-direction:column;gap:16px">
+<label for="ip" class="h" style="font-size:20px;letter-spacing:-.02em">Adresse de votre U1 <span class="tip" tabindex="0" data-tip="Elle s'affiche dans les réglages réseau de l'écran tactile de la U1. Elle ressemble à 192.168.1.42." style="display:inline-flex;width:22px;height:22px;margin-left:4px;align-items:center;justify-content:center;border-radius:50%;background:rgba(255,255,255,.12);font-size:12px;vertical-align:3px">?</span></label>
+<input id="ip" class="field" type="text" inputmode="decimal" placeholder="192.168.1.xx">
+<button type="button" class="consent" aria-pressed="{{agreedStr}}" onClick="{{toggleAgree}}"><span class="{{swCls}}"></span><span>J'autorise U1 Doctor à <strong>lire</strong> l'état de mon imprimante pendant 30 secondes. Aucune commande n'est envoyée.</span></button>
+<div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center"><button type="button" class="btn btn-a" disabled="{{notAgreed}}" onClick="{{start}}">Lancer l'analyse</button><span style="font-size:14px;color:var(--ink3)">{{hint}}</span></div>
+</div>
+<div class="solid" style="padding:20px 22px;display:flex;flex-direction:column;gap:12px;background:rgba(0,0,0,.25)">
+<span class="lbl">Ce qui va se passer</span>
+<div style="font-size:15px">1 · On vérifie que la U1 répond.</div>
+<div style="font-size:15px">2 · On lit températures, têtes et codes.</div>
+<div style="font-size:15px">3 · On compare et on vous explique.</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isFiles}}" hint-placeholder-val="{{ false }}">
+<div class="drop">
+<div class="h" style="font-size:28px;letter-spacing:-.02em">Glissez vos fichiers ici</div>
+<button type="button" class="btn btn-g" onClick="{{start}}">ou choisir des fichiers</button>
+<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px">
+<span class="tg tip" tabindex="0" data-tip="Journal principal de Klipper, le logiciel qui pilote les moteurs et les températures.">klippy.log</span>
+<span class="tg tip" tabindex="0" data-tip="Journal de Moonraker, le service qui fait le lien entre l'écran, le réseau et Klipper.">moonraker.log</span>
+<span class="tg">.zip de journaux</span>
+<span class="tg tip" tabindex="0" data-tip="Le fichier d'impression : on vérifie qu'il convient à la U1 avant de lancer.">.3mf · .gcode</span>
+</div>
+<div style="font-size:14px;color:var(--ink3)">Le fichier chiffré de l'écran tactile est reconnu, mais jamais ouvert.</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isDescribe}}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div class="h" style="font-size:22px;letter-spacing:-.02em">Qu'est-ce que vous voyez sur la pièce ?</div>
+<div style="display:flex;flex-wrap:wrap;gap:10px">
+<a href="F-Verdict.dc.html" class="sym">La 1re couche n'accroche pas</a>
+<a href="F-Verdict.dc.html" class="sym">Des trous dans la 1re couche</a>
+<a href="F-Verdict.dc.html" class="sym">Des fils entre les pièces</a>
+<a href="F-Verdict.dc.html" class="sym">Pas assez de matière</a>
+<a href="F-Verdict.dc.html" class="sym">Les coins se soulèvent</a>
+<a href="F-Verdict.dc.html" class="sym">Couleurs décalées</a>
+<a href="F-Verdict.dc.html" class="sym">Les couches se fendent</a>
+<a href="F-Verdict.dc.html" class="sym">Le dessous des ponts pend</a>
+<a href="F-Verdict.dc.html" class="sym" style="color:#FFD18A">Voir les 8 autres</a>
+</div>
+<div style="font-size:14px;color:var(--ink3)">Les causes viennent du wiki officiel Snapmaker, dans son ordre. Aucune n'est classée comme « la bonne ».</div>
+</div>
+</sc-if>
+
+</sc-if>
+
+<sc-if value="{{analyzing}}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px">
+<div><span class="lbl">Analyse en cours</span><div class="h" style="margin-top:8px;font-size:30px;letter-spacing:-.02em">On écoute votre U1…</div></div>
+<div class="h" style="font-size:52px;line-height:1">18<span style="font-size:18px;color:var(--ink3)"> s</span></div>
+</div>
+<div style="position:relative;height:8px;margin:22px 0 8px;border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden"><div style="width:45%;height:100%;border-radius:999px;background:linear-gradient(90deg,rgba(255,255,255,.5),#F2F4F7)"></div></div>
+<div class="srow" style="border-top:0"><span class="mk" style="background:rgba(143,217,168,.2);color:var(--ok)">✓</span><span style="flex-grow:1">La U1 répond</span><span style="font-size:14px;color:var(--ink3)">12 ms</span></div>
+<div class="srow"><span class="mk spin" role="img" aria-label="En cours"></span><span style="flex-grow:1;font-weight:600">Lecture de l'état de l'imprimante</span><span style="font-size:14px">3 lectures sur 5</span></div>
+<div class="srow" style="color:var(--ink3)"><span class="mk" style="box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.2)"></span><span style="flex-grow:1">Recherche des codes d'erreur</span></div>
+<div class="srow" style="color:var(--ink3)"><span class="mk" style="box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.2)"></span><span style="flex-grow:1">Comparaison avec les problèmes connus</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-top:18px"><span style="font-size:14px;color:var(--ink3)">Lecture seule · 0 commande envoyée</span><div style="display:flex;gap:10px"><button type="button" class="btn btn-g" onClick="{{cancel}}">Annuler</button><a href="F-Verdict.dc.html" class="btn btn-a">Voir le résultat</a></div></div>
+</sc-if>
+</section>
+</div>
+
+<nav class="dock glass lq" aria-label="Navigation principale">
+<a href="F-Accueil.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path><path d="M10 21v-6h4v6"></path></svg>Accueil</a>
+<a href="F-Diagnostiquer.dc.html" class="on" aria-current="page"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>Diagnostiquer</a>
+<a href="F-Diagnostiquer.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>J'ai un problème</a>
+<a href="F-Expert.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Historique</a>
+<a href="F-Expert.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"></path><path d="M16 6l-4-4-4 4"></path><path d="M12 2v13"></path></svg>Partager</a>
+</nav>
+<div style="height:30px"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1200}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { mode: "connect", agreed: false, analyzing: false };
+}
+renderVals() {
+var s = this.state;
+var self = this;
+var idx = { connect: 0, files: 1, describe: 2 }[s.mode];
+function choice(m) { var on = s.mode === m; return { cls: on ? "on" : "", checked: on ? "true" : "false" }; }
+return {
+idle: !s.analyzing, analyzing: s.analyzing, busy: s.analyzing,
+isConnect: s.mode === "connect", isFiles: s.mode === "files", isDescribe: s.mode === "describe",
+c1: choice("connect"), c2: choice("files"), c3: choice("describe"),
+thumbL: "calc(6px + " + idx + " * (100% - 12px) / 3)",
+agreedStr: s.agreed ? "true" : "false",
+swCls: s.agreed ? "sw on" : "sw",
+notAgreed: !s.agreed,
+hint: s.agreed ? "Prêt. L'analyse dure environ 30 secondes." : "Activez l'autorisation pour continuer.",
+pickConnect: function () { self.setState({ mode: "connect" }); },
+pickFiles: function () { self.setState({ mode: "files" }); },
+pickDescribe: function () { self.setState({ mode: "describe" }); },
+toggleAgree: function () { self.setState({ agreed: !s.agreed }); },
+start: function () { self.setState({ analyzing: true }); },
+cancel: function () { self.setState({ analyzing: false }); }
+};
+}
+}
+</script>
+</body>
+</html>

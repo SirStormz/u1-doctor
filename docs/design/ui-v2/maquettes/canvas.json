@@ -1,0 +1,190 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "P-Accueil.dc.html": {
+      "expand": "fill",
+      "h": 2300,
+      "is_interactive": true,
+      "radius": 24,
+      "title": "C · 1 · Pupitre 2 — Accueil : galvanomètre, ticket, clavier, bande de console",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "P-Expert.dc.html": {
+      "expand": "fill",
+      "h": 1700,
+      "is_interactive": true,
+      "radius": 24,
+      "title": "C · 2 · Pupitre 2 — Expert : 2 cadrans, molette qui fait défiler la session",
+      "w": 1440,
+      "x": 1520,
+      "y": 0
+    },
+    "P-Verdict.dc.html": {
+      "expand": "fill",
+      "h": 1250,
+      "is_interactive": true,
+      "radius": 24,
+      "title": "C · 3 · Pupitre 2 — Verdict : leviers, gros plan, ticket imprimé",
+      "w": 1440,
+      "x": 3040,
+      "y": 0
+    },
+    "P-Diagnostiquer.dc.html": {
+      "expand": "fill",
+      "h": 1250,
+      "is_interactive": true,
+      "radius": 24,
+      "title": "C · 4 · Pupitre 2 — Diagnostiquer : vrai bouton rotatif, capot de sécurité",
+      "w": 1440,
+      "x": 4560,
+      "y": 0
+    },
+    "E-Accueil.dc.html": {
+      "expand": "fill",
+      "h": 1760,
+      "is_interactive": true,
+      "radius": 24,
+      "title": "E · 1 · Accueil — les 3 gestes illustrés (à cocher)",
+      "w": 1440,
+      "x": 0,
+      "y": 2600
+    },
+    "E-Expert.dc.html": {
+      "expand": "fill",
+      "h": 2000,
+      "is_interactive": true,
+      "radius": 24,
+      "title": "E · 2 · Notice technique — vue éclatée à renvois",
+      "w": 1440,
+      "x": 1520,
+      "y": 2600
+    },
+    "E-Verdict.dc.html": {
+      "expand": "fill",
+      "h": 1260,
+      "is_interactive": true,
+      "radius": 24,
+      "title": "E · 3 · Verdict — une étape à la fois (cliquable)",
+      "w": 1440,
+      "x": 3040,
+      "y": 2600
+    },
+    "E-Diagnostiquer.dc.html": {
+      "expand": "fill",
+      "h": 1150,
+      "is_interactive": true,
+      "radius": 24,
+      "title": "E · 4 · Diagnostiquer",
+      "w": 1440,
+      "x": 4560,
+      "y": 2600
+    },
+    "F-Accueil.dc.html": {
+      "expand": "fill",
+      "h": 2000,
+      "is_interactive": true,
+      "radius": 24,
+      "title": "F · 1 · Accueil — U1 réelle, loupe liquide sur la tête 3, verre sur la photo",
+      "w": 1440,
+      "x": 0,
+      "y": 4900
+    },
+    "F-Expert.dc.html": {
+      "expand": "fill",
+      "h": 1800,
+      "is_interactive": true,
+      "radius": 24,
+      "title": "F · 2 · Expert — étiquettes de verre posées sur les pièces",
+      "w": 1440,
+      "x": 1520,
+      "y": 4900
+    },
+    "F-Verdict.dc.html": {
+      "expand": "fill",
+      "h": 1250,
+      "is_interactive": true,
+      "radius": 24,
+      "title": "F · 3 · Verdict — la caméra zoome d'étape en étape (cliquable)",
+      "w": 1440,
+      "x": 3040,
+      "y": 4900
+    },
+    "F-Diagnostiquer.dc.html": {
+      "expand": "fill",
+      "h": 1200,
+      "is_interactive": true,
+      "radius": 24,
+      "title": "F · 4 · Diagnostiquer — sélecteur de verre qui glisse",
+      "w": 1440,
+      "x": 4560,
+      "y": 4900
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-11-09T22:30:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "noteOrder": [
+    "title",
+    "rowA",
+    "rowB",
+    "rowF"
+  ],
+  "notes": {
+    "rowA": {
+      "kind": "title1",
+      "maxW": 7520,
+      "text": "C · Pupitre 2 — l'instrument pour de vrai : plastique microbillé photographié, galvanomètre à aiguille, bouton moleté photo, imprimante à tickets, clavier qui tape dans l'écran ambre, étiquettes manuscrites sur ruban",
+      "w": 240,
+      "x": 0,
+      "y": -200
+    },
+    "rowB": {
+      "kind": "title1",
+      "maxW": 7520,
+      "text": "E · Notice — un vrai mode d'emploi : illustrations au trait générées avec Codex depuis le rendu de la U1, contours noirs, une seule couleur ambre sur la pièce à toucher, boutons qui s'enfoncent",
+      "w": 240,
+      "x": 0,
+      "y": 2405
+    },
+    "title": {
+      "kind": "title1",
+      "maxW": 7520,
+      "text": "U1 Doctor · UI V2 — trois directions : Pupitre 2, Notice, Obsidienne",
+      "w": 240,
+      "x": 0,
+      "y": -420
+    },
+    "rowF": {
+      "kind": "title1",
+      "maxW": 7520,
+      "text": "F · Obsidienne — Liquid Glass sombre : photos de la vraie U1 (retouches Codex des rendus U1_Jay), verre posé sur la photo, loupe liquide, curseurs qui glissent, zéro halo",
+      "w": 240,
+      "x": 0,
+      "y": 4705
+    }
+  },
+  "order": [
+    "P-Accueil.dc.html",
+    "P-Expert.dc.html",
+    "P-Verdict.dc.html",
+    "P-Diagnostiquer.dc.html",
+    "E-Accueil.dc.html",
+    "E-Expert.dc.html",
+    "E-Verdict.dc.html",
+    "E-Diagnostiquer.dc.html",
+    "F-Accueil.dc.html",
+    "F-Expert.dc.html",
+    "F-Verdict.dc.html",
+    "F-Diagnostiquer.dc.html"
+  ],
+  "pages": [],
+  "title": "U1 Doctor UI V2 — Pupitre 2, Notice, Obsidienne"
+}

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>F · Verdict — tête 3</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+@@HEAD@@
+<style>
+.bg{position:absolute;inset:0;background-repeat:no-repeat;transition:background-size .9s cubic-bezier(.65,0,.35,1),background-position .9s cubic-bezier(.65,0,.35,1),opacity .6s ease}
+.shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(11,13,16,.82) 0%,rgba(11,13,16,.35) 42%,rgba(11,13,16,0) 62%),linear-gradient(0deg,#0B0D10 0%,rgba(11,13,16,0) 22%)}
+.pinm{position:absolute;z-index:3;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 4px rgba(11,13,16,.8),0 0 0 6px rgba(255,255,255,.65);transition:left .9s cubic-bezier(.65,0,.35,1),top .9s cubic-bezier(.65,0,.35,1),opacity .4s}
+.ring{position:absolute;z-index:3;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.55);transition:left .9s cubic-bezier(.65,0,.35,1),top .9s cubic-bezier(.65,0,.35,1),opacity .4s,width .9s,height .9s,margin .9s}
+.ev{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);font-size:15px}
+.donebtn{display:flex;align-items:center;gap:12px;padding:10px 14px 10px 10px;border:0;border-radius:999px;background:rgba(255,255,255,.07);color:var(--ink);font:600 15px/1 'Albert Sans',sans-serif;cursor:pointer}
+</style>
+</helmet>
+<div class="app">
+@@DEFS@@
+@@NAV:simple:back@@
+
+<section style="position:relative;height:900px">
+<div class="bg" role="img" aria-label="{{alt}}" style="background-image:url('/_blob/3cd39a2e266f4c5f3db791eeaaa1eff8');background-size:{{tSize}};background-position:{{tPos}};opacity:{{tOp}}"></div>
+<div class="bg" aria-hidden="true" style="background-image:url('/_blob/bcb3698311013692549901476c69ea00');background-size:1440px 960px;background-position:0 -30px;opacity:{{eOp}}"></div>
+<div class="shade" aria-hidden="true"></div>
+<span class="ring" aria-hidden="true" style="left:{{px}};top:{{py}};opacity:{{pinOp}};width:{{rs}};height:{{rs}};margin:{{rm}}"></span>
+<span class="pinm" aria-hidden="true" style="left:{{px}};top:{{py}};opacity:{{pinOp}}"></span>
+
+<div class="glass lq rise" style="position:absolute;z-index:5;left:80px;top:150px;width:540px;padding:30px;border-radius:34px;animation-delay:.15s">
+<span class="st s-w tip" tabindex="0" data-tip="À vérifier : l'imprimante l'a signalé, il faut le confirmer à l'œil. Ce n'est pas une certitude."><i></i>À vérifier · tête 3</span>
+<h1 class="h" style="margin:16px 0 0;font-size:40px;line-height:1.04">La tête 3 n'arrive plus à pousser le filament</h1>
+<div class="seg" role="tablist" aria-label="Étapes" style="display:grid;margin-top:24px;width:100%">
+<button type="button" role="tab" aria-selected="{{s0.sel}}" class="{{s0.cls}}" onClick="{{go0}}">1 · Repérer</button>
+<button type="button" role="tab" aria-selected="{{s1.sel}}" class="{{s1.cls}}" onClick="{{go1}}">2 · Nettoyer</button>
+<button type="button" role="tab" aria-selected="{{s2.sel}}" class="{{s2.cls}}" onClick="{{go2}}">3 · Relancer</button>
+<span class="thumb" style="left:{{thumbL}};width:calc((100% - 6px) / 3)"></span>
+</div>
+<div class="h" style="margin-top:22px;font-size:26px;letter-spacing:-.02em">{{cur.title}}</div>
+<p style="margin:10px 0 0;font-size:16.5px;color:var(--ink2);min-height:76px">{{cur.text}}</p>
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:14px">
+<button type="button" class="donebtn" aria-pressed="{{pressed}}" onClick="{{toggle}}"><span class="{{swCls}}"></span>{{doneLabel}}</button>
+<span style="margin-left:auto;font-size:13.5px;color:var(--ink3)">{{count}} sur 3 faits</span>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:22px">
+<sc-if value="{{notLast}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn-a" onClick="{{next}}">Étape suivante</button></sc-if>
+<sc-if value="{{isLast}}" hint-placeholder-val="{{ false }}"><a href="F-Accueil.dc.html" class="btn btn-a">C'est réglé</a><a href="F-Expert.dc.html" class="btn btn-g">Toujours bloqué ? Partager</a></sc-if>
+</div>
+<p style="margin:16px 0 0;font-size:13px;color:var(--ink3)">Consigne officielle Snapmaker pour ce code : vérifier, nettoyer, relancer.</p>
+</div>
+<span class="chip glass" style="position:absolute;z-index:5;right:40px;bottom:120px;height:32px;color:var(--ink)">{{caption}}</span>
+</section>
+
+<div class="wrap">
+<section class="solid" style="padding:24px 28px;margin-top:-60px;position:relative;z-index:6">
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px"><h3 class="h" style="margin:0;font-size:22px;letter-spacing:-.02em">Comment on le sait</h3><a href="F-Expert.dc.html" style="font-size:14px;font-weight:600;color:var(--ink2)">Détails techniques →</a></div>
+<div class="g2" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 28px">
+<div class="ev"><span class="st s-o"><i></i>Constaté</span>Code de blocage à 14:14</div>
+<div class="ev"><span class="st s-o"><i></i>Constaté</span>Pause juste avant</div>
+<div class="ev tip" tabindex="0" data-tip="Pendant 1 min 30, U1 Doctor n'a rien reçu (Wi-Fi coupé ?)."><span class="st s-u"><i></i>Pas assez d'infos</span>Rien reçu 1 min 30</div>
+</div>
+</section>
+</div>
+
+@@DOCK:Accueil@@
+<div style="height:30px"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1250}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { step: 0, done: [false, false, false] };
+}
+renderVals() {
+var self = this;
+var s = this.state;
+var i = s.step;
+var defs = [
+{ title: "Repérez la tête 3", text: "C'est la troisième en partant de la gauche, à l'arrière de la machine. Le point ambre la montre sur la photo.", tSize: "1440px 960px", tPos: "0px -60px", px: "658px", py: "665px", rs: "150px", rm: "-75px 0 0 -75px", caption: "Les 4 têtes, vues de l'avant", alt: "Les quatre têtes à l'arrière de la U1" },
+{ title: "Vérifiez l'engrenage", text: "Regardez l'engrenage qui pousse le filament dans la tête 3 et retirez les débris ou le filament cassé.", tSize: "2600px 1733px", tPos: "-210px -860px", px: "978px", py: "455px", rs: "300px", rm: "-150px 0 0 -150px", caption: "Gros plan · tête 3", alt: "Gros plan sur la tête 3" },
+{ title: "Relancez l'impression", text: "Sur l'écran tactile de la U1, reprenez l'impression mise en pause.", tSize: "2600px 1733px", tPos: "-210px -860px", px: "666px", py: "345px", rs: "220px", rm: "-110px 0 0 -110px", caption: "Écran tactile de la U1", alt: "L'écran tactile de la U1" }
+];
+var d = defs[i];
+var on = s.done[i];
+function tab(k) { return { cls: k === i ? "on" : "", sel: k === i ? "true" : "false" }; }
+return {
+cur: d, alt: d.alt, caption: d.caption,
+tSize: d.tSize, tPos: d.tPos, tOp: i === 2 ? "0" : "1", eOp: i === 2 ? "1" : "0",
+px: d.px, py: d.py, rs: d.rs, rm: d.rm, pinOp: i === 2 ? "0" : "1",
+s0: tab(0), s1: tab(1), s2: tab(2),
+thumbL: "calc(3px + " + i + " * (100% - 6px) / 3)",
+go0: function () { self.setState({ step: 0 }); },
+go1: function () { self.setState({ step: 1 }); },
+go2: function () { self.setState({ step: 2 }); },
+pressed: on ? "true" : "false",
+swCls: on ? "sw on" : "sw",
+doneLabel: on ? "Fait" : "C'est fait",
+count: s.done.filter(function (x) { return x; }).length,
+toggle: function () { var n = s.done.slice(); n[i] = !n[i]; self.setState({ done: n }); },
+notLast: i < 2, isLast: i === 2,
+next: function () { var n = s.done.slice(); n[i] = true; self.setState({ step: Math.min(2, i + 1), done: n }); }
+};
+}
+}
+</script>
+</body>
+</html>
