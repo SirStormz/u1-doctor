@@ -88,3 +88,11 @@
 [data-theme="notice"] .tour-bar { background: #ffffff; color: var(--ink); border: 2px solid var(--ink); border-radius: 999px; box-shadow: 3px 3px 0 var(--ink); padding: 6px 14px; }
 [data-theme="notice"] .tour-dot { border: 2px solid var(--ink); border-radius: 50%; }
 [data-theme="notice"] .tour-dot[aria-current="true"] { color: var(--ink); border-color: var(--ink); }
+
+/* ---- home: the toolhead circled in amber with a callout, numbered steps like a manual ---- */
+[data-theme="notice"] .home-step { border: 2px solid var(--ink); border-radius: 12px; background: #ffffff; }
+[data-theme="notice"] .home-step-n { background: var(--yellow); color: var(--ink); border: 2px solid var(--ink); font-family: var(--font-display); }
+[data-theme="notice"] .home-step-img { border-radius: 8px; box-shadow: inset 0 0 0 2px var(--ink); }
+[data-theme="notice"] .home-ring { border: 4px solid var(--yellow); box-shadow: 0 0 0 2px var(--ink), inset 0 0 0 2px var(--ink); }
+[data-theme="notice"] .home-tag { background: #ffffff; color: var(--ink); border: 2px solid var(--ink); border-radius: 999px; box-shadow: 2px 2px 0 var(--ink); }
+[data-theme="notice"] .home-short:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); }

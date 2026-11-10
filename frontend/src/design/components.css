@@ -120,3 +120,19 @@ main:focus-visible { outline: none; box-shadow: none; }
 
 /* bars share the content column: right padding includes the width of main's scrollbar */
 .stage > .topbar { padding-right: calc(max(21px, 3vw) + var(--sbw, 0px)); }
+
+/* ---- UI V2 home (Simple mode): steps, the U1 render with its toolhead mark, shortcuts; each theme dresses them ---- */
+.home-steps { list-style: none; padding: 0; margin: 0; }
+.home-step { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-m); background: var(--surface-2); }
+.home-step-n { display: grid; place-items: center; width: 30px; height: 30px; flex: none; border-radius: 50%; background: var(--yellow); color: #1a1100; font-weight: 800; font-size: 14px; }
+.home-step-img { width: 96px; height: 62px; flex: none; border-radius: var(--radius-s); background-repeat: no-repeat; background-size: 340% auto; box-shadow: inset 0 0 0 1px var(--line); }
+.home-figure { position: relative; overflow: hidden; margin-inline: auto; width: min(100%, calc(min(640px, 76vh) * var(--ar, 0.84))); aspect-ratio: var(--ar, 0.84); }
+.home-mark { position: absolute; z-index: 2; transform: translate(-50%, -50%); pointer-events: none; }
+.home-ring { display: block; width: 78px; height: 78px; border-radius: 50%; border: 3px solid var(--yellow); box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35); }
+.home-tag { position: absolute; left: 50%; top: calc(100% + 8px); transform: translateX(-50%); white-space: nowrap; padding: 2px 9px; background: var(--yellow); color: #1a1100; font-weight: 800; font-size: 12px; border-radius: var(--radius-s); }
+.home-lens { display: none; }
+.home-short { cursor: pointer; transition: transform var(--d-fast) var(--ease); }
+.home-short:hover { transform: translateY(-1px); }
+@keyframes home-mark-in { from { opacity: 0; transform: translate(-50%, -50%) scale(1.25); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+.home-mark { animation: home-mark-in 600ms var(--ease) 300ms both; }
+@media (prefers-reduced-motion: reduce) { .home-mark { animation: none; } }

@@ -13,12 +13,14 @@ import { U1Viewer } from "../viz/U1Viewer";
 import { RealCapturePanel } from "./real";
 import { NoData } from "../components/nodata";
 import { FirstSteps } from "../components/onboarding";
+import { Home } from "./home";
 
 export function Overview({ go }: { go: (n: RouteName, p?: string) => void }) {
-  const { t, lang, theme } = usePrefs();
+  const { t, lang, theme, mode } = usePrefs();
   const inc = useIncident();
   if (inc.status === "loading") return <StateBlock kind="loading" title={t.loading} />;
   if (inc.status === "error") return <StateBlock kind="error" title={t.error} body={errText(t, inc.error)} action={<Button onClick={inc.reload}>{t.retry}</Button>} />;
+  if (mode === "simple") return <Home go={go} />; // UI V2 home; Expert keeps the detailed layout
 
   const demo = inc.demo;
   const findings = demo ? inc.findings : [];

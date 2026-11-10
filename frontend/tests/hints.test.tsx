@@ -51,7 +51,7 @@ test("a hint shows once, next to its element, and never again after 'Got it'", a
   await screen.findByRole("navigation");
   await waitFor(() => expect(hint("marks")).not.toBeNull());
   expect(hint("palette")).not.toBeNull();
-  expect(hint("marks")!.closest("section")).toHaveTextContent(/Findings|Conclusions/); // anchored in the Findings block
+  expect(hint("marks")!.closest("section")).toHaveTextContent(/How we know|Comment on le sait/); // anchored in the block that counts the marks (UI V2 home)
   expect(hint("marks")!).toHaveTextContent(/Observed.*Suspected.*Missing/);
   fireEvent.click(gotIt(hint("marks")!));
   expect(hint("marks")).toBeNull();

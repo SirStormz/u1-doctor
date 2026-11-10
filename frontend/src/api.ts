@@ -41,7 +41,8 @@ export interface Decoding {
   /** raw code parts, sent for every well-formed code */
   level?: string; module_code?: string; index?: string; number?: string;
   reason?: string;
-  entry?: { title: string; summary: string } | null;
+  /** toolhead and actions come from the official table row (actions are keywords of its text, not an ordered procedure) */
+  entry?: { title: string; summary: string; toolhead?: number | null; actions?: string[]; article?: { title: string; url: string; kind: string } | null } | null;
   firmware?: FirmwareView;
 }
 export interface FwNote { component: string; version: string; kind: string; text: string; source: string; applies: "BEFORE" | "INCLUDED" | null }
