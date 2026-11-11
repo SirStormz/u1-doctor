@@ -3,7 +3,7 @@
 <style>
 text{font-family:'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif}
 .m{font-family:ui-monospace,'Cascadia Mono',Consolas,'SF Mono',Menlo,monospace}
-.hl,.scan,.type{opacity:0}
+.hl,.scan,.type,.trav{opacity:0}
 
 @media (prefers-reduced-motion:no-preference){
 
@@ -25,7 +25,11 @@ text{font-family:'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif}
 @keyframes chk{0%,60%{opacity:0}66%,92%{opacity:1}100%{opacity:0}}
 .eq{transform-box:fill-box;transform-origin:center;animation:eq 2.4s ease-in-out infinite}
 @keyframes eq{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
-.fade{animation:fade 1.2s ease-out both}
+.ping{transform-box:fill-box;transform-origin:center;animation:ping 2.6s ease-out infinite}
+@keyframes ping{0%{transform:scale(.8);opacity:.9}100%{transform:scale(1.6);opacity:0}}
+.trav{animation:trav 5s ease-in-out infinite}
+@keyframes trav{0%{transform:translateX(0);opacity:0}8%{opacity:1}92%{opacity:1}100%{transform:translateX(420px);opacity:0}}
+.fade{animation:fade 1.2s ease-out}
 @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
 }

@@ -30,6 +30,9 @@ const TXT = {
     reads: "reads: at most 13 GET requests", noCmd: "no command, no G-code, no pause", noCloud: "No cloud. No telemetry. Nothing leaves this PC.",
     gapsTitle: "Gaps stay gaps", gapNote: "no data here does not mean nothing happened", observedLbl: "observed", gapLbl: "gap",
     sameTitle: "Same input, same result", inputs: "same observations + same rules", run1: "Run 1", run2: "Run 2", same: "same hash", example: "example",
+    h1: "We are missing", h2: "one real failure.", sub1: "Only normal prints have been captured so far.", sub2: "Every incident in the app is synthetic.",
+    count: "real failures received", n1: "Your U1 stops", n2: "You send a report", n3: "The rules get tested",
+    bReport: "Send an incident report", bForum: "Snapmaker forum", bDiscord: "Snapmaker Discord",
   },
   fr: {
     alt: "U1 Doctor",
@@ -42,6 +45,9 @@ const TXT = {
     reads: "lit : 13 requêtes GET au maximum", noCmd: "aucune commande, aucun G-code, aucune pause", noCloud: "Aucun cloud. Aucune télémétrie. Rien ne quitte ce PC.",
     gapsTitle: "Un trou reste un trou", gapNote: "pas de donnée ici ne veut pas dire que rien ne s'est passé", observedLbl: "observé", gapLbl: "trou",
     sameTitle: "Même entrée, même résultat", inputs: "mêmes observations + mêmes règles", run1: "Rejeu 1", run2: "Rejeu 2", same: "même empreinte", example: "exemple",
+    h1: "Il nous manque", h2: "une vraie panne.", sub1: "Seules des impressions normales ont été capturées.", sub2: "Tout incident de l'app est synthétique.",
+    count: "pannes réelles reçues", n1: "Ta U1 s'arrête", n2: "Tu envoies un rapport", n3: "Les règles sont testées",
+    bReport: "Envoyer un rapport", bForum: "Forum Snapmaker", bDiscord: "Discord Snapmaker",
   },
 };
 
@@ -52,7 +58,7 @@ const doc = (w, h, t, css, body, title) => `<svg xmlns="http://www.w3.org/2000/s
 <style>
 text{font-family:${D}}
 .m{font-family:${M}}
-.hl,.scan,.type{opacity:0}
+.hl,.scan,.type,.trav{opacity:0}
 ${css}
 @media (prefers-reduced-motion:no-preference){
 ${ANIM}
@@ -83,7 +89,11 @@ const ANIM = `
 @keyframes chk{0%,60%{opacity:0}66%,92%{opacity:1}100%{opacity:0}}
 .eq{transform-box:fill-box;transform-origin:center;animation:eq 2.4s ease-in-out infinite}
 @keyframes eq{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
-.fade{animation:fade 1.2s ease-out both}
+.ping{transform-box:fill-box;transform-origin:center;animation:ping 2.6s ease-out infinite}
+@keyframes ping{0%{transform:scale(.8);opacity:.9}100%{transform:scale(1.6);opacity:0}}
+.trav{animation:trav 5s ease-in-out infinite}
+@keyframes trav{0%{transform:translateX(0);opacity:0}8%{opacity:1}92%{opacity:1}100%{transform:translateX(420px);opacity:0}}
+.fade{animation:fade 1.2s ease-out}
 @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 `;
 
@@ -232,6 +242,43 @@ function replay(t, x) {
   return doc(W, H, t, "", body, `${x.gapsTitle}. ${x.sameTitle}`);
 }
 
+
+/* ---------- 5. call for help ---------- */
+function help(t, x) {
+  const W = 1280, H = 430, ny = 190, xs = [740, 940, 1140];
+  let body = "";
+  body += `<g class="fade"><text x="60" y="130" font-size="60" font-weight="800" fill="${t.ink}" letter-spacing="-1">${esc(x.h1)}</text><text x="60" y="200" font-size="60" font-weight="800" fill="${t.accText}" letter-spacing="-1">${esc(x.h2)}</text></g>`;
+  body += `<text x="62" y="252" font-size="23" fill="${t.ink}">${esc(x.sub1)}</text><text x="62" y="284" font-size="23" fill="${t.ink2}">${esc(x.sub2)}</text>`;
+  body += `<text x="56" y="396" font-size="112" font-weight="700" class="m" fill="${t.accText}">0</text><text x="150" y="388" font-size="24" fill="${t.ink}">${esc(x.count)}</text>`;
+  // path between the three nodes
+  body += `<path d="M${xs[0] + 52} ${ny}H${xs[1] - 52}M${xs[1] + 52} ${ny}H${xs[2] - 52}" stroke="${t.ink2}" stroke-width="4" stroke-dasharray="3 10" stroke-linecap="round" fill="none"/>`;
+  body += `<g class="trav"><circle cx="${xs[0] + 20}" cy="${ny}" r="9" fill="${t.acc}" stroke="${t.line}" stroke-width="2"/></g>`;
+  // node 1: the failure
+  body += `<circle class="ping" cx="${xs[0]}" cy="${ny}" r="46" fill="none" stroke="${t.danger}" stroke-width="4"/>`;
+  body += `<circle class="ping" style="animation-delay:1.3s" cx="${xs[0]}" cy="${ny}" r="46" fill="none" stroke="${t.danger}" stroke-width="4"/>`;
+  const node = (cx, fill) => (t.shadow ? `<circle cx="${cx + 5}" cy="${ny + 5}" r="46" fill="${t.shadow}"/>` : "") + `<circle cx="${cx}" cy="${ny}" r="46" fill="${fill}" stroke="${t.line}" stroke-width="${t.sw + 1}"/>`;
+  body += node(xs[0], t.panel) + `<path d="M${xs[0]} ${ny - 22}v26" stroke="${t.danger}" stroke-width="7" stroke-linecap="round"/><circle cx="${xs[0]}" cy="${ny + 22}" r="4.5" fill="${t.danger}"/>`;
+  // node 2: the report (an envelope)
+  body += node(xs[1], t.acc) + `<rect x="${xs[1] - 24}" y="${ny - 16}" width="48" height="34" fill="none" stroke="${t.accInk}" stroke-width="4" stroke-linejoin="round"/><path d="M${xs[1] - 24} ${ny - 14}l24 18 24 -18" fill="none" stroke="${t.accInk}" stroke-width="4" stroke-linejoin="round"/>`;
+  // node 3: the rules, tested
+  body += node(xs[2], t.panel) + `<path d="M${xs[2] - 20} ${ny + 2}l14 14 28 -32" fill="none" stroke="${t.accText}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>`;
+  [[xs[0], x.n1], [xs[1], x.n2], [xs[2], x.n3]].forEach(([cx, l]) => (body += `<text x="${cx}" y="${ny + 106}" text-anchor="middle" font-size="19" font-weight="600" fill="${t.ink}">${esc(l)}</text>`));
+  return doc(W, H, t, "", body, `${x.h1} ${x.h2} ${x.sub1} ${x.sub2}`);
+}
+
+function button(t, label, kind) {
+  const W = 330, H = 76, primary = kind === "report";
+  const fill = primary ? t.acc : t.bg, ink = primary ? t.accInk : t.ink;
+  const cut = !t.shadow;
+  const shape = cut
+    ? `<path d="M16 3H${W - 3}V${H - 19}L${W - 19} ${H - 3}H3V19z" fill="${fill}" stroke="${primary ? t.acc : t.acc}" stroke-width="2"/>`
+    : (t.shadow ? `<rect x="9" y="9" width="${W - 12}" height="${H - 12}" fill="${t.shadow}"/>` : "") + `<rect x="3" y="3" width="${W - 12}" height="${H - 12}" fill="${fill}" stroke="${t.line}" stroke-width="2.5"/>`;
+  const tx = cut ? 34 : 30, ax = cut ? W - 54 : W - 62, k = primary || t.shadow ? ink : t.accText;
+  const body = `${shape}<text x="${tx}" y="${H / 2 + 8}" font-size="23" font-weight="800" fill="${k}">${esc(label)}</text><path d="M${ax} ${H / 2}h26m-9 -9 9 9 -9 9" stroke="${k}" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${esc(label)}"><title>${esc(label)}</title><style>text{font-family:${D}}</style>${body}</svg>
+`;
+}
+
 for (const lang of ["en", "fr"]) {
   const suffix = lang === "fr" ? ".fr" : "";
   for (const [name, t] of Object.entries(THEMES)) {
@@ -240,6 +287,10 @@ for (const lang of ["en", "fr"]) {
     writeFileSync(`${OUT}questions-${name}${suffix}.svg`, questions(t, x));
     writeFileSync(`${OUT}readonly-${name}${suffix}.svg`, readonly(t, x));
     writeFileSync(`${OUT}replay-${name}${suffix}.svg`, replay(t, x));
+    writeFileSync(`${OUT}help-${name}${suffix}.svg`, help(t, x));
+    writeFileSync(`${OUT}button-report-${name}${suffix}.svg`, button(t, x.bReport, "report"));
+    writeFileSync(`${OUT}button-forum-${name}${suffix}.svg`, button(t, x.bForum, "forum"));
+    writeFileSync(`${OUT}button-discord-${name}${suffix}.svg`, button(t, x.bDiscord, "discord"));
   }
 }
 console.log("README SVGs written to docs/media/readme/");

@@ -42,6 +42,21 @@
 <img src="docs/media/readme/replay-light.fr.svg" alt="Un trou dans la frise reste un trou, il ne veut pas dire que rien ne s'est passé. Les mêmes observations et les mêmes règles donnent toujours la même empreinte." width="100%">
 </picture></p>
 
+## Une vraie panne ?
+
+<p align="center"><picture>
+<source media="(prefers-color-scheme: dark)" srcset="docs/media/readme/help-dark.fr.svg">
+<img src="docs/media/readme/help-light.fr.svg" alt="Il nous manque une vraie panne. Seules des impressions normales ont été capturées, tout incident de l'app est synthétique. Ta U1 s'arrête, tu envoies un rapport, les règles sont testées. Zéro panne réelle reçue." width="100%">
+</picture></p>
+
+<p align="center">
+<a href="https://github.com/SirStormz/u1-doctor/issues/new?template=incident-report.yml"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/readme/button-report-dark.fr.svg"><img src="docs/media/readme/button-report-light.fr.svg" alt="Envoyer un rapport" height="52"></picture></a>
+<a href="https://forum.snapmaker.com/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/readme/button-forum-dark.fr.svg"><img src="docs/media/readme/button-forum-light.fr.svg" alt="Forum Snapmaker" height="52"></picture></a>
+<a href="https://discord.com/invite/snapmaker-official-1086575708903571536"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/readme/button-discord-dark.fr.svg"><img src="docs/media/readme/button-discord-light.fr.svg" alt="Discord Snapmaker, salon u1-printer" height="52"></picture></a>
+</p>
+
+<p align="center">Quoi envoyer ? <a href="docs/SHARE_A_REPORT.md">Comment partager un rapport, en deux minutes</a> (en anglais). L'app n'envoie jamais rien toute seule.</p>
+
 ## Aller plus loin
 
 Le détail complet (écrans, état des tests, modèle de sécurité, limites, lancer depuis les sources) est en anglais : [Everything it does](docs/OVERVIEW.md), [How it works](docs/HOW-IT-WORKS.md), [limites](docs/LIMITS.md). Pour aider avec une vraie panne : [formulaire d'incident](https://github.com/SirStormz/u1-doctor/issues/new?template=incident-report.yml).
