@@ -13,6 +13,6 @@
 /* theme and language are decided before first paint, so there is no flash */
 (function(){var d=document.documentElement,t="a",l="en";
 try{if(localStorage.getItem("u1d-theme")==="b")t="b";var s=localStorage.getItem("u1d-lang");
-l=s==="fr"||s==="en"?s:((navigator.language||"en").slice(0,2)==="fr"?"fr":"en")}catch(e){}
+if(s==="fr")l="fr"}catch(e){}
 d.dataset.theme=t;d.lang=l;d.classList.add("js")})();
 </script>
