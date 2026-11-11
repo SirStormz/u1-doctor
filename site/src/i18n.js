@@ -60,7 +60,7 @@ const FR = {
   "ai.2.h": "Fais une capture en lecture seule, si tu peux", "ai.2.p": "Capture depuis l'écran Diagnostiquer, puis exporte un paquet depuis l'écran Rapport. Ouvre d'abord le zip et lis ce qu'il liste.",
   "ai.3.h": "Vérifie avant de publier", "ai.3.p": "Un ticket est public et reste indexé même si tu le supprimes. Retire adresses IP, numéros de série, e-mails et noms de fichiers d'impression, y compris sur les captures d'écran.",
   "ai.4.h": "Ouvre le formulaire d'incident", "ai.4.p": "Tu l'écris et tu joins le fichier toi-même. U1 Doctor n'envoie jamais rien tout seul.",
-  "ai.guide": "Lire le guide complet",
+  "ai.guide": "Comment partager un rapport",
   "ai.miss.h2": "Ce qui nous manque",
   "ai.m1.h": "Une vraie panne", "ai.m1.p": "Tout incident de l'app est synthétique. Une capture réelle testerait les règles pour la première fois.",
   "ai.m2.h": "Des règles jamais déclenchées", "ai.m2.p": "Les règles S17 à S21 sont restées muettes sur une impression saine. Leur cas positif n'a jamais été vu sur une vraie imprimante.",

@@ -55,7 +55,7 @@
 <a href="https://discord.com/invite/snapmaker-official-1086575708903571536"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/readme/button-discord-dark.fr.svg"><img src="docs/media/readme/button-discord-light.fr.svg" alt="Discord Snapmaker, salon u1-printer" height="52"></picture></a>
 </p>
 
-<p align="center">Quoi envoyer ? <a href="docs/SHARE_A_REPORT.md">Comment partager un rapport, en deux minutes</a> (en anglais). L'app n'envoie jamais rien toute seule.</p>
+<p align="center">Quoi envoyer ? <a href="docs/SHARE_A_REPORT.md">Comment partager un rapport, en deux minutes</a>. L'app n'envoie jamais rien toute seule.</p>
 
 ## Aller plus loin
 
