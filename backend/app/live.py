@@ -20,7 +20,7 @@ import re
 import time
 from collections.abc import Callable
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, TypeGuard
 
 import httpx
 
@@ -91,7 +91,7 @@ _JOB_STATUS = re.compile(r"^[a-z_]{1,32}$")
 _ERRORISH = re.compile(r"^!!|\b(?:error|shutdown|lost communication|timeout|timer too close|mcu|overheat|runaway|stall|fault)\b", re.I)
 
 
-def _num_ok(v: Any) -> bool:
+def _num_ok(v: Any) -> TypeGuard[float]:
     return isinstance(v, int | float) and not isinstance(v, bool) and math.isfinite(v) and v >= 0
 
 
@@ -106,7 +106,7 @@ def _jobs(doc: dict[str, Any], t: str) -> dict[str, Any] | None:
     for j in jobs[:20]:
         if not isinstance(j, dict) or not isinstance(j.get("status"), str) or not _JOB_STATUS.match(j["status"]):
             continue
-        meta = j.get("metadata") if isinstance(j.get("metadata"), dict) else {}
+        meta: dict[str, Any] = j["metadata"] if isinstance(j.get("metadata"), dict) else {}
         row: dict[str, Any] = {"status": j["status"]}
         for k, src in (("start", "start_time"), ("end", "end_time")):
             v = j.get(src)
@@ -136,7 +136,7 @@ def _console(doc: dict[str, Any], t: str) -> dict[str, Any] | None:
     store = _result(doc).get("gcode_store")
     if not isinstance(store, list):
         return None
-    lines = [m.get("message") for m in store if isinstance(m, dict) and isinstance(m.get("message"), str)]
+    lines: list[str] = [msg for m in store if isinstance(m, dict) and isinstance(msg := m.get("message"), str)]
     kept = [scrub(s.strip()) for s in lines if _ERRORISH.search(s)][-20:]
     return {"read": len(lines), "lines": kept, "t": t}
 

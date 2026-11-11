@@ -17,6 +17,7 @@ import re
 import secrets
 from collections.abc import Callable
 from datetime import UTC, datetime
+from functools import partial
 from typing import Any
 
 import httpx
@@ -228,7 +229,7 @@ def build_support_pack(host: str, *, code: str | None = None, notes: str | None 
         say("config")
         listing = get("server.files.list(config)", lambda: tr.list_files("config"))
         for n in _pick_configs(listing or {}):
-            data = get(f"config/{n}", lambda n=n: tr.download_file("config", n, MAX_FILE_BYTES))
+            data = get(f"config/{n}", partial(tr.download_file, "config", n, MAX_FILE_BYTES))
             if data is not None:
                 files[f"config/{n}"] = scrub_network(data) if redact_network else data
         say("logs")
@@ -238,7 +239,7 @@ def build_support_pack(host: str, *, code: str | None = None, notes: str | None 
             if total + size > MAX_TOTAL_BYTES:
                 errors.append({"op": f"logs/{n}", "why": "skipped: total size limit"})
                 continue
-            data = get(f"logs/{n}", lambda n=n: tr.download_file("logs", n, MAX_FILE_BYTES))
+            data = get(f"logs/{n}", partial(tr.download_file, "logs", n, MAX_FILE_BYTES))
             if data is not None:
                 total += len(data)
                 files[f"logs/{n}"] = scrub_network(data) if redact_network else data
