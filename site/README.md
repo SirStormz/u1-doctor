@@ -16,4 +16,5 @@ npm run build    # cleans docs/assets, docs/changelog, docs/aider, then builds i
 - **Decoder demo**: `src/data/codes.json` is made from `knowledge/u1_codes.json` by `npm run codes` (commit the result when the catalog changes).
 - **Images**: `src/img/` holds copies of the app's Blender renders; `npm run renders` refreshes them from `frontend/src/assets/renders/`.
 - **Changelog**: edit `src/data/changelog.json` (English and French text per release) when a release ships.
+- **README visuals**: the animated SVGs of the root README (banner, three questions, read-only, replay; dark/light x EN/FR) are generated into `docs/media/readme/` by `npm run readme-svgs` (`scripts/build-readme-svgs.mjs`). The banner embeds the owner's Blender render; no AI image. Edit the texts or colours in that script and commit the SVGs.
 - Fonts come from Fontsource packages and ship with the site: no request to a font host.

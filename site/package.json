@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "node scripts/clean.mjs && vite build",
     "codes": "node scripts/build-codes.mjs",
-    "renders": "node scripts/sync-renders.mjs"
+    "renders": "node scripts/sync-renders.mjs",
+    "readme-svgs": "node scripts/build-readme-svgs.mjs"
   },
   "dependencies": {
     "@fontsource-variable/doto": "5.3.0",
