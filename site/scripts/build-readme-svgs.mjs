@@ -267,7 +267,7 @@ function help(t, x) {
 }
 
 function button(t, label, kind) {
-  const W = Math.round(label.length * 12.4 + 108), H = 76, primary = kind === "report"; // width follows the label
+  const W = Math.round(label.length * 14 + 130), H = 76, primary = kind === "report"; // width follows the label
   const fill = primary ? t.acc : t.bg, ink = primary ? t.accInk : t.ink;
   const cut = !t.shadow;
   const shape = cut
