@@ -51,7 +51,7 @@
 
 <p align="center">
 <a href="https://github.com/SirStormz/u1-doctor/issues/new?template=incident-report.yml"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/readme/button-report-dark.fr.svg"><img src="docs/media/readme/button-report-light.fr.svg" alt="Envoyer un rapport" height="52"></picture></a>
-<a href="https://forum.snapmaker.com/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/readme/button-forum-dark.fr.svg"><img src="docs/media/readme/button-forum-light.fr.svg" alt="Forum Snapmaker" height="52"></picture></a>
+<a href="https://forum.snapmaker.com/t/44124"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/readme/button-forum-dark.fr.svg"><img src="docs/media/readme/button-forum-light.fr.svg" alt="Forum Snapmaker" height="52"></picture></a>
 <a href="https://discord.com/invite/snapmaker-official-1086575708903571536"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/readme/button-discord-dark.fr.svg"><img src="docs/media/readme/button-discord-light.fr.svg" alt="Discord Snapmaker, salon u1-printer" height="52"></picture></a>
 </p>
 

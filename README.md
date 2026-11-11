@@ -74,7 +74,7 @@ Pick one in Settings. A theme changes the look only, never what the app says.
 
 <p align="center">
 <a href="https://github.com/SirStormz/u1-doctor/issues/new?template=incident-report.yml"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/readme/button-report-dark.svg"><img src="docs/media/readme/button-report-light.svg" alt="Send an incident report" height="52"></picture></a>
-<a href="https://forum.snapmaker.com/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/readme/button-forum-dark.svg"><img src="docs/media/readme/button-forum-light.svg" alt="Snapmaker forum" height="52"></picture></a>
+<a href="https://forum.snapmaker.com/t/44124"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/readme/button-forum-dark.svg"><img src="docs/media/readme/button-forum-light.svg" alt="Snapmaker forum" height="52"></picture></a>
 <a href="https://discord.com/invite/snapmaker-official-1086575708903571536"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/readme/button-discord-dark.svg"><img src="docs/media/readme/button-discord-light.svg" alt="Snapmaker Discord, channel u1-printer" height="52"></picture></a>
 </p>
 
