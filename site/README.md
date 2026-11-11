@@ -16,5 +16,7 @@ npm run build    # cleans docs/assets, docs/changelog, docs/aider, then builds i
 - **Decoder demo**: `src/data/codes.json` is made from `knowledge/u1_codes.json` by `npm run codes` (commit the result when the catalog changes).
 - **Images**: `src/img/` holds copies of the app's Blender renders; `npm run renders` refreshes them from `frontend/src/assets/renders/`.
 - **Changelog**: edit `src/data/changelog.json` (English and French text per release) when a release ships.
+- **Release facts** (version, zip name and size, SHA-256, VirusTotal score and link): edit `src/data/release.json`. The build stops if its version differs from the top entry of `changelog.json`. The history and these facts are written into the HTML at build time (`vite.config.mjs`).
+- **App screens** (`src/img/app-*.webp`): regenerate with `E2E_OUT=<dir> node frontend/scripts/capture-screens.mjs obsidienne` against the built app in demo mode, then resize to 1280 px wide webp.
 - **README visuals**: the animated SVGs of the root README (banner, three questions, read-only, replay; dark/light x EN/FR) are generated into `docs/media/readme/` by `npm run readme-svgs` (`scripts/build-readme-svgs.mjs`). The banner embeds the owner's Blender render; no AI image. Edit the texts or colours in that script and commit the SVGs.
 - Fonts come from Fontsource packages and ship with the site: no request to a font host.

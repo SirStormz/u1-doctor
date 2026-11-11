@@ -6,7 +6,7 @@ import { chromium } from "@playwright/test";
 import path from "node:path";
 
 const BASE = process.env.E2E_BASE_URL ?? "http://127.0.0.1:8766";
-const OUT = path.resolve(import.meta.dirname, "../../docs/media/screens");
+const OUT = process.env.E2E_OUT ?? path.resolve(import.meta.dirname, "../../docs/media/screens");
 const THEME = process.argv[2] ?? "obsidienne";
 const SCREENS = [
   ["01-welcome", "welcome"], ["02-connect", "connect"], ["03-overview", "overview"], ["04-error-codes", "explorer"],

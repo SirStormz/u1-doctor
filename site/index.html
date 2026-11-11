@@ -9,7 +9,15 @@
 <meta property="og:description" content="Decode the 413 official error codes, replay what happened and share a bundle anyone can check. Local and read-only.">
 <meta property="og:url" content="https://sirstormz.github.io/u1-doctor/">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"U1 Doctor","applicationCategory":"UtilitiesApplication","operatingSystem":"Windows","description":"A local, read-only tool that reads Snapmaker U1 logs, decodes the 413 official error codes and builds a timeline of observed facts.","url":"https://sirstormz.github.io/u1-doctor/","downloadUrl":"https://github.com/SirStormz/u1-doctor/releases/latest","license":"https://opensource.org/licenses/MIT","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"U1 Doctor","applicationCategory":"UtilitiesApplication","operatingSystem":"Windows","description":"A local, read-only tool that reads Snapmaker U1 logs, decodes the 413 official error codes and builds a timeline of observed facts.","url":"https://sirstormz.github.io/u1-doctor/","downloadUrl":"https://github.com/SirStormz/u1-doctor/releases/latest","license":"https://opensource.org/licenses/MIT","softwareVersion":"{{version}}","fileSize":"{{size}}","image":"https://sirstormz.github.io/u1-doctor/og.jpg","inLanguage":["en","fr"],"isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Do my logs leave my PC?","acceptedAnswer":{"@type":"Answer","text":"No. Nothing is sent anywhere. There is no cloud and no telemetry, and you can check the source."}},
+{"@type":"Question","name":"Can the tool touch the printer?","acceptedAnswer":{"@type":"Answer","text":"No. It is read-only: it reads what the printer reports and never sends a command."}},
+{"@type":"Question","name":"Why is there no AI in the tool?","acceptedAnswer":{"@type":"Answer","text":"Because a result must be replayable, byte for byte. The same observations and the same rules always give the same answer."}},
+{"@type":"Question","name":"Is it official Snapmaker software?","acceptedAnswer":{"@type":"Answer","text":"No. It is an independent project. Every code links to the official wiki page it comes from."}},
+{"@type":"Question","name":"Which systems does it run on?","acceptedAnswer":{"@type":"Answer","text":"The app ships as a Windows zip with its checksum. The engine is tested in CI on Windows, Linux and macOS."}}]}
 </script>
 <script type="module" src="./src/main.js"></script>
 </head>
@@ -115,6 +123,44 @@
   </div>
 </section>
 
+<!-- THE APP: real screens of the current release, demo data -->
+<section id="app">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <h2 data-i18n="app.h2">The real app, on demo data.</h2>
+      <p class="lead" data-i18n="app.lead">Screens of the current release. The incident you see is synthetic and labelled as such in the app.</p>
+    </div>
+    <div class="app rv">
+      <div class="tabs" role="tablist" aria-label="App screens" id="app-tabs">
+        <button type="button" role="tab" id="tab-verdict" aria-controls="shot-verdict" aria-selected="true" data-i18n="app.t1">Verdict</button>
+        <button type="button" role="tab" id="tab-timeline" aria-controls="shot-timeline" aria-selected="false" tabindex="-1" data-i18n="app.t2">Timeline</button>
+        <button type="button" role="tab" id="tab-findings" aria-controls="shot-findings" aria-selected="false" tabindex="-1" data-i18n="app.t3">Findings</button>
+        <button type="button" role="tab" id="tab-report" aria-controls="shot-report" aria-selected="false" tabindex="-1" data-i18n="app.t4">Report</button>
+      </div>
+      <div class="shots">
+        <div class="shot" id="shot-verdict" role="tabpanel" aria-labelledby="tab-verdict"><figure>
+          <img src="./src/img/app-verdict.webp" width="1280" height="800" loading="lazy" alt="U1 Doctor verdict screen: a code reported on toolhead 3 with the evidence, the source of the rule and the 3D U1">
+          <figcaption data-i18n="app.c1">The verdict says what was reported, how many facts support it, and where the rule comes from.</figcaption>
+        </figure></div>
+        <div class="shot" id="shot-timeline" role="tabpanel" aria-labelledby="tab-timeline"><figure>
+          <img src="./src/img/app-timeline.webp" width="1280" height="800" loading="lazy" alt="U1 Doctor timeline: temperature curves with a marked gap in the data and the list of events">
+          <figcaption data-i18n="app.c2">The timeline marks every gap in the data instead of drawing a line across it.</figcaption>
+        </figure></div>
+        <div class="shot" id="shot-findings" role="tabpanel" aria-labelledby="tab-findings"><figure>
+          <img src="./src/img/app-findings.webp" width="1280" height="800" loading="lazy" alt="U1 Doctor findings list: each finding with its status, evidence for, against and missing">
+          <figcaption data-i18n="app.c3">Each finding shows what supports it, what contradicts it and what is missing. No score.</figcaption>
+        </figure></div>
+        <div class="shot" id="shot-report" role="tabpanel" aria-labelledby="tab-report"><figure>
+          <img src="./src/img/app-report.webp" width="1280" height="800" loading="lazy" alt="U1 Doctor report composer: the bundle contents, and a privacy check listing what is removed">
+          <figcaption data-i18n="app.c4">Before anything is exported, the privacy check lists what is removed: addresses, serial numbers, file names.</figcaption>
+        </figure></div>
+      </div>
+      <p class="app-links"><a class="btn" href="{{base}}sample-report/" data-i18n="app.sample">Open the sample report</a><span class="muted" data-i18n="app.themes">Four themes, same facts. A theme changes the look, never what the app says.</span></p>
+      <img class="themes-img" src="./src/img/app-themes.webp" width="1440" height="900" loading="lazy" alt="The same screen in the four themes: Pupitre, Notice, Obsidienne and Visière">
+    </div>
+  </div>
+</section>
+
 <!-- DECODER -->
 <section id="decoder">
   <div class="wrap decoder">
@@ -130,6 +176,36 @@
       </div>
       <div class="tryit" id="dec-try"></div>
     </div>
+  </div>
+</section>
+
+<!-- GET IT -->
+<section id="get">
+  <div class="wrap get">
+    <div class="rv">
+      <h2 data-i18n="get.h2">Get it. No installer.</h2>
+      <p class="lead" style="margin-top:20px" data-i18n="get.lead">One zip for Windows. Nothing to set up, no account.</p>
+      <ol class="steps-list" style="margin-top:32px">
+        <li><span class="n" aria-hidden="true">1</span><div><h3 data-i18n="get.1.h">Download the zip</h3><p data-i18n="get.1.p">From the latest release on GitHub.</p></div></li>
+        <li><span class="n" aria-hidden="true">2</span><div><h3 data-i18n="get.2.h">Extract it with Windows Explorer</h3><p data-i18n="get.2.p">Right-click, Extract all. WinRAR or 7-Zip drop the mark Windows uses for SmartScreen. Then double-click u1-doctor.exe.</p></div></li>
+        <li><span class="n" aria-hidden="true">3</span><div><h3 data-i18n="get.3.h">Try the demo first</h3><p data-i18n="get.3.p">Switch on Demo mode to see everything on labelled synthetic data. Open Diagnose when you want to read your own U1.</p></div></li>
+      </ol>
+      <div class="cta" style="margin-top:32px">
+        <a class="btn btn-primary" href="https://github.com/SirStormz/u1-doctor/releases/latest" data-i18n="dl.win">Download for Windows</a>
+        <a class="btn" href="https://github.com/SirStormz/u1-doctor/blob/main/docs/INSTALL.md" data-i18n="get.guide">Install guide</a>
+      </div>
+    </div>
+    <aside class="proof rv" aria-labelledby="proof-h">
+      <h3 id="proof-h" data-i18n="get.proof">Check it yourself</h3>
+      <dl>
+        <div><dt data-i18n="get.v">Version</dt><dd>{{version}} <span class="muted">({{relDate}})</span></dd></div>
+        <div><dt data-i18n="get.f">File</dt><dd>{{zip}} <span class="muted">{{size}}</span></dd></div>
+        <div><dt>SHA-256</dt><dd class="hash">{{sha256}}</dd></div>
+        <div><dt>VirusTotal</dt><dd><a href="{{vtUrl}}">{{vtScore}}</a> <span data-i18n="get.vt0">engines flag it</span></dd></div>
+        <div><dt data-i18n="get.b">Build</dt><dd data-i18n="get.bv">Made by GitHub Actions from the public source, with a build attestation.</dd></div>
+      </dl>
+      <p class="muted" style="margin-top:18px" data-i18n="get.note">The exe is unsigned, so SmartScreen may warn. A clean scan is not a guarantee: the source is public, so you can read it.</p>
+    </aside>
   </div>
 </section>
 

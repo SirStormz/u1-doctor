@@ -43,6 +43,27 @@ themeBtn?.addEventListener("click", () => {
 applyLang(root.lang === "fr" ? "fr" : "en");
 document.getElementById("lang")?.addEventListener("click", () => applyLang(getLang() === "fr" ? "en" : "fr"));
 
+/* ---------- app screens: tabs (without JavaScript the four screens simply stack) ---------- */
+const tabs = [...document.querySelectorAll("#app-tabs [role=tab]")];
+if (tabs.length) {
+  const show = (tab, focus) => {
+    for (const b of tabs) {
+      const on = b === tab, panel = document.getElementById(b.getAttribute("aria-controls"));
+      b.setAttribute("aria-selected", String(on)); b.tabIndex = on ? 0 : -1;
+      panel.classList.toggle("on", on);
+    }
+    if (focus) tab.focus();
+  };
+  tabs.forEach((b) => b.addEventListener("click", () => show(b)));
+  document.getElementById("app-tabs").addEventListener("keydown", (e) => {
+    const i = tabs.indexOf(document.activeElement);
+    if (i < 0 || !["ArrowRight", "ArrowLeft", "Home", "End"].includes(e.key)) return;
+    e.preventDefault();
+    show(tabs[e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : (i + (e.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length], true);
+  });
+  show(tabs[0]);
+}
+
 /* ---------- mobile menu, current page ---------- */
 const menu = document.getElementById("menu"), links = document.getElementById("links");
 menu?.addEventListener("click", () => {

@@ -17,6 +17,30 @@ const partials = () => ({
   },
 });
 
+// Release facts and the changelog are written into the HTML at build time: the version, size and checksum on the page can
+// never drift from data/release.json, and the history is real HTML (no layout jump, readable without JavaScript).
+const readJson = (p) => JSON.parse(readFileSync(path.join(here, "src", "data", p), "utf8"));
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const timelineHtml = (items, level) => {
+  const fmt = new Intl.DateTimeFormat("en-GB", { year: "numeric", month: "short", day: "numeric" });
+  return items.map((r) => `<li><div class="ver">${esc(r.v)}<small>${fmt.format(new Date(r.date))}</small></div><${level}>${esc(r.en.title)}</${level}><p>${esc(r.en.body)}</p></li>`).join("");
+};
+const releaseData = () => ({
+  name: "u1d-release-data",
+  transformIndexHtml: {
+    order: "pre",
+    handler(html) {
+      const rel = readJson("release.json"), log = readJson("changelog.json");
+      if (log[0].v !== rel.version) throw new Error(`release.json (${rel.version}) and changelog.json (${log[0].v}) disagree`);
+      return html
+        .replace(/(<ol class="timeline" id="tl-home">)(<\/ol>)/, (_, a, b) => a + timelineHtml(log.slice(0, 3), "h3") + b)
+        .replace(/(<ol class="timeline" id="tl-full">)(<\/ol>)/, (_, a, b) => a + timelineHtml(log, "h2") + b)
+        .replaceAll("{{version}}", rel.version).replaceAll("{{zip}}", rel.zip).replaceAll("{{size}}", rel.size)
+        .replaceAll("{{sha256}}", rel.sha256).replaceAll("{{vtScore}}", rel.vtScore).replaceAll("{{vtUrl}}", rel.vtUrl).replaceAll("{{relDate}}", rel.date);
+    },
+  },
+});
+
 // Preload the two fonts the default theme (A) draws above the fold, so the headline does not swap fonts after first paint
 const preloadFonts = () => ({
   name: "u1d-preload-fonts",
@@ -31,7 +55,7 @@ const preloadFonts = () => ({
 });
 
 export default {
-  plugins: [partials(), preloadFonts()],
+  plugins: [partials(), releaseData(), preloadFonts()],
   root: here,
   base: BASE,
   publicDir: path.join(here, "public"),

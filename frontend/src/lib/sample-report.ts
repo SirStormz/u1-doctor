@@ -95,6 +95,7 @@ export function renderSampleReport(i: SampleInput): string {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
+<meta name="description" content="A sample U1 Doctor incident report built from a synthetic demo incident. Nothing in it comes from a real printer.">
 <title>U1 Doctor sample report (SYNTHETIC)</title>
 <style>
 :root{--bg:#f4f4f0;--paper:#fafaf7;--ink:#161614;--ink2:#4a4a44;--line:#c9c9c0;--demo:#7a3fd1;--demo-bg:#efe6fb;color-scheme:light dark}
