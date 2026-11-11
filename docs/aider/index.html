@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en" data-theme="a">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#08070a">
+<meta property="og:site_name" content="U1 Doctor">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://sirstormz.github.io/u1-doctor/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="U1 Doctor and the Snapmaker U1">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="/u1-doctor/icon.png">
+<script>
+/* theme and language are decided before first paint, so there is no flash */
+(function(){var d=document.documentElement,t="a",l="en";
+try{if(localStorage.getItem("u1d-theme")==="b")t="b";var s=localStorage.getItem("u1d-lang");
+l=s==="fr"||s==="en"?s:((navigator.language||"en").slice(0,2)==="fr"?"fr":"en")}catch(e){}
+d.dataset.theme=t;d.lang=l;d.classList.add("js")})();
+</script>
+
+<title>How to help - U1 Doctor</title>
+<meta name="description" content="What U1 Doctor is missing, and how to send a real incident report from your own Snapmaker U1.">
+<link rel="canonical" href="https://sirstormz.github.io/u1-doctor/aider/">
+<meta property="og:title" content="Help U1 Doctor with a real failure">
+<meta property="og:description" content="So far only normal prints have been captured. A real incident is the only way to find where the rules are wrong.">
+<meta property="og:url" content="https://sirstormz.github.io/u1-doctor/aider/">
+  <script type="module" crossorigin src="/u1-doctor/assets/main-maizrR0Q.js"></script>
+  <link rel="stylesheet" crossorigin href="/u1-doctor/assets/main-C0MVaQQg.css">
+  <link rel="preload" as="font" type="font/woff2" href="/u1-doctor/assets/oxanium-latin-wght-normal-BwpvAp5U.woff2" crossorigin="">
+  <link rel="preload" as="font" type="font/woff2" href="/u1-doctor/assets/saira-latin-wght-normal-C4OLzBX3.woff2" crossorigin="">
+</head>
+<body>
+<a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="/u1-doctor/" aria-label="U1 Doctor">U1 <b>Doctor</b></a>
+    <button class="chip menu-btn" id="menu" type="button" aria-expanded="false" aria-controls="links" data-i18n="menu">Menu</button>
+    <nav class="links" id="links" aria-label="Main">
+      <a href="/u1-doctor/#story" data-i18n="nav.story">The idea</a>
+      <a href="/u1-doctor/#features" data-i18n="nav.features">Features</a>
+      <a href="/u1-doctor/#decoder" data-i18n="nav.decoder">Decoder</a>
+      <a href="/u1-doctor/changelog/" data-i18n="nav.history">History</a>
+      <a href="/u1-doctor/aider/" data-i18n="nav.help">Help</a>
+    </nav>
+    <div class="tools">
+      <button class="chip" id="lang" type="button" aria-label="Language"><span id="lang-l">FR</span></button>
+      <button class="chip" id="theme" type="button"><span class="swatch" aria-hidden="true"></span><span data-i18n="theme">Theme</span></button>
+      <a class="btn btn-primary btn-sm btn-dl" href="https://github.com/SirStormz/u1-doctor/releases/latest" data-i18n="dl.win">Download for Windows</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="wrap narrow page-head">
+    <h1 data-i18n="ai.h1">Help U1 Doctor</h1>
+    <p class="lead" data-i18n="ai.lead">The rules were written from the official documentation. A real incident from a real U1 is the only way to find out where they are wrong or too weak.</p>
+    <div class="links-list" style="margin-top:28px">
+      <a class="btn btn-primary" href="https://github.com/SirStormz/u1-doctor/issues/new?template=incident-report.yml" data-i18n="help.cta">Send a report</a>
+    </div>
+  </div>
+
+  <section style="padding-top:clamp(48px,7vw,88px)">
+    <div class="wrap narrow">
+      <h2 class="sec-head" data-i18n="ai.send.h2">Send a report in five minutes</h2>
+      <ol class="steps-list">
+        <li><span class="n" aria-hidden="true">1</span><div><h3 data-i18n="ai.1.h">Write down what happened</h3><p data-i18n="ai.1.p">The exact error code in the form dddd-dddd-dddd-dddd, the firmware version, when it happened and what you tried.</p></div></li>
+        <li><span class="n" aria-hidden="true">2</span><div><h3 data-i18n="ai.2.h">Take a read-only capture, if you can</h3><p data-i18n="ai.2.p">Capture from the Diagnose screen, then export a bundle from the Report screen. Open the zip first and read what it lists.</p></div></li>
+        <li><span class="n" aria-hidden="true">3</span><div><h3 data-i18n="ai.3.h">Check before you post</h3><p data-i18n="ai.3.p">An issue is public and stays indexed even if you delete it. Remove IP addresses, serial numbers, e-mail addresses and print file names, also from screenshots.</p></div></li>
+        <li><span class="n" aria-hidden="true">4</span><div><h3 data-i18n="ai.4.h">Open the incident form</h3><p data-i18n="ai.4.p">You write it and you attach the file yourself. U1 Doctor never sends anything by itself.</p></div></li>
+      </ol>
+      <p style="margin-top:28px"><a class="btn" href="https://github.com/SirStormz/u1-doctor/blob/main/docs/SHARE_A_REPORT.md" data-i18n="ai.guide">Read the full guide</a></p>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap narrow">
+      <h2 class="sec-head" data-i18n="ai.miss.h2">What we are missing</h2>
+      <div class="needs">
+        <div class="need"><h3 data-i18n="ai.m1.h">A real failure</h3><p data-i18n="ai.m1.p">Every incident in the app is synthetic. One real capture would test the rules for the first time.</p></div>
+        <div class="need"><h3 data-i18n="ai.m2.h">Rules that never fired</h3><p data-i18n="ai.m2.p">Rules S17 to S21 stayed quiet on a healthy print. Their positive case has never been seen on a real printer.</p></div>
+        <div class="need"><h3 data-i18n="ai.m3.h">More U1 owners</h3><p data-i18n="ai.m3.p">Other firmware versions, other filaments, other setups. Tell us where the app says something wrong.</p></div>
+        <div class="need"><h3 data-i18n="ai.m4.h">Other platforms</h3><p data-i18n="ai.m4.p">The app ships for Windows. A tester on macOS or Linux would help.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap narrow">
+      <h2 class="sec-head" data-i18n="ai.more.h2">Other ways to help</h2>
+      <div class="links-list">
+        <a class="btn" href="https://github.com/SirStormz/u1-doctor/issues" data-i18n="ai.issues">Open issues</a>
+        <a class="btn" href="https://github.com/SirStormz/u1-doctor/blob/main/CONTRIBUTING.md" data-i18n="ai.contrib">Contributing guide</a>
+        <a class="btn" href="https://forum.snapmaker.com/" data-i18n="ai.forum">Snapmaker forum</a>
+        <a class="btn" href="https://github.com/SirStormz/u1-doctor/security/advisories/new" data-i18n="foot.security">Report a security problem</a>
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="foot">
+  <div class="wrap">
+    <p data-i18n="foot.note">U1 Doctor is an independent project, not affiliated with Snapmaker. MIT licence.</p>
+    <nav aria-label="Footer">
+      <a href="https://github.com/SirStormz/u1-doctor">GitHub</a>
+      <a href="/u1-doctor/sample-report/" data-i18n="foot.sample">Sample report</a>
+      <a href="/u1-doctor/changelog/" data-i18n="nav.history">History</a>
+      <a href="https://github.com/SirStormz/u1-doctor/security/advisories/new" data-i18n="foot.security">Report a security problem</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>

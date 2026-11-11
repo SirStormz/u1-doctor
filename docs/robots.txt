@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://sirstormz.github.io/u1-doctor/sitemap.xml

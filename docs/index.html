@@ -1,15 +1,239 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="a">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>U1 Doctor</title>
-<meta http-equiv="refresh" content="0; url=presentation/">
-<link rel="canonical" href="presentation/">
-<style>body{font:16px/1.5 system-ui,sans-serif;margin:0;padding:48px 16px;text-align:center;background:#0e1116;color:#e6edf3}a{color:#7cc4ff}</style>
+<meta name="theme-color" content="#08070a">
+<meta property="og:site_name" content="U1 Doctor">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://sirstormz.github.io/u1-doctor/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="U1 Doctor and the Snapmaker U1">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="/u1-doctor/icon.png">
+<script>
+/* theme and language are decided before first paint, so there is no flash */
+(function(){var d=document.documentElement,t="a",l="en";
+try{if(localStorage.getItem("u1d-theme")==="b")t="b";var s=localStorage.getItem("u1d-lang");
+l=s==="fr"||s==="en"?s:((navigator.language||"en").slice(0,2)==="fr"?"fr":"en")}catch(e){}
+d.dataset.theme=t;d.lang=l;d.classList.add("js")})();
+</script>
+
+<title>U1 Doctor - evidence for the Snapmaker U1</title>
+<meta name="description" content="A local, read-only tool that reads your Snapmaker U1 logs and tells you what happened and when. No cloud, no telemetry, no AI in the tool.">
+<link rel="canonical" href="https://sirstormz.github.io/u1-doctor/">
+<meta property="og:title" content="U1 Doctor - evidence for the Snapmaker U1">
+<meta property="og:description" content="Decode the 413 official error codes, replay what happened and share a bundle anyone can check. Local and read-only.">
+<meta property="og:url" content="https://sirstormz.github.io/u1-doctor/">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"U1 Doctor","applicationCategory":"UtilitiesApplication","operatingSystem":"Windows","description":"A local, read-only tool that reads Snapmaker U1 logs, decodes the 413 official error codes and builds a timeline of observed facts.","url":"https://sirstormz.github.io/u1-doctor/","downloadUrl":"https://github.com/SirStormz/u1-doctor/releases/latest","license":"https://opensource.org/licenses/MIT","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+  <script type="module" crossorigin src="/u1-doctor/assets/main-maizrR0Q.js"></script>
+  <link rel="stylesheet" crossorigin href="/u1-doctor/assets/main-C0MVaQQg.css">
+  <link rel="preload" as="font" type="font/woff2" href="/u1-doctor/assets/oxanium-latin-wght-normal-BwpvAp5U.woff2" crossorigin="">
+  <link rel="preload" as="font" type="font/woff2" href="/u1-doctor/assets/saira-latin-wght-normal-C4OLzBX3.woff2" crossorigin="">
 </head>
 <body>
-<p>Opening the <a href="presentation/">U1 Doctor presentation</a>…</p>
-<p><a href="https://github.com/SirStormz/u1-doctor">Source code and releases on GitHub</a></p>
+<a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="/u1-doctor/" aria-label="U1 Doctor">U1 <b>Doctor</b></a>
+    <button class="chip menu-btn" id="menu" type="button" aria-expanded="false" aria-controls="links" data-i18n="menu">Menu</button>
+    <nav class="links" id="links" aria-label="Main">
+      <a href="/u1-doctor/#story" data-i18n="nav.story">The idea</a>
+      <a href="/u1-doctor/#features" data-i18n="nav.features">Features</a>
+      <a href="/u1-doctor/#decoder" data-i18n="nav.decoder">Decoder</a>
+      <a href="/u1-doctor/changelog/" data-i18n="nav.history">History</a>
+      <a href="/u1-doctor/aider/" data-i18n="nav.help">Help</a>
+    </nav>
+    <div class="tools">
+      <button class="chip" id="lang" type="button" aria-label="Language"><span id="lang-l">FR</span></button>
+      <button class="chip" id="theme" type="button"><span class="swatch" aria-hidden="true"></span><span data-i18n="theme">Theme</span></button>
+      <a class="btn btn-primary btn-sm btn-dl" href="https://github.com/SirStormz/u1-doctor/releases/latest" data-i18n="dl.win">Download for Windows</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- HERO -->
+<section class="hero" style="padding-top:clamp(36px,6vw,72px)">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow a-only" data-i18n="hero.eyebrow">U1 case file, read-only</p>
+      <h1 data-i18n-html="hero.h1">What happened on your U1, <em>and when.</em></h1>
+      <p class="lead" data-i18n="hero.lead">A local tool that reads your printer's logs and gives you proof you can read, keep and show.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://github.com/SirStormz/u1-doctor/releases/latest" data-i18n="dl.win">Download for Windows</a>
+        <a class="btn" href="#story" data-i18n="hero.how">See how it works</a>
+      </div>
+    </div>
+    <div class="frame" id="hero-frame">
+      <img class="a-only" src="/u1-doctor/assets/hud-hero-D3V1yyu1.webp" width="1000" height="1189" alt="The Snapmaker U1 seen from the front, framed like a head-up display" fetchpriority="high">
+      <img class="b-only" src="/u1-doctor/assets/line-hero-Cia7gXej.webp" width="1000" height="1189" alt="The Snapmaker U1 drawn in lines with three numbered call-outs" loading="lazy">
+      <i class="co" style="--x:22%;--y:20%" aria-hidden="true">1</i>
+      <i class="co" style="--x:52%;--y:46%" aria-hidden="true">2</i>
+      <i class="co" style="--x:72%;--y:24%" aria-hidden="true">3</i>
+    </div>
+  </div>
+</section>
+
+<div class="strip">
+  <ul>
+    <li data-i18n="g.local">Local</li><li data-i18n="g.ro">Read-only</li><li data-i18n="g.cloud">No cloud</li><li data-i18n="g.tel">No telemetry</li><li data-i18n="g.ai">No AI in the tool</li><li>MIT</li>
+  </ul>
+</div>
+
+<!-- STORY: sticky visual, three steps -->
+<section id="story">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <h2 data-i18n="story.h2">When a print stops, three questions matter.</h2>
+      <p class="lead" data-i18n="story.lead">The logs exported from the U1 are encrypted: only Snapmaker support can open them. U1 Doctor gives the owner evidence they can read. It never drives the printer.</p>
+    </div>
+    <div class="stage">
+      <div class="stage-visual">
+        <div class="frame" id="stage-frame">
+          <img class="a-only on" data-k="0" src="/u1-doctor/assets/hud-hero-D3V1yyu1.webp" alt="" loading="lazy">
+          <img class="a-only" data-k="1" src="/u1-doctor/assets/hud-tetes-BWq8B1G5.webp" alt="" loading="lazy">
+          <img class="a-only" data-k="2" src="/u1-doctor/assets/hud-ecran-CxWEkZco.webp" alt="" loading="lazy">
+          <img class="b-only on" data-k="0" src="/u1-doctor/assets/line-hero-Cia7gXej.webp" alt="" loading="lazy">
+          <img class="b-only" data-k="1" src="/u1-doctor/assets/line-tetes-BKEykJMA.webp" alt="" loading="lazy">
+          <img class="b-only" data-k="2" src="/u1-doctor/assets/line-ecran-D1utZLEM.webp" alt="" loading="lazy">
+        </div>
+      </div>
+      <div class="stage-steps">
+        <article class="step on" data-k="1">
+          <span class="num" aria-hidden="true">1</span>
+          <h3 data-i18n="s1.h">What does this error code mean?</h3>
+          <p data-i18n="s1.p">An offline decoder with the link to the official page. A code it does not know stays unknown: it never guesses.</p>
+        </article>
+        <article class="step" data-k="2">
+          <span class="num" aria-hidden="true">2</span>
+          <h3 data-i18n="s2.h">What happened, and when?</h3>
+          <p data-i18n="s2.p">A timeline built only from observed facts. Gaps stay gaps, and every line keeps its source.</p>
+        </article>
+        <article class="step" data-k="3">
+          <span class="num" aria-hidden="true">3</span>
+          <h3 data-i18n="s3.h">What can I show someone?</h3>
+          <p data-i18n="s3.p">A portable evidence bundle, U1-DEB, that anyone can open and replay on their own machine.</p>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES: exactly five cells -->
+<section id="features">
+  <div class="wrap">
+    <h2 class="sec-head rv" data-i18n="feat.h2">What it does today</h2>
+    <div class="bento">
+      <div class="cell c1 rv">
+        <div class="bignum">413</div>
+        <h3 data-i18n="f1.h">Official error codes, decoded offline</h3>
+        <p data-i18n="f1.p">With firmware notes, the toolheads to inspect and what support will ask you.</p>
+      </div>
+      <div class="cell c2 rv">
+        <img class="a-only" src="/u1-doctor/assets/holo-hero-CEhPYYSj.webp" alt="Gold hologram of the U1" loading="lazy">
+        <img class="b-only" src="/u1-doctor/assets/line-tetes-BKEykJMA.webp" alt="The four toolheads of the U1 drawn in lines" loading="lazy">
+        <div class="cap"><h3 data-i18n="f2.h">A timeline of observed facts</h3><p data-i18n="f2.p">Phases, explicit gaps, and how reliable each timestamp is.</p></div>
+      </div>
+      <div class="cell c3 rv">
+        <h3 data-i18n="f3.h">Findings that explain themselves</h3>
+        <p data-i18n="f3.p">Evidence for, evidence against, what is missing and the limits. No score.</p>
+      </div>
+      <div class="cell c4 rv">
+        <h3 data-i18n="f4.h">Same input, same hash</h3>
+        <p data-i18n="f4.p">The replay gives the same result on Windows, Linux and macOS, checked in CI.</p>
+      </div>
+      <div class="cell c5 rv">
+        <h3 data-i18n="f5.h">A support pack you can read</h3>
+        <p data-i18n="f5.p">An AES-256 zip for Snapmaker support, after a privacy scan of what goes in.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DECODER -->
+<section id="decoder">
+  <div class="wrap decoder">
+    <div class="rv">
+      <h2 data-i18n="dec.h2">Type a code. The decoder answers.</h2>
+      <p class="lead" style="margin-top:20px" data-i18n="dec.lead">It runs in your browser, on the official catalog. Nothing you type leaves this page.</p>
+    </div>
+    <div class="console rv">
+      <label for="code" data-i18n="dec.label">Error code</label>
+      <input id="code" type="text" inputmode="text" autocomplete="off" spellcheck="false" maxlength="24" placeholder="0001-0523-0000-0037" aria-describedby="dec-out">
+      <div class="out" id="dec-out" aria-live="polite">
+        <p class="none" data-i18n="dec.idle">Enter a code such as 0001-0523-0000-0037, or try one of these.</p>
+      </div>
+      <div class="tryit" id="dec-try"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FILM -->
+<section id="film" style="padding-top:0">
+  <div class="wrap narrow">
+    <h2 class="sec-head rv" data-i18n="film.h2">The film</h2>
+    <video class="rv" id="film-video" controls preload="none" playsinline poster="/u1-doctor/media/film/poster.jpg" style="width:100%;height:auto;aspect-ratio:16/9;background:#000;border:var(--bw) solid var(--frame-line)">
+      <source src="/u1-doctor/media/film/u1-doctor-film.mp4" type="video/mp4">
+      <track kind="subtitles" srclang="fr" label="Français" src="/u1-doctor/media/film/fr.vtt">
+    </video>
+  </div>
+</section>
+
+<!-- HISTORY TEASER -->
+<section id="history" style="padding-top:clamp(40px,6vw,80px)">
+  <div class="wrap narrow">
+    <h2 class="sec-head rv" data-i18n="hist.h2">History</h2>
+    <ol class="timeline" id="tl-home"></ol>
+    <p style="margin-top:36px"><a class="btn" href="/u1-doctor/changelog/" data-i18n="hist.all">Full changelog</a></p>
+  </div>
+</section>
+
+<!-- HELP -->
+<section id="help">
+  <div class="wrap">
+    <div class="help rv">
+      <div>
+        <h2 data-i18n="help.h2">We are missing one real failure.</h2>
+        <p class="lead" data-i18n="help.lead">So far only normal prints have been captured: every incident in the app is synthetic. If your U1 stops, your report moves the whole project forward.</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="https://github.com/SirStormz/u1-doctor/issues/new?template=incident-report.yml" data-i18n="help.cta">Send a report</a>
+          <a class="btn" href="/u1-doctor/aider/" data-i18n="help.how">How to help</a>
+        </div>
+      </div>
+      <div class="counter" aria-label="0 real failures received">0<span data-i18n="help.count">real failures received</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="padding-top:0">
+  <div class="wrap narrow faq">
+    <h2 class="sec-head rv" data-i18n="faq.h2">Questions</h2>
+    <details><summary data-i18n="q1">Do my logs leave my PC?</summary><p data-i18n="a1">No. Nothing is sent anywhere. There is no cloud and no telemetry, and you can check the source.</p></details>
+    <details><summary data-i18n="q2">Can the tool touch the printer?</summary><p data-i18n="a2">No. It is read-only: it reads what the printer reports and never sends a command.</p></details>
+    <details><summary data-i18n="q3">Why is there no AI in the tool?</summary><p data-i18n="a3">Because a result must be replayable, byte for byte. The same observations and the same rules always give the same answer.</p></details>
+    <details><summary data-i18n="q4">Is it official Snapmaker software?</summary><p data-i18n="a4">No. It is an independent project. Every code links to the official wiki page it comes from.</p></details>
+    <details><summary data-i18n="q5">Which systems does it run on?</summary><p data-i18n="a5">The app ships as a Windows zip with its checksum. The engine is tested in CI on Windows, Linux and macOS.</p></details>
+  </div>
+</section>
+
+</main>
+<footer class="foot">
+  <div class="wrap">
+    <p data-i18n="foot.note">U1 Doctor is an independent project, not affiliated with Snapmaker. MIT licence.</p>
+    <nav aria-label="Footer">
+      <a href="https://github.com/SirStormz/u1-doctor">GitHub</a>
+      <a href="/u1-doctor/sample-report/" data-i18n="foot.sample">Sample report</a>
+      <a href="/u1-doctor/changelog/" data-i18n="nav.history">History</a>
+      <a href="https://github.com/SirStormz/u1-doctor/security/advisories/new" data-i18n="foot.security">Report a security problem</a>
+    </nav>
+  </div>
+</footer>
+
 </body>
 </html>
