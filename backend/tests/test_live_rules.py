@@ -159,7 +159,7 @@ def test_consent_text_counts_match_the_code_budget_in_en_and_fr():
     assert "job totals of the print history" in en and "totaux de l'historique des impressions" in fr
 
 
-@pytest.mark.parametrize("doc", ["SECURITY.md", "docs/INSTALL.md", "README.md", "docs/adr/0002-moonraker-readonly.md", "docs/threat-model.md"])
+@pytest.mark.parametrize("doc", ["SECURITY.md", "docs/INSTALL.md", "docs/OVERVIEW.md", "docs/adr/0002-moonraker-readonly.md", "docs/threat-model.md"])
 def test_docs_state_the_same_maximum(doc):
     text = (ROOT / doc).read_text(encoding="utf-8")
     assert f"{live.MAX_GET} GET" in text and "/server/files/directory?path=logs" in text and "/server/history/totals" in text

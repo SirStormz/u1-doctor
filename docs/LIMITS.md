@@ -72,7 +72,7 @@ What U1 Doctor cannot know or has not yet proven. Each item cites the document i
 | Limit | Source |
 |---|---|
 | Replay hashes are identical on Linux, Windows and macOS in CI (every committed scenario: 1 real capture and 20 synthetic scenarios on 2026-11-08). They have not been checked on a user's own second machine. | `BACKLOG.md` #12, #17 |
-| U1-DEB has been replayed by CI on three OS, not yet by an independent user. | `README.md` |
+| U1-DEB has been replayed by CI on three OS, not yet by an independent user. | `docs/OVERVIEW.md` |
 | A SHA-256 on a bundle proves integrity only, never authorship or that data came from a real machine. | `docs/U1-DEB.md` |
 | Imported bundles are replayed with the local ruleset; with a different ruleset hash no replay is done. Findings are always recomputed locally. | `docs/U1-DEB.md` |
 | Export redaction is best effort and not a guarantee of anonymity. | `docs/U1-DEB.md` |
@@ -81,9 +81,9 @@ What U1 Doctor cannot know or has not yet proven. Each item cites the document i
 
 | Limit | Source |
 |---|---|
-| The timeline describes the observed window only. "No gap recorded" does not prove the data is complete. | `README.md`, `IMPLEMENTATION_STATUS.md` |
-| Timestamps are the PC's receipt time unless proven otherwise. The machine's `eventtime` is not UTC and is never read as such. | `README.md`, `docs/G0_GO_NOGO.md` |
-| A lost connection never means the printer stopped. | `README.md` |
+| The timeline describes the observed window only. "No gap recorded" does not prove the data is complete. | `docs/OVERVIEW.md`, `IMPLEMENTATION_STATUS.md` |
+| Timestamps are the PC's receipt time unless proven otherwise. The machine's `eventtime` is not UTC and is never read as such. | `docs/OVERVIEW.md`, `docs/G0_GO_NOGO.md` |
+| A lost connection never means the printer stopped. | `docs/OVERVIEW.md` |
 
 ## Evaluators
 
