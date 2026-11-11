@@ -206,7 +206,6 @@ At the time of writing: 1,195 backend tests, 181 frontend tests and 16 browser (
 - [`docs/INSTALL.md`](INSTALL.md): install guide (executable, source, Docker) and where your data lives.
 - [`docs/U1-DEB.md`](U1-DEB.md): the evidence bundle format and its validator.
 - [`docs/LIMITS.md`](LIMITS.md): what is not covered or not yet proven.
-- [`docs/spec/`](spec/): the original requirements and the read-only hardware test protocol (in French).
 - [`CONTRIBUTING.md`](../CONTRIBUTING.md): tests, conventions, honesty rules.
 - [`SECURITY.md`](../SECURITY.md): the read-only allowlist and how to report a vulnerability privately.
 

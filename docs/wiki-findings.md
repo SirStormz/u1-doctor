@@ -60,4 +60,4 @@ Most pages are "Cause 1..N" lists with no error codes or telemetry names. What a
 - Whether the U1 has a chamber sensor is unclear; the ABS ≥ 60 °C ambient advice needs a user-declared enclosure.
 
 ## 8. What this feeds
-Catalog 0.2.0 (413 codes, article links, axis and toolhead mapping with provenance) · roadmap items 33–42 in `BACKLOG.md` · positioning: encrypted vendor logs vs owner-readable bundles.
+Catalog 0.2.0 (413 codes, article links, axis and toolhead mapping with provenance) · positioning: encrypted vendor logs vs owner-readable bundles.

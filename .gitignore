@@ -31,3 +31,6 @@ backups/
 
 # launch-film project (HyperFrames + Blender): its own local git repo, renders are heavy
 01-VIDZ-U1DOCTOR/
+
+# local tooling
+.claude/
