@@ -3,6 +3,6 @@ contact_links:
   - name: Report a security problem (private)
     url: https://github.com/SirStormz/u1-doctor/security/advisories/new
     about: Do not open a public issue for a security problem. Use GitHub's private vulnerability reporting.
-  - name: Illustrated presentation and install guide
-    url: https://sirstormz.github.io/u1-doctor/presentation/
+  - name: The U1 Doctor website
+    url: https://sirstormz.github.io/u1-doctor/
     about: What U1 Doctor does and does not do, in a few minutes.

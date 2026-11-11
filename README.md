@@ -16,7 +16,7 @@ A local, read-only evidence tool for the Snapmaker U1. No cloud, no telemetry, n
 
 <p align="center">
 <a href="https://github.com/SirStormz/u1-doctor/releases/latest"><b>Download for Windows</b></a> &nbsp;·&nbsp;
-<a href="https://sirstormz.github.io/u1-doctor/presentation/"><b>Illustrated presentation</b></a> (EN/FR) &nbsp;·&nbsp;
+<a href="https://sirstormz.github.io/u1-doctor/"><b>Website</b></a> (EN/FR, two themes, live decoder) &nbsp;·&nbsp;
 <a href="https://sirstormz.github.io/u1-doctor/sample-report/"><b>Sample report</b></a> (synthetic data) &nbsp;·&nbsp;
 <a href="docs/INSTALL.md"><b>Install guide</b></a> &nbsp;·&nbsp;
 <a href="docs/LIMITS.md"><b>What it does not do</b></a>
@@ -253,7 +253,7 @@ No code is copied from these projects. The comparison is in [`docs/ORIGINALITY_A
 - **Tout reste sur ton PC** : pas de cloud, pas de télémétrie, pas d'IA. L'application n'écoute que sur `127.0.0.1`.
 - **Démarrer** : télécharge le zip de la [dernière release](https://github.com/SirStormz/u1-doctor/releases/latest), extrais-le avec « Extraire tout », double-clique `u1-doctor.exe` : une fenêtre s'ouvre avec l'application (sans console ni navigateur ; si le composant Microsoft WebView2 manque, l'app propose de l'installer une fois). Windows peut afficher un avertissement SmartScreen, car l'exe n'est pas signé.
 - **Bilingue** : l'interface existe en français et en anglais, avec un bouton en haut à droite.
-- **Statut honnête** : seules des impressions normales ont été capturées sur une vraie U1 ; aucune panne réelle pour l'instant, donc tous les incidents de démonstration sont marqués `SYNTHETIC`. La [présentation illustrée](https://sirstormz.github.io/u1-doctor/presentation/) est aussi disponible en français. Un [exemple de rapport](https://sirstormz.github.io/u1-doctor/sample-report/) bilingue, produit à partir de l'incident de démonstration synthétique, est en ligne.
+- **Statut honnête** : seules des impressions normales ont été capturées sur une vraie U1 ; aucune panne réelle pour l'instant, donc tous les incidents de démonstration sont marqués `SYNTHETIC`. Le [site](https://sirstormz.github.io/u1-doctor/) est aussi disponible en français, avec deux thèmes. Un [exemple de rapport](https://sirstormz.github.io/u1-doctor/sample-report/) bilingue, produit à partir de l'incident de démonstration synthétique, est en ligne.
 
 </details>
 

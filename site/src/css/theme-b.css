@@ -1,0 +1,33 @@
+/* Theme B, "Notice x Pupitre": an illustrated manual. White paper, black outlines, hard shadows, amber only on the part to touch. */
+[data-theme="b"]{
+  color-scheme:light;
+  --bg:#ffffff;--bg2:#eceae5;--ink:#141414;--ink2:#383838;--line:#141414;
+  --accent:#ffb547;--accent-ink:#2a1b03;--accent-text:#8a5200;
+  --nav-bg:rgba(255,255,255,.9);
+  --font-display:"Barlow Semi Condensed",system-ui,sans-serif;--font-body:"Schibsted Grotesk Variable",system-ui,sans-serif;--font-mono:"Courier Prime",ui-monospace,monospace;
+  --display-weight:700;--display-track:-.005em;--btn-weight:700;
+  --bw:2px;--radius:0;--dot-radius:50%;
+  --btn-line:#141414;--btn-line-primary:#141414;--chip-line:#141414;--tl-dot-line:#141414;
+  --frame-bg:#ffffff;--frame-line:#141414;
+  --cell-bg:#ffffff;--cell-line:#141414;--cell-shadow:6px 6px 0 #141414;
+  --cell1-bg:#2a1b03;--cell1-ink:#ffb547;--cell1-num:#ffb547;
+  --cap-bg:#ffffff;
+  --console-bg:#2a1b03;--console-ink:#ffb547;--console-dim:#d9a55e;--console-line:#141414;--console-link:#ffd99a;--input-bg:#1a1002;
+  --help-bg:#ffb547;--help-ink:#2a1b03;--help-line:#141414;--help-btn-bg:#141414;--help-btn-ink:#ffffff;--help-num:#2a1b03;
+}
+[data-theme="b"] .btn{box-shadow:4px 4px 0 #141414;transition:transform .12s ease,box-shadow .12s ease}
+[data-theme="b"] .btn:hover{transform:translate(-1px,-1px);box-shadow:6px 6px 0 #141414}
+[data-theme="b"] .btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 #141414}
+[data-theme="b"] .btn-sm,[data-theme="b"] .chip{box-shadow:none}
+[data-theme="b"] .btn-sm:hover,[data-theme="b"] .btn-sm:active{box-shadow:none}
+[data-theme="b"] .c1 .bignum,[data-theme="b"] .counter,[data-theme="b"] .out .t,[data-theme="b"] .step .num{font-family:"Doto Variable","Courier Prime",monospace}
+[data-theme="b"] .c1 .bignum,[data-theme="b"] .counter{font-weight:900}
+[data-theme="b"] .out .t{font-weight:900;font-size:1.7rem}
+[data-theme="b"] .c4{color:#2a1b03}
+[data-theme="b"] .c2 .cap{border-top:2px solid #141414}
+[data-theme="b"] .step .num{background:var(--accent);color:#2a1b03;width:1.6em;height:1.6em;display:grid;place-items:center;border:2px solid #141414;font-size:2.6rem}
+[data-theme="b"] .timeline li::before{width:14px;height:14px}
+[data-theme="b"] .a-only{display:none}
+/* numbered call-outs on the line drawing */
+.co{display:none}
+[data-theme="b"] .co{display:grid;position:absolute;z-index:2;left:var(--x);top:var(--y);width:36px;height:36px;place-items:center;border-radius:50%;background:#ffb547;color:#2a1b03;border:2px solid #141414;font-family:"Barlow Semi Condensed",sans-serif;font-weight:700;font-size:1.2rem;font-style:normal;box-shadow:3px 3px 0 #141414}

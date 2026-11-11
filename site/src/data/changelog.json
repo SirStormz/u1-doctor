@@ -1,0 +1,50 @@
+[
+  {
+    "v": "0.4.0-g1",
+    "date": "2026-11-11",
+    "en": { "title": "The support pack", "body": "An AES-256 zip you can hand to Snapmaker support, after the app has checked what goes in it. It also reads the recent jobs and the console errors of the printer." },
+    "fr": { "title": "Le dossier de support", "body": "Un zip AES-256 à remettre au support Snapmaker, après que l'app a vérifié ce qu'il contient. Elle lit aussi les derniers jobs et les erreurs de console de l'imprimante." }
+  },
+  {
+    "v": "0.3.0-g1",
+    "date": "2026-11-10",
+    "en": { "title": "New screens", "body": "Simple and Expert home screens, a guided Verdict whose camera follows each step, and a Diagnose screen with four modes. Each theme has its own pieces: meters, ticket, radar, liquid lens." },
+    "fr": { "title": "Nouveaux écrans", "body": "Accueils Simple et Expert, Verdict guidé dont la caméra suit chaque étape, et un écran Diagnostiquer à quatre modes. Chaque thème a ses pièces : galvanomètres, ticket, radar, loupe liquide." }
+  },
+  {
+    "v": "0.2.0-g1",
+    "date": "2026-11-10",
+    "en": { "title": "Four themes", "body": "Pupitre, Notice, Obsidienne and Visière replace the three old themes. A theme changes the look only, never what the app says." },
+    "fr": { "title": "Quatre thèmes", "body": "Pupitre, Notice, Obsidienne et Visière remplacent les trois anciens thèmes. Un thème change l'apparence, jamais ce que dit l'app." }
+  },
+  {
+    "v": "0.1.9-g1",
+    "date": "2026-11-09",
+    "en": { "title": "Read exported logs", "body": "Import Moonraker, Klipper and Orca log files and run the new rules S25 to S32. VirusTotal: 0 detections out of 66 engines." },
+    "fr": { "title": "Lire les journaux exportés", "body": "Import de journaux Moonraker, Klipper et Orca et nouvelles règles S25 à S32. VirusTotal : 0 détection sur 66 moteurs." }
+  },
+  {
+    "v": "0.1.8-g1",
+    "date": "2026-11-08",
+    "en": { "title": "Live rules and G-code checks", "body": "Live rules S17 to S24 with a connection self-check, 10 community-sourced G-code checks, 3MF input, known issues per firmware, good-to-know notes and a sample report." },
+    "fr": { "title": "Règles en direct et contrôle du G-code", "body": "Règles en direct S17 à S24 avec auto-test de connexion, 10 contrôles G-code issus de la communauté, entrée 3MF, problèmes connus par firmware, notes utiles et rapport d'exemple." }
+  },
+  {
+    "v": "0.1.7-g1",
+    "date": "2026-11-08",
+    "en": { "title": "Simple and Expert", "body": "Two display levels and a first-run guide, so the app is readable on day one and deep when you need it." },
+    "fr": { "title": "Simple et Expert", "body": "Deux niveaux d'affichage et un guide de premier lancement : lisible dès le premier jour, profond quand il le faut." }
+  },
+  {
+    "v": "0.1.6-g1",
+    "date": "2026-11-07",
+    "en": { "title": "Starts empty", "body": "The app opens with nothing in it. Demo mode is an explicit switch, and synthetic data is always badged." },
+    "fr": { "title": "Démarre à vide", "body": "L'app s'ouvre sans rien dedans. Le mode démo est un interrupteur explicite et les données synthétiques sont toujours badgées." }
+  },
+  {
+    "v": "0.1.0-g1",
+    "date": "2026-11-07",
+    "en": { "title": "First release", "body": "Offline decoder for the 413 official error codes, a deterministic rules engine, an observed timeline and the U1-DEB evidence bundle." },
+    "fr": { "title": "Première version", "body": "Décodeur hors ligne des 413 codes d'erreur officiels, moteur de règles déterministe, frise des faits observés et paquet de preuves U1-DEB." }
+  }
+]
